@@ -28,6 +28,9 @@ $RECYCLE.BIN/
 # Icon must ends with two \r.
 Icon
 
+# Ignore all built files
+bin/
+obj/
 
 # Thumbnails
 ._*

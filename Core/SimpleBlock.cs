@@ -21,8 +21,6 @@ namespace DXGame.Core
         {
             position_.X = column * width_;
             position_.Y = row * height_;
-            LOG.Debug(String.Format("Creating block at ({0}, {1}), width: {2}, height: {3}, asset: {4}, colorId: {5}", column,
-                row, width_, height_, assetName_, colorId));
         }
 
         public static bool CanCreateFrom(char character)
@@ -39,16 +37,16 @@ namespace DXGame.Core
                 assetString += "RedBlock";
                 break;
             case GREEN_BLOCK:
-                assetString += "RedBlock";
+                assetString += "GreenBlock";
                 break;
             case BLUE_BLOCK:
-                assetString += "RedBlock";
+                assetString += "BlueBlock";
                 break;
             case PURPLE_BLOCK:
-                assetString += "RedBlock";
+                assetString += "PurpleBlock";
                 break;
             case YELLOW_BLOCK:
-                assetString += "RedBlock";
+                assetString += "YellowBlock";
                 break;
             default:
                 return "";

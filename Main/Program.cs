@@ -18,6 +18,7 @@ namespace DXGame
         [STAThread]
         static void Main()
         {
+            log4net.Config.XmlConfigurator.Configure();
             using (var game = new DXGame())
                 game.Run();
         }

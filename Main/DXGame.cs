@@ -30,14 +30,14 @@ namespace DXGame
         public DXGame()
             : base()
         {
-            map_ = new SimpleMap("../../../Content/Map/SimpleMap.txt");
+            map_ = new SimpleMap("../../Content/Map/SimpleMap.txt");
             player_ = new SimplePlayer(map_);
 
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferHeight = height_;
             graphics.PreferredBackBufferWidth = width_;
 
-            Content.RootDirectory = "../../../Content";
+            Content.RootDirectory = "../../Content";
         }
 
         /// <summary>
@@ -120,9 +120,6 @@ namespace DXGame
             player_.Draw(spriteBatch);
 
             spriteBatch.End();
-
-            // TODO: Add your drawing code here
-
             base.Draw(gameTime);
         }
     }

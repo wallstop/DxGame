@@ -32,9 +32,9 @@ namespace DXGame.Core
 
         private void HandleInput()
         {
-            KeyboardState keyboardState = Keyboard.GetState();
-            Keys[] pressedKeys = keyboardState.GetPressedKeys();
-            foreach (Keys key in pressedKeys)
+            var keyboardState = Keyboard.GetState();
+            var pressedKeys = keyboardState.GetPressedKeys();
+            foreach (var key in pressedKeys)
             {
                 switch (key)
                 {
@@ -58,7 +58,6 @@ namespace DXGame.Core
         {
             return character == PLAYER_CHARACTER;
         }
-
 
         public bool Update()
         {

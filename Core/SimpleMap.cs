@@ -16,7 +16,7 @@ namespace DXGame.Core
     public class SimpleMap
     {
         private static readonly log4net.ILog LOG =
-            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            log4net.LogManager.GetLogger(typeof(SimpleMap));
 
         private readonly List<SimpleBlock> blocks_ = new List<SimpleBlock>();
 
@@ -32,7 +32,7 @@ namespace DXGame.Core
 
         public void InitMap(string path)
         {
-            LOG.Info(String.Format("Attempting to load map %s", path));
+            LOG.Info(String.Format("Attempting to load map {0}", path));
 
             using (TextReader fileReader = File.OpenText(path))
             {
@@ -45,7 +45,7 @@ namespace DXGame.Core
                     {
                         LOG.Warn(
                             String.Format(
-                                "Read %d from file, expected to be within bounds [%d, %d] at position (%d, %d)",
+                                "Read {0} from file, expected to be within bounds [{1}, {2}] at position ({3}, {4})",
                                 readValue, Char.MinValue, Char.MaxValue, column, row));
                     }
                     else

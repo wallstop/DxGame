@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using DXGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,11 +21,22 @@ namespace DXGame
     {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
+        private SimplePlayer player_;
+        private SimpleMap map_;
+
+        private const int height_ = 720;
+        private const int width_ = 1280;
 
         public DXGame()
             : base()
         {
+            map_ = new SimpleMap("../../../Content/Map/SimpleMap.txt");
+            player_ = new SimplePlayer(map_);
+
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferHeight = height_;
+            graphics.PreferredBackBufferWidth = width_;
+
             Content.RootDirectory = "Content";
         }
 
@@ -49,6 +61,8 @@ namespace DXGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            map_.Load(this.Content);
+            player_.LoadContent(this.Content);
 
             // TODO: use this.Content to load your game content here
         }
@@ -76,6 +90,8 @@ namespace DXGame
                 Exit();
             }
 
+            player_.Update();
+
             // TODO: Add your update logic here
 
             // TODO: Fix update & draw lockstep so they're de-synced. Sync Update() to 60/30/whatever FPS, Draw() unlocked (or locked to player preference)
@@ -97,6 +113,11 @@ namespace DXGame
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.HotPink);
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteBatch.Begin();
+
+            map_.Draw(spriteBatch);
+            player_.Draw(spriteBatch);
 
             // TODO: Add your drawing code here
 

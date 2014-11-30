@@ -63,7 +63,7 @@ namespace DXGame.Core
         public bool Update()
         {
             HandleInput();
-            return false;
+            return true;
         }
 
 

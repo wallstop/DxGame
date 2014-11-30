@@ -17,7 +17,7 @@ namespace DXGame.Core
         private const char BLUE_BLOCK = 'B';
         private const char PURPLE_BLOCK = 'P';
         private const char YELLOW_BLOCK = 'Y';
-        private const string BASE_FOLDER = "Map/";
+        private const string BASE_FOLDER = "Map/Blocks/";
 
         public SimpleBlock(int column, int row, char colorId)
             : base(ResolveCharacterToString(colorId))

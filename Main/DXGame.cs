@@ -37,7 +37,7 @@ namespace DXGame
             graphics.PreferredBackBufferHeight = height_;
             graphics.PreferredBackBufferWidth = width_;
 
-            Content.RootDirectory = "Content";
+            Content.RootDirectory = "../../../Content";
         }
 
         /// <summary>
@@ -112,12 +112,14 @@ namespace DXGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.HotPink);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch = new SpriteBatch(GraphicsDevice);
             spriteBatch.Begin();
 
             map_.Draw(spriteBatch);
             player_.Draw(spriteBatch);
+
+            spriteBatch.End();
 
             // TODO: Add your drawing code here
 

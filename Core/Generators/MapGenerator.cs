@@ -5,7 +5,8 @@ using System.Text;
 
 namespace DXGame.Core.Generators
 {
-    class MapGenerator
+    public class MapGenerator : ObjectGenerator
     {
+        // TODO
     }
 }

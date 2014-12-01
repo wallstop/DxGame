@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DXGame.Core
 {
-    class ObjectGenerator
+    public class ObjectGenerator
     {
         // TODO: Not sure if we'll need this, but these will create Players, Maps, etc (maybe)
     }

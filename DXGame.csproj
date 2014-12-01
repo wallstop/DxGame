@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Components\DrawableComponent.cs" />
+    <Compile Include="Core\Components\UpdateableComponent.cs" />
     <Compile Include="Core\GameObject.cs" />
     <Compile Include="Core\Generators\MapGenerator.cs" />
     <Compile Include="Core\ObjectGenerator.cs" />

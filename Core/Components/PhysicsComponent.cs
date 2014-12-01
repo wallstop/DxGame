@@ -38,7 +38,7 @@ namespace DXGame.Core.Components
             return this;
         }
 
-        virtual public bool Update()
+        virtual new public bool Update()
         {
             Velocity += Acceleration;
             VectorUtils.ConstrainVector(Velocity, maxVelocity_, -maxVelocity_);

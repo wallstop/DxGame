@@ -24,6 +24,7 @@ namespace DXGame.Core.Simple
         private const char CARRIAGE_RETURN = (char) 13;
 
         private Vector2 playerPosition_;
+        private Vector2 mapSize_;
 
         public SimpleMap(string path)
         {
@@ -38,6 +39,7 @@ namespace DXGame.Core.Simple
             {
                 int row = 0;
                 int column = 0;
+                int maxColumn = 0;
                 int readValue;
                 while ((readValue = fileReader.Read()) != -1)
                 {
@@ -66,6 +68,7 @@ namespace DXGame.Core.Simple
                         {
                         case LINE_FEED:
                             ++row;
+                            maxColumn = Math.Max(column, maxColumn);
                             column = 0;
                             break;
                         case CARRIAGE_RETURN:
@@ -76,7 +79,15 @@ namespace DXGame.Core.Simple
                         }
                     }
                 }
+
+                mapSize_.X = SimpleSprite.GetBlockWidth()*maxColumn;
+                mapSize_.Y = SimpleSprite.GetBlockWidth()*row;
             }
+        }
+
+        public Vector2 GetMapSize()
+        {
+            return mapSize_;
         }
 
         public Vector2 GetPlayerPosition()

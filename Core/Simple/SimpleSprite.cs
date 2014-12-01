@@ -32,5 +32,10 @@ namespace DXGame.Core.Simple
         {
             spriteBatch.Draw(texture_, position_, null, Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0);
         }
+
+        public static int GetBlockWidth()
+        {
+            return BLOCK_WIDTH;
+        }
     }
 }

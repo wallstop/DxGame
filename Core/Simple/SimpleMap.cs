@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DXGame.Core
+namespace DXGame.Core.Simple
 {
     public class SimpleMap
     {
@@ -23,7 +23,7 @@ namespace DXGame.Core
         private const char LINE_FEED = (char) 10;
         private const char CARRIAGE_RETURN = (char) 13;
 
-        private Vector2 playerPosition_ = new Vector2();
+        private Vector2 playerPosition_;
 
         public SimpleMap(string path)
         {
@@ -38,7 +38,7 @@ namespace DXGame.Core
             {
                 int row = 0;
                 int column = 0;
-                int readValue = -1;
+                int readValue;
                 while ((readValue = fileReader.Read()) != -1)
                 {
                     if (Char.MaxValue < readValue || Char.MinValue > readValue)
@@ -50,10 +50,10 @@ namespace DXGame.Core
                     }
                     else
                     {
-                        var currentChar = (char) readValue;
+                        char currentChar = (char) readValue;
                         if (SimpleBlock.CanCreateFrom(currentChar))
                         {
-                            var block = new SimpleBlock(column, row, currentChar);
+                            SimpleBlock block = new SimpleBlock(column, row, currentChar);
                             blocks_.Add(block);
                         }
                         else if (SimplePlayer.CanCreateFrom((currentChar)))
@@ -86,7 +86,7 @@ namespace DXGame.Core
 
         public void Load(ContentManager contentManager)
         {
-            foreach (var block in blocks_)
+            foreach (SimpleBlock block in blocks_)
             {
                 block.LoadContent(contentManager);
             }
@@ -94,7 +94,7 @@ namespace DXGame.Core
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            foreach (var block in blocks_)
+            foreach (SimpleBlock block in blocks_)
             {
                 block.Draw(spriteBatch);
             }

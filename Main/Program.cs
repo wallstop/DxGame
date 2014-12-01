@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 #endregion
 
-namespace DXGame
+namespace DXGame.Main
 {
 #if WINDOWS || LINUX
     /// <summary>

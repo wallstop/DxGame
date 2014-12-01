@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DXGame.Core
+namespace DXGame.Core.Simple
 {
     public abstract class SimpleSprite
     {
         protected Vector2 position_ = new Vector2();
         protected Rectangle space_;
         protected Texture2D texture_;
+        protected const int BLOCK_WIDTH = 50;
         protected string assetName_;
 
         protected SimpleSprite(string assetName)
@@ -28,7 +30,7 @@ namespace DXGame.Core
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture_, position_, space_, Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture_, position_, null, Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0);
         }
     }
 }

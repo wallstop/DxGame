@@ -1,13 +1,10 @@
 ﻿using System;
 using log4net;
 
-namespace DXGame.Core
+namespace DXGame.Core.Simple
 {
     public class SimpleBlock : SimpleSprite
     {
-        private const int width_ = 50;
-        private const int height_ = 50;
-
         private const char RED_BLOCK = 'R';
         private const char GREEN_BLOCK = 'G';
         private const char BLUE_BLOCK = 'B';
@@ -19,8 +16,8 @@ namespace DXGame.Core
         public SimpleBlock(int column, int row, char colorId)
             : base(ResolveCharacterToString(colorId))
         {
-            position_.X = column * width_;
-            position_.Y = row * height_;
+            position_.X = column * BLOCK_WIDTH;
+            position_.Y = row * BLOCK_WIDTH;
         }
 
         public static bool CanCreateFrom(char character)

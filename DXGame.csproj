@@ -71,10 +71,15 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Core\SimpleBlock.cs" />
-    <Compile Include="Core\SimpleMap.cs" />
-    <Compile Include="Core\SimplePlayer.cs" />
-    <Compile Include="Core\SimpleSprite.cs" />
+    <Compile Include="Core\Component.cs" />
+    <Compile Include="Core\DrawableComponent.cs" />
+    <Compile Include="Core\GameObject.cs" />
+    <Compile Include="Core\ObjectGenerator.cs" />
+    <Compile Include="Core\Simple\SimpleBlock.cs" />
+    <Compile Include="Core\Simple\SimpleMap.cs" />
+    <Compile Include="Core\Simple\SimplePlayer.cs" />
+    <Compile Include="Core\Simple\SimpleSprite.cs" />
+    <Compile Include="Core\UniqueId.cs" />
     <Compile Include="Main\DXGame.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

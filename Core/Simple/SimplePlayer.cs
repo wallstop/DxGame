@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 
-namespace DXGame.Core
+namespace DXGame.Core.Simple
 {
     public class SimplePlayer : SimpleSprite
     {
@@ -18,10 +10,11 @@ namespace DXGame.Core
         private const char PLAYER_CHARACTER = 'Z';
 
         public SimplePlayer(SimpleMap map)
-            : base(playerName_)
+           : base(playerName_)
         {
             map_ = map;
-            position_ = map.GetPlayerPosition();
+            position_.X = map.GetPlayerPosition().X * BLOCK_WIDTH;
+            position_.Y = map.GetPlayerPosition().Y * BLOCK_WIDTH;
         }
 
         private void Move(int x, int y)
@@ -32,9 +25,9 @@ namespace DXGame.Core
 
         private void HandleInput()
         {
-            var keyboardState = Keyboard.GetState();
-            var pressedKeys = keyboardState.GetPressedKeys();
-            foreach (var key in pressedKeys)
+            KeyboardState keyboardState = Keyboard.GetState();
+            Keys [] pressedKeys = keyboardState.GetPressedKeys();
+            foreach (Keys key in pressedKeys)
             {
                 switch (key)
                 {
@@ -64,7 +57,5 @@ namespace DXGame.Core
             HandleInput();
             return true;
         }
-
-
     }
 }

@@ -1,13 +1,13 @@
 ﻿#region Using Statements
 
-using DXGame.Core;
+using DXGame.Core.Simple;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 #endregion
 
-namespace DXGame
+namespace DXGame.Main
 {
     /// <summary>
     ///     This is the main type for your game
@@ -18,17 +18,17 @@ namespace DXGame
         private const int width_ = 1280;
         private readonly SimpleMap map_;
         private readonly SimplePlayer player_;
-        private GraphicsDeviceManager graphics;
-        private SpriteBatch spriteBatch;
+        private GraphicsDeviceManager graphics_;
+        private SpriteBatch spriteBatch_;
 
         public DXGame()
         {
             map_ = new SimpleMap("../../Content/Map/SimpleMap.txt");
             player_ = new SimplePlayer(map_);
 
-            graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferHeight = height_;
-            graphics.PreferredBackBufferWidth = width_;
+            graphics_ = new GraphicsDeviceManager(this);
+            graphics_.PreferredBackBufferHeight = height_;
+            graphics_.PreferredBackBufferWidth = width_;
 
             Content.RootDirectory = "../../Content";
         }
@@ -53,7 +53,7 @@ namespace DXGame
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteBatch_ = new SpriteBatch(GraphicsDevice);
             map_.Load(Content);
             player_.LoadContent(Content);
         }
@@ -106,19 +106,18 @@ namespace DXGame
                 TODO: Only draw the objects that are on-screen at the current time. This can be done via naive methods, 
                 such as iterate-over-all-objects and only draw those on screen, or advanced techniques, like http://gamedev.stackexchange.com/questions/14713/culling-for-a-2d-platformer-game,
                 http://www.codeproject.com/Articles/18113/KD-Tree-Searching-in-N-dimensions-Part-I, http://qstuff.blogspot.com/2008/05/spatial-sorting-with-kd-trees-part-1.html.
-             */
+            */
 
             /*
                 TODO: Instead of doing a clear, see if we can take a diff. That way, we only have to re-draw certain objects (the ones that have changed)
             */
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            spriteBatch.Begin();
+            spriteBatch_.Begin();
 
-            map_.Draw(spriteBatch);
-            player_.Draw(spriteBatch);
+            map_.Draw(spriteBatch_);
+            player_.Draw(spriteBatch_);
 
-            spriteBatch.End();
+            spriteBatch_.End();
             base.Draw(gameTime);
         }
     }

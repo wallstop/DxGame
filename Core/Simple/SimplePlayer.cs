@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using System.Runtime.InteropServices;
+using Microsoft.Xna.Framework.Input;
 
 namespace DXGame.Core.Simple
 {
@@ -19,8 +20,17 @@ namespace DXGame.Core.Simple
 
         private void Move(int x, int y)
         {
-            position_.X += x;
-            position_.Y += y;
+            float updatedX = position_.X + x;
+            float updatedY = position_.Y + y;
+
+            if ((updatedX > 0) && (updatedX < map_.GetMapSize().X))
+            {
+                position_.X += x;
+            }
+            if ((updatedY > 0) && ((updatedY + space_.Height) < map_.GetMapSize().Y))
+            {
+                position_.Y += y;
+            }
         }
 
         private void HandleInput()

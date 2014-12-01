@@ -10,6 +10,7 @@ namespace DXGame.Core.Simple
         private const char BLUE_BLOCK = 'B';
         private const char PURPLE_BLOCK = 'P';
         private const char YELLOW_BLOCK = 'Y';
+        private const char ORANGE_BLOCK = 'O';
         private const string BASE_FOLDER = "Map/Blocks/";
         private static readonly ILog LOG = LogManager.GetLogger(typeof (SimpleBlock));
 
@@ -44,6 +45,9 @@ namespace DXGame.Core.Simple
                 break;
             case YELLOW_BLOCK:
                 assetString += "YellowBlock";
+                break;
+            case ORANGE_BLOCK:
+                assetString += "OrangeBlock";
                 break;
             default:
                 return "";

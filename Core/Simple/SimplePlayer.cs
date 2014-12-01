@@ -25,11 +25,11 @@ namespace DXGame.Core.Simple
 
             if ((updatedX > 0) && (updatedX < map_.GetMapSize().X))
             {
-                position_.X += x;
+                position_.X = updatedX;
             }
             if ((updatedY > 0) && ((updatedY + space_.Height) < map_.GetMapSize().Y))
             {
-                position_.Y += y;
+                position_.Y = updatedY;
             }
         }
 

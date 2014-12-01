@@ -15,8 +15,7 @@ namespace DXGame.Core.Components
 
         protected float maxVelocity_;
 
-        public PhysicsComponent(float maxVelocity = 0.0f)
-            : base()
+        public PhysicsComponent(float maxVelocity = 10.0f)
         {
             maxVelocity_ = maxVelocity;
         }

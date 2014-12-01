@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DXGame.Core
+namespace DXGame.Core.Components
 {
-    class DrawableComponent : Component
+    public abstract class DrawableComponent : Component
     {
         // TODO: This should have refs to something like a physics component (for position, size, etc)
 
-        public bool LoadContent()
+        virtual public bool LoadContent()
         {
             // TODO
             return true;
         }
 
-        public bool Draw()
+        virtual public bool Draw()
         {
             // TODO
             return true;

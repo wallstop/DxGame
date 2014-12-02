@@ -7,7 +7,7 @@ namespace DXGame.Core.Generators
     public class PlayerGenerator : ObjectGenerator<GameObject>
     {
         private const string PLAYER = "Player";
-        private const float MAX_VELOCITY = 1.0f;
+        private const float MAX_VELOCITY = 5.0f;
         private readonly SimplePlayerInputComponent input_;
         private readonly PhysicsComponent physics_;
         private readonly PositionalComponent position_;

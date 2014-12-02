@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using DXGame.Core;
 using DXGame.Core.Components;
 using DXGame.Core.Generators;
-using DXGame.Core.Simple;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -20,16 +19,16 @@ namespace DXGame.Main
     {
         private const int height_ = 720;
         private const int width_ = 1280;
+        private readonly HashSet<DrawableComponent> drawables_ = new HashSet<DrawableComponent>();
         private readonly MapGenerator mapGenerator_;
         private readonly PlayerGenerator playerGenerator_;
 
-        private readonly HashSet<DrawableComponent> drawables_ = new HashSet<DrawableComponent>();
-        private readonly HashSet<UpdateableComponent> updateables_ = new HashSet<UpdateableComponent>();
+        private readonly SortedSet<UpdateableComponent> updateables_ = new SortedSet<UpdateableComponent>();
         private SpriteBatch spriteBatch_;
 
         public DXGame()
         {
-            mapGenerator_= new MapGenerator("../../Content/Map/SimpleMap.txt");
+            mapGenerator_ = new MapGenerator("../../Content/Map/SimpleMap.txt");
             playerGenerator_ = new PlayerGenerator(mapGenerator_.PlayerPosition);
 
             List<GameObject> mapObjects = mapGenerator_.Generate();
@@ -37,7 +36,7 @@ namespace DXGame.Main
             AddAllObjects(mapObjects);
             AddAllObjects(playerObjects);
 
-            GraphicsDeviceManager graphics_ = new GraphicsDeviceManager(this);
+            var graphics_ = new GraphicsDeviceManager(this);
             graphics_.PreferredBackBufferHeight = height_;
             graphics_.PreferredBackBufferWidth = width_;
 

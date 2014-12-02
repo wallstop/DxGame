@@ -15,6 +15,7 @@ namespace DXGame.Core.Components
         {
             maxVelocity_ = maxVelocity;
             position_ = position;
+            priority_ = UpdatePriority.NORMAL;
         }
 
         public virtual Vector2 Velocity
@@ -57,7 +58,7 @@ namespace DXGame.Core.Components
         public override bool Update(GameTime gameTime)
         {
             velocity_ += acceleration_;
-            VectorUtils.ConstrainVector(velocity_, maxVelocity_, -maxVelocity_);
+            velocity_ = VectorUtils.ConstrainVector(velocity_, -maxVelocity_, maxVelocity_);
             Vector2 position = position_.Position;
             position += velocity_;
             position_.Position = position;

@@ -8,16 +8,18 @@ namespace DXGame.Core.Utils
 {
     public class VectorUtils
     {
-        public static void ConstrainVector(Vector2 vector, float constraintMin, float constraintMax)
+        public static Vector2 ConstrainVector(Vector2 vector, float constraintMin, float constraintMax)
         {
-            Constrain(ref vector.X, constraintMin, constraintMax);
-            Constrain(ref vector.Y, constraintMin, constraintMax);
+            vector.X = Constrain(vector.X, constraintMin, constraintMax);
+            vector.Y = Constrain(vector.Y, constraintMin, constraintMax);
+            return vector;
         }
 
-        private static void Constrain(ref float value, float constraintMin, float constraintMax)
+        private static float Constrain(float value, float constraintMin, float constraintMax)
         {
             value = Math.Min(value, constraintMax);
             value = Math.Max(value, constraintMin);
+            return value;
         }
 
     }

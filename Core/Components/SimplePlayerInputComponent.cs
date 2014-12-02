@@ -15,6 +15,7 @@ namespace DXGame.Core.Components
             : base(parent)
         {
             physics_ = physics;
+            priority_ = UpdatePriority.HIGH;
         }
 
         public SimplePlayerInputComponent WithPhysics(PhysicsComponent physics)

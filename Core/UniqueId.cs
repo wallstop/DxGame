@@ -4,16 +4,11 @@ namespace DXGame.Core
 {
     public struct UniqueId
     {
-        private static long staticId;
         private const long INVALID_ID = 0;
+        private static long staticId;
         private static readonly UniqueId INVALID = new UniqueId(INVALID_ID);
 
         private readonly long id_;
-
-        public UniqueId()
-            : this(generateId())
-        {
-        }
 
         private UniqueId(long assignedId)
         {

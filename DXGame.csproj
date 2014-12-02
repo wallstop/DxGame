@@ -72,10 +72,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Core\Component.cs" />
+    <Compile Include="Core\Components\BoundingBoxComponent.cs" />
     <Compile Include="Core\Components\DrawableComponent.cs" />
+    <Compile Include="Core\Components\SimplePlayerInputComponent.cs" />
+    <Compile Include="Core\Components\PositionalComponent.cs" />
+    <Compile Include="Core\Components\SimpleSpriteComponent.cs" />
     <Compile Include="Core\Components\UpdateableComponent.cs" />
     <Compile Include="Core\GameObject.cs" />
     <Compile Include="Core\Generators\MapGenerator.cs" />
+    <Compile Include="Core\Generators\PlayerGenerator.cs" />
     <Compile Include="Core\ObjectGenerator.cs" />
     <Compile Include="Core\Components\PhysicsComponent.cs" />
     <Compile Include="Core\Simple\SimpleBlock.cs" />

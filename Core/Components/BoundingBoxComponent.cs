@@ -2,18 +2,18 @@
 
 namespace DXGame.Core.Components
 {
-    public class BoundedBoxComponent : Component
+    public class BoundingBoxComponent : Component
     {
         protected Rectangle boundingBox_;
         protected PositionalComponent position_;
 
-        public BoundedBoxComponent(PositionalComponent position = null, GameObject parent = null)
+        public BoundingBoxComponent(PositionalComponent position = null, GameObject parent = null)
             : base(parent)
         {
             boundingBox_ = new Rectangle();
         }
 
-        public BoundedBoxComponent(Rectangle boundingBox, GameObject parent = null)
+        public BoundingBoxComponent(Rectangle boundingBox, GameObject parent = null)
             : base(parent)
         {
             boundingBox_ = boundingBox;
@@ -25,13 +25,13 @@ namespace DXGame.Core.Components
             set { boundingBox_ = value; }
         }
 
-        public BoundedBoxComponent WithWidthAndHeight(int width, int height)
+        public BoundingBoxComponent WithWidthAndHeight(int width, int height)
         {
             boundingBox_ = new Rectangle((int) position_.Position.X, (int) position_.Position.Y, width, height);
             return this;
         }
 
-        public BoundedBoxComponent WithPosition(PositionalComponent position)
+        public BoundingBoxComponent WithPosition(PositionalComponent position)
         {
             position_ = position;
             return this;

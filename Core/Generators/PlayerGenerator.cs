@@ -1,16 +1,16 @@
-﻿using DXGame.Core.Components;
+﻿using System.Collections.Generic;
+using DXGame.Core.Components;
 
 namespace DXGame.Core.Generators
 {
     public class PlayerGenerator : ObjectGenerator<GameObject>
     {
-        private readonly PositionalComponent position_;
-        private readonly SimpleSpriteComponent sprite_;
-        private readonly SimplePlayerInputComponent input_;
-        private readonly PhysicsComponent physics_;
-
         private const string PLAYER = "Player";
         private const float MAX_VELOCITY = 10.0f;
+        private readonly SimplePlayerInputComponent input_;
+        private readonly PhysicsComponent physics_;
+        private readonly PositionalComponent position_;
+        private readonly SimpleSpriteComponent sprite_;
 
         public PlayerGenerator(int x, int y)
         {
@@ -20,11 +20,13 @@ namespace DXGame.Core.Generators
             input_ = new SimplePlayerInputComponent().WithPhysics(physics_);
         }
 
-        public override GameObject Generate()
+        public override List<GameObject> Generate()
         {
-            GameObject player = new GameObject();
+            var objects = new List<GameObject>();
+            var player = new GameObject();
             player.AttachComponents(position_, physics_, sprite_, input_);
-            return player;
+            objects.Add(player);
+            return objects;
         }
     }
 }

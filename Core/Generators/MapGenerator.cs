@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DXGame.Core.Generators
 {
@@ -8,9 +9,10 @@ namespace DXGame.Core.Generators
 
         public MapGenerator(string mapPath)
         {
+
         }
 
-        public override GameObject Generate()
+        public override List<GameObject> Generate()
         {
             throw new NotImplementedException();
         }

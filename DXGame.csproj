@@ -72,7 +72,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Core\Component.cs" />
-    <Compile Include="Core\Components\BoundingBoxComponent.cs" />
     <Compile Include="Core\Components\DrawableComponent.cs" />
     <Compile Include="Core\Components\SimplePlayerInputComponent.cs" />
     <Compile Include="Core\Components\PositionalComponent.cs" />

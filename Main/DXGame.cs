@@ -1,5 +1,9 @@
 ﻿#region Using Statements
 
+using System.Collections.Generic;
+using DXGame.Core;
+using DXGame.Core.Components;
+using DXGame.Core.Generators;
 using DXGame.Core.Simple;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,21 +20,43 @@ namespace DXGame.Main
     {
         private const int height_ = 720;
         private const int width_ = 1280;
-        private readonly SimpleMap map_;
-        private readonly SimplePlayer player_;
-        private GraphicsDeviceManager graphics_;
+        private readonly MapGenerator mapGenerator_;
+        private readonly PlayerGenerator playerGenerator_;
+
+        private readonly HashSet<DrawableComponent> drawables_ = new HashSet<DrawableComponent>();
+        private readonly HashSet<UpdateableComponent> updateables_ = new HashSet<UpdateableComponent>();
         private SpriteBatch spriteBatch_;
 
         public DXGame()
         {
-            map_ = new SimpleMap("../../Content/Map/SimpleMap.txt");
-            player_ = new SimplePlayer(map_);
+            mapGenerator_= new MapGenerator("../../Content/Map/SimpleMap.txt");
+            playerGenerator_ = new PlayerGenerator(mapGenerator_.PlayerPosition);
 
-            graphics_ = new GraphicsDeviceManager(this);
+            List<GameObject> mapObjects = mapGenerator_.Generate();
+            List<GameObject> playerObjects = playerGenerator_.Generate();
+            AddAllObjects(mapObjects);
+            AddAllObjects(playerObjects);
+
+            GraphicsDeviceManager graphics_ = new GraphicsDeviceManager(this);
             graphics_.PreferredBackBufferHeight = height_;
             graphics_.PreferredBackBufferWidth = width_;
 
             Content.RootDirectory = "../../Content";
+        }
+
+        private void AddAllObjects(IEnumerable<GameObject> gameObjects)
+        {
+            foreach (GameObject gameObject in gameObjects)
+            {
+                foreach (DrawableComponent drawable in gameObject.Drawables)
+                {
+                    drawables_.Add(drawable);
+                }
+                foreach (UpdateableComponent updateable in gameObject.Updateables)
+                {
+                    updateables_.Add(updateable);
+                }
+            }
         }
 
         /// <summary>
@@ -54,8 +80,10 @@ namespace DXGame.Main
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch_ = new SpriteBatch(GraphicsDevice);
-            map_.Load(Content);
-            player_.LoadContent(Content);
+            foreach (DrawableComponent component in drawables_)
+            {
+                component.LoadContent(Content);
+            }
         }
 
         /// <summary>
@@ -80,7 +108,10 @@ namespace DXGame.Main
                 Exit();
             }
 
-            player_.Update();
+            foreach (UpdateableComponent component in updateables_)
+            {
+                component.Update(gameTime);
+            }
 
             // TODO: Add your update logic here
 
@@ -114,8 +145,10 @@ namespace DXGame.Main
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch_.Begin();
 
-            map_.Draw(spriteBatch_);
-            player_.Draw(spriteBatch_);
+            foreach (DrawableComponent component in drawables_)
+            {
+                component.Draw(spriteBatch_);
+            }
 
             spriteBatch_.End();
             base.Draw(gameTime);

@@ -19,17 +19,23 @@ namespace DXGame.Core.Components
             position_ = position;
         }
 
-        public PositionalComponent WithCoordinates(float x, float y)
+        public virtual Vector2 Position
+        {
+            get { return position_; }
+            set { position_ = value; }
+        }
+
+        public PositionalComponent WithPosition(float x, float y)
         {
             position_.X = x;
             position_.Y = y;
             return this;
         }
 
-        public virtual Vector2 Position
+        public PositionalComponent WithPosition(Vector2 position)
         {
-            get { return position_; }
-            set { position_ = value; }
+            position_ = position;
+            return this;
         }
     }
 }

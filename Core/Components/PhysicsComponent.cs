@@ -53,6 +53,7 @@ namespace DXGame.Core.Components
             return this;
         }
 
+        // TODO: Create some kind of prioritization scheme. We want to process input before we process any physics
         public override bool Update(GameTime gameTime)
         {
             velocity_ += acceleration_;

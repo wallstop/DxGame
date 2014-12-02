@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -7,6 +8,7 @@ namespace DXGame.Core.Components
     public class SimplePlayerInputComponent : UpdateableComponent
     {
         private static readonly float ACCELERATE_AMOUNT = 0.2f;
+        private static readonly float DECAY_AMOUNT = 0.1f;
         protected PhysicsComponent physics_;
 
         public SimplePlayerInputComponent(PhysicsComponent physics = null, GameObject parent = null)
@@ -17,7 +19,7 @@ namespace DXGame.Core.Components
 
         public SimplePlayerInputComponent WithPhysics(PhysicsComponent physics)
         {
-            // TODO: null validation
+            Debug.Assert(physics != null, "PhysicsComponent cannot be null");
             physics_ = physics;
             return this;
         }
@@ -33,6 +35,7 @@ namespace DXGame.Core.Components
             KeyboardState keyboardState = Keyboard.GetState();
             Keys[] pressedKeys = keyboardState.GetPressedKeys();
             Vector2 acceleration = physics_.Acceleration;
+            Vector2 velocity = physics_.Velocity;
             if (pressedKeys.Length > 0)
             {
                 foreach (Keys key in pressedKeys)
@@ -54,31 +57,31 @@ namespace DXGame.Core.Components
                     }
                 }
             }
+
+            // TODO: Better acceleration. This is hilariously bad
+            if (Math.Abs(acceleration.X) - DECAY_AMOUNT > 0.0f)
+            {
+                acceleration.X -= DECAY_AMOUNT * SignOf(acceleration.X);
+            }
             else
             {
-                if (Math.Abs(acceleration.X) - ACCELERATE_AMOUNT > 0.0f)
-                {
-                    acceleration.X -= ACCELERATE_AMOUNT * signOf(acceleration.X);
-                }
-                else
-                {
-                    acceleration.X = 0.0f;
-                }
+                acceleration.X = 0.0f;
+            }
 
-                if (Math.Abs(acceleration.Y) - ACCELERATE_AMOUNT > 0.0f)
-                {
-                    acceleration.Y -= ACCELERATE_AMOUNT * signOf(acceleration.Y);
-                }
-                else
-                {
-                    acceleration.Y = 0.0f;
-                }
+            if (Math.Abs(acceleration.Y) - DECAY_AMOUNT > 0.0f)
+            {
+                acceleration.Y -= DECAY_AMOUNT * SignOf(acceleration.Y);
+            }
+            else
+            {
+                acceleration.Y = 0.0f;
             }
 
             physics_.Acceleration = acceleration;
         }
 
-        protected static int signOf(float x)
+        // TODO: Move somewhere else
+        protected static int SignOf(float x)
         {
             return x > 0.0f ? 1 : -1;
         }

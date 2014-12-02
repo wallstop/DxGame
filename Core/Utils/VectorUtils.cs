@@ -17,6 +17,5 @@ namespace DXGame.Core.Utils
             vector.Y = MathUtils.Constrain(vector.Y, constraintMin, constraintMax);
             return vector;
         }
-
     }
 }

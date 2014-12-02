@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A74D44
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DXGameTest", "Test\DXGameTest\DXGameTest.csproj", "{410F6A43-8ED7-41E9-BA9F-A348398C793F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DXGameTest", "Test\DXGameTest\DXGameTest.csproj", "{883B9882-DA61-4D25-8F11-2270E6C317AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,14 +34,12 @@ Global
 		{9B58D322-95D0-4F4C-A742-DD643C7024FC}.Release|x64.Build.0 = Release|x64
 		{9B58D322-95D0-4F4C-A742-DD643C7024FC}.Release|x86.ActiveCfg = Release|x86
 		{9B58D322-95D0-4F4C-A742-DD643C7024FC}.Release|x86.Build.0 = Release|x86
-		{410F6A43-8ED7-41E9-BA9F-A348398C793F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{410F6A43-8ED7-41E9-BA9F-A348398C793F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{410F6A43-8ED7-41E9-BA9F-A348398C793F}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{410F6A43-8ED7-41E9-BA9F-A348398C793F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{410F6A43-8ED7-41E9-BA9F-A348398C793F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{410F6A43-8ED7-41E9-BA9F-A348398C793F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{410F6A43-8ED7-41E9-BA9F-A348398C793F}.Release|x64.ActiveCfg = Release|Any CPU
-		{410F6A43-8ED7-41E9-BA9F-A348398C793F}.Release|x86.ActiveCfg = Release|Any CPU
+		{883B9882-DA61-4D25-8F11-2270E6C317AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{883B9882-DA61-4D25-8F11-2270E6C317AF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{883B9882-DA61-4D25-8F11-2270E6C317AF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{883B9882-DA61-4D25-8F11-2270E6C317AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{883B9882-DA61-4D25-8F11-2270E6C317AF}.Release|x64.ActiveCfg = Release|Any CPU
+		{883B9882-DA61-4D25-8F11-2270E6C317AF}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

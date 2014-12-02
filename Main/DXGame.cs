@@ -28,7 +28,7 @@ namespace DXGame.Main
 
         public DXGame()
         {
-            mapGenerator_ = new MapGenerator("../../Content/Map/SimpleMap.txt");
+            mapGenerator_ = new MapGenerator("Content/Map/SimpleMap.txt");
             playerGenerator_ = new PlayerGenerator(mapGenerator_.PlayerPosition, mapGenerator_.MapBounds);
 
             List<GameObject> mapObjects = mapGenerator_.Generate();
@@ -40,7 +40,7 @@ namespace DXGame.Main
             graphics_.PreferredBackBufferHeight = height_;
             graphics_.PreferredBackBufferWidth = width_;
 
-            Content.RootDirectory = "../../Content";
+            Content.RootDirectory = "Content";
         }
 
         private void AddAllObjects(IEnumerable<GameObject> gameObjects)

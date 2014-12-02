@@ -27,9 +27,26 @@ namespace DXGame.Core.Simple
             {
                 position_.X = updatedX;
             }
+            else if (updatedX <= 0)
+            {
+                position_.X = 0;
+            }
+            else
+            {
+                position_.X = map_.GetMapSize().X - space_.Width;
+            }
+
             if ((updatedY > 0) && ((updatedY + space_.Height) < map_.GetMapSize().Y))
             {
                 position_.Y = updatedY;
+            }
+            else if (updatedY <= 0)
+            {
+                position_.Y = 0;
+            }
+            else
+            {
+                position_.Y = map_.GetMapSize().Y - space_.Height;
             }
         }
 
@@ -42,16 +59,16 @@ namespace DXGame.Core.Simple
                 switch (key)
                 {
                 case Keys.Left:
-                    Move(-5, 0);
+                    Move(-4, 0);
                     break;
                 case Keys.Right:
-                    Move(5, 0);
+                    Move(4, 0);
                     break;
                 case Keys.Up:
-                    Move(0, -5);
+                    Move(0, -4);
                     break;
                 case Keys.Down:
-                    Move(0, 5);
+                    Move(0, 4);
                     break;
                 }
             }

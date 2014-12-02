@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DXGame.Core.Utils;
+﻿using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using NUnit.Framework;
 
@@ -12,25 +7,12 @@ namespace DXGameTest.Core.Utils
     [TestFixture]
     public class VectorUtilsTest
     {
-
         [Test]
-        public void TestConstrainNoViolation()
-        {
-            Vector2 testVector = new Vector2(1.0f, 1.0f);
-            float min = float.MinValue;
-            float max = float.MaxValue;
-
-            Vector2 resultVector = VectorUtils.ConstrainVector(testVector, min, max);
-            // Ensure that the returned vector remains unchanged
-            Assert.AreEqual(testVector, resultVector);
-        }
-
-        [Test]
-        public void TestConstainXViolation()
+        public void TestConstainVectorXViolation()
         {
             float min = -25.0f;
             float max = 100.0f;
-            Vector2 testVector = new Vector2(-100.0f, max);
+            var testVector = new Vector2(-100.0f, max);
 
             Vector2 resultVector = VectorUtils.ConstrainVector(testVector, min, max);
             // Ensure that the resultVector has been properly constrained
@@ -42,27 +24,22 @@ namespace DXGameTest.Core.Utils
         }
 
         [Test]
-        public void TestConstrainYViolation()
+        public void TestConstrainVectorBadMinMax()
         {
-            float min = -25.0f;
-            float max = 100.0f;
-            Vector2 testVector = new Vector2(2.0f, max + 300.0f);
+            float min = 100.0f;
+            float max = -100.0f;
+            var testVector = new Vector2(3.0f, -4.0f);
 
             Vector2 resultVector = VectorUtils.ConstrainVector(testVector, min, max);
-            // Ensure that the resultVector has been properly constrained
-            Assert.AreNotEqual(testVector, resultVector);
-            Assert.AreEqual(testVector.X, resultVector.X);
-            // Only the Y value should have changed
-            Assert.Greater(testVector.Y, resultVector.Y);
-            Assert.AreEqual(max, resultVector.Y);
+            Assert.AreEqual(testVector, resultVector);
         }
 
         [Test]
-        public void TestConstrainBothViolation()
+        public void TestConstrainVectorBothViolation()
         {
             float min = -100.0f;
             float max = 100.0f;
-            Vector2 testVector = new Vector2(min - 100.0f, max + 100.0f);
+            var testVector = new Vector2(min - 100.0f, max + 100.0f);
 
             Vector2 resultVector = VectorUtils.ConstrainVector(testVector, min, max);
             // Ensure that the resultVector has been properly constrained
@@ -72,15 +49,31 @@ namespace DXGameTest.Core.Utils
         }
 
         [Test]
-        public void TestConstrainBadMinMax()
+        public void TestConstrainVectorNoViolation()
         {
-            float min = 100.0f;
-            float max = -100.0f;
-            Vector2 testVector = new Vector2(3.0f, -4.0f);
+            var testVector = new Vector2(1.0f, 1.0f);
+            float min = float.MinValue;
+            float max = float.MaxValue;
 
             Vector2 resultVector = VectorUtils.ConstrainVector(testVector, min, max);
+            // Ensure that the returned vector remains unchanged
             Assert.AreEqual(testVector, resultVector);
         }
 
+        [Test]
+        public void TestConstrainVectorYViolation()
+        {
+            float min = -25.0f;
+            float max = 100.0f;
+            var testVector = new Vector2(2.0f, max + 300.0f);
+
+            Vector2 resultVector = VectorUtils.ConstrainVector(testVector, min, max);
+            // Ensure that the resultVector has been properly constrained
+            Assert.AreNotEqual(testVector, resultVector);
+            Assert.AreEqual(testVector.X, resultVector.X);
+            // Only the Y value should have changed
+            Assert.Greater(testVector.Y, resultVector.Y);
+            Assert.AreEqual(max, resultVector.Y);
+        }
     }
 }

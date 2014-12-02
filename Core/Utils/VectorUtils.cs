@@ -13,23 +13,9 @@ namespace DXGame.Core.Utils
 
         public static Vector2 ConstrainVector(Vector2 vector, float constraintMin, float constraintMax)
         {
-            vector.X = Constrain(vector.X, constraintMin, constraintMax);
-            vector.Y = Constrain(vector.Y, constraintMin, constraintMax);
+            vector.X = MathUtils.Constrain(vector.X, constraintMin, constraintMax);
+            vector.Y = MathUtils.Constrain(vector.Y, constraintMin, constraintMax);
             return vector;
-        }
-
-        private static float Constrain(float value, float min, float max)
-        {
-            if (min > max)
-            {
-                // Return the original value in the case where we're called with bad values
-                LOG.Warn(String.Format("Asked to constrain {0} with bad min {1} max {2}", value, min, max));
-                return value;
-            }
-
-            value = Math.Max(value, min);
-            value = Math.Min(value, max);
-            return value;
         }
 
     }

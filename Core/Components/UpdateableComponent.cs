@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components
 {
     public abstract class UpdateableComponent : Component
     {
-        virtual public bool Update()
+        protected UpdateableComponent(GameObject parent = null)
+            : base(parent)
         {
-            return true;
         }
+
+        public abstract bool Update(GameTime gameTime);
     }
 }

@@ -3,74 +3,53 @@ using DXGame.Core.Components;
 
 namespace DXGame.Core
 {
-    public abstract class GameObject
+    public class GameObject
     {
-        protected readonly UniqueId id_;
-
-        protected List<Component> components_ = new List<Component>();
-        protected List<DrawableComponent> drawableComponents_ = new List<DrawableComponent>();
-        protected List<UpdateableComponent> updateableComponents_ = new List<UpdateableComponent>();
+        private readonly List<DrawableComponent> drawables_ = new List<DrawableComponent>();
+        private readonly UniqueId id_;
+        private readonly List<UpdateableComponent> updateables_ = new List<UpdateableComponent>();
 
         public UniqueId Id
         {
             get { return id_; }
         }
 
-        public bool AttachComponent(Component component)
+        public List<DrawableComponent> Drawables
         {
-            return addTo(components_, component);
+            get { return drawables_; }
         }
 
-        public bool AttachUpdateableComponent(UpdateableComponent component)
+        public List<UpdateableComponent> Updateables
         {
-            return addTo(updateableComponents_, component);
+            get { return updateables_; }
         }
 
-        public bool AttachDrawableComponent(DrawableComponent component)
+        protected GameObject AttachComponent(Component component)
         {
-            return addTo(drawableComponents_, component);
-        }
-
-        private static bool addTo<T>(List<T> list, T element)
-        {
-            bool alreadyContains = list.Contains(element);
-            if (!alreadyContains)
-                list.Add(element);
-            return alreadyContains;
-        }
-
-        /*
-            Allows for Constructor chaining.
-            GameObject object = new GameObject().WithComponent(a).WithComponent(b) ...;
-        */
-
-        public GameObject WithComponent(Component component)
-        {
-            AttachComponent(component);
-            return this;
-        }
-
-        public GameObject WithUpdateableComponent(UpdateableComponent component)
-        {
-            AttachUpdateableComponent(component);
-            return this;
-        }
-
-        public GameObject WithDrawableComponent(DrawableComponent component)
-        {
-            AttachDrawableComponent(component);
-            return this;
-        }
-
-        public bool Update()
-        {
-            bool allUpdatesSucceeded = true;
-            foreach (UpdateableComponent component in updateableComponents_)
+            var drawable = component as DrawableComponent;
+            if (drawable != null)
             {
-                bool updateSucceeded = component.Update();
-                allUpdatesSucceeded = allUpdatesSucceeded && updateSucceeded;
+                drawables_.Add(drawable);
+                return this;
             }
-            return allUpdatesSucceeded;
+
+            var updateable = component as UpdateableComponent;
+            if (updateable != null)
+            {
+                updateables_.Add(updateable);
+                return this;
+            }
+
+            return this;
+        }
+
+        public GameObject AttachComponents(params Component[] components)
+        {
+            foreach (Component component in components)
+            {
+                AttachComponent(component);
+            }
+            return this;
         }
     }
 }

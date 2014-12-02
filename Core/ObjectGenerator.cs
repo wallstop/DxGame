@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace DXGame.Core
+﻿namespace DXGame.Core
 {
-    public class ObjectGenerator
+    public abstract class ObjectGenerator<T>
     {
         // TODO: Not sure if we'll need this, but these will create Players, Maps, etc (maybe)
+
+        public abstract T Generate();
     }
 }

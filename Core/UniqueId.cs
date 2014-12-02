@@ -2,7 +2,7 @@
 
 namespace DXGame.Core
 {
-    public class UniqueId
+    public struct UniqueId
     {
         private static long staticId;
         private const long INVALID_ID = 0;

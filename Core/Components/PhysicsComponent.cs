@@ -1,49 +1,66 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DXGame.Core.Utils;
+﻿using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components
 {
     public class PhysicsComponent : UpdateableComponent
     {
-        virtual public Vector2 Position { get; set; }
-        virtual public Vector2 Velocity { get; set; }
-        virtual public Vector2 Acceleration { get; set; }
-
+        protected Vector2 acceleration_;
         protected float maxVelocity_;
+        protected PositionalComponent position_;
+        protected Vector2 velocity_;
 
-        public PhysicsComponent(float maxVelocity = 10.0f)
+        public PhysicsComponent(float maxVelocity = 10.0f, PositionalComponent position = null, GameObject parent = null)
+            : base(parent)
         {
             maxVelocity_ = maxVelocity;
+            position_ = position;
         }
 
-        public PhysicsComponent WithPosition(Vector2 position)
+        public virtual Vector2 Velocity
         {
-            Position = position;
-            return this;
+            get { return velocity_; }
+            set { velocity_ = value; }
+        }
+
+        public virtual Vector2 Acceleration
+        {
+            get { return acceleration_; }
+            set { acceleration_ = value; }
         }
 
         public PhysicsComponent WithVelocity(Vector2 velocity)
         {
-            Velocity = velocity;
+            velocity_ = velocity;
             return this;
         }
 
         public PhysicsComponent WithAcceleration(Vector2 acceleration)
         {
-            Acceleration = acceleration;
+            acceleration_ = acceleration;
             return this;
         }
 
-        new virtual public bool Update()
+        public PhysicsComponent WithPosition(PositionalComponent position)
         {
-            Velocity += Acceleration;
-            VectorUtils.ConstrainVector(Velocity, maxVelocity_, -maxVelocity_);
-            Position += Velocity;
-            return base.Update();
+            position_ = position;
+            return this;
+        }
+
+        public PhysicsComponent WithMaxVelocity(float maxVelocity)
+        {
+            maxVelocity_ = maxVelocity;
+            return this;
+        }
+
+        public override bool Update(GameTime gameTime)
+        {
+            velocity_ += acceleration_;
+            VectorUtils.ConstrainVector(velocity_, maxVelocity_, -maxVelocity_);
+            Vector2 position = position_.Position;
+            position += velocity_;
+            position_.Position = position;
+            return true;
         }
     }
 }

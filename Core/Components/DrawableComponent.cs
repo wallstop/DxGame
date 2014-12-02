@@ -1,24 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Components
 {
     public abstract class DrawableComponent : Component
     {
-        // TODO: This should have refs to something like a physics component (for position, size, etc)
-
-        virtual public bool LoadContent()
+        protected DrawableComponent(GameObject parent = null)
+            : base(parent)
         {
-            // TODO
-            return true;
         }
 
-        virtual public bool Draw()
-        {
-            // TODO
-            return true;
-        }
+        public abstract bool LoadContent(ContentManager contentManager);
+
+        public abstract bool Draw(SpriteBatch spriteBatch);
     }
 }

@@ -1,12 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace DXGame.Core.Generators
 {
-    public class MapGenerator : ObjectGenerator
+    public class MapGenerator : ObjectGenerator<GameObject>
     {
-        // TODO
+        private const string BASE_FOLDER = "Map/Blocks/";
+
+        public MapGenerator(string mapPath)
+        {
+        }
+
+        public override GameObject Generate()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

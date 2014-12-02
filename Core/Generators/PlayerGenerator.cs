@@ -13,9 +13,9 @@ namespace DXGame.Core.Generators
         private readonly PositionalComponent position_;
         private readonly SimpleSpriteComponent sprite_;
 
-        public PlayerGenerator(Vector2 playerPosition)
+        public PlayerGenerator(Vector2 playerPosition, Rectangle bounds = new Rectangle())
         {
-            position_ = new PositionalComponent().WithPosition(playerPosition);
+            position_ = new PositionalComponent().WithPosition(playerPosition).WithBounds(bounds);
             physics_ = new PhysicsComponent().WithMaxVelocity(MAX_VELOCITY).WithPosition(position_);
             sprite_ = new SimpleSpriteComponent().WithAsset(PLAYER).WithPosition(position_);
             input_ = new SimplePlayerInputComponent().WithPhysics(physics_);

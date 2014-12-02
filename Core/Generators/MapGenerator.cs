@@ -26,7 +26,7 @@ namespace DXGame.Core.Generators
             LogManager.GetLogger(typeof (MapGenerator));
 
         private readonly List<GameObject> map_;
-        private Vector2 mapSize_;
+        private Rectangle mapBounds_;
         private Vector2 playerPosition_;
 
         public MapGenerator(string mapPath)
@@ -37,6 +37,11 @@ namespace DXGame.Core.Generators
         public Vector2 PlayerPosition
         {
             get { return playerPosition_; }
+        }
+
+        public Rectangle MapBounds
+        {
+            get { return mapBounds_; }
         }
 
         private List<GameObject> InitMap(string path)
@@ -65,7 +70,8 @@ namespace DXGame.Core.Generators
                         if (CanCreateBlockFrom(currentChar))
                         {
                             string asset = ResolveCharacterToAsset(currentChar);
-                            PositionalComponent position = new PositionalComponent().WithPosition(column * BLOCK_WIDTH, row * BLOCK_WIDTH);
+                            PositionalComponent position = new PositionalComponent().WithPosition(column * BLOCK_WIDTH,
+                                row * BLOCK_WIDTH);
                             SimpleSpriteComponent sprite =
                                 new SimpleSpriteComponent().WithAsset(asset).WithPosition(position);
                             GameObject block = new GameObject().AttachComponents(position, sprite);
@@ -93,8 +99,7 @@ namespace DXGame.Core.Generators
                     }
                 }
 
-                mapSize_.X = BLOCK_WIDTH * maxColumn;
-                mapSize_.Y = BLOCK_WIDTH * row;
+                mapBounds_ = new Rectangle(0, 0, BLOCK_WIDTH * maxColumn, BLOCK_WIDTH * row);
             }
 
             return blocks;

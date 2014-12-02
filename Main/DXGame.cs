@@ -29,7 +29,7 @@ namespace DXGame.Main
         public DXGame()
         {
             mapGenerator_ = new MapGenerator("../../Content/Map/SimpleMap.txt");
-            playerGenerator_ = new PlayerGenerator(mapGenerator_.PlayerPosition);
+            playerGenerator_ = new PlayerGenerator(mapGenerator_.PlayerPosition, mapGenerator_.MapBounds);
 
             List<GameObject> mapObjects = mapGenerator_.Generate();
             List<GameObject> playerObjects = playerGenerator_.Generate();

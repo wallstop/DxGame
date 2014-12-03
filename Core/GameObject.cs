@@ -1,9 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using DXGame.Core.Components;
+﻿using System.Collections.Generic;
+using DXGame.Core.Components.Basic;
 
 namespace DXGame.Core
 {
+#pragma warning disable 649
     public class GameObject
     {
         private readonly List<DrawableComponent> drawables_ = new List<DrawableComponent>();
@@ -53,4 +53,5 @@ namespace DXGame.Core
             return this;
         }
     }
+#pragma warning restore 649
 }

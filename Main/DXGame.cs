@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 using DXGame.Core;
-using DXGame.Core.Components;
+using DXGame.Core.Components.Basic;
 using DXGame.Core.Generators;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

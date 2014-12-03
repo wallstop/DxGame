@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using DXGame.Core.Components;
+using DXGame.Core.Components.Advanced;
 using log4net;
 using Microsoft.Xna.Framework;
 
@@ -147,6 +147,11 @@ namespace DXGame.Core.Generators
         public override List<GameObject> Generate()
         {
             return map_;
+        }
+
+        public static int BlockSize
+        {
+            get { return BLOCK_WIDTH;  }
         }
     }
 }

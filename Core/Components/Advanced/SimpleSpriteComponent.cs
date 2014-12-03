@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics;
+using DXGame.Core.Components.Basic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DXGame.Core.Components
+namespace DXGame.Core.Components.Advanced
 {
     public class SimpleSpriteComponent : DrawableComponent
     {

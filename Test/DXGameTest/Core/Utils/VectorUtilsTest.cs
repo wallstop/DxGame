@@ -64,5 +64,14 @@ namespace DXGameTest.Core.Utils
             Assert.AreEqual(min, resultVector.X);
             Assert.AreEqual(max, resultVector.Y);
         }
+
+        [Test]
+        [ExpectedException (typeof)]
+        public void TestConstrainVectorBadMinMax()
+        {
+            float min = 100.0f;
+            float max = -100.0f;
+            var testVector = new Vector2(min - 100.0f, max + 100.0f);
+        }
     }
 }

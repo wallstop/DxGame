@@ -1,20 +1,25 @@
-﻿using DXGame.Core.Utils;
+﻿using System.Diagnostics;
+using DXGame.Core.Components.Basic;
+using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
-namespace DXGame.Core.Components
+namespace DXGame.Core.Components.Advanced
 {
     public class PhysicsComponent : UpdateableComponent
     {
         protected Vector2 acceleration_;
         protected float maxVelocity_;
-        protected PositionalComponent position_;
+        protected float maxAcceleration_;
+        protected SpatialComponent space_;
         protected Vector2 velocity_;
 
-        public PhysicsComponent(float maxVelocity = 10.0f, PositionalComponent position = null, GameObject parent = null)
+        public PhysicsComponent(float maxVelocity = 10.0f, float maxAcceleration = 1.0f,
+            SpatialComponent space = null, GameObject parent = null)
             : base(parent)
         {
             maxVelocity_ = maxVelocity;
-            position_ = position;
+            maxAcceleration_ = maxAcceleration;
+            space_ = space;
             priority_ = UpdatePriority.NORMAL;
         }
 
@@ -27,24 +32,27 @@ namespace DXGame.Core.Components
         public virtual Vector2 Acceleration
         {
             get { return acceleration_; }
-            set { acceleration_ = value; }
+            set { acceleration_ = VectorUtils.ConstrainVector(value, -maxAcceleration_, maxAcceleration_); }
         }
 
         public PhysicsComponent WithVelocity(Vector2 velocity)
         {
+            Debug.Assert(velocity != null, "PhysicsComponent's velocity cannot be initialized to null");
             velocity_ = velocity;
             return this;
         }
 
         public PhysicsComponent WithAcceleration(Vector2 acceleration)
         {
+            Debug.Assert(acceleration != null, "PhysicsComponent's acceleration cannot be initialized to null");
             acceleration_ = acceleration;
             return this;
         }
 
-        public PhysicsComponent WithPosition(PositionalComponent position)
+        public PhysicsComponent WithSpatialComponent(SpatialComponent space)
         {
-            position_ = position;
+            Debug.Assert(space != null, "PhysicsComponent's spatial component cannot be initialized to null");
+            space_ = space;
             return this;
         }
 
@@ -54,14 +62,18 @@ namespace DXGame.Core.Components
             return this;
         }
 
+        public PhysicsComponent WithMaxAcceleration(float maxAcceleration)
+        {
+            maxAcceleration_ = maxAcceleration;
+            return this;
+        }
+
         // TODO: Create some kind of prioritization scheme. We want to process input before we process any physics
         public override bool Update(GameTime gameTime)
         {
-            velocity_ += acceleration_;
-            velocity_ = VectorUtils.ConstrainVector(velocity_, -maxVelocity_, maxVelocity_);
-            Vector2 position = position_.Position;
-            position += velocity_;
-            position_.Position = position;
+            Velocity += acceleration_;
+            Velocity = VectorUtils.ConstrainVector(velocity_, -maxVelocity_, maxVelocity_);
+            space_.Position += Velocity;
             return true;
         }
     }

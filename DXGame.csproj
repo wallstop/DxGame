@@ -77,6 +77,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>
     </DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -88,19 +89,23 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>
     </DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Core\Component.cs" />
-    <Compile Include="Core\Components\DrawableComponent.cs" />
-    <Compile Include="Core\Components\SimplePlayerInputComponent.cs" />
-    <Compile Include="Core\Components\PositionalComponent.cs" />
-    <Compile Include="Core\Components\SimpleSpriteComponent.cs" />
-    <Compile Include="Core\Components\UpdateableComponent.cs" />
+    <Compile Include="Core\Components\Advanced\BoundedSpatialComponent.cs" />
+    <Compile Include="Core\Components\Advanced\SpatialComponent.cs" />
+    <Compile Include="Core\Components\Basic\DrawableComponent.cs" />
+    <Compile Include="Core\Components\Basic\InitializableComponent.cs" />
+    <Compile Include="Core\Components\Advanced\SimplePlayerInputComponent.cs" />
+    <Compile Include="Core\Components\Advanced\PositionalComponent.cs" />
+    <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
+    <Compile Include="Core\Components\Basic\UpdateableComponent.cs" />
     <Compile Include="Core\GameObject.cs" />
     <Compile Include="Core\Generators\MapGenerator.cs" />
     <Compile Include="Core\Generators\PlayerGenerator.cs" />
     <Compile Include="Core\ObjectGenerator.cs" />
-    <Compile Include="Core\Components\PhysicsComponent.cs" />
+    <Compile Include="Core\Components\Advanced\PhysicsComponent.cs" />
     <Compile Include="Core\Simple\SimpleBlock.cs" />
     <Compile Include="Core\Simple\SimpleMap.cs" />
     <Compile Include="Core\Simple\SimplePlayer.cs" />

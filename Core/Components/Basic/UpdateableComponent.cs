@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 
-namespace DXGame.Core.Components
+namespace DXGame.Core.Components.Basic
 {
     public abstract class UpdateableComponent : Component, IComparable<UpdateableComponent>
     {

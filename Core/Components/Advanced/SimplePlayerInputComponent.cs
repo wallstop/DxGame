@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using DXGame.Core.Components.Basic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace DXGame.Core.Components
+namespace DXGame.Core.Components.Advanced
 {
     public class SimplePlayerInputComponent : UpdateableComponent
     {

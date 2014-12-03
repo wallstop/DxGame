@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DXGame.Core.Components
+namespace DXGame.Core.Components.Basic
 {
     public abstract class DrawableComponent : Component
     {

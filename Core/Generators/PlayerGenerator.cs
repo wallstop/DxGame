@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using DXGame.Core.Components;
+using DXGame.Core.Components.Advanced;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Generators
@@ -11,12 +11,20 @@ namespace DXGame.Core.Generators
         private readonly SimplePlayerInputComponent input_;
         private readonly PhysicsComponent physics_;
         private readonly PositionalComponent position_;
+        private readonly SpatialComponent space_;
         private readonly SimpleSpriteComponent sprite_;
 
         public PlayerGenerator(Vector2 playerPosition, Rectangle bounds = new Rectangle())
         {
             position_ = new PositionalComponent().WithPosition(playerPosition).WithBounds(bounds);
-            physics_ = new PhysicsComponent().WithMaxVelocity(MAX_VELOCITY).WithPosition(position_);
+            space_ =
+                new BoundedSpatialComponent().WithXMin(bounds.X)
+                    .WithXMax(bounds.Width)
+                    .WithXMin(bounds.Y)
+                    .WithYMax(bounds.Height)
+                    .WithPosition(position_)
+                    .WithWidthAndHeight(new Vector2(50, 100));  // TODO: un-hard code these
+            physics_ = new PhysicsComponent().WithMaxVelocity(MAX_VELOCITY).WithSpatialComponent(space_);
             sprite_ = new SimpleSpriteComponent().WithAsset(PLAYER).WithPosition(position_);
             input_ = new SimplePlayerInputComponent().WithPhysics(physics_);
         }

@@ -1,11 +1,18 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using DXGame.Core.Utils;
+using log4net;
 using Microsoft.Xna.Framework;
 
-namespace DXGame.Core.Components
+namespace DXGame.Core.Components.Advanced
 {
+    /**
+    <summary>
+        PositionalComponent is a component that keeps track of a position in space and time
+    */
+
     public class PositionalComponent : Component
     {
+        private static readonly ILog LOG = LogManager.GetLogger(typeof (PositionalComponent));
         protected Rectangle bounds_;
         protected Vector2 position_;
 
@@ -27,31 +34,8 @@ namespace DXGame.Core.Components
             get { return position_; }
             set
             {
-                if ((value.X > bounds_.X) && (value.X < (bounds_.X + Math.Abs(bounds_.Width))))
-                {
-                    position_.X = value.X;
-                }
-                else if (value.X <= bounds_.X)
-                {
-                    position_.X = bounds_.X;
-                }
-                else
-                {
-                    position_.X = bounds_.X + Math.Abs(bounds_.Width);
-                }
-
-                if ((value.Y > bounds_.Y) && (value.Y < (bounds_.Y + Math.Abs(bounds_.Height))))
-                {
-                    position_.Y = value.Y;
-                }
-                else if (value.Y <= bounds_.Y)
-                {
-                    position_.Y = bounds_.Y;
-                }
-                else
-                {
-                    position_.Y = bounds_.Y + Math.Abs(bounds_.Height);
-                }
+                position_.X = MathUtils.Constrain(value.X, bounds_.X, bounds_.X + bounds_.Width);
+                position_.Y = MathUtils.Constrain(value.Y, bounds_.Y, bounds_.Y + bounds_.Height);
             }
         }
 

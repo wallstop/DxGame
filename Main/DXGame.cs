@@ -23,7 +23,7 @@ namespace DXGame.Main
         private readonly HashSet<DrawableComponent> drawables_ = new HashSet<DrawableComponent>();
         private readonly MapGenerator mapGenerator_;
         private readonly PlayerGenerator playerGenerator_;
-        private readonly SpatialComponent playerPosition_;
+        private readonly SpatialComponent playerSpace_;
 
         private readonly SortedSet<UpdateableComponent> updateables_ = new SortedSet<UpdateableComponent>();
         private SpriteBatch spriteBatch_;
@@ -33,8 +33,7 @@ namespace DXGame.Main
         {
             mapGenerator_ = new MapGenerator("Content/Map/SimpleMap.txt");
             playerGenerator_ = new PlayerGenerator(mapGenerator_.PlayerPosition, mapGenerator_.MapBounds);
-            playerPosition_ = playerGenerator_.PlayerPosition;
-            
+            playerSpace_ = playerGenerator_.PlayerSpace;
 
             List<GameObject> mapObjects = mapGenerator_.Generate();
             List<GameObject> playerObjects = playerGenerator_.Generate();
@@ -147,8 +146,8 @@ namespace DXGame.Main
                 TODO: Instead of doing a clear, see if we can take a diff. That way, we only have to re-draw certain objects (the ones that have changed)
             */
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            cameraShift_ = Matrix.CreateTranslation(width_/2 - playerPosition_.PositionShift.X,
-                height_/2 - playerPosition_.PositionShift.Y, 0);
+            cameraShift_ = Matrix.CreateTranslation(width_/2 - playerSpace_.PositionShift.X,
+                height_/2 - playerSpace_.PositionShift.Y, 0);
             spriteBatch_.Begin(0, null, null, null, null, null, cameraShift_);
 
             foreach (DrawableComponent component in drawables_)

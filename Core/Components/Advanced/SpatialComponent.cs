@@ -43,7 +43,7 @@ namespace DXGame.Core.Components.Advanced
 
         public virtual Vector2 PositionShift
         {
-            get { return new Vector2(position_.X + widthHeight_.X/2, position_.Y + widthHeight_.Y/2);}
+            get { return position_ + widthHeight_/2;}
         }
     }
 }

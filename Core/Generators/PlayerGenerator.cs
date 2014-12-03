@@ -35,5 +35,10 @@ namespace DXGame.Core.Generators
             objects.Add(player);
             return objects;
         }
+
+        public SpatialComponent PlayerPosition
+        {
+            get { return space_; }
+        }
     }
 }

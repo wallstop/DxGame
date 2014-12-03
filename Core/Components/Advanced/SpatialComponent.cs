@@ -40,5 +40,10 @@ namespace DXGame.Core.Components.Advanced
             widthHeight_ = widthAndHeight;
             return this;
         }
+
+        public virtual Vector2 PositionShift
+        {
+            get { return new Vector2(position_.X + widthHeight_.X, position_.Y + widthHeight_.Y/2);}
+        }
     }
 }

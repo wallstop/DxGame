@@ -29,5 +29,10 @@ namespace DXGame.Core.Utils
             value = Min(value, max);
             return value;
         }
+
+        public static int SignOf<T>(T value)
+        {
+            return Compare(value, default(T)) < 0 ? -1 : 1; // Count 0 here as positive
+        }
     }
 }

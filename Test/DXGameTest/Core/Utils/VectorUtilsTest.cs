@@ -66,7 +66,6 @@ namespace DXGameTest.Core.Utils
         }
 
         [Test]
-        [ExpectedException (typeof)]
         public void TestConstrainVectorBadMinMax()
         {
             float min = 100.0f;

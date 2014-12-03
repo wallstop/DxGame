@@ -10,16 +10,16 @@ namespace DXGame.Core.Components.Advanced
         protected Vector2 acceleration_;
         protected float maxVelocity_;
         protected float maxAcceleration_;
-        protected SpatialComponent space_;
+        protected PositionalComponent position_;
         protected Vector2 velocity_;
 
         public PhysicsComponent(float maxVelocity = 10.0f, float maxAcceleration = 1.0f,
-            SpatialComponent space = null, GameObject parent = null)
+            PositionalComponent position = null, GameObject parent = null)
             : base(parent)
         {
             maxVelocity_ = maxVelocity;
             maxAcceleration_ = maxAcceleration;
-            space_ = space;
+            position_ = position;
             priority_ = UpdatePriority.NORMAL;
         }
 
@@ -49,10 +49,10 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public PhysicsComponent WithSpatialComponent(SpatialComponent space)
+        public PhysicsComponent WithPositionalComponent(PositionalComponent position)
         {
-            Debug.Assert(space != null, "PhysicsComponent's spatial component cannot be initialized to null");
-            space_ = space;
+            Debug.Assert(position != null, "PhysicsComponent's positional component cannot be initialized to null");
+            position_ = position;
             return this;
         }
 
@@ -73,7 +73,7 @@ namespace DXGame.Core.Components.Advanced
         {
             Velocity += acceleration_;
             Velocity = VectorUtils.ConstrainVector(velocity_, -maxVelocity_, maxVelocity_);
-            space_.Position += Velocity;
+            position_.Position += Velocity;
             return true;
         }
     }

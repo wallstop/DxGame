@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -63,7 +64,7 @@ namespace DXGame.Core.Components.Advanced
             // TODO: Better acceleration. This is hilariously bad
             if (Math.Abs(acceleration.X) - DECAY_AMOUNT > 0.0f)
             {
-                acceleration.X -= DECAY_AMOUNT * SignOf(acceleration.X);
+                acceleration.X -= DECAY_AMOUNT * MathUtils.SignOf(acceleration.X);
             }
             else
             {
@@ -72,7 +73,7 @@ namespace DXGame.Core.Components.Advanced
 
             if (Math.Abs(acceleration.Y) - DECAY_AMOUNT > 0.0f)
             {
-                acceleration.Y -= DECAY_AMOUNT * SignOf(acceleration.Y);
+                acceleration.Y -= DECAY_AMOUNT * MathUtils.SignOf(acceleration.Y);
             }
             else
             {
@@ -80,12 +81,6 @@ namespace DXGame.Core.Components.Advanced
             }
 
             physics_.Acceleration = acceleration;
-        }
-
-        // TODO: Move somewhere else
-        protected static int SignOf(float x)
-        {
-            return x > 0.0f ? 1 : -1;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Basic
@@ -28,12 +29,7 @@ namespace DXGame.Core.Components.Basic
 
         public int CompareTo(UpdateableComponent rhs)
         {
-            if (priority_ == rhs.Priority)
-            {
-                return 0;
-            }
-
-            return priority_ > rhs.Priority ? 1 : -1;
+            return MathUtils.Compare(priority_, rhs.Priority);
         }
 
         public abstract bool Update(GameTime gameTime);

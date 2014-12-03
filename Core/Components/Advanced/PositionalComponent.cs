@@ -39,21 +39,21 @@ namespace DXGame.Core.Components.Advanced
             }
         }
 
-        public PositionalComponent WithBounds(Rectangle bounds)
+        public virtual PositionalComponent WithBounds(Rectangle bounds)
         {
             Debug.Assert(bounds != null, "PositionalComponent cannot have null boundary");
             bounds_ = bounds;
             return this;
         }
 
-        public PositionalComponent WithPosition(float x, float y)
+        public virtual PositionalComponent WithPosition(float x, float y)
         {
             position_.X = x;
             position_.Y = y;
             return this;
         }
 
-        public PositionalComponent WithPosition(Vector2 position)
+        public virtual PositionalComponent WithPosition(Vector2 position)
         {
             position_ = position;
             return this;

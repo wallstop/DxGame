@@ -4,26 +4,19 @@ using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
-    public class SpatialComponent : Component
+    public class SpatialComponent : PositionalComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (SpatialComponent));
 
         protected Vector2 widthHeight_;
-        protected PositionalComponent position_;
 
         public virtual Rectangle Space
         {
             get
             {
-                return new Rectangle((int) position_.Position.X, (int) position_.Position.Y, (int) widthHeight_.X,
+                return new Rectangle((int) Position.X, (int) Position.Y, (int) widthHeight_.X,
                     (int) widthHeight_.Y);
             }
-        }
-
-        public virtual Vector2 Position
-        {
-            get { return position_.Position; }
-            set { position_.Position = value; }
         }
 
         public virtual float Width
@@ -37,15 +30,8 @@ namespace DXGame.Core.Components.Advanced
         }
 
         public SpatialComponent(GameObject parent = null)
-            : base(parent)
+            : base(parent: parent)
         {
-        }
-
-        public virtual SpatialComponent WithPosition(PositionalComponent position)
-        {
-            Debug.Assert(position != null, "SpatialComponent cannot be constructed with null position");
-            position_ = position;
-            return this;
         }
 
         public virtual SpatialComponent WithWidthAndHeight(Vector2 widthAndHeight)

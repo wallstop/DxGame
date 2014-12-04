@@ -55,6 +55,7 @@ namespace DXGame.Core.Generators
                 int column = 0;
                 int maxColumn = 0;
                 int readValue;
+                int numBlocks = 0;
                 while ((readValue = fileReader.Read()) != -1)
                 {
                     if (Char.MaxValue < readValue || Char.MinValue > readValue)
@@ -76,6 +77,7 @@ namespace DXGame.Core.Generators
                                 new SimpleSpriteComponent().WithAsset(asset).WithPosition(position);
                             GameObject block = new GameObject().AttachComponents(position, sprite);
                             blocks.Add(block);
+                            ++numBlocks;
                         }
                         else if (CanCreatePlayerFrom(currentChar))
                         {
@@ -98,6 +100,8 @@ namespace DXGame.Core.Generators
                         }
                     }
                 }
+
+                LOG.Info(String.Format("Loaded {0} map blocks.", numBlocks));
 
                 mapBounds_ = new Rectangle(0, 0, BLOCK_WIDTH * maxColumn, BLOCK_WIDTH * row);
             }

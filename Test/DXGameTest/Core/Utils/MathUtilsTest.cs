@@ -28,7 +28,7 @@ namespace DXGameTest.Core.Utils
             int medium = 13;
             int large = 100002;
 
-            // Make sure Max works with the basic numeric types
+            // Make sure Min works with the basic numeric types
             Min(small, medium, large);
             Min<float>(small, medium, large);
             Min<double>(small, medium, large);
@@ -43,7 +43,7 @@ namespace DXGameTest.Core.Utils
             int medium = 13;
             int large = 100002;
 
-            // Make sure Max works with the basic numeric types
+            // Make sure Compare works with the basic numeric types
             Compare(small, medium, large);
             Compare<float>(small, medium, large);
             Compare<double>(small, medium, large);

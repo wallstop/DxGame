@@ -122,10 +122,10 @@ namespace DXGame.Main
 
             // TODO (Short term): Have a dedicated InputSystem 
             /*
-             * TODO (Long term): XNA/Monogame only supports polling-based input. In order to get this to the level of granularity that
-             * I'd like, we need to have a dedicated InputSystem that is capable of short-polling (on the order of 1/10th of a millisecond) the keyboard/gamepad/mouse state, 
-             * diffing the previous state, and publishing events if there is a change. Then it's a matter of hooking up subscribers to these events.
-             */
+                TODO (Long term): XNA/Monogame only supports polling-based input. In order to get this to the level of granularity that
+                I'd like, we need to have a dedicated InputSystem that is capable of short-polling (on the order of 1/10th of a millisecond) the keyboard/gamepad/mouse state, 
+                diffing the previous state, and publishing events if there is a change. Then it's a matter of hooking up subscribers to these events.
+            */
 
             base.Update(gameTime);
         }

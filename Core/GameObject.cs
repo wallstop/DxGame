@@ -26,7 +26,7 @@ namespace DXGame.Core
     public class GameObject
     {
         private readonly List<DrawableComponent> drawables_ = new List<DrawableComponent>();
-        private readonly UniqueId id_;
+        private readonly UniqueId id_ = new UniqueId();
         private readonly List<UpdateableComponent> updateables_ = new List<UpdateableComponent>();
         private readonly List<InitializableComponent> initializables_ = new List<InitializableComponent>();
 

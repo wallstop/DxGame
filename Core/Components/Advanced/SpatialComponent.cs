@@ -41,9 +41,9 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public virtual Vector2 PositionShift
+        public virtual Vector2 Center
         {
-            get { return position_ + widthHeight_/2;}
+            get { return position_ + widthHeight_ / 2;}
         }
     }
 }

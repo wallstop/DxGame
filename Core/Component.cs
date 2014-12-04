@@ -46,7 +46,7 @@
             Note: This id_ field is the UniqueId of the Component, *NOT* of the GameObject. 
             This is a very important distinction.
         */
-        protected readonly UniqueId id_;
+        protected readonly UniqueId id_ = new UniqueId();
 
         public UniqueId Id
         {

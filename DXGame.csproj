@@ -75,8 +75,9 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\Debug\DXGame.XML</DocumentationFile>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DocumentationFile>
+    </DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -103,7 +104,7 @@
     <Compile Include="Core\GameObject.cs" />
     <Compile Include="Core\Generators\MapGenerator.cs" />
     <Compile Include="Core\Generators\PlayerGenerator.cs" />
-    <Compile Include="Core\ObjectGenerator.cs" />
+    <Compile Include="Core\Generator.cs" />
     <Compile Include="Core\Components\Advanced\PhysicsComponent.cs" />
     <Compile Include="Core\Simple\SimpleBlock.cs" />
     <Compile Include="Core\Simple\SimpleMap.cs" />

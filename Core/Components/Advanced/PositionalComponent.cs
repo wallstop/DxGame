@@ -7,14 +7,33 @@ namespace DXGame.Core.Components.Advanced
 {
     /**
     <summary>
-        PositionalComponent is a component that keeps track of a position in space and time
+        PositionalComponent is a component that keeps track of a position in space and time. You can think of it as a 2D point.
+
+        PositionalComponent is meant to be a base class for more complex classes. For example, SpatialComponent (which is a component
+        that takes up a Rectangular 2D space) and BoundedSpatialComponent (which is the same as SpatialComponent, but has it's position
+        bounded by some larger Rectangle) implement more complex logic inside of their set Position functions.
+
+        Any DrawableComponent should have some reference to a PositionalComponent (or subclass) as a reference of where to call their
+        Draw methods at.
+
+        PositionalComponent is meant to be shared between Components. For example, a Component that handles input can update a 
+        PositionalComponent's Position, which will then be reflected in the DrawableComponent by having the DrawableComponent be
+        drawn at the new Position.
+
+        Classes derived from PositionalComponent should take care to implement their own Position property if they want any special behavior.
+    </summary>
     */
 
     public class PositionalComponent : Component
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (PositionalComponent));
-        protected Rectangle bounds_;
         protected Vector2 position_;
+
+        public virtual Vector2 Position
+        {
+            get { return position_; }
+            set { position_ = value;  }
+        }
 
         public PositionalComponent(float x = 0.0f, float y = 0.0f, GameObject parent = null)
             : base(parent)
@@ -26,24 +45,8 @@ namespace DXGame.Core.Components.Advanced
         public PositionalComponent(Vector2 position, GameObject parent = null)
             : base(parent)
         {
+            // position_ is used here because the bounds may not have been initialized.
             position_ = position;
-        }
-
-        public virtual Vector2 Position
-        {
-            get { return position_; }
-            set
-            {
-                position_.X = MathUtils.Constrain(value.X, bounds_.X, bounds_.X + bounds_.Width);
-                position_.Y = MathUtils.Constrain(value.Y, bounds_.Y, bounds_.Y + bounds_.Height);
-            }
-        }
-
-        public virtual PositionalComponent WithBounds(Rectangle bounds)
-        {
-            Debug.Assert(bounds != null, "PositionalComponent cannot have null boundary");
-            bounds_ = bounds;
-            return this;
         }
 
         public virtual PositionalComponent WithPosition(float x, float y)
@@ -55,6 +58,7 @@ namespace DXGame.Core.Components.Advanced
 
         public virtual PositionalComponent WithPosition(Vector2 position)
         {
+            Debug.Assert(position != null, "PositionalComponent cannot be initialized with a null position");
             position_ = position;
             return this;
         }

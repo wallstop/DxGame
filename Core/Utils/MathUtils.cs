@@ -4,6 +4,12 @@ using System.Diagnostics;
 
 namespace DXGame.Core.Utils
 {
+    /**
+    <summary>
+        Provides a collection of utility functions for general Math-based functions that 
+        occur on a regular basis.
+    </summary>
+    */
     public static class MathUtils
     {
         /**
@@ -15,6 +21,7 @@ namespace DXGame.Core.Utils
             </code>
         </summary>
         */
+
         public static T Max<T>(T x, T y)
         {
             return (Compare(x, y) > 0) ? x : y;
@@ -29,6 +36,7 @@ namespace DXGame.Core.Utils
             </code>
         </summary>
         */
+
         public static T Min<T>(T x, T y)
         {
             return (Compare(x, y) < 0) ? x : y;
@@ -46,6 +54,7 @@ namespace DXGame.Core.Utils
             </code
         </summary
         */
+
         public static int Compare<T>(T x, T y)
         {
             return Comparer<T>.Default.Compare(x, y);
@@ -63,9 +72,10 @@ namespace DXGame.Core.Utils
             </code>
         </summary>
         */
+
         public static T Constrain<T>(T value, T min, T max)
         {
-            Debug.Assert(Compare(min, max) < 0,
+            Debug.Assert(Compare(min, max) <= 0,
                 String.Format("Could not constrain {0} with min {1}, max {2}", value, min, max));
             value = Max(value, min);
             value = Min(value, max);
@@ -87,6 +97,7 @@ namespace DXGame.Core.Utils
             </code>
         </summary>
         */
+
         public static int SignOf<T>(T value)
         {
             return Compare(value, default(T)) < 0 ? -1 : 1; // Count 0 here as positive

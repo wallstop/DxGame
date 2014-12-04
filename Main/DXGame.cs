@@ -1,10 +1,12 @@
 ﻿#region Using Statements
 
+using System;
 using System.Collections.Generic;
 using DXGame.Core;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Generators;
+using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -20,6 +22,7 @@ namespace DXGame.Main
     {
         private const int height_ = 720;
         private const int width_ = 1280;
+        private readonly Rectangle mapBounds_;
         private readonly HashSet<DrawableComponent> drawables_ = new HashSet<DrawableComponent>();
         private readonly MapGenerator mapGenerator_;
         private readonly PlayerGenerator playerGenerator_;
@@ -32,7 +35,8 @@ namespace DXGame.Main
         public DXGame()
         {
             mapGenerator_ = new MapGenerator("Content/Map/SimpleMap.txt");
-            playerGenerator_ = new PlayerGenerator(mapGenerator_.PlayerPosition, mapGenerator_.MapBounds);
+            mapBounds_ = mapGenerator_.MapBounds;
+            playerGenerator_ = new PlayerGenerator(mapGenerator_.PlayerPosition, mapBounds_);
             playerSpace_ = playerGenerator_.PlayerSpace;
 
             List<GameObject> mapObjects = mapGenerator_.Generate();
@@ -146,8 +150,16 @@ namespace DXGame.Main
                 TODO: Instead of doing a clear, see if we can take a diff. That way, we only have to re-draw certain objects (the ones that have changed)
             */
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            cameraShift_ = Matrix.CreateTranslation(width_/2 - playerSpace_.PositionShift.X,
-                height_/2 - playerSpace_.PositionShift.Y, 0);
+
+            // TODO: Oh god what have I done? Do some proper math, hidden in a function, like a CameraUtils class or something
+            float x = width_ / 2.0f - playerSpace_.Center.X;
+            x = MathUtils.Constrain(x, Math.Max(float.MinValue, -(mapBounds_.X + mapBounds_.Width - width_)) , mapBounds_.X);
+            float y = height_ / 2.0f - playerSpace_.Center.Y;
+            y = MathUtils.Constrain(y, Math.Max(0, (mapBounds_.Y + mapBounds_.Height - height_)), mapBounds_.Y);
+
+            //cameraShift_ = Matrix.CreateTranslation(width_ / 2 - playerSpace_.Center.X,
+            //    height_ / 2 - playerSpace_.Center.Y, 0);
+            cameraShift_ = Matrix.CreateTranslation(x, y, 0);
             spriteBatch_.Begin(0, null, null, null, null, null, cameraShift_);
 
             foreach (DrawableComponent component in drawables_)

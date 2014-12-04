@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Generators
 {
-    public class PlayerGenerator : ObjectGenerator<GameObject>
+    public class PlayerGenerator : Generator<GameObject>
     {
         private const string PLAYER = "Player";
         private const float MAX_VELOCITY = 5.0f;

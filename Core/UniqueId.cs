@@ -1,21 +1,32 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 namespace DXGame.Core
 {
-    public struct UniqueId
+    /**
+    <summary>
+        UniqueId is a thread-safe, immutable, unique identifier. 
+    </summary>
+    */
+    public class UniqueId
     {
-        private const long INVALID_ID = 0;
-        private static long staticId;
+        private const Int64 INVALID_ID = 0;
+        private static Int64 staticId;
         private static readonly UniqueId INVALID = new UniqueId(INVALID_ID);
 
-        private readonly long id_;
+        private readonly Int64 id_;
 
-        private UniqueId(long assignedId)
+        public UniqueId()
+            : this(GenerateId())
+        {
+        }
+
+        private UniqueId(Int64 assignedId)
         {
             id_ = assignedId;
         }
 
-        private static long generateId()
+        private static Int64 GenerateId()
         {
             return Interlocked.Increment(ref staticId);
         }

@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Generators
 {
-    public class MapGenerator : ObjectGenerator<GameObject>
+    public class MapGenerator : Generator<GameObject>
     {
         private const char RED_BLOCK = 'R';
         private const char GREEN_BLOCK = 'G';

@@ -30,7 +30,6 @@ namespace DXGame.Main
 
         private readonly SortedSet<UpdateableComponent> updateables_ = new SortedSet<UpdateableComponent>();
         private SpriteBatch spriteBatch_;
-        private Matrix cameraShift_;
 
         public DXGame()
         {
@@ -157,10 +156,8 @@ namespace DXGame.Main
             float y = height_ / 2.0f - playerSpace_.Center.Y;
             y = MathUtils.Constrain(y, Math.Max(0, (mapBounds_.Y + mapBounds_.Height - height_)), mapBounds_.Y);
 
-            //cameraShift_ = Matrix.CreateTranslation(width_ / 2 - playerSpace_.Center.X,
-            //    height_ / 2 - playerSpace_.Center.Y, 0);
-            cameraShift_ = Matrix.CreateTranslation(x, y, 0);
-            spriteBatch_.Begin(0, null, null, null, null, null, cameraShift_);
+            Matrix cameraShift = Matrix.CreateTranslation(x, y, 0);
+            spriteBatch_.Begin(0, null, null, null, null, null, cameraShift);
 
             foreach (DrawableComponent component in drawables_)
             {

@@ -5,6 +5,11 @@ using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
+    /**
+    <summary>
+
+    </summary>
+    */
     public class PhysicsComponent : UpdateableComponent
     {
         protected Vector2 acceleration_;
@@ -37,21 +42,21 @@ namespace DXGame.Core.Components.Advanced
 
         public PhysicsComponent WithVelocity(Vector2 velocity)
         {
-            Debug.Assert(velocity != null, "PhysicsComponent's velocity cannot be initialized to null");
+            Debug.Assert(velocity != null, "PhysicsComponent cannot be initialized with null velocity");
             velocity_ = velocity;
             return this;
         }
 
         public PhysicsComponent WithAcceleration(Vector2 acceleration)
         {
-            Debug.Assert(acceleration != null, "PhysicsComponent's acceleration cannot be initialized to null");
+            Debug.Assert(acceleration != null, "PhysicsComponent cannot be initialized with null acceleration");
             acceleration_ = acceleration;
             return this;
         }
 
         public PhysicsComponent WithPositionalComponent(PositionalComponent position)
         {
-            Debug.Assert(position != null, "PhysicsComponent's positional component cannot be initialized to null");
+            Debug.Assert(position != null, "PhysicsComponent cannot be initialized with null position");
             position_ = position;
             return this;
         }
@@ -68,7 +73,6 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        // TODO: Create some kind of prioritization scheme. We want to process input before we process any physics
         public override bool Update(GameTime gameTime)
         {
             Velocity += acceleration_;

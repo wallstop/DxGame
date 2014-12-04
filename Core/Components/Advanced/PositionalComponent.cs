@@ -27,8 +27,25 @@ namespace DXGame.Core.Components.Advanced
     public class PositionalComponent : Component
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (PositionalComponent));
+
         protected Vector2 position_;
 
+
+        /**
+        <summary>
+            The Position property of a PositionalComponent is likely to be overriden by derived classes.
+            As such, it's virtual, and wraps an internal position_ member, instead of being a simple
+            get/set Property.
+
+            Used to modify the PositionalComponent's Position in 2D space.
+
+            For most PositionalComponents, you should be able to get/set Position by doing things like:
+            <code>
+                // Calls get, updates the value, then calls set
+                Positional += new Vector2(2.0, -2.0); 
+            </code>
+        </summary>
+        */
         public virtual Vector2 Position
         {
             get { return position_; }
@@ -45,7 +62,7 @@ namespace DXGame.Core.Components.Advanced
         public PositionalComponent(Vector2 position, GameObject parent = null)
             : base(parent)
         {
-            // position_ is used here because the bounds may not have been initialized.
+            // position_ is used here because the bounds may not have been initialized (instead of Position)
             position_ = position;
         }
 

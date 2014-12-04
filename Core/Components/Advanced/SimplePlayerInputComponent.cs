@@ -22,7 +22,7 @@ namespace DXGame.Core.Components.Advanced
 
         public SimplePlayerInputComponent WithPhysics(PhysicsComponent physics)
         {
-            Debug.Assert(physics != null, "PhysicsComponent cannot be null");
+            Debug.Assert(physics != null, "SimplePlayerInput cannot be assigned a null PhysicsComponent");
             physics_ = physics;
             return this;
         }

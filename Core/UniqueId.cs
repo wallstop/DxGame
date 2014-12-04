@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Threading;
 
 namespace DXGame.Core
@@ -8,7 +11,7 @@ namespace DXGame.Core
         UniqueId is a thread-safe, immutable, unique identifier. 
     </summary>
     */
-    public class UniqueId
+    public class UniqueId : IComparable
     {
         private const Int64 INVALID_ID = 0;
         private static Int64 staticId;
@@ -21,6 +24,43 @@ namespace DXGame.Core
         {
         }
 
+        public UniqueId(UniqueId copy)
+            : this(copy.id_)
+        {
+        }
+
+        public bool isValid()
+        {
+            return id_ != invalidId().id_;
+        }
+
+        public int CompareTo(Object rhs)
+        {
+            var otherId = rhs as UniqueId;
+            if (otherId != null)
+            {
+                if (otherId.id_ == id_)
+                    return 0;
+                return otherId.id_ > id_ ? 1 : -1;
+            }
+            return -1;
+        }
+
+        public override bool Equals(Object other)
+        {
+            return CompareTo(other) == 0;
+        }
+
+        public override int GetHashCode()
+        {
+            return id_.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return "Id: " + id_;
+        }
+
         private UniqueId(Int64 assignedId)
         {
             id_ = assignedId;
@@ -29,11 +69,6 @@ namespace DXGame.Core
         private static Int64 GenerateId()
         {
             return Interlocked.Increment(ref staticId);
-        }
-
-        public bool isValid()
-        {
-            return id_ != INVALID_ID;
         }
 
         public static UniqueId invalidId()

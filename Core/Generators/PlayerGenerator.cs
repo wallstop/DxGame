@@ -20,7 +20,7 @@ namespace DXGame.Core.Generators
                     .WithXMax(bounds.Width)
                     .WithXMin(bounds.Y)
                     .WithYMax(bounds.Height)
-                    .WithWidthAndHeight(new Vector2(50, 100)) // TODO: un-hard code these
+                    .WithDimensions(new Vector2(50, 100)) // TODO: un-hard code these
                     .WithPosition(playerPosition);
             physics_ = new PhysicsComponent().WithMaxVelocity(MAX_VELOCITY).WithPositionalComponent(space_);
             sprite_ = new SimpleSpriteComponent().WithAsset(PLAYER).WithPosition(space_);

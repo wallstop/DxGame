@@ -9,7 +9,6 @@ namespace DXGame.Core.Components.Advanced
 {
     public class SimplePlayerInputComponent : UpdateableComponent
     {
-        private static readonly float ACCELERATE_AMOUNT = 0.2f;
         private static readonly float GRAVITY = 2.5f;
         private static readonly float DECAY_AMOUNT = 0.1f;
         private static readonly float JUMP_SPEED = 20.0f;

@@ -90,14 +90,14 @@ namespace DXGame.Core.Components.Advanced
 
         public override bool Update(GameTime gameTime)
         {
-            if (position_.Grounded)
-            {
-                isJumping_ = false;
-            }
             Velocity += acceleration_;
             Velocity = new Vector2( MathUtils.Constrain(velocity_.X, -maxVelocity_.X, maxVelocity_.X),
                                     MathUtils.Constrain(velocity_.Y, -maxVelocity_.Y, maxVelocity_.Y));
             position_.Position += Velocity;
+            if (position_.Grounded)
+            {
+                isJumping_ = false;
+            }
             return true;
         }
     }

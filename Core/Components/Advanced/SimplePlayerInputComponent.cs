@@ -63,7 +63,6 @@ namespace DXGame.Core.Components.Advanced
                         }
                         break;
                     case Keys.Down:
-                        acceleration.Y += ACCELERATE_AMOUNT;
                         break;
                     }
                 }

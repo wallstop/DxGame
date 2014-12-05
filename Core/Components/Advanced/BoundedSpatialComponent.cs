@@ -86,6 +86,14 @@ namespace DXGame.Core.Components.Advanced
                 float height = dimensions_.Y;
                 float x = MathUtils.Constrain(value.X, xBounds_.X, xBounds_.Y - width);
                 float y = MathUtils.Constrain(value.Y, yBounds_.X, yBounds_.Y - height);
+                if (y != value.Y)
+                {
+                    grounded_ = true;
+                }
+                else
+                {
+                    grounded_ = false;
+                }
                 position_ = new Vector2(x, y);
             }
         }

@@ -7,7 +7,8 @@ namespace DXGame.Core.Generators
     public class PlayerGenerator : Generator<GameObject>
     {
         private const string PLAYER = "Player";
-        private const float MAX_VELOCITY = 5.0f;
+        private const float MAX_VELOCITY_X = 5.0f;
+        private const float MAX_VELOCITY_Y = 20.0f;
         private readonly SimplePlayerInputComponent input_;
         private readonly PhysicsComponent physics_;
         private readonly SpatialComponent space_;
@@ -22,7 +23,7 @@ namespace DXGame.Core.Generators
                     .WithYMax(bounds.Height)
                     .WithDimensions(new Vector2(50, 100)) // TODO: un-hard code these
                     .WithPosition(playerPosition);
-            physics_ = new PhysicsComponent().WithMaxVelocity(MAX_VELOCITY).WithPositionalComponent(space_);
+            physics_ = new PhysicsComponent().WithMaxVelocity(MAX_VELOCITY_X, MAX_VELOCITY_Y).WithPositionalComponent(space_);
             sprite_ = new SimpleSpriteComponent().WithAsset(PLAYER).WithPosition(space_);
             input_ = new SimplePlayerInputComponent().WithPhysics(physics_);
         }

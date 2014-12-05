@@ -10,7 +10,9 @@ namespace DXGame.Core.Components.Advanced
     public class SimplePlayerInputComponent : UpdateableComponent
     {
         private static readonly float ACCELERATE_AMOUNT = 0.2f;
+        private static readonly float GRAVITY = 2.5f;
         private static readonly float DECAY_AMOUNT = 0.1f;
+        private static readonly float JUMP_SPEED = 20.0f;
         protected PhysicsComponent physics_;
 
         public SimplePlayerInputComponent(PhysicsComponent physics = null, GameObject parent = null)
@@ -52,7 +54,12 @@ namespace DXGame.Core.Components.Advanced
                         acceleration.X += ACCELERATE_AMOUNT;
                         break;
                     case Keys.Up:
-                        acceleration.Y -= ACCELERATE_AMOUNT;
+                        if (!physics_.IsJumping)
+                        {
+                            velocity.Y = -JUMP_SPEED;
+                            physics_.IsJumping = true;
+                            acceleration.Y = GRAVITY;
+                        }
                         break;
                     case Keys.Down:
                         acceleration.Y += ACCELERATE_AMOUNT;
@@ -75,12 +82,13 @@ namespace DXGame.Core.Components.Advanced
             {
                 acceleration.Y -= DECAY_AMOUNT * MathUtils.SignOf(acceleration.Y);
             }
-            else
-            {
-                acceleration.Y = 0.0f;
-            }
+            //else
+            //{
+            //    acceleration.Y = 0.0f;
+            //}
 
             physics_.Acceleration = acceleration;
+            physics_.Velocity = velocity;
         }
     }
 }

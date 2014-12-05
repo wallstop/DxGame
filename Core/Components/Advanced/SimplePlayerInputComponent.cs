@@ -13,6 +13,7 @@ namespace DXGame.Core.Components.Advanced
         private static readonly float GRAVITY = 2.5f;
         private static readonly float DECAY_AMOUNT = 0.1f;
         private static readonly float JUMP_SPEED = 20.0f;
+        private static readonly float MOVE_SPEED = 10.0f;
         protected PhysicsComponent physics_;
 
         public SimplePlayerInputComponent(PhysicsComponent physics = null, GameObject parent = null)
@@ -48,10 +49,10 @@ namespace DXGame.Core.Components.Advanced
                     switch (key)
                     {
                     case Keys.Left:
-                        acceleration.X -= ACCELERATE_AMOUNT;
+                        velocity.X = -MOVE_SPEED;
                         break;
                     case Keys.Right:
-                        acceleration.X += ACCELERATE_AMOUNT;
+                        velocity.X = MOVE_SPEED;
                         break;
                     case Keys.Up:
                         if (!physics_.IsJumping)
@@ -67,16 +68,21 @@ namespace DXGame.Core.Components.Advanced
                     }
                 }
             }
-
-            // TODO: Better acceleration. This is hilariously bad
-            if (Math.Abs(acceleration.X) - DECAY_AMOUNT > 0.0f)
-            {
-                acceleration.X -= DECAY_AMOUNT * MathUtils.SignOf(acceleration.X);
-            }
+            // TODO: Kill me
             else
             {
-                acceleration.X = 0.0f;
+                velocity.X = 0;
             }
+
+            // TODO: Better acceleration. This is hilariously bad
+            //if (Math.Abs(acceleration.X) - DECAY_AMOUNT > 0.0f)
+            //{
+            //    acceleration.X -= DECAY_AMOUNT * MathUtils.SignOf(acceleration.X);
+            //}
+            //else
+            //{
+            //    acceleration.X = 0.0f;
+            //}
 
             if (Math.Abs(acceleration.Y) - DECAY_AMOUNT > 0.0f)
             {

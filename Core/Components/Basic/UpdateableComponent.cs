@@ -9,6 +9,7 @@ namespace DXGame.Core.Components.Basic
         public enum UpdatePriority
         {
             NONE = 100,
+            IMPERATIVE = -10,
             HIGH = 0,
             NORMAL = 50,
             LOW = 80

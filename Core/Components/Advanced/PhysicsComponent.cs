@@ -71,15 +71,34 @@ namespace DXGame.Core.Components.Advanced
 
         public PhysicsComponent WithMaxAcceleration(Vector2 maxAcceleration)
         {
-            Debug.Assert(maxAcceleration != null, "PhysicsComponent cannot be initialized with a null maximum acceleration ");
+            Debug.Assert(maxAcceleration != null,
+                "PhysicsComponent cannot be initialized with a null maximum acceleration ");
             maxAcceleration_ = maxAcceleration;
             return this;
         }
 
         public override bool Update(GameTime gameTime)
         {
-            Velocity = VectorUtils.ConstrainVector(Velocity + acceleration_, maxVelocity_);
-            position_.Position += Velocity;
+            Vector2 acceleration = Acceleration;
+            Vector2 velocity = VectorUtils.ConstrainVector(Velocity + acceleration_, maxVelocity_);
+            Vector2 previousPosition = position_.Position;
+            position_.Position += velocity;
+
+            // These checks will cease an object's velocity and acceleration in a direction if it was unable to move
+            // TODO: Remove shit code, replace with proper collision
+            if (previousPosition.X == position_.Position.X)
+            {
+                velocity.X = 0;
+                acceleration.X = 0;
+            }
+            if (previousPosition.Y == position_.Position.Y)
+            {
+                velocity.Y = 0;
+                acceleration.Y = 0;
+            }
+
+            Velocity = velocity;
+            Acceleration = acceleration;
             return true;
         }
     }

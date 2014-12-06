@@ -20,8 +20,8 @@ namespace DXGame.Core.Components.Advanced
     */
     public class WorldGravityComponent : UpdateableComponent
     {
-        private const float gravity_ = -1.0f;
-        private static readonly WorldGravityComponent singleGravity_ = new WorldGravityComponent();
+        private const float gravity_ = 0.7f;
+        private static WorldGravityComponent singleGravity_ = new WorldGravityComponent();
         private static readonly HashSet<PhysicsComponent> physics_ = new HashSet<PhysicsComponent>();
 
         public static float Gravity
@@ -31,6 +31,7 @@ namespace DXGame.Core.Components.Advanced
 
         private WorldGravityComponent()
         {
+            priority_ = UpdatePriority.NORMAL; // This component needs to hit AFTER player input and BEFORE normal physics updates (currently, to properly check state changes...)
         }
 
         public static WorldGravityComponent Get()

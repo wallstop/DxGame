@@ -28,7 +28,7 @@ namespace DXGame.Main
         private readonly PlayerGenerator playerGenerator_;
         private readonly SpatialComponent playerSpace_;
 
-        private readonly SortedSet<UpdateableComponent> updateables_ = new SortedSet<UpdateableComponent>();
+        private readonly List<UpdateableComponent> updateables_ = new List<UpdateableComponent>();
         private SpriteBatch spriteBatch_;
 
         public DXGame()
@@ -76,6 +76,7 @@ namespace DXGame.Main
         {
             // TODO: Add your initialization logic here
 
+            updateables_.Sort();
             base.Initialize();
         }
 
@@ -115,7 +116,7 @@ namespace DXGame.Main
                 Exit();
             }
 
-            foreach (UpdateableComponent component in updateables_)
+            foreach (var component in updateables_)
             {
                 component.Update(gameTime);
             }

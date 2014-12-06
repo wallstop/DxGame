@@ -1,7 +1,5 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using DXGame.Core.Components.Basic;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -9,9 +7,8 @@ namespace DXGame.Core.Components.Advanced
 {
     public class SimplePlayerInputComponent : UpdateableComponent
     {
-        //private static readonly float GRAVITY = 2.5f;
-        private static readonly float DECAY_AMOUNT = 0.1f;
-        //private static readonly float JUMP_SPEED = 20.0f;
+        //ivate static readonly float DECAY_AMOUNT = 0.1f;
+        private static readonly float JUMP_SPEED = 20.0f;
         private static readonly float MOVE_SPEED = 10.0f;
         protected PhysicsComponent physics_;
         protected PlayerStateComponent state_;
@@ -45,10 +42,12 @@ namespace DXGame.Core.Components.Advanced
 
         protected virtual void HandleInput()
         {
-            KeyboardState keyboardState = Keyboard.GetState();
-            Keys[] pressedKeys = keyboardState.GetPressedKeys();
             Vector2 acceleration = physics_.Acceleration;
             Vector2 velocity = physics_.Velocity;
+            PlayerState state = state_.State;
+
+            KeyboardState keyboardState = Keyboard.GetState();
+            Keys[] pressedKeys = keyboardState.GetPressedKeys();
             if (pressedKeys.Length > 0)
             {
                 foreach (Keys key in pressedKeys)
@@ -62,40 +61,41 @@ namespace DXGame.Core.Components.Advanced
                         velocity.X = MOVE_SPEED;
                         break;
                     case Keys.Up:
-                        // Change state to jumping
+                        // TODO: Remove shit code, replace with proper collision.
+                        switch (state_.State)
+                        {
+                        case PlayerState.Walking:
+                        case PlayerState.None:
+                            state = PlayerState.Jumping;
+                            acceleration.Y = 0;
+                            velocity.Y -= JUMP_SPEED;
+                            acceleration.Y -= JUMP_SPEED;
+                            break;
+                        case PlayerState.Jumping:
+                            if (acceleration.Y == 0 && velocity.Y == 0)
+                            {
+                                state = PlayerState.Walking;
+                            }
+                            // TODO: Deal with jumping state
+                            break;
+
+                        default:
+                            break;
+                        }
                         break;
                     case Keys.Down:
                         break;
                     }
                 }
             }
-            // TODO: Kill me
             else
             {
                 velocity.X = 0;
             }
 
-            // TODO: Better acceleration. This is hilariously bad
-            //if (Math.Abs(acceleration.X) - DECAY_AMOUNT > 0.0f)
-            //{
-            //    acceleration.X -= DECAY_AMOUNT * MathUtils.SignOf(acceleration.X);
-            //}
-            //else
-            //{
-            //    acceleration.X = 0.0f;
-            //}
-
-            if (Math.Abs(acceleration.Y) - DECAY_AMOUNT > 0.0f)
-            {
-                acceleration.Y -= DECAY_AMOUNT * MathUtils.SignOf(acceleration.Y);
-            }
-            //else
-            //{
-            //    acceleration.Y = 0.0f;
-            //}
-
             physics_.Acceleration = acceleration;
             physics_.Velocity = velocity;
+            state_.State = state;
         }
     }
 }

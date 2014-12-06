@@ -108,6 +108,8 @@
     <Compile Include="Core\Generators\PlayerGenerator.cs" />
     <Compile Include="Core\Generator.cs" />
     <Compile Include="Core\Components\Advanced\PhysicsComponent.cs" />
+    <Compile Include="Core\Models\MapModel.cs" />
+    <Compile Include="Core\Models\PhysicsModel.cs" />
     <Compile Include="Core\Simple\SimpleBlock.cs" />
     <Compile Include="Core\Simple\SimpleMap.cs" />
     <Compile Include="Core\Simple\SimplePlayer.cs" />

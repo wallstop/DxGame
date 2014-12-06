@@ -9,11 +9,12 @@ namespace DXGame.Core.Components.Advanced
 {
     public class SimplePlayerInputComponent : UpdateableComponent
     {
-        private static readonly float GRAVITY = 2.5f;
+        //private static readonly float GRAVITY = 2.5f;
         private static readonly float DECAY_AMOUNT = 0.1f;
-        private static readonly float JUMP_SPEED = 20.0f;
+        //private static readonly float JUMP_SPEED = 20.0f;
         private static readonly float MOVE_SPEED = 10.0f;
         protected PhysicsComponent physics_;
+        protected PlayerStateComponent state_;
 
         public SimplePlayerInputComponent(PhysicsComponent physics = null, GameObject parent = null)
             : base(parent)
@@ -26,6 +27,13 @@ namespace DXGame.Core.Components.Advanced
         {
             Debug.Assert(physics != null, "SimplePlayerInput cannot be assigned a null PhysicsComponent");
             physics_ = physics;
+            return this;
+        }
+
+        public SimplePlayerInputComponent WithPlayerState(PlayerStateComponent state)
+        {
+            Debug.Assert(state != null, "SimplePlayerInput cannot be initialized with a null PlayerState");
+            state_ = state;
             return this;
         }
 
@@ -54,12 +62,7 @@ namespace DXGame.Core.Components.Advanced
                         velocity.X = MOVE_SPEED;
                         break;
                     case Keys.Up:
-                        if (!physics_.IsJumping)
-                        {
-                            velocity.Y = -JUMP_SPEED;
-                            physics_.IsJumping = true;
-                            acceleration.Y = GRAVITY;
-                        }
+                        // Change state to jumping
                         break;
                     case Keys.Down:
                         break;

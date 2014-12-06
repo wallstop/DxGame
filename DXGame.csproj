@@ -94,7 +94,9 @@
   <ItemGroup>
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Components\Advanced\BoundedSpatialComponent.cs" />
+    <Compile Include="Core\Components\Advanced\PlayerStateComponent.cs" />
     <Compile Include="Core\Components\Advanced\SpatialComponent.cs" />
+    <Compile Include="Core\Components\Advanced\WorldGravityComponent.cs" />
     <Compile Include="Core\Components\Basic\DrawableComponent.cs" />
     <Compile Include="Core\Components\Basic\InitializableComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimplePlayerInputComponent.cs" />

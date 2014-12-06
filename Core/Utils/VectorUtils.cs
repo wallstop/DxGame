@@ -29,5 +29,26 @@ namespace DXGame.Core.Utils
             vector.Y = MathUtils.Constrain(vector.Y, constraintMin, constraintMax);
             return vector;
         }
+
+        /**
+        <summary>
+            Given a vector and another vector with values specifying maximum X and Y values, constrains the original vector to be:
+                X within [-constraintVector.X, constraintVector.X]
+                Y within [-constraintVector.Y, constraintVector.Y]
+
+            <code>
+                Vector2 constrained = VectorUtils.ConstrainVector(new Vector2(-200.0f, 200.0f), new Vector2(150, 300)); // constrained == {-150, 200}
+            </code>
+            <code>
+                Vector2 constrained = VectorUtils.ConstrainVector(new Vector2(-300, 350), new Vector(140, 141)); // constrained == {-140, 141}
+            </code>
+        </summary>
+        */
+        public static Vector2 ConstrainVector(Vector2 vector, Vector2 constraintVector)
+        {
+            vector.X = MathUtils.Constrain(vector.X, -constraintVector.X, constraintVector.X);
+            vector.Y = MathUtils.Constrain(vector.Y, -constraintVector.Y, constraintVector.Y);
+            return vector;
+        }
     }
 }

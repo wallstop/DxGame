@@ -42,6 +42,7 @@ namespace DXGame.Main
             List<GameObject> playerObjects = playerGenerator_.Generate();
             AddAllObjects(mapObjects);
             AddAllObjects(playerObjects);
+            updateables_.Add(WorldGravityComponent.Get());
 
             var graphics_ = new GraphicsDeviceManager(this);
             graphics_.PreferredBackBufferHeight = height_;

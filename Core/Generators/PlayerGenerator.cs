@@ -7,11 +7,11 @@ namespace DXGame.Core.Generators
     public class PlayerGenerator : Generator<GameObject>
     {
         private const string PLAYER = "Player";
-        private const float MAX_VELOCITY_X = 5.0f;
-        private const float MAX_VELOCITY_Y = 20.0f;
+        private static readonly Vector2 MAX_VELOCITY = new Vector2(5.0f, 20.0f);
         private readonly SimplePlayerInputComponent input_;
         private readonly PhysicsComponent physics_;
         private readonly SpatialComponent space_;
+        private readonly PlayerStateComponent state_;
         private readonly SimpleSpriteComponent sprite_;
 
         public PlayerGenerator(Vector2 playerPosition, Rectangle bounds = new Rectangle())
@@ -23,7 +23,8 @@ namespace DXGame.Core.Generators
                     .WithYMax(bounds.Height)
                     .WithDimensions(new Vector2(50, 100)) // TODO: un-hard code these
                     .WithPosition(playerPosition);
-            physics_ = new PhysicsComponent().WithMaxVelocity(MAX_VELOCITY_X, MAX_VELOCITY_Y).WithPositionalComponent(space_);
+            physics_ = new PhysicsComponent().WithMaxVelocity(MAX_VELOCITY).WithPositionalComponent(space_);
+            state_ = new PlayerStateComponent().WithState(PlayerStateComponent.PlayerState.Walking);
             sprite_ = new SimpleSpriteComponent().WithAsset(PLAYER).WithPosition(space_);
             input_ = new SimplePlayerInputComponent().WithPhysics(physics_);
         }
@@ -32,7 +33,8 @@ namespace DXGame.Core.Generators
         {
             var objects = new List<GameObject>();
             var player = new GameObject();
-            player.AttachComponents(space_, physics_, sprite_, input_);
+            WorldGravityComponent.WithPhysicsComponent(physics_);
+            player.AttachComponents(space_, physics_, sprite_, input_, state_);
             objects.Add(player);
             return objects;
         }

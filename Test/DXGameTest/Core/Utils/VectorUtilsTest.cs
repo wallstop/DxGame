@@ -72,5 +72,16 @@ namespace DXGameTest.Core.Utils
             float max = -100.0f;
             var testVector = new Vector2(min - 100.0f, max + 100.0f);
         }
+
+        [Test]
+        public void TestConstrianVectorWithVector()
+        {
+            Vector2 constraint = new Vector2(2.0f, 15.0f);
+
+            Vector2 constrained = VectorUtils.ConstrainVector(new Vector2(3, -14), constraint);
+            Assert.AreNotEqual(constraint, constrained);
+            Assert.AreEqual(new Vector2(2, -14), constrained);
+
+        }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
@@ -11,6 +10,7 @@ namespace DXGame.Core.Components.Advanced
 
     </summary>
     */
+
     public class PhysicsComponent : UpdateableComponent
     {
         protected Vector2 acceleration_;
@@ -18,7 +18,6 @@ namespace DXGame.Core.Components.Advanced
         protected Vector2 maxAcceleration_;
         protected PositionalComponent position_;
         protected Vector2 velocity_;
-        protected bool isJumping_;
 
         public PhysicsComponent(float maxVelocityX = 5.0f, float maxVelocityY = 10.0f, float maxAccelerationX = 1.0f,
             float maxAccelerationY = 2.5f, PositionalComponent position = null, GameObject parent = null)
@@ -27,7 +26,6 @@ namespace DXGame.Core.Components.Advanced
             maxVelocity_ = new Vector2(maxVelocityX, maxVelocityY);
             maxAcceleration_ = new Vector2(maxAccelerationX, maxAccelerationY);
             position_ = position;
-            isJumping_ = false;
             priority_ = UpdatePriority.NORMAL;
         }
 
@@ -40,11 +38,7 @@ namespace DXGame.Core.Components.Advanced
         public virtual Vector2 Acceleration
         {
             get { return acceleration_; }
-            set
-            {
-                acceleration_.X = MathUtils.Constrain(value.X, -maxAcceleration_.X, maxAcceleration_.X);
-                acceleration_.Y = MathUtils.Constrain(value.Y, -maxAcceleration_.Y, maxAcceleration_.Y);
-            }
+            set { acceleration_ = VectorUtils.ConstrainVector(value, maxAcceleration_); }
         }
 
         public PhysicsComponent WithVelocity(Vector2 velocity)
@@ -68,35 +62,23 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public PhysicsComponent WithMaxVelocity(float maxVelocityX, float maxVelocityY)
+        public PhysicsComponent WithMaxVelocity(Vector2 maxVelocity)
         {
-            maxVelocity_.X = maxVelocityX;
-            maxVelocity_.Y = maxVelocityY;
+            Debug.Assert(maxVelocity != null, "PhysicsComponent cannot be initialized with a null maximum velocity ");
+            maxVelocity_ = maxVelocity;
             return this;
         }
 
-        public PhysicsComponent WithMaxAcceleration(float maxAccelerationX, float maxAccelerationY)
+        public PhysicsComponent WithMaxAcceleration(Vector2 maxAcceleration)
         {
-            maxAcceleration_.X = maxAccelerationX;
-            maxAcceleration_.Y = maxAccelerationY;
+            Debug.Assert(maxAcceleration != null, "PhysicsComponent cannot be initialized with a null maximum acceleration ");
+            maxAcceleration_ = maxAcceleration;
             return this;
-        }
-
-        public bool IsJumping
-        {
-            get { return isJumping_; }
-            set { isJumping_ = value; }
         }
 
         public override bool Update(GameTime gameTime)
         {
-            if (position_.Grounded)
-            {
-                isJumping_ = false;
-            }
-            Velocity += acceleration_;
-            Velocity = new Vector2( MathUtils.Constrain(velocity_.X, -maxVelocity_.X, maxVelocity_.X),
-                                    MathUtils.Constrain(velocity_.Y, -maxVelocity_.Y, maxVelocity_.Y));
+            Velocity = VectorUtils.ConstrainVector(Velocity + acceleration_, maxVelocity_);
             position_.Position += Velocity;
             return true;
         }

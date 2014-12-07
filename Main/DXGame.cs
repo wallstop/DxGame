@@ -41,7 +41,7 @@ namespace DXGame.Main
 
             List<GameObject> mapObjects = map_.MapObjects;
             List<GameObject> playerObjects = playerGenerator_.Generate();
-            AddAllObjects(mapObjects);
+            //AddAllObjects(mapObjects);
             AddAllObjects(playerObjects);
             updateables_.Add(WorldGravityComponent.Get());
 
@@ -93,6 +93,13 @@ namespace DXGame.Main
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch_ = new SpriteBatch(GraphicsDevice);
             foreach (DrawableComponent component in drawables_)
+            {
+                component.LoadContent(Content);
+            }
+
+            // TODO: Move this out somewhere else
+            List<GameObject> mapObjects = map_.MapObjects;
+            foreach (DrawableComponent component in GameObjectUtils.ComponentsOfType<DrawableComponent>(mapObjects))
             {
                 component.LoadContent(Content);
             }
@@ -166,8 +173,17 @@ namespace DXGame.Main
             Matrix cameraShift = Matrix.CreateTranslation(x, y, 0);
             spriteBatch_.Begin(0, null, null, null, null, null, cameraShift);
 
-            // TODO: Grab all of the drawables off of only the chunk of the math that we care about
+            var screenRegion = new Rectangle(0 - (int) x, 0 - (int) y, width_, height_);
+            List<GameObject> mapObjects = map_.ObjectsInRange(screenRegion);
+            List<DrawableComponent> drawables = GameObjectUtils.ComponentsOfType<DrawableComponent>(mapObjects);
 
+            // Draw map items
+            foreach (DrawableComponent component in drawables)
+            {
+                component.Draw(spriteBatch_);
+            }
+
+            // Draw everything else
             foreach (DrawableComponent component in drawables_)
             {
                 component.Draw(spriteBatch_);

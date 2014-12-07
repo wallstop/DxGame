@@ -10,8 +10,11 @@ namespace DXGame.Core.Utils
         occur on a regular basis.
     </summary>
     */
+
     public static class MathUtils
     {
+        private static readonly log4net.ILog LOG = log4net.LogManager.GetLogger(typeof (MathUtils));
+
         /**
         <summary>
             Given two values, returns the maximum of the two.

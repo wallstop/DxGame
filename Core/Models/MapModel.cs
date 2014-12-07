@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Generators;
-using DXGame.Core.Utils;
 using log4net;
 using Microsoft.Xna.Framework;
 
@@ -52,7 +50,7 @@ namespace DXGame.Core.Models
                 //        .Select(mapElement => mapElement.Key)
                 //        .Where(element => element != null)
                 //        .ToList();
-                List<GameObject> mapObjects = new List<GameObject>();
+                var mapObjects = new List<GameObject>();
                 foreach (KeyValuePair<GameObject, SpatialComponent> element in map_)
                 {
                     if (element.Key != null && element.Value != null)
@@ -131,19 +129,23 @@ namespace DXGame.Core.Models
         /**
         <summary>
             Given a Rectangle representing a spatial range within the map, returns a list of all 
-            GameObject -> SpatialComponent that are within that range.
+            GameObject -> SpatialComponent (map objects & components) that are within that range.
+
+            This is useful in collision-type queriess, where you can specify a rectangular range
+            and receive spatial components (exact bounds of map objects) as well as their GameObjects
+            (in case you require additional information about any other component.
         </summary>
         */
 
-        public List<KeyValuePair<GameObject, SpatialComponent>> ObjectsInRange(Rectangle range)
+        public List<KeyValuePair<GameObject, SpatialComponent>> ObjectsAndPositionsInRange(Rectangle range)
         {
             var objects =
                 new List<KeyValuePair<GameObject, SpatialComponent>>();
-            for (int i = 0; i < range.Width; ++i)
+            for (int i = 0; i < (range.Width / blockSize_); ++i)
             {
-                for (int j = 0; j < range.Height; ++j)
+                for (int j = 0; j < (range.Height / blockSize_); ++j)
                 {
-                    var objectPair = map_[range.X + i, range.Y + j];
+                    var objectPair = map_[range.X / blockSize_ + i, range.Y / blockSize_ + j];
                     if (objectPair.Value != null)
                     {
                         objects.Add(objectPair);
@@ -154,18 +156,44 @@ namespace DXGame.Core.Models
             return objects;
         }
 
+        /**
+        <summary>
+            Given a Rectangle representing the spatial range within the map, returns a list of all
+            GameObjects (map objects) that are within that range.
+
+            This is useful for getting a list of GameObjects from which to draw the current scene.
+        </summary>
+        */
+
+        public List<GameObject> ObjectsInRange(Rectangle range)
+        {
+            var objects = new List<GameObject>();
+            for (int i = 0; i <= (range.Width / blockSize_); ++i)
+            {
+                for (int j = 0; j <= (range.Height / blockSize_); ++j)
+                {
+                    var objectPair = map_[range.X / blockSize_ + i, range.Y / blockSize_ + j];
+                    if (objectPair.Value != null && objectPair.Key != null)
+                    {
+                        objects.Add(objectPair.Key);
+                    }
+                }
+            }
+            return objects;
+        }
+
 
         // TODO: Consolidate these methods
         private bool CanInsertIntoMap(SpatialComponent space)
         {
             Rectangle occupied = space.Space;
-            var x = occupied.X;
-            var y = occupied.Y;
-            var width = occupied.Width;
-            var height = occupied.Height;
+            var x = occupied.X / blockSize_;
+            var y = occupied.Y / blockSize_;
+            var width = occupied.Width / blockSize_;
+            var height = occupied.Height / blockSize_;
 
-            if (height % blockSize_ != 0
-                || width % blockSize_ != 0 || x % blockSize_ != 0 || y % blockSize_ != 0)
+            if (occupied.X % blockSize_ != 0 || occupied.Width % blockSize_ != 0 || occupied.Y % blockSize_ != 0 ||
+                occupied.Height % blockSize_ != 0)
             {
                 LOG.Warn(String.Format("Encountered malformed map entry {0}, ({1}, {2}, {3}, {4})", space, x,
                     y, width, height));
@@ -173,11 +201,11 @@ namespace DXGame.Core.Models
             }
 
             bool insertedOk = true;
-            for (int i = 0; i < (width / blockSize_); ++i)
+            for (int i = 0; i < width; ++i)
             {
-                for (int j = 0; j < (height / blockSize_); ++j)
+                for (int j = 0; j < height; ++j)
                 {
-                    var mapElement = map_[x / blockSize_ + i, y / blockSize_ + j];
+                    var mapElement = map_[x + i, y + j];
                     /* We only care if the Value (SpatialComponent) is null. If a GameObject is there, but has no space, then there really isn't anything there */
                     insertedOk = insertedOk && (mapElement.Value == null);
                     if (!insertedOk)
@@ -189,7 +217,6 @@ namespace DXGame.Core.Models
                                 mapElement.Value.Space.X, mapElement.Value.Space.Y, mapElement.Value.Space.Width,
                                 mapElement.Value.Space.Height, space.Space.X, space.Space.Y, space.Space.Width,
                                 space.Space.Height));
-
                     }
                 }
             }
@@ -199,17 +226,17 @@ namespace DXGame.Core.Models
 
         private void InsertIntoMap(GameObject gameObject, SpatialComponent space)
         {
-            Vector2 position = space.Position;
-            var x = (int) position.X;
-            var y = (int) position.Y;
-            var width = (int) space.Width;
-            var height = (int) space.Height;
+            Rectangle occupied = space.Space;
+            var x = occupied.X / blockSize_;
+            var y = occupied.Y / blockSize_;
+            var width = occupied.Width / blockSize_;
+            var height = occupied.Height / blockSize_;
 
-            for (int i = 0; i < (width / blockSize_); ++i)
+            for (int i = 0; i < width; ++i)
             {
-                for (int j = 0; j < (height / blockSize_); ++j)
+                for (int j = 0; j < height; ++j)
                 {
-                    map_[x / blockSize_ + width, y / blockSize_ + height] = new KeyValuePair<GameObject, SpatialComponent>(gameObject, space);
+                    map_[x + i, y + j] = new KeyValuePair<GameObject, SpatialComponent>(gameObject, space);
                 }
             }
         }

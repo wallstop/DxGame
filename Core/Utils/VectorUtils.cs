@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Utils
 {
-    public class VectorUtils
+    public static class VectorUtils
     {
         private static readonly log4net.ILog LOG =
             log4net.LogManager.GetLogger(typeof(VectorUtils));

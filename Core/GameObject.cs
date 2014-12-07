@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using DXGame.Core.Components.Basic;
+using System.Linq;
 
 namespace DXGame.Core
 {
@@ -25,29 +25,28 @@ namespace DXGame.Core
 
     public class GameObject
     {
-        private readonly List<DrawableComponent> drawables_ = new List<DrawableComponent>();
+        private readonly List<Component> components_ = new List<Component>();
         private readonly UniqueId id_ = new UniqueId();
-        private readonly List<UpdateableComponent> updateables_ = new List<UpdateableComponent>();
-        private readonly List<InitializableComponent> initializables_ = new List<InitializableComponent>();
 
         public UniqueId Id
         {
             get { return id_; }
         }
 
-        public List<DrawableComponent> Drawables
-        {
-            get { return drawables_; }
-        }
+        /**
+        <summary>
+            Given a type, iterates over all components that the game object contains and returns them as a list.
 
-        public List<UpdateableComponent> Updateables
+            For example, if you wanted all DrawableComponents that a GameObject has, simply:
+            <code>
+                GameObject myGameObject;
+                List<DrawableComponent> drawables = myGameObject.ComponentsOfType<DrawableComponent>();
+            </code>
+        </summary>
+        */
+        public List<T> ComponentsOfType<T>() where T : Component
         {
-            get { return updateables_; }
-        }
-
-        public List<InitializableComponent> Initializables
-        {
-            get { return initializables_; }
+            return components_.OfType<T>().ToList();
         }
 
         /**
@@ -64,7 +63,8 @@ namespace DXGame.Core
 
         protected GameObject AttachComponent(Component component)
         {
-            DetermineAndAssignComponentType(component);
+            Debug.Assert(component != null, "Cannot assign a null component to a GameObject");
+            components_.Add(component);
             return this;
         }
 
@@ -84,46 +84,9 @@ namespace DXGame.Core
 
         public GameObject AttachComponents(params Component[] components)
         {
-            foreach (Component component in components)
-            {
-                DetermineAndAssignComponentType(component);
-            }
+            Debug.Assert(components != null, "Cannot assign a null components to a GameObject");
+            components_.AddRange(components);
             return this;
-        }
-
-        /*
-            Determines the type of a Component that has been attached. If it is
-            an Initializable, Drawable, or Updateable, adds it to the appropriate member list.
-        */
-
-        private void DetermineAndAssignComponentType(Component component)
-        {
-            Debug.Assert(component != null, "Cannot assign a null component to a GameObject");
-            /*
-                TODO: Come up with a better (re: remotely good) way of properly assigning / distributing
-                comopnents into their categories. Maybe a virtual method on each component like .ComponentType
-                that the base classes would override? Maybe a .IsDrawable? Whatever it is, this really sucks, and
-                should be fixed.
-            */
-            var drawable = component as DrawableComponent;
-            if (drawable != null)
-            {
-                drawables_.Add(drawable);
-                return;
-            }
-
-            var updateable = component as UpdateableComponent;
-            if (updateable != null)
-            {
-                updateables_.Add(updateable);
-                return;
-            }
-
-            var initializable = component as InitializableComponent;
-            if (initializable != null)
-            {
-                initializables_.Add(initializable);
-            }
         }
     }
 #pragma warning restore 649

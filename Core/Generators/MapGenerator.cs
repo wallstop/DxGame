@@ -44,6 +44,11 @@ namespace DXGame.Core.Generators
             get { return mapBounds_; }
         }
 
+        public static int BlockSize
+        {
+            get { return BLOCK_WIDTH; }
+        }
+
         private List<GameObject> InitMap(string path)
         {
             LOG.Info(String.Format("Attempting to load map {0}", path));
@@ -71,8 +76,10 @@ namespace DXGame.Core.Generators
                         if (CanCreateBlockFrom(currentChar))
                         {
                             string asset = ResolveCharacterToAsset(currentChar);
-                            PositionalComponent position = new PositionalComponent().WithPosition(column * BLOCK_WIDTH,
-                                row * BLOCK_WIDTH);
+                            PositionalComponent position =
+                                new SpatialComponent().WithDimensions(new Vector2(BLOCK_WIDTH, BLOCK_WIDTH))
+                                    .WithPosition(column * BLOCK_WIDTH,
+                                        row * BLOCK_WIDTH);
                             SimpleSpriteComponent sprite =
                                 new SimpleSpriteComponent().WithAsset(asset).WithPosition(position);
                             GameObject block = new GameObject().AttachComponents(position, sprite);
@@ -151,11 +158,6 @@ namespace DXGame.Core.Generators
         public override List<GameObject> Generate()
         {
             return map_;
-        }
-
-        public static int BlockSize
-        {
-            get { return BLOCK_WIDTH;  }
         }
     }
 }

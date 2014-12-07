@@ -115,6 +115,7 @@
     <Compile Include="Core\Simple\SimplePlayer.cs" />
     <Compile Include="Core\Simple\SimpleSprite.cs" />
     <Compile Include="Core\UniqueId.cs" />
+    <Compile Include="Core\Utils\CollectionUtils.cs" />
     <Compile Include="Core\Utils\MathUtils.cs" />
     <Compile Include="Core\Utils\VectorUtils.cs" />
     <Compile Include="Main\DXGame.cs" />

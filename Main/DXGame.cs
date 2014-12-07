@@ -6,6 +6,7 @@ using DXGame.Core;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Generators;
+using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -23,22 +24,22 @@ namespace DXGame.Main
         private const int height_ = 720;
         private const int width_ = 1280;
         private readonly Rectangle mapBounds_;
-        private readonly HashSet<DrawableComponent> drawables_ = new HashSet<DrawableComponent>();
-        private readonly MapGenerator mapGenerator_;
+        private readonly MapModel map_;
         private readonly PlayerGenerator playerGenerator_;
         private readonly SpatialComponent playerSpace_;
 
+        private readonly HashSet<DrawableComponent> drawables_ = new HashSet<DrawableComponent>();
         private readonly List<UpdateableComponent> updateables_ = new List<UpdateableComponent>();
         private SpriteBatch spriteBatch_;
 
         public DXGame()
         {
-            mapGenerator_ = new MapGenerator("Content/Map/SimpleMap.txt");
-            mapBounds_ = mapGenerator_.MapBounds;
-            playerGenerator_ = new PlayerGenerator(mapGenerator_.PlayerPosition, mapBounds_);
+            map_ = MapModel.InitializeFromGenerator(new MapGenerator("Content/Map/SimpleMap.txt"));
+            mapBounds_ = map_.MapBounds;
+            playerGenerator_ = new PlayerGenerator(map_.PlayerPosition, mapBounds_);
             playerSpace_ = playerGenerator_.PlayerSpace;
 
-            List<GameObject> mapObjects = mapGenerator_.Generate();
+            List<GameObject> mapObjects = map_.MapObjects;
             List<GameObject> playerObjects = playerGenerator_.Generate();
             AddAllObjects(mapObjects);
             AddAllObjects(playerObjects);
@@ -55,11 +56,14 @@ namespace DXGame.Main
         {
             foreach (GameObject gameObject in gameObjects)
             {
-                foreach (DrawableComponent drawable in gameObject.Drawables)
+                List<DrawableComponent> drawables = gameObject.ComponentsOfType<DrawableComponent>();
+                foreach (DrawableComponent drawable in drawables)
                 {
                     drawables_.Add(drawable);
                 }
-                foreach (UpdateableComponent updateable in gameObject.Updateables)
+
+                List<UpdateableComponent> updateables = gameObject.ComponentsOfType<UpdateableComponent>();
+                foreach (UpdateableComponent updateable in updateables)
                 {
                     updateables_.Add(updateable);
                 }
@@ -154,12 +158,15 @@ namespace DXGame.Main
 
             // TODO: Oh god what have I done? Do some proper math, hidden in a function, like a CameraUtils class or something
             float x = width_ / 2.0f - playerSpace_.Center.X;
-            x = MathUtils.Constrain(x, Math.Max(float.MinValue, -(mapBounds_.X + mapBounds_.Width - width_)) , mapBounds_.X);
+            x = MathUtils.Constrain(x, Math.Max(float.MinValue, -(mapBounds_.X + mapBounds_.Width - width_)),
+                mapBounds_.X);
             float y = height_ / 2.0f - playerSpace_.Center.Y;
             y = MathUtils.Constrain(y, Math.Max(0, (mapBounds_.Y + mapBounds_.Height - height_)), mapBounds_.Y);
 
             Matrix cameraShift = Matrix.CreateTranslation(x, y, 0);
             spriteBatch_.Begin(0, null, null, null, null, null, cameraShift);
+
+            // TODO: Grab all of the drawables off of only the chunk of the math that we care about
 
             foreach (DrawableComponent component in drawables_)
             {

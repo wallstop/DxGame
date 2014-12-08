@@ -46,6 +46,8 @@ namespace DXGame.Core.Components.Advanced
             Vector2 velocity = physics_.Velocity;
             PlayerState state = state_.State;
 
+            bool isMoving = false;
+
             KeyboardState keyboardState = Keyboard.GetState();
             Keys[] pressedKeys = keyboardState.GetPressedKeys();
             if (pressedKeys.Length > 0)
@@ -56,9 +58,11 @@ namespace DXGame.Core.Components.Advanced
                     {
                     case Keys.Left:
                         velocity.X = -MOVE_SPEED;
+                        isMoving = true;
                         break;
                     case Keys.Right:
                         velocity.X = MOVE_SPEED;
+                        isMoving = true;
                         break;
                     case Keys.Up:
                         // TODO: Remove shit code, replace with proper collision.
@@ -88,7 +92,9 @@ namespace DXGame.Core.Components.Advanced
                     }
                 }
             }
-            else
+            //really just want to know if they never pressed left or right so
+            //horizontal movement can be stopped even while jumping
+            if(!isMoving)
             {
                 velocity.X = 0;
             }

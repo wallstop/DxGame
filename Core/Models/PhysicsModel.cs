@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DXGame.Core.Models
 {
-    public class PhysicsModel
+    public class PhysicsModel : Model
     {
         // TODO: WorldPhysicsComponent into here. Perform better, specific physics logic
 

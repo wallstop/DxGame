@@ -16,7 +16,7 @@ namespace DXGame.Core.Models
     </summary>
     */
 
-    public class MapModel
+    public class MapModel : Model
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapModel));
 

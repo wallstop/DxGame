@@ -92,8 +92,8 @@ namespace DXGame.Core.Components.Advanced
                     }
                 }
             }
-            //really just want to know if they never pressed left or right so
-            //horizontal movement can be stopped even while jumping
+            //Really just want to know if they never pressed left or right so
+            //horizontal movement can be stopped even while jumping. 
             if(!isMoving)
             {
                 velocity.X = 0;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Generators;
 using log4net;
@@ -137,7 +138,7 @@ namespace DXGame.Core.Models
         </summary>
         */
 
-        public List<KeyValuePair<GameObject, SpatialComponent>> ObjectsAndPositionsInRange(Rectangle range)
+        public List<KeyValuePair<GameObject, SpatialComponent>> ObjectsAndSpatialsInRange(Rectangle range)
         {
             var objects =
                 new List<KeyValuePair<GameObject, SpatialComponent>>();
@@ -165,21 +166,23 @@ namespace DXGame.Core.Models
         </summary>
         */
 
-        public List<GameObject> ObjectsInRange(Rectangle range)
+        public IEnumerable<GameObject> ObjectsInRange(Rectangle range)
         {
-            var objects = new List<GameObject>();
-            for (int i = 0; i <= (range.Width / blockSize_); ++i)
-            {
-                for (int j = 0; j <= (range.Height / blockSize_); ++j)
-                {
-                    var objectPair = map_[range.X / blockSize_ + i, range.Y / blockSize_ + j];
-                    if (objectPair.Value != null && objectPair.Key != null)
-                    {
-                        objects.Add(objectPair.Key);
-                    }
-                }
-            }
-            return objects;
+            return ObjectsAndSpatialsInRange(range).Select(element => element.Key);
+        }
+
+        /**
+        <summary>
+            Given a Rectangle representing the spatial range within the map, returns a list of all
+            Spatials (map objects) that are within that range.
+
+            This is useful for getting a list of SpatialComponents to check for map collision on.
+        </summary>
+        */
+
+        public IEnumerable<SpatialComponent> SpatialsInRange(Rectangle range)
+        {
+            return ObjectsAndSpatialsInRange(range).Select(element => element.Value);
         }
 
 

@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using DXGame.Core.Utils;
 using log4net;
 using Microsoft.Xna.Framework;
 
@@ -22,13 +24,10 @@ namespace DXGame.Core.Components.Advanced
             The bounding box
         </summary>
         */
+
         public virtual Rectangle Space
         {
-            get
-            {
-                return new Rectangle((int) Position.X, (int) Position.Y, (int) dimensions_.X,
-                    (int) dimensions_.Y);
-            }
+            get { return VectorUtils.RectangleFrom(position_, dimensions_); }
         }
 
         public virtual float Width
@@ -39,6 +38,11 @@ namespace DXGame.Core.Components.Advanced
         public virtual float Height
         {
             get { return dimensions_.Y; }
+        }
+
+        public virtual Vector2 Dimensions
+        {
+            get { return dimensions_; }
         }
 
         public SpatialComponent(GameObject parent = null)
@@ -62,7 +66,7 @@ namespace DXGame.Core.Components.Advanced
 
         public virtual Vector2 Center
         {
-            get { return position_ + dimensions_ / 2.0f; }
+            get { return position_ + dimensions_/2.0f; }
         }
     }
 }

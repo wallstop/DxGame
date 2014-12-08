@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
@@ -49,6 +50,30 @@ namespace DXGame.Core.Utils
             vector.X = MathUtils.Constrain(vector.X, -constraintVector.X, constraintVector.X);
             vector.Y = MathUtils.Constrain(vector.Y, -constraintVector.Y, constraintVector.Y);
             return vector;
+        }
+
+        /**
+        <summary>
+            Given a vector representing positional coordinates and another vector representing the dimenions,
+            constructs a Rectangle that is a "superset" of the Rectangle being represented, but in integer coordinates.
+            For example, a Rectangle constructed from (0.5, 0.5, 3.5, 3.5) would be (0, 0, 4, 4)
+        </summary>
+        */
+
+        // TODO: Create a floating point based Rectangle
+        public static Rectangle RectangleFrom(Vector2 position, Vector2 dimensions)
+        {
+            Debug.Assert(dimensions.X >= 0, "Rectangle width should be >= 0");
+            Debug.Assert(dimensions.Y >= 0, "Rectangle height should be >= 0");
+            return new Rectangle(
+                    /*
+                        The position may be anywhere, so if it's -.05, we actually want it to wrap to -1. Similarly, 
+                        if the position is 0.5, we want it to wrap to 1.0
+                    */
+                    (int)Math.Ceiling(Math.Abs(position.X)) * Math.Sign(position.X),
+                    (int)Math.Ceiling(Math.Abs(position.Y)) * Math.Sign(position.Y),
+                    (int)Math.Ceiling(dimensions.X), // Assume dimensions are always positive
+                    (int)Math.Ceiling(dimensions.Y));
         }
     }
 }

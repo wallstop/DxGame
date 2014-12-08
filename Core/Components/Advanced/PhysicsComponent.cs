@@ -19,20 +19,18 @@ namespace DXGame.Core.Components.Advanced
         protected PositionalComponent position_;
         protected Vector2 velocity_;
 
-        public PhysicsComponent(float maxVelocityX = 5.0f, float maxVelocityY = 10.0f, float maxAccelerationX = 1.0f,
-            float maxAccelerationY = 2.5f, PositionalComponent position = null, GameObject parent = null)
+        public PhysicsComponent(GameObject parent = null)
             : base(parent)
         {
-            maxVelocity_ = new Vector2(maxVelocityX, maxVelocityY);
-            maxAcceleration_ = new Vector2(maxAccelerationX, maxAccelerationY);
-            position_ = position;
+            maxVelocity_ = new Vector2(5.0f, 5.0f);
+            maxAcceleration_ = new Vector2(5.0f, 5.0f);
             priority_ = UpdatePriority.NORMAL;
         }
 
         public virtual Vector2 Velocity
         {
             get { return velocity_; }
-            set { velocity_ = value; }
+            set { velocity_ = VectorUtils.ConstrainVector(value, maxVelocity_); }
         }
 
         public virtual Vector2 Acceleration
@@ -86,6 +84,7 @@ namespace DXGame.Core.Components.Advanced
 
             // These checks will cease an object's velocity and acceleration in a direction if it was unable to move
             // TODO: Remove shit code, replace with proper collision
+
             if (previousPosition.X == position_.Position.X)
             {
                 velocity.X = 0;

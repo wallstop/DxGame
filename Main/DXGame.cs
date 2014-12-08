@@ -24,7 +24,6 @@ namespace DXGame.Main
         private const int height_ = 720;
         private const int width_ = 1280;
         private readonly Rectangle mapBounds_;
-        private readonly MapModel map_;
         private readonly PlayerGenerator playerGenerator_;
         private readonly SpatialComponent playerSpace_;
 
@@ -34,12 +33,13 @@ namespace DXGame.Main
 
         public DXGame()
         {
-            map_ = MapModel.InitializeFromGenerator(new MapGenerator("Content/Map/SimpleMap.txt"));
-            mapBounds_ = map_.MapBounds;
-            playerGenerator_ = new PlayerGenerator(map_.PlayerPosition, mapBounds_);
+            var map = MapModel.InitializeFromGenerator(new MapGenerator("Content/Map/SimpleMap.txt"));
+            GameState.AttachModel(map);
+            mapBounds_ = map.MapBounds;
+            playerGenerator_ = new PlayerGenerator(map.PlayerPosition, mapBounds_);
             playerSpace_ = playerGenerator_.PlayerSpace;
 
-            List<GameObject> mapObjects = map_.MapObjects;
+            List<GameObject> mapObjects = map.MapObjects;
             List<GameObject> playerObjects = playerGenerator_.Generate();
             //AddAllObjects(mapObjects);
             AddAllObjects(playerObjects);
@@ -98,7 +98,8 @@ namespace DXGame.Main
             }
 
             // TODO: Move this out somewhere else
-            List<GameObject> mapObjects = map_.MapObjects;
+            var map = GameState.Model<MapModel>();
+            List<GameObject> mapObjects = map.MapObjects;
             foreach (DrawableComponent component in GameObjectUtils.ComponentsOfType<DrawableComponent>(mapObjects))
             {
                 component.LoadContent(Content);
@@ -174,8 +175,9 @@ namespace DXGame.Main
             spriteBatch_.Begin(0, null, null, null, null, null, cameraShift);
 
             var screenRegion = new Rectangle(0 - (int) x, 0 - (int) y, width_, height_);
-            List<GameObject> mapObjects = map_.ObjectsInRange(screenRegion);
-            List<DrawableComponent> drawables = GameObjectUtils.ComponentsOfType<DrawableComponent>(mapObjects);
+            var map = GameState.Model<MapModel>();
+            var mapObjects = map.ObjectsInRange(screenRegion);
+            var drawables = GameObjectUtils.ComponentsOfType<DrawableComponent>(mapObjects);
 
             // Draw map items
             foreach (DrawableComponent component in drawables)

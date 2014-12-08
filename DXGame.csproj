@@ -94,6 +94,7 @@
   <ItemGroup>
     <Compile Include="Core\Component.cs" />
     <Compile Include="Core\Components\Advanced\BoundedSpatialComponent.cs" />
+    <Compile Include="Core\Components\Advanced\MapCollideablePhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\PlayerStateComponent.cs" />
     <Compile Include="Core\Components\Advanced\SpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\WorldGravityComponent.cs" />
@@ -132,6 +133,9 @@
       <HintPath>packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>

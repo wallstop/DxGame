@@ -19,7 +19,7 @@ namespace DXGame.Core.Utils
             </code.
         </summary>
         */
-        public static List<T> ComponentsOfType<T>(List<GameObject> gameObjects) where T : Component
+        public static IEnumerable<T> ComponentsOfType<T>(IEnumerable<GameObject> gameObjects) where T : Component
         {
             var components = new List<T>();
             foreach (GameObject gameObject in gameObjects)

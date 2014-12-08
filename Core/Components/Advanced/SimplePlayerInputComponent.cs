@@ -1,5 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -88,7 +91,8 @@ namespace DXGame.Core.Components.Advanced
                     }
                 }
             }
-            else
+            
+            if(!(pressedKeys.Contains(Keys.Left) || pressedKeys.Contains(Keys.Right)))
             {
                 velocity.X = 0;
             }

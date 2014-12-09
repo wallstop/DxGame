@@ -168,9 +168,9 @@ namespace DXGame.Core.Models
         public List<GameObject> ObjectsInRange(Rectangle range)
         {
             var objects = new List<GameObject>();
-            for (int i = 0; i <= (range.Width / blockSize_); ++i)
+            for (int i = 0; i <= (range.Width / blockSize_) + blockSize_; ++i)
             {
-                for (int j = 0; j <= (range.Height / blockSize_); ++j)
+                for (int j = 0; j <= (range.Height / blockSize_) + blockSize_; ++j)
                 {
                     var objectPair = map_[range.X / blockSize_ + i, range.Y / blockSize_ + j];
                     if (objectPair.Value != null && objectPair.Key != null)

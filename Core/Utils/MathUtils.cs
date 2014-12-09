@@ -84,26 +84,5 @@ namespace DXGame.Core.Utils
             value = Min(value, max);
             return value;
         }
-
-        /**
-        <summary>
-            Given a value, returns:
-                1 if the value is positive (greater than default)
-                1 if the value is 0 (or default)
-                -1 if the value is negative (less than default)
-
-            <code>
-                int sign = MathUtils.SignOf(-300); // sign = -1
-            </code>
-            <code>
-                int sign = MathUtils.SignOf(245.33f); // sign = 1
-            </code>
-        </summary>
-        */
-
-        public static int SignOf<T>(T value)
-        {
-            return Compare(value, default(T)) < 0 ? -1 : 1; // Count 0 here as positive
-        }
     }
 }

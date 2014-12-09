@@ -51,34 +51,6 @@ namespace DXGameTest.Core.Utils
             Compare<Int64>(small, medium, large);
         }
 
-        [Test]
-        public void TestSignOf()
-        {
-            int negative = -100;
-            int positive = 100;
-            int zero = 0;
-
-            Assert.AreEqual(1, MathUtils.SignOf(positive));
-            Assert.AreEqual(1, MathUtils.SignOf(zero));
-            Assert.AreEqual(-1, MathUtils.SignOf(negative));
-
-            Assert.AreEqual(1, MathUtils.SignOf<float>(positive));
-            Assert.AreEqual(1, MathUtils.SignOf<float>(zero));
-            Assert.AreEqual(-1, MathUtils.SignOf<float>(negative));
-
-            Assert.AreEqual(1, MathUtils.SignOf<double>(positive));
-            Assert.AreEqual(1, MathUtils.SignOf<double>(zero));
-            Assert.AreEqual(-1, MathUtils.SignOf<double>(negative));
-
-            Assert.AreEqual(1, MathUtils.SignOf<Int64>(positive));
-            Assert.AreEqual(1, MathUtils.SignOf<Int64>(zero));
-            Assert.AreEqual(-1, MathUtils.SignOf<Int64>(negative));
-
-            Assert.AreEqual(1, MathUtils.SignOf<long>(positive));
-            Assert.AreEqual(1, MathUtils.SignOf<long>(zero));
-            Assert.AreEqual(-1, MathUtils.SignOf<long>(negative));
-        }
-
         private static void Max<T>(T small, T medium, T large)
         {
             Assert.AreEqual(small, MathUtils.Max(small, small));

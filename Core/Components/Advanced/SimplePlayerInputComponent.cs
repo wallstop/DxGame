@@ -11,10 +11,12 @@ namespace DXGame.Core.Components.Advanced
     public class SimplePlayerInputComponent : UpdateableComponent
     {
         //ivate static readonly float DECAY_AMOUNT = 0.1f;
-        private static readonly float JUMP_SPEED = 20.0f;
+        private static readonly float JUMP_SPEED = 15.0f;
         private static readonly float MOVE_SPEED = 10.0f;
         protected PhysicsComponent physics_;
         protected PlayerStateComponent state_;
+
+        private Vector2 lastAcceleration = new Vector2();
 
         public SimplePlayerInputComponent(PhysicsComponent physics = null, GameObject parent = null)
             : base(parent)
@@ -74,16 +76,14 @@ namespace DXGame.Core.Components.Advanced
                         case PlayerState.Walking:
                         case PlayerState.None:
                             state = PlayerState.Jumping;
-                            acceleration.Y = 0;
                             velocity.Y -= JUMP_SPEED;
                             acceleration.Y -= JUMP_SPEED;
                             break;
                         case PlayerState.Jumping:
-                            if (acceleration.Y == 0 && velocity.Y == 0)
+                            if (lastAcceleration.Y == 0  && acceleration.Y == 0 && velocity.Y == 0)
                             {
-                                state = PlayerState.Walking;
+                                state = PlayerState.None;
                             }
-                            // TODO: Deal with jumping state
                             break;
 
                         default:
@@ -105,6 +105,8 @@ namespace DXGame.Core.Components.Advanced
             physics_.Acceleration = acceleration;
             physics_.Velocity = velocity;
             state_.State = state;
+
+            lastAcceleration = physics_.Acceleration;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DXGame.Core.Models;
@@ -14,6 +15,12 @@ namespace DXGame.Core.Components.Advanced
         public MapCollideablePhysicsComponent(GameObject parent = null)
             : base(parent)
         {
+        }
+
+        private Vector2 Position
+        {
+            get { return position_.Position; }
+            set { position_.Position = value; }
         }
 
         private Rectangle Space
@@ -47,61 +54,65 @@ namespace DXGame.Core.Components.Advanced
         public override bool Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            Vector2 currentPosition = position_.Position;
-            Vector2 currentDimensions = Dimensions;
-            Rectangle currentSpace = Space;
+
+            Rectangle oldSpace = Space;
+            Vector2 oldPosition = Position;
+            Vector2 oldDimensions = Dimensions;
 
             var map = GameState.Model<MapModel>();
             IEnumerable<SpatialComponent> mapTiles =
                 map.SpatialsInRange(MapQueryRegion);
 
-            Vector2 offset = new Vector2();
+            Vector2 newPosition = Position;
+            Vector2 newVelocity = Velocity;
+            Vector2 newAcceleration = Acceleration;
             foreach (SpatialComponent spatial in mapTiles)
             {
-                Rectangle space = spatial.Space;
-                if (currentSpace.Intersects(space))
+                if (oldSpace.Intersects(spatial.Space))
                 {
-                    // TODO: Fix this (it suckkssss, some of the math is wrong)
-                    // Need to base collision off of trajectory.
-                    var tempCurrentPosition = currentPosition + offset;
-                    // Left side collision
-                    if (space.X < tempCurrentPosition.X && space.X + space.Width >= tempCurrentPosition.X)
+                    Vector2 mapBlockPosition = spatial.Position;
+                    Vector2 mapBlockDimensions = spatial.Dimensions;
+                    Rectangle intersection = Rectangle.Intersect(spatial.Space, oldSpace);
+                    if (intersection.Width > intersection.Height)
                     {
-                        offset.X = space.X + space.Width - tempCurrentPosition.X;
+                        // below collision
+                        if (oldPosition.Y + oldDimensions.Y > mapBlockPosition.Y && mapBlockPosition.Y > oldPosition.Y)
+                        {
+                            newPosition.Y = mapBlockPosition.Y - oldDimensions.Y;
+                        }
+                        else // above collision
+                        {
+                            newPosition.Y = mapBlockPosition.Y + mapBlockDimensions.Y;
+                        }
+                        newVelocity.Y = 0;
+                        newAcceleration.Y = 0;
+                    } 
+                    else if (intersection.Height > intersection.Width)
+                    {
+                        // left collision
+                        if (oldPosition.X  < mapBlockPosition.X + mapBlockDimensions.X && mapBlockPosition.X < oldPosition.X)
+                        {
+                            newPosition.X = mapBlockPosition.X + mapBlockDimensions.X;
+                        }
+                        else // right collision
+                        {
+                            newPosition.X = mapBlockPosition.X - oldDimensions.X;
+                        }
+                        newVelocity.X = 0;
+                        newAcceleration.X = 0;
                     }
-
-                    // Top side collision
-                    if (space.Y < tempCurrentPosition.Y && space.Y + space.Height >= tempCurrentPosition.Y)
+                    else // Hope this never occurs
                     {
-                        offset.Y = space.Y + space.Height - tempCurrentPosition.Y;
-                    }
-
-                    // Right side collision
-                    if (space.X > tempCurrentPosition.X && space.X <= tempCurrentPosition.X + currentDimensions.X)
-                    {
-                        offset.X = currentDimensions.X - (space.X - tempCurrentPosition.X);
-                    }
-
-                    // Bottom collision
-                    if (space.Y > tempCurrentPosition.Y && space.Y <= tempCurrentPosition.Y + currentDimensions.Y)
-                    {
-                        offset.Y = space.Y - tempCurrentPosition.Y - currentDimensions.Y;
+                        position_.Position -= velocity_; // back up
+                        newVelocity = new Vector2(0, 0);
+                        newAcceleration = new Vector2(0, 0);
                     }
                 }
             }
 
-            if (offset.X != 0.0f)
-            {
-                velocity_.X = 0.0f;
-                acceleration_.X = 0.0f;
-            }
-            if (offset.Y != 0.0f)
-            {
-                velocity_.Y = 0.0f;
-                acceleration_.Y = 0.0f;
-            }
-
-            position_.Position = currentPosition + offset;
+            Position = newPosition;
+            Velocity = newVelocity;
+            Acceleration = newAcceleration;
 
             return true;
         }

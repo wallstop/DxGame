@@ -68,45 +68,47 @@ namespace DXGame.Core.Components.Advanced
             Vector2 newAcceleration = Acceleration;
             foreach (SpatialComponent spatial in mapTiles)
             {
-                if (oldSpace.Intersects(spatial.Space))
+                if (!oldSpace.Intersects(spatial.Space))
                 {
-                    Vector2 mapBlockPosition = spatial.Position;
-                    Vector2 mapBlockDimensions = spatial.Dimensions;
-                    Rectangle intersection = Rectangle.Intersect(spatial.Space, oldSpace);
-                    if (intersection.Width > intersection.Height)
+                    continue;
+                }
+
+                Vector2 mapBlockPosition = spatial.Position;
+                Vector2 mapBlockDimensions = spatial.Dimensions;
+                Rectangle intersection = Rectangle.Intersect(spatial.Space, oldSpace);
+                if (intersection.Width > intersection.Height)
+                {
+                    // below collision
+                    if (oldPosition.Y + oldDimensions.Y > mapBlockPosition.Y && mapBlockPosition.Y > oldPosition.Y)
                     {
-                        // below collision
-                        if (oldPosition.Y + oldDimensions.Y > mapBlockPosition.Y && mapBlockPosition.Y > oldPosition.Y)
-                        {
-                            newPosition.Y = mapBlockPosition.Y - oldDimensions.Y;
-                        }
-                        else // above collision
-                        {
-                            newPosition.Y = mapBlockPosition.Y + mapBlockDimensions.Y;
-                        }
-                        newVelocity.Y = 0;
-                        newAcceleration.Y = 0;
-                    } 
-                    else if (intersection.Height > intersection.Width)
-                    {
-                        // left collision
-                        if (oldPosition.X  < mapBlockPosition.X + mapBlockDimensions.X && mapBlockPosition.X < oldPosition.X)
-                        {
-                            newPosition.X = mapBlockPosition.X + mapBlockDimensions.X;
-                        }
-                        else // right collision
-                        {
-                            newPosition.X = mapBlockPosition.X - oldDimensions.X;
-                        }
-                        newVelocity.X = 0;
-                        newAcceleration.X = 0;
+                        newPosition.Y = mapBlockPosition.Y - oldDimensions.Y;
                     }
-                    else // Hope this never occurs
+                    else // above collision
                     {
-                        position_.Position -= velocity_; // back up
-                        newVelocity = new Vector2(0, 0);
-                        newAcceleration = new Vector2(0, 0);
+                        newPosition.Y = mapBlockPosition.Y + mapBlockDimensions.Y;
                     }
+                    newVelocity.Y = 0;
+                    newAcceleration.Y = 0;
+                } 
+                else if (intersection.Height > intersection.Width)
+                {
+                    // left collision
+                    if (oldPosition.X  < mapBlockPosition.X + mapBlockDimensions.X && mapBlockPosition.X < oldPosition.X)
+                    {
+                        newPosition.X = mapBlockPosition.X + mapBlockDimensions.X;
+                    }
+                    else // right collision
+                    {
+                        newPosition.X = mapBlockPosition.X - oldDimensions.X;
+                    }
+                    newVelocity.X = 0;
+                    newAcceleration.X = 0;
+                }
+                else // Hope this never occurs
+                {
+                    position_.Position -= velocity_; // back up
+                    newVelocity = new Vector2(0, 0);
+                    newAcceleration = new Vector2(0, 0);
                 }
             }
 

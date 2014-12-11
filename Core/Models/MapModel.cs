@@ -78,7 +78,7 @@ namespace DXGame.Core.Models
         public static MapModel InitializeFromGenerator(MapGenerator generator)
         {
             List<GameObject> mapObjects = generator.Generate();
-            var model = new MapModel(generator.MapBounds.Width, generator.MapBounds.Height, MapGenerator.BlockSize);
+            var model = new MapModel(generator.MapBounds.Width / MapGenerator.BlockSize, generator.MapBounds.Height / MapGenerator.BlockSize, MapGenerator.BlockSize);
             model.playerPosition_ = generator.PlayerPosition;
             model.mapBounds_ = generator.MapBounds;
             foreach (GameObject mapObject in mapObjects)

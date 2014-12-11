@@ -62,11 +62,25 @@ namespace DXGame.Core.Components.Advanced
                     switch (key)
                     {
                     case Keys.Left:
-                        velocity.X = -MOVE_SPEED;
+                        if (velocity.X < 0)
+                        {
+                            velocity.X = 1.5f * - MOVE_SPEED;
+                        }
+                        else
+                        {
+                            velocity.X = -MOVE_SPEED;
+                        }
                         isMoving = true;
                         break;
                     case Keys.Right:
-                        velocity.X = MOVE_SPEED;
+                        if (velocity.X > 0)
+                        {
+                            velocity.X = 1.5f * MOVE_SPEED;
+                        }
+                        else
+                        {
+                            velocity.X = MOVE_SPEED;
+                        }
                         isMoving = true;
                         break;
                     case Keys.Up:

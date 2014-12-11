@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using DXGame.Core.Models;
+using DXGame.Core.Utils;
 using log4net;
 using Microsoft.Xna.Framework;
 
@@ -53,68 +52,81 @@ namespace DXGame.Core.Components.Advanced
 
         public override bool Update(GameTime gameTime)
         {
+            /*
+                Perform the normal PhysicsComponent's update first. We assume that at the end of our last update cycle,
+                we are collision free. The PhysicsComponent's update cycle may place us into some kind of state where
+                we're colliding with the map, so we need to handle that.
+            */
             base.Update(gameTime);
 
-            Rectangle oldSpace = Space;
-            Vector2 oldPosition = Position;
-            Vector2 oldDimensions = Dimensions;
-
             var map = GameState.Model<MapModel>();
-            IEnumerable<SpatialComponent> mapTiles =
-                map.SpatialsInRange(MapQueryRegion);
+            IEnumerable<SpatialComponent> mapTiles = map.SpatialsInRange(MapQueryRegion);
 
-            Vector2 newPosition = Position;
-            Vector2 newVelocity = Velocity;
-            Vector2 newAcceleration = Acceleration;
+            /*
+                Additionally, we should really re-query the map after we find a collision and update our position / velocity. 
+                Typically, our previous update cycle will take care of any major collision, so we should only be colliding with
+                blocks on some small order of magnitude (less than a block). However, in cases of extreme velocity, like
+                being shot from a cannon, it's possible that we've moved several blocks since our last update cycle. 
+                TODO: THIS NEEDS TO BE ADDRESSED AT SOME POINT. 
+                The below collision handling routine assumes that resolving collisions with
+                our immediate neighbors will put us in the clear, which may NOT be the case.
+
+                In a method that re-quries the map, we're going to need to throw in calculations based off of velocity as well,
+                so as to not "warp" us through walls and obstacles.
+            */
             foreach (SpatialComponent spatial in mapTiles)
             {
-                if (!oldSpace.Intersects(spatial.Space))
+                if (!Space.Intersects(spatial.Space))
                 {
                     continue;
                 }
 
                 Vector2 mapBlockPosition = spatial.Position;
                 Vector2 mapBlockDimensions = spatial.Dimensions;
-                Rectangle intersection = Rectangle.Intersect(spatial.Space, oldSpace);
-                if (intersection.Width > intersection.Height)
+                Rectangle intersection = Rectangle.Intersect(spatial.Space, Space);
+                /*
+                    Wrap to the Y axis if the collision area was greater along the X axis (implies the collision occured either up or down,
+                    as a left/right collision *should* have very little overlap on the X axis.
+
+                    OR wrap to the Y axis if we weren't moving in the X direction. This prevents "warps", where the player is jumping
+                    something like a few pixels off of a block boundary and gets warped back.
+
+                    Since the acceleration from gravity is always going to throw us downward, we check this first.
+                */
+                if (intersection.Width >= intersection.Height ||
+                    MathUtils.FuzzyCompare(Velocity.X, 0.0f, MathUtils.FloatTolerance) == 0)
                 {
                     // below collision
-                    if (oldPosition.Y + oldDimensions.Y > mapBlockPosition.Y && mapBlockPosition.Y > oldPosition.Y)
+                    if (Position.Y + Dimensions.Y > mapBlockPosition.Y && mapBlockPosition.Y > Position.Y)
                     {
-                        newPosition.Y = mapBlockPosition.Y - oldDimensions.Y;
+                        Position = new Vector2(Position.X, mapBlockPosition.Y - Dimensions.Y);
                     }
                     else // above collision
                     {
-                        newPosition.Y = mapBlockPosition.Y + mapBlockDimensions.Y;
+                        Position = new Vector2(Position.X, mapBlockPosition.Y + mapBlockDimensions.Y);
                     }
-                    newVelocity.Y = 0;
-                    newAcceleration.Y = 0;
+                    Velocity = new Vector2(Velocity.X, 0);
+                    Acceleration = new Vector2(Acceleration.X, 0);
                 } 
-                else if (intersection.Height > intersection.Width)
+                    /*
+                    Wrap to the X axis otherwise. 
+                */
+                else
+                    // if (intersection.Height > intersection.Width || MathUtils.FuzzyCompare(Velocity.Y, 0.0, MathUtils.DoubleTolerance) == 0)
                 {
                     // left collision
-                    if (oldPosition.X  < mapBlockPosition.X + mapBlockDimensions.X && mapBlockPosition.X < oldPosition.X)
+                    if (Position.X < mapBlockPosition.X + mapBlockDimensions.X && mapBlockPosition.X < Position.X)
                     {
-                        newPosition.X = mapBlockPosition.X + mapBlockDimensions.X;
+                        Position = new Vector2(mapBlockPosition.X + mapBlockDimensions.X, Position.Y);
                     }
                     else // right collision
                     {
-                        newPosition.X = mapBlockPosition.X - oldDimensions.X;
+                        Position = new Vector2(mapBlockPosition.X - Dimensions.X, Position.Y);
                     }
-                    newVelocity.X = 0;
-                    newAcceleration.X = 0;
-                }
-                else // Hope this never occurs
-                {
-                    position_.Position -= velocity_; // back up
-                    newVelocity = new Vector2(0, 0);
-                    newAcceleration = new Vector2(0, 0);
+                    Velocity = new Vector2(0, Velocity.Y);
+                    Acceleration = new Vector2(0, Acceleration.Y);
                 }
             }
-
-            Position = newPosition;
-            Velocity = newVelocity;
-            Acceleration = newAcceleration;
 
             return true;
         }

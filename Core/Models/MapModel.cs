@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Generators;
+using DXGame.Core.Utils;
 using log4net;
 using Microsoft.Xna.Framework;
 
@@ -140,13 +141,17 @@ namespace DXGame.Core.Models
 
         public List<KeyValuePair<GameObject, SpatialComponent>> ObjectsAndSpatialsInRange(Rectangle range)
         {
-            var objects =
-                new List<KeyValuePair<GameObject, SpatialComponent>>();
-            for (int i = 0; i < (range.Width / blockSize_); ++i)
+            var objects = new List<KeyValuePair<GameObject, SpatialComponent>>();
+            // Make sure to wrap the requested values to those servable by the map
+            int x = MathUtils.Constrain(range.X / blockSize_, MapBounds.X / blockSize_, (MapBounds.X + MapBounds.Width) / blockSize_);
+            int width = MathUtils.Constrain((int)Math.Ceiling((float)range.Width / blockSize_ + 1), 0, (MapBounds.X + MapBounds.Width) / blockSize_ - x);
+            int y = MathUtils.Constrain(range.Y / blockSize_, MapBounds.Y / blockSize_, (MapBounds.Y + MapBounds.Height) / blockSize_);
+            int height = MathUtils.Constrain((int)Math.Ceiling((float)range.Height / blockSize_), 0, (MapBounds.Y + MapBounds.Height) / blockSize_ - y);
+            for (int i = 0; i < width; ++i)
             {
-                for (int j = 0; j < (range.Height / blockSize_); ++j)
+                for (int j = 0; j < height; ++j)
                 {
-                    var objectPair = map_[range.X / blockSize_ + i, range.Y / blockSize_ + j];
+                    var objectPair = map_[x + i,y + j];
                     if (objectPair.Value != null)
                     {
                         objects.Add(objectPair);

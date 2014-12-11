@@ -15,6 +15,19 @@ namespace DXGame.Core.Utils
     {
         private static readonly log4net.ILog LOG = log4net.LogManager.GetLogger(typeof (MathUtils));
 
+        private const float floatTolerance_ = 0.00001f;
+        private const double doubleTolerance_ = 0.0000001;
+
+        public static float FloatTolerance
+        {
+            get { return floatTolerance_; }
+        }
+
+        public static double DoubleTolerance
+        {
+            get { return doubleTolerance_; }
+        }
+
         /**
         <summary>
             Given two values, returns the maximum of the two.
@@ -100,7 +113,7 @@ namespace DXGame.Core.Utils
                 }
             </code>
         */
-        public static int FuzzyCompare(float lhs, float rhs, float epsilon = 0.0f)
+        public static int FuzzyCompare(float lhs, float rhs, float epsilon = floatTolerance_)
         {
             if (Math.Abs(lhs - rhs) <= epsilon)
                 return 0;
@@ -121,7 +134,7 @@ namespace DXGame.Core.Utils
                 }
             </code>
         */
-        public static int FuzzyCompare(double lhs, double rhs, double epsilon = 0.0f)
+        public static int FuzzyCompare(double lhs, double rhs, double epsilon = doubleTolerance_)
         {
             if (Math.Max(lhs, rhs) - Math.Min(lhs, rhs) <= epsilon)
                 return 0;

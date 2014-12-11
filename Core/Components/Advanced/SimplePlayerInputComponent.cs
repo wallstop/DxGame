@@ -11,7 +11,7 @@ namespace DXGame.Core.Components.Advanced
     public class SimplePlayerInputComponent : UpdateableComponent
     {
         //ivate static readonly float DECAY_AMOUNT = 0.1f;
-        private static readonly float JUMP_SPEED = 15.0f;
+        private static readonly float JUMP_SPEED = 10.0f;
         private static readonly float MOVE_SPEED = 10.0f;
         protected PhysicsComponent physics_;
         protected PlayerStateComponent state_;

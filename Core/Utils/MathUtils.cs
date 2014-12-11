@@ -84,5 +84,48 @@ namespace DXGame.Core.Utils
             value = Min(value, max);
             return value;
         }
+
+        /**
+        <summary>
+            Tests if two floats are equal to within some tolerance of each other. (Floating point numbers are tricky).
+
+            Floating point numbers, by definition, lose precision. This method helps to alleviate some of that issue.
+
+            See: http://en.wikipedia.org/wiki/Loss_of_significance for details
+
+            <code>
+                if(0 == FuzzyCompare(x, y, 0.00001)) 
+                {
+                    // do stuff, they're equal "enough" here
+                }
+            </code>
+        */
+        public static int FuzzyCompare(float lhs, float rhs, float epsilon = 0.0f)
+        {
+            if (Math.Abs(lhs - rhs) <= epsilon)
+                return 0;
+            return (lhs > rhs ? 1 : -1);
+        }
+
+        /**
+        Tests if two doubles are equal to within some tolerance of each other. (Floating point numbers are tricky).
+
+            Floating point numbers, by definition, lose precision. This method helps to alleviate some of that issue.
+
+            See: http://en.wikipedia.org/wiki/Loss_of_significance for details
+
+            <code>
+                if(0 == FuzzyCompare(x, y, 0.00001)) 
+                {
+                    // do stuff, they're equal "enough" here
+                }
+            </code>
+        */
+        public static int FuzzyCompare(double lhs, double rhs, double epsilon = 0.0f)
+        {
+            if (Math.Max(lhs, rhs) - Math.Min(lhs, rhs) <= epsilon)
+                return 0;
+            return (lhs > rhs ? 1 : -1);
+        }
     }
 }

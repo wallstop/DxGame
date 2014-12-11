@@ -117,7 +117,7 @@
     <Compile Include="Core\Utils\CollectionUtils.cs" />
     <Compile Include="Core\Utils\GameObjectUtils.cs" />
     <Compile Include="Core\Utils\MathUtils.cs" />
-    <Compile Include="Core\Utils\Rectangle.cs" />
+    <Compile Include="Core\Utils\Rectangle2f.cs" />
     <Compile Include="Core\Utils\VectorUtils.cs" />
     <Compile Include="Main\DXGame.cs" />
     <Compile Include="Main\Program.cs" />

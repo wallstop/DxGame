@@ -8,6 +8,8 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Generators;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
+using log4net;
+using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -21,6 +23,8 @@ namespace DXGame.Main
     /// </summary>
     public class DXGame : Game
     {
+        private static readonly ILog LOG = LogManager.GetLogger(typeof(DXGame));
+
         private const int height_ = 720;
         private const int width_ = 1280;
         private readonly Rectangle mapBounds_;
@@ -31,12 +35,18 @@ namespace DXGame.Main
         private readonly List<UpdateableComponent> updateables_ = new List<UpdateableComponent>();
         private SpriteBatch spriteBatch_;
 
-        public DXGame()
+        private DxGameRole role_;
+
+        private NetPeer networkConnection_;
+
+        public DXGame(DxGameArguments arguments)
         {
+            parseArguments(arguments);
             var map = MapModel.InitializeFromGenerator(new MapGenerator("Content/Map/SimpleMap.txt"));
+            
             GameState.AttachModel(map);
             mapBounds_ = map.MapBounds;
-            playerGenerator_ = new PlayerGenerator(map.PlayerPosition, mapBounds_);
+            playerGenerator_ = new PlayerGenerator(map.PlayerPosition, mapBounds_, arguments.IsServer);
             playerSpace_ = playerGenerator_.PlayerSpace;
 
             List<GameObject> mapObjects = map.MapObjects;
@@ -50,6 +60,31 @@ namespace DXGame.Main
             graphics_.PreferredBackBufferWidth = width_;
 
             Content.RootDirectory = "Content";
+        }
+
+        private void parseArguments(DxGameArguments arguments)
+        {
+            // TODO: Move this crap out of here
+            role_ = (arguments.IsServer ? DxGameRole.Server : DxGameRole.Client);
+            if (role_ == DxGameRole.Server)
+            {
+                NetPeerConfiguration config = new NetPeerConfiguration("DXGameServer");
+                config.Port = 8000; // TODO: Move to config bsed value
+                config.MaximumConnections = 200;
+                networkConnection_ = new NetServer(config);
+                networkConnection_.Start();
+                LOG.Info(String.Format("Server started. Port: {0}, MaxConnections {1}", config.Port, config.MaximumConnections));
+            }
+            else
+            {
+                NetPeerConfiguration config = new NetPeerConfiguration("DXGameClient");
+                networkConnection_ = new NetClient(config);
+                networkConnection_.Start();
+                networkConnection_.Connect(arguments.ServerIp, arguments.ServerPort);
+                LOG.Info(String.Format("Client started. Connected to IP: {0}, Port: {1}", arguments.ServerIp,
+                    arguments.ServerPort));
+            }
+
         }
 
         private void AddAllObjects(IEnumerable<GameObject> gameObjects)

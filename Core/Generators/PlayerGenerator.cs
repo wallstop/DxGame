@@ -6,7 +6,9 @@ namespace DXGame.Core.Generators
 {
     public class PlayerGenerator : Generator<GameObject>
     {
+        // TODO: Make player sprites scalable
         private const string PLAYER = "Player";
+        private const string PLAYER_2 = "Player2";
         private static readonly Vector2 MAX_VELOCITY = new Vector2(5.0f, 20.0f);
         private readonly SimplePlayerInputComponent input_;
         private readonly PhysicsComponent physics_;
@@ -14,7 +16,8 @@ namespace DXGame.Core.Generators
         private readonly PlayerStateComponent state_;
         private readonly SimpleSpriteComponent sprite_;
 
-        public PlayerGenerator(Vector2 playerPosition, Rectangle bounds = new Rectangle())
+        // Addendum to prior TODO: change isLocalPlayer to something that's not a bool
+        public PlayerGenerator(Vector2 playerPosition, Rectangle bounds, bool isLocalPlayer)
         {
             space_ =
                 (BoundedSpatialComponent) new BoundedSpatialComponent().WithXMin(bounds.X)
@@ -25,7 +28,7 @@ namespace DXGame.Core.Generators
                     .WithPosition(playerPosition);
             physics_ = new MapCollideablePhysicsComponent().WithMaxVelocity(MAX_VELOCITY).WithPositionalComponent(space_);
             state_ = new PlayerStateComponent();
-            sprite_ = new SimpleSpriteComponent().WithAsset(PLAYER).WithPosition(space_);
+            sprite_ = new SimpleSpriteComponent().WithAsset((isLocalPlayer ? PLAYER : PLAYER_2)).WithPosition(space_);
             input_ = new SimplePlayerInputComponent().WithPhysics(physics_).WithPlayerState(state_);
         }
 

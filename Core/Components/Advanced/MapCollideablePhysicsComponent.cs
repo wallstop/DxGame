@@ -108,7 +108,7 @@ namespace DXGame.Core.Components.Advanced
                     Velocity = new Vector2(Velocity.X, 0);
                     Acceleration = new Vector2(Acceleration.X, 0);
                 } 
-                    /*
+                /*
                     Wrap to the X axis otherwise. 
                 */
                 else

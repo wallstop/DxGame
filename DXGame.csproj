@@ -104,12 +104,16 @@
     <Compile Include="Core\Components\Advanced\PositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
     <Compile Include="Core\Components\Basic\UpdateableComponent.cs" />
+    <Compile Include="Core\GameComponentCollection.cs" />
     <Compile Include="Core\GameObject.cs" />
     <Compile Include="Core\GameState.cs" />
     <Compile Include="Core\Generators\MapGenerator.cs" />
     <Compile Include="Core\Generators\PlayerGenerator.cs" />
     <Compile Include="Core\Generator.cs" />
     <Compile Include="Core\Components\Advanced\PhysicsComponent.cs" />
+    <Compile Include="Core\Menus\MainMenu.cs" />
+    <Compile Include="Core\Menus\Menu.cs" />
+    <Compile Include="Core\Menus\MenuItem.cs" />
     <Compile Include="Core\Model.cs" />
     <Compile Include="Core\Models\MapModel.cs" />
     <Compile Include="Core\Models\PhysicsModel.cs" />
@@ -121,7 +125,6 @@
     <Compile Include="Core\Utils\Rectangle2f.cs" />
     <Compile Include="Core\Utils\VectorUtils.cs" />
     <Compile Include="Main\DXGame.cs" />
-    <Compile Include="Main\DxGameUtils.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

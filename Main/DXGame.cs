@@ -18,6 +18,24 @@ using Microsoft.Xna.Framework.Input;
 
 namespace DXGame.Main
 {
+
+    public enum InteractionState
+    {
+        None,
+        StartMenu,
+        Loading,
+        Playing,
+        Paused
+    }
+
+    public enum GameRole
+    {
+        None,
+        DedicatedServer,
+        HostedServer,
+        Client
+    }
+
     /// <summary>
     ///     This is the main type for your game
     /// </summary>
@@ -35,18 +53,16 @@ namespace DXGame.Main
         private readonly List<UpdateableComponent> updateables_ = new List<UpdateableComponent>();
         private SpriteBatch spriteBatch_;
 
-        private DxGameRole role_;
+        public GameRole Role { get; set; }
+        public InteractionState InteractionState { get; set; }
 
-        private NetPeer networkConnection_;
-
-        public DXGame(DxGameArguments arguments)
+        public DXGame()
         {
-            parseArguments(arguments);
             var map = MapModel.InitializeFromGenerator(new MapGenerator("Content/Map/SimpleMap.txt"));
-            
+
             GameState.AttachModel(map);
             mapBounds_ = map.MapBounds;
-            playerGenerator_ = new PlayerGenerator(map.PlayerPosition, mapBounds_, arguments.IsServer);
+            playerGenerator_ = new PlayerGenerator(map.PlayerPosition, mapBounds_);
             playerSpace_ = playerGenerator_.PlayerSpace;
 
             List<GameObject> mapObjects = map.MapObjects;
@@ -60,31 +76,6 @@ namespace DXGame.Main
             graphics_.PreferredBackBufferWidth = width_;
 
             Content.RootDirectory = "Content";
-        }
-
-        private void parseArguments(DxGameArguments arguments)
-        {
-            // TODO: Move this crap out of here
-            role_ = (arguments.IsServer ? DxGameRole.Server : DxGameRole.Client);
-            if (role_ == DxGameRole.Server)
-            {
-                NetPeerConfiguration config = new NetPeerConfiguration("DXGameServer");
-                config.Port = 8000; // TODO: Move to config bsed value
-                config.MaximumConnections = 200;
-                networkConnection_ = new NetServer(config);
-                networkConnection_.Start();
-                LOG.Info(String.Format("Server started. Port: {0}, MaxConnections {1}", config.Port, config.MaximumConnections));
-            }
-            else
-            {
-                NetPeerConfiguration config = new NetPeerConfiguration("DXGameClient");
-                networkConnection_ = new NetClient(config);
-                networkConnection_.Start();
-                networkConnection_.Connect(arguments.ServerIp, arguments.ServerPort);
-                LOG.Info(String.Format("Client started. Connected to IP: {0}, Port: {1}", arguments.ServerIp,
-                    arguments.ServerPort));
-            }
-
         }
 
         private void AddAllObjects(IEnumerable<GameObject> gameObjects)
@@ -188,45 +179,57 @@ namespace DXGame.Main
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            /*
-                TODO: Only draw the objects that are on-screen at the current time. This can be done via naive methods, 
-                such as iterate-over-all-objects and only draw those on screen, or advanced techniques, like http://gamedev.stackexchange.com/questions/14713/culling-for-a-2d-platformer-game,
-                http://www.codeproject.com/Articles/18113/KD-Tree-Searching-in-N-dimensions-Part-I, http://qstuff.blogspot.com/2008/05/spatial-sorting-with-kd-trees-part-1.html.
-            */
-
-            /*
-                TODO: Instead of doing a clear, see if we can take a diff. That way, we only have to re-draw certain objects (the ones that have changed)
-            */
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Oh god what have I done? Do some proper math, hidden in a function, like a CameraUtils class or something
-            float x = width_ / 2.0f - playerSpace_.Center.X;
-            x = MathUtils.Constrain(x, Math.Max(float.MinValue, -(mapBounds_.X + mapBounds_.Width - width_)),
-                mapBounds_.X);
-            float y = height_ / 2.0f - playerSpace_.Center.Y;
-            y = MathUtils.Constrain(y, Math.Max(0, (mapBounds_.Y + mapBounds_.Height - height_)), mapBounds_.Y);
-
-            Matrix cameraShift = Matrix.CreateTranslation(x, y, 0);
-            spriteBatch_.Begin(0, null, null, null, null, null, cameraShift);
-
-            var screenRegion = new Rectangle(0 - (int) x, 0 - (int) y, width_, height_);
-            var map = GameState.Model<MapModel>();
-            var mapObjects = map.ObjectsInRange(screenRegion);
-            var drawables = GameObjectUtils.ComponentsOfType<DrawableComponent>(mapObjects);
-
-            // Draw map items
-            foreach (DrawableComponent component in drawables)
+            switch (InteractionState)
             {
-                component.Draw(spriteBatch_);
-            }
+            case InteractionState.None:
+                break;
+            case InteractionState.Playing:
 
-            // Draw everything else
-            foreach (DrawableComponent component in drawables_)
-            {
-                component.Draw(spriteBatch_);
-            }
+                /*
+                    TODO: Only draw the objects that are on-screen at the current time. This can be done via naive methods, 
+                    such as iterate-over-all-objects and only draw those on screen, or advanced techniques, like http://gamedev.stackexchange.com/questions/14713/culling-for-a-2d-platformer-game,
+                    http://www.codeproject.com/Articles/18113/KD-Tree-Searching-in-N-dimensions-Part-I, http://qstuff.blogspot.com/2008/05/spatial-sorting-with-kd-trees-part-1.html.
+                */
 
-            spriteBatch_.End();
+                /*
+                    TODO: Instead of doing a clear, see if we can take a diff. That way, we only have to re-draw certain objects (the ones that have changed)
+                */
+                GraphicsDevice.Clear(Color.CornflowerBlue);
+
+                // TODO: Oh god what have I done? Do some proper math, hidden in a function, like a CameraUtils class or something
+                float x = width_ / 2.0f - playerSpace_.Center.X;
+                x = MathUtils.Constrain(x, Math.Max(float.MinValue, -(mapBounds_.X + mapBounds_.Width - width_)),
+                    mapBounds_.X);
+                float y = height_ / 2.0f - playerSpace_.Center.Y;
+                y = MathUtils.Constrain(y, Math.Max(0, (mapBounds_.Y + mapBounds_.Height - height_)), mapBounds_.Y);
+
+                Matrix cameraShift = Matrix.CreateTranslation(x, y, 0);
+                spriteBatch_.Begin(0, null, null, null, null, null, cameraShift);
+
+                var screenRegion = new Rectangle(0 - (int) x, 0 - (int) y, width_, height_);
+                var map = GameState.Model<MapModel>();
+                var mapObjects = map.ObjectsInRange(screenRegion);
+                var drawables = GameObjectUtils.ComponentsOfType<DrawableComponent>(mapObjects);
+
+                // Draw map items
+                foreach (DrawableComponent component in drawables)
+                {
+                    component.Draw(spriteBatch_);
+                }
+
+                // Draw everything else
+                foreach (DrawableComponent component in drawables_)
+                {
+                    component.Draw(spriteBatch_);
+                }
+
+                spriteBatch_.End();
+                break;
+
+            case InteractionState.StartMenu:
+                break;
+
+            }
             base.Draw(gameTime);
         }
     }

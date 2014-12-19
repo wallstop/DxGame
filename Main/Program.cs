@@ -19,42 +19,9 @@ namespace DXGame.Main
         static void Main(string [] args)
         {
             log4net.Config.XmlConfigurator.Configure();
-            DxGameArguments gameArguments = parseArgs(args);
 
-            using (var game = new DXGame(gameArguments))
+            using (var game = new DXGame())
                 game.Run();
-        }
-
-        static DxGameArguments parseArgs(string[] args)
-        {
-            DxGameArguments parsedArguments = new DxGameArguments();
-            parsedArguments.IsServer = true;
-
-            bool parsedSuccessfully = true;
-            for (int i = 0; i < args.Length; ++i)
-            {
-                if (args[i].Contains("server") && i + 1 < args.Length)
-                {
-                    parsedSuccessfully = true;
-                    parsedArguments.IsServer = false;
-                    parsedArguments.ServerIp = args[i + 1];
-                    parsedArguments.ServerPort = 8000;
-                    break;
-                }
-                else
-                {
-                    parsedSuccessfully = false;
-                }
-            }
-
-            if (!parsedSuccessfully)
-            {
-                Console.WriteLine(String.Format("Could not properly parse {0}", args));
-                Console.WriteLine("Expects --server [ip address], without brackets");
-                Environment.Exit(1);
-            }
-            return parsedArguments;
-
         }
     }
 #endif

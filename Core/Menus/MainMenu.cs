@@ -10,18 +10,26 @@ namespace DXGame.Core.Menus
 {
     public class MainMenu : Menu
     {
+        private Game game_;
+
         public MainMenu(Game game, GameState gameState) : base(game, gameState)
         {
             Debug.Assert(game != null, "Main Menu cannot be initialized with a null game!");
+            menuItem_ = Game.Content.Load<SpriteFont>("MainMenu");
+            game_ = game;
         }
 
-        protected override void InitializeMenu()
+        public override void Initialize()
         {
             List<MenuItem> menuItems = new List<MenuItem>();
 
-            //MenuItem start = new MenuItem().WithSpriteFont(new SpriteFont())
-            //throw new NotImplementedException();
+            MenuItem play = new MenuItem().WithText("Play").WithAction(PlayAction);
+        }
 
+        private void PlayAction()
+        {
+            Game.Components.Remove(this);
+            Game.Components.Add(new GameState(game_));
         }
     }
 }

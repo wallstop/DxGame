@@ -114,6 +114,7 @@
     <Compile Include="Core\Menus\MainMenu.cs" />
     <Compile Include="Core\Menus\Menu.cs" />
     <Compile Include="Core\Menus\MenuItem.cs" />
+    <Compile Include="Core\Menus\PlayMenu.cs" />
     <Compile Include="Core\Model.cs" />
     <Compile Include="Core\Models\MapModel.cs" />
     <Compile Include="Core\Models\PhysicsModel.cs" />

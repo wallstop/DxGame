@@ -12,17 +12,17 @@ namespace DXGame.Core.Menus
 
         public delegate void MenuAction();
 
-        public SpriteFont SpriteFont { get; set; }
+        public string Text { get; set; }
         public MenuAction Action { get; set; }
 
         public MenuItem()
         {
         }
 
-        public MenuItem WithSpriteFont(SpriteFont spriteFont)
+        public MenuItem WithText(string text)
         {
-            Debug.Assert(spriteFont != null, "Menu Item cannot be initialized with a null sprite font");
-            SpriteFont = spriteFont;
+            Debug.Assert(text != null, "Menu Item cannot be initialized with a null text");
+            Text = text;
             return this;
         }
 

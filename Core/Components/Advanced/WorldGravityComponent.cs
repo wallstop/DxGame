@@ -18,7 +18,7 @@ namespace DXGame.Core.Components.Advanced
         WorldGravity should generally affect only moveable Entities, like enemies and the players. Map Entities should not be added.
     </summary>        
     */
-    public class WorldGravityComponent : UpdateableComponent
+    public class WorldGravityComponent : Component
     {
         private const float gravity_ = 0.7f;
         private static WorldGravityComponent singleGravity_ = new WorldGravityComponent();
@@ -30,7 +30,9 @@ namespace DXGame.Core.Components.Advanced
         }
 
         private WorldGravityComponent()
+            : base(null)
         {
+            UpdateOrder = UpdatePriority.NORMAL;
             priority_ = UpdatePriority.NORMAL; // This component needs to hit AFTER player input and BEFORE normal physics updates (currently, to properly check state changes...)
         }
 
@@ -46,7 +48,7 @@ namespace DXGame.Core.Components.Advanced
             return singleGravity_;
         }
 
-        public override bool Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             /*
                 For now, I'm going to leave it up to each specific physics component to deal

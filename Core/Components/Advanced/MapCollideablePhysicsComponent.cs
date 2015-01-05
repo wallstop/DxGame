@@ -36,7 +36,7 @@ namespace DXGame.Core.Components.Advanced
         {
             get
             {
-                int blockSize = GameState.Model<MapModel>().BlockSize;
+                int blockSize = GameModel.Model<MapModel>().BlockSize;
                 return new Rectangle(Space.X - blockSize, Space.Y - blockSize, Space.Width + blockSize * 2,
                     Space.Height + blockSize * 2);
             }
@@ -50,7 +50,7 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override bool Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             /*
                 Perform the normal PhysicsComponent's update first. We assume that at the end of our last update cycle,
@@ -59,7 +59,7 @@ namespace DXGame.Core.Components.Advanced
             */
             base.Update(gameTime);
 
-            var map = GameState.Model<MapModel>();
+            var map = GameModel.Model<MapModel>();
             IEnumerable<SpatialComponent> mapTiles = map.SpatialsInRange(MapQueryRegion);
 
             /*
@@ -127,8 +127,6 @@ namespace DXGame.Core.Components.Advanced
                     Acceleration = new Vector2(0, Acceleration.Y);
                 }
             }
-
-            return true;
         }
     }
 }

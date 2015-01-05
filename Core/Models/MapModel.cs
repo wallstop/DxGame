@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Generators;
@@ -18,7 +19,7 @@ namespace DXGame.Core.Models
     </summary>
     */
 
-    public class MapModel : Model
+    public class MapModel : GameComponentCollection
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapModel));
 
@@ -65,7 +66,8 @@ namespace DXGame.Core.Models
             }
         }
 
-        public MapModel(int width, int height, int blockSize)
+        public MapModel(Game game, int width, int height, int blockSize)
+            : base(game)
         {
             map_ = new KeyValuePair<GameObject, SpatialComponent>[width, height];
             blockSize_ = blockSize;
@@ -76,10 +78,10 @@ namespace DXGame.Core.Models
             internal elements to Models. Until then, use something like this.
         */
 
-        public static MapModel InitializeFromGenerator(MapGenerator generator)
+        public static MapModel InitializeFromGenerator(Game game, MapGenerator generator)
         {
             List<GameObject> mapObjects = generator.Generate();
-            var model = new MapModel(generator.MapBounds.Width / MapGenerator.BlockSize, generator.MapBounds.Height / MapGenerator.BlockSize, MapGenerator.BlockSize);
+            var model = new MapModel(game, generator.MapBounds.Width / MapGenerator.BlockSize, generator.MapBounds.Height / MapGenerator.BlockSize, MapGenerator.BlockSize);
             model.playerPosition_ = generator.PlayerPosition;
             model.mapBounds_ = generator.MapBounds;
             foreach (GameObject mapObject in mapObjects)
@@ -115,14 +117,10 @@ namespace DXGame.Core.Models
                     InsertIntoMap(gameObject, spatial);
                 }
             }
-
-            if (LOG.IsDebugEnabled)
+            else if (LOG.IsDebugEnabled) // If not, log it
             {
-                if (!allInserted)
-                {
-                    LOG.Debug(String.Format("Failed to insert {0} into map",
-                        gameObject));
-                }
+                LOG.Debug(String.Format("Failed to insert {0} into map",
+                    gameObject));
             }
 
             return allInserted;
@@ -143,6 +141,7 @@ namespace DXGame.Core.Models
         {
             var objects = new List<KeyValuePair<GameObject, SpatialComponent>>();
             // Make sure to wrap the requested values to those servable by the map
+            // TODO: Clean this up
             int x = MathUtils.Constrain(range.X / blockSize_, MapBounds.X / blockSize_, (MapBounds.X + MapBounds.Width) / blockSize_);
             int width = MathUtils.Constrain((int)Math.Ceiling((float)range.Width / blockSize_ + 1), 0, (MapBounds.X + MapBounds.Width) / blockSize_ - x);
             int y = MathUtils.Constrain(range.Y / blockSize_, MapBounds.Y / blockSize_, (MapBounds.Y + MapBounds.Height) / blockSize_);
@@ -245,6 +244,7 @@ namespace DXGame.Core.Models
                 for (int j = 0; j < height; ++j)
                 {
                     map_[x + i, y + j] = new KeyValuePair<GameObject, SpatialComponent>(gameObject, space);
+                    Components.Add(space);
                 }
             }
         }

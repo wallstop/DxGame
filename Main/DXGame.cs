@@ -50,7 +50,7 @@ namespace DXGame.Main
         private readonly SpatialComponent playerSpace_;
 
         private readonly HashSet<DrawableComponent> drawables_ = new HashSet<DrawableComponent>();
-        private readonly List<UpdateableComponent> updateables_ = new List<UpdateableComponent>();
+        private readonly List<Component> updateables_ = new List<Component>();
         private SpriteBatch spriteBatch_;
 
         public GameRole Role { get; set; }
@@ -58,9 +58,9 @@ namespace DXGame.Main
 
         public DXGame()
         {
-            var map = MapModel.InitializeFromGenerator(new MapGenerator("Content/Map/SimpleMap.txt"));
+            var map = MapModel.InitializeFromGenerator(this, new MapGenerator("Content/Map/SimpleMap.txt"));
 
-            GameState.AttachModel(map);
+            GameModel.AttachModel(map);
             mapBounds_ = map.MapBounds;
             playerGenerator_ = new PlayerGenerator(map.PlayerPosition, mapBounds_);
             playerSpace_ = playerGenerator_.PlayerSpace;
@@ -124,7 +124,7 @@ namespace DXGame.Main
             }
 
             // TODO: Move this out somewhere else
-            var map = GameState.Model<MapModel>();
+            var map = GameModel.Model<MapModel>();
             List<GameObject> mapObjects = map.MapObjects;
             foreach (DrawableComponent component in GameObjectUtils.ComponentsOfType<DrawableComponent>(mapObjects))
             {
@@ -207,7 +207,7 @@ namespace DXGame.Main
                 spriteBatch_.Begin(0, null, null, null, null, null, cameraShift);
 
                 var screenRegion = new Rectangle(0 - (int) x, 0 - (int) y, width_, height_);
-                var map = GameState.Model<MapModel>();
+                var map = GameModel.Model<MapModel>();
                 var mapObjects = map.ObjectsInRange(screenRegion);
                 var drawables = GameObjectUtils.ComponentsOfType<DrawableComponent>(mapObjects);
 

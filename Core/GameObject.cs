@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using DXGame.Core.Components.Basic;
+using Microsoft.Xna.Framework;
 
 namespace DXGame.Core
 {
@@ -44,7 +46,7 @@ namespace DXGame.Core
             </code>
         </summary>
         */
-        public List<T> ComponentsOfType<T>() where T : Component
+        public List<T> ComponentsOfType<T>() where T : GameComponent
         {
             return components_.OfType<T>().ToList();
         }

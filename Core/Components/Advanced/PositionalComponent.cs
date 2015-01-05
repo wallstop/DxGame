@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using log4net;
 using Microsoft.Xna.Framework;
@@ -54,7 +55,6 @@ namespace DXGame.Core.Components.Advanced
         }
 
         public PositionalComponent(float x = 0.0f, float y = 0.0f, GameObject parent = null)
-            : base(parent)
         {
             position_.X = x;
             position_.Y = y;

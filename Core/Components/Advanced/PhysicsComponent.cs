@@ -11,7 +11,7 @@ namespace DXGame.Core.Components.Advanced
     </summary>
     */
 
-    public class PhysicsComponent : UpdateableComponent
+    public class PhysicsComponent : Component
     {
         protected Vector2 acceleration_;
         protected Vector2 maxVelocity_;
@@ -75,7 +75,7 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override bool Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             Vector2 acceleration = Acceleration;
             Vector2 velocity = VectorUtils.ConstrainVector(Velocity + acceleration_, maxVelocity_);
@@ -98,7 +98,6 @@ namespace DXGame.Core.Components.Advanced
 
             Velocity = velocity;
             Acceleration = acceleration;
-            return true;
         }
     }
 }

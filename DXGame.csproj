@@ -92,21 +92,20 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Core\Component.cs" />
+    <Compile Include="Core\Components\Basic\Component.cs" />
     <Compile Include="Core\Components\Advanced\BoundedSpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\MapCollideablePhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\PlayerStateComponent.cs" />
     <Compile Include="Core\Components\Advanced\SpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\WorldGravityComponent.cs" />
-    <Compile Include="Core\Components\Basic\DrawableComponent.cs" />
-    <Compile Include="Core\Components\Basic\InitializableComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimplePlayerInputComponent.cs" />
     <Compile Include="Core\Components\Advanced\PositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
-    <Compile Include="Core\Components\Basic\UpdateableComponent.cs" />
+    <Compile Include="Core\Components\Basic\DrawableComponent.cs" />
     <Compile Include="Core\GameComponentCollection.cs" />
     <Compile Include="Core\GameObject.cs" />
-    <Compile Include="Core\GameState.cs" />
+    <Compile Include="Core\Generators\WorldGravityGenerator.cs" />
+    <Compile Include="Core\Models\GameModel.cs" />
     <Compile Include="Core\Generators\MapGenerator.cs" />
     <Compile Include="Core\Generators\PlayerGenerator.cs" />
     <Compile Include="Core\Generator.cs" />

@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace DXGame.Core.Components.Advanced
 {
-    public class SimplePlayerInputComponent : UpdateableComponent
+    public class SimplePlayerInputComponent : Component
     {
         //ivate static readonly float DECAY_AMOUNT = 0.1f;
         private static readonly float JUMP_SPEED = 10.0f;
@@ -22,7 +22,7 @@ namespace DXGame.Core.Components.Advanced
             : base(parent)
         {
             physics_ = physics;
-            priority_ = UpdatePriority.HIGH;
+            UpdatePriority = UpdatePriority.HIGH;
         }
 
         public SimplePlayerInputComponent WithPhysics(PhysicsComponent physics)
@@ -39,10 +39,9 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override bool Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             HandleInput();
-            return true;
         }
 
         protected virtual void HandleInput()

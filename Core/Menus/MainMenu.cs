@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using DXGame.Core.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,7 +13,7 @@ namespace DXGame.Core.Menus
     {
         private Game game_;
 
-        public MainMenu(Game game, GameState gameState) : base(game, gameState)
+        public MainMenu(Game game, GameModel gameState) : base(game, gameState)
         {
             Debug.Assert(game != null, "Main Menu cannot be initialized with a null game!");
             menuItem_ = Game.Content.Load<SpriteFont>("MainMenu");
@@ -29,7 +30,7 @@ namespace DXGame.Core.Menus
         private void PlayAction()
         {
             Game.Components.Remove(this);
-            Game.Components.Add(new GameState(game_));
+            Game.Components.Add(new GameModel(game_));
         }
     }
 }

@@ -1,3 +1,6 @@
+﻿
+
+﻿using Microsoft.Xna.Framework;
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -19,34 +22,12 @@ namespace DXGame.Core.Components.Basic
     </summary>
     */
 
-    public abstract class DrawableComponent : Component
+    public abstract class DrawableComponent : DrawableGameComponent
     {
-        protected DrawableComponent(GameObject parent = null)
-            : base(parent)
+        protected DrawableComponent(GameObject parent, Game game = null)
+            : base(game)
         {
         }
-
-        /**
-        <summary>
-            Loads any relevant content from either the Content pipeline (http://msdn.microsoft.com/en-us/library/bb447745.aspx)
-            or generated methods. This will typically involve loading a sprite sheet by name.
-
-            See http://msdn.microsoft.com/en-us/library/microsoft.xna.framework.game.loadcontent.aspx for information about 
-            Game.LoadContent, which will invoke this method.
-        </summary>
-        */
-        public abstract bool LoadContent(ContentManager contentManager);
-
-        /**
-        <summary>
-            Draws the relevant textures to a spriteBatch. This method gets called once per DrawableComponent rendered (in the scene)
-            per frame. Logic that depends on staying in-sync with Game Time should *NOT* be put here. The correct place for
-            updateable logic is in an UpdateableComponent.
-
-            See http://msdn.microsoft.com/en-us/library/microsoft.xna.framework.game.draw.aspx for information about
-            Game.Draw, which will invoke this method.
-        </summary>
-        */
-        public abstract bool Draw(SpriteBatch spriteBatch);
     }
 }
+

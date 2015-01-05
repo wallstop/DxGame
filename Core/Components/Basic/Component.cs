@@ -1,4 +1,7 @@
-﻿namespace DXGame.Core
+﻿using System;
+using Microsoft.Xna.Framework;
+
+namespace DXGame.Core.Components.Basic
 {
     /**
     <summary>
@@ -40,7 +43,8 @@
         </code>
     </summary>            
     */
-    public abstract class Component
+
+    public abstract class Component : GameComponent
     {
         /**
             Note: This id_ field is the UniqueId of the Component, *NOT* of the GameObject. 
@@ -64,9 +68,24 @@
         */
         public GameObject Parent { get; set; }
 
-        protected Component(GameObject parent = null)
+        protected Component(GameObject parent, Game game = null)
+            : base(game)
         {
             Parent = parent;
         }
+
+        protected UpdatePriority UpdatePriority
+        {
+            set { UpdateOrder = (int) value; }
+            get { return (UpdatePriority) UpdateOrder; }
+        }
     }
+
+    public enum UpdatePriority
+    {
+        HIGH = 1,
+        NORMAL = 5,
+        LOW = 10
+    }
+
 }

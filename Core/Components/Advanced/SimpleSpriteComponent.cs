@@ -54,7 +54,7 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override bool Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture_, position_.Position, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
                 SpriteEffects.None, 0);

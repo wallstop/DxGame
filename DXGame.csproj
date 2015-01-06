@@ -92,10 +92,12 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Core\Animation.cs" />
+    <Compile Include="Core\Components\Advanced\AnimationComponent.cs" />
     <Compile Include="Core\Components\Basic\Component.cs" />
     <Compile Include="Core\Components\Advanced\BoundedSpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\MapCollideablePhysicsComponent.cs" />
-    <Compile Include="Core\Components\Advanced\PlayerStateComponent.cs" />
+    <Compile Include="Core\Components\Advanced\StateComponent.cs" />
     <Compile Include="Core\Components\Advanced\SpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\WorldGravityComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimplePlayerInputComponent.cs" />
@@ -167,9 +169,11 @@
     <Content Include="Content\Map\SimpleMap.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Player.png">
+    <Content Include="Content\PlayerJumping.png" />
+    <Content Include="Content\PlayerNone.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\PlayerWalking.png" />
     <Content Include="Main\Icon.ico" />
     <Content Include="README.txt" />
   </ItemGroup>

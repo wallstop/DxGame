@@ -14,7 +14,7 @@ namespace DXGame.Core.Components.Advanced
         private static readonly float JUMP_SPEED = 10.0f;
         private static readonly float MOVE_SPEED = 10.0f;
         protected PhysicsComponent physics_;
-        protected PlayerStateComponent state_;
+        protected StateComponent state_;
 
         private Vector2 lastAcceleration = new Vector2();
 
@@ -32,7 +32,7 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public SimplePlayerInputComponent WithPlayerState(PlayerStateComponent state)
+        public SimplePlayerInputComponent WithPlayerState(StateComponent state)
         {
             Debug.Assert(state != null, "SimplePlayerInput cannot be initialized with a null PlayerState");
             state_ = state;
@@ -48,7 +48,7 @@ namespace DXGame.Core.Components.Advanced
         {
             Vector2 acceleration = physics_.Acceleration;
             Vector2 velocity = physics_.Velocity;
-            PlayerState state = state_.State;
+            string state = state_.State;
 
             bool isMoving = false;
 
@@ -86,16 +86,19 @@ namespace DXGame.Core.Components.Advanced
                         // TODO: Remove shit code, replace with proper collision.
                         switch (state_.State)
                         {
-                        case PlayerState.Walking:
-                        case PlayerState.None:
-                            state = PlayerState.Jumping;
-                            velocity.Y -= JUMP_SPEED;
-                            acceleration.Y -= JUMP_SPEED;
+                        case "Walking":
+                        case "None":
+                            if (state_.GetStateList().Contains("Jumping"))
+                            {
+                                state = "Jumping";
+                                velocity.Y -= JUMP_SPEED;
+                                acceleration.Y -= JUMP_SPEED;
+                            }
                             break;
-                        case PlayerState.Jumping:
+                        case "Jumping":
                             if (lastAcceleration.Y == 0  && acceleration.Y == 0 && velocity.Y == 0)
                             {
-                                state = PlayerState.None;
+                                state = "None";
                             }
                             break;
 

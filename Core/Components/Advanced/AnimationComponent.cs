@@ -22,7 +22,6 @@ namespace DXGame.Core.Components.Advanced
         public AnimationComponent(Game game)
             : base(game)
         {
-            (SpriteBatch)game.Services.GetService(typeof(SpriteBatch))
         }
 
         public AnimationComponent WithPosition(PositionalComponent position)

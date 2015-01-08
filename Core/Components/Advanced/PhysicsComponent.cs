@@ -19,12 +19,11 @@ namespace DXGame.Core.Components.Advanced
         protected PositionalComponent position_;
         protected Vector2 velocity_;
 
-        public PhysicsComponent(GameObject parent = null)
-            : base(parent)
+        public PhysicsComponent(Game game)
+            : base(game)
         {
             maxVelocity_ = new Vector2(5.0f, 5.0f);
             maxAcceleration_ = new Vector2(5.0f, 5.0f);
-            priority_ = UpdatePriority.NORMAL;
         }
 
         public virtual Vector2 Velocity

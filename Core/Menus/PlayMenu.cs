@@ -10,7 +10,7 @@ namespace DXGame.Core.Menus
     // TODO
     public class PlayMenu : Menu
     {
-        public PlayMenu(Game game, GameModel gameState) : base(game, gameState)
+        public PlayMenu(Game game) : base(game)
         {
         }
     }

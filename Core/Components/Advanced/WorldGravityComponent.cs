@@ -32,8 +32,6 @@ namespace DXGame.Core.Components.Advanced
         private WorldGravityComponent()
             : base(null)
         {
-            UpdateOrder = UpdatePriority.NORMAL;
-            priority_ = UpdatePriority.NORMAL; // This component needs to hit AFTER player input and BEFORE normal physics updates (currently, to properly check state changes...)
         }
 
         public static WorldGravityComponent Get()

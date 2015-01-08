@@ -20,8 +20,8 @@ namespace DXGame.Core.Components.Advanced
 
         public string State { get; set; }
 
-        public StateComponent(GameObject parent = null)
-            : base(parent)
+        public StateComponent(Game game)
+            : base(game)
         {
             State = "None";
         }

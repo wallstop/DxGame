@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using DXGame.Core.Components.Advanced;
-using DXGame.Core.Components.Basic;
+﻿using DXGame.Core.Components.Advanced;
 using DXGame.Core.Generators;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using NUnit.Framework;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace DXGame.Core.Models
 {
@@ -61,6 +54,7 @@ namespace DXGame.Core.Models
             Since we can't properly control how we add/remove each component from the gamestate,
             we entrust the runtime to call dispose, which is where we remove all
         */
+
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);

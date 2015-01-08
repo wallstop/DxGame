@@ -11,8 +11,8 @@ namespace DXGame.Core.Components.Advanced
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapCollideablePhysicsComponent));
 
-        public MapCollideablePhysicsComponent(GameObject parent = null)
-            : base(parent)
+        public MapCollideablePhysicsComponent(Game game)
+            : base(game)
         {
         }
 

@@ -69,7 +69,7 @@ namespace DXGame.Core.Components.Basic
         HIGH = 1,
         NORMAL = 5,
         LOW = 10,
-        END_SPRITEBATCH = 1000;
+        END_SPRITEBATCH = 1000
     }
 }
 

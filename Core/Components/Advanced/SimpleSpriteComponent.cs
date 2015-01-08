@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,14 +14,6 @@ namespace DXGame.Core.Components.Advanced
         protected PositionalComponent position_;
         protected Texture2D texture_;
 
-        public SimpleSpriteComponent(string assetName = "", PositionalComponent position = null,
-            GameObject parent = null)
-            : base(parent)
-        {
-            assetName_ = assetName;
-            position_ = position;
-        }
-
         public Rectangle BoundingBox
         {
             get { return boundingBox_; }
@@ -31,6 +24,11 @@ namespace DXGame.Core.Components.Advanced
         {
             get { return assetName_; }
             set { assetName_ = value; }
+        }
+
+        public SimpleSpriteComponent(Game game, GameObject parent)
+            : base(game, parent)
+        {
         }
 
         public SimpleSpriteComponent WithAsset(string assetName)
@@ -54,23 +52,22 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(GameTime gametime)
         {
             spriteBatch.Draw(texture_, position_.Position, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
                 SpriteEffects.None, 0);
-            return true;
         }
 
-        public override bool LoadContent(ContentManager contentManager)
+        protected override void LoadContent()
         {
             Debug.Assert(contentManager != null, "ContentManager cannot be null during LoadContent");
             texture_ = contentManager.Load<Texture2D>(assetName_);
             // Assign boundingBox to be the shape of the texture only if it hasn't been custom-set
-            if (boundingBox_ == default(Rectangle))
+            // TODO: Change to an isLoaded bool flag / state
+            if(GenericUtils.IsNullOrDefault(boundingBox_))
             {
                 boundingBox_ = new Rectangle(0, 0, texture_.Width, texture_.Height);
             }
-            return true;
         }
     }
 }

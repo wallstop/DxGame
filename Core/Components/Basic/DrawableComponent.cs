@@ -24,7 +24,7 @@ namespace DXGame.Core.Components.Basic
 
     public abstract class DrawableComponent : DrawableGameComponent
     {
-        protected DrawableComponent(GameObject parent, Game game = null)
+        protected DrawableComponent(Game game, GameObject parent)
             : base(game)
         {
         }

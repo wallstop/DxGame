@@ -30,7 +30,7 @@ namespace DXGame.Core.Models
         {
         }
 
-        protected override void Initialize()
+        public override void Initialize()
         {
             base.Initialize();
             MapModel = MapModel.InitializeFromGenerator(Game, new MapGenerator("Content/Map/SimpleMap.txt"));

@@ -54,17 +54,10 @@ namespace DXGame.Core.Components.Advanced
             set { position_ = value;  }
         }
 
-        public PositionalComponent(float x = 0.0f, float y = 0.0f, GameObject parent = null)
+        public PositionalComponent(Game game)
+            : base(game)
         {
-            position_.X = x;
-            position_.Y = y;
-        }
-
-        public PositionalComponent(Vector2 position, GameObject parent = null)
-            : base(parent)
-        {
-            // position_ is used here because the bounds may not have been initialized (instead of Position)
-            position_ = position;
+            
         }
 
         public virtual PositionalComponent WithPosition(float x, float y)

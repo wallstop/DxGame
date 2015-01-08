@@ -34,11 +34,16 @@ namespace DXGame.Core.Components.Basic
                     get { return name_; }
                 }
 
-                public NameableComponent(string name, GameObject parent = null)
-                    : base(parent)
+                public NameableComponent(Game game)
+                    : base(game)
                 {
+                }
+   
+                public NameableComponent WithName(string name)
+                {
+                    Debug.Assert(!GenericUtils.IsNullOrDefault(name), "NameableComponent cannot be initialized with a null name");
                     name_ = name;
-                }   
+                }
             }
         </code>
     </summary>            
@@ -57,21 +62,10 @@ namespace DXGame.Core.Components.Basic
             get { return id_; }
         }
 
-        /**
-        <summary>
-            The "owning" GameObject of this component. 
-
-            Note: This field does not have to contain a valid GameObject. A (poorly constructed) Component 
-            can easily act on a GameObject. Generally, a Component's Parent property should point to a valid
-            and correct owning GameObject, but this shouldn't be relied on.
-        </summary>
-        */
-        public GameObject Parent { get; set; }
-
-        protected Component(GameObject parent, Game game = null)
+        protected Component(Game game)
             : base(game)
         {
-            Parent = parent;
+            UpdatePriority = UpdatePriority.NORMAL;
         }
 
         protected UpdatePriority UpdatePriority

@@ -45,8 +45,8 @@ namespace DXGame.Core.Components.Advanced
             get { return dimensions_; }
         }
 
-        public SpatialComponent(GameObject parent = null)
-            : base(parent: parent)
+        public SpatialComponent(Game game)
+            : base(game)
         {
         }
 

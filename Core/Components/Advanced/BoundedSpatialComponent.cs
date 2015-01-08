@@ -18,8 +18,8 @@ namespace DXGame.Core.Components.Advanced
         protected Vector2 xBounds_;
         protected Vector2 yBounds_;
 
-        public BoundedSpatialComponent(GameObject parent = null)
-            : base(parent)
+        public BoundedSpatialComponent(Game game)
+            : base(game)
         {
         }
 
@@ -86,14 +86,7 @@ namespace DXGame.Core.Components.Advanced
                 float height = dimensions_.Y;
                 float x = MathUtils.Constrain(value.X, xBounds_.X, xBounds_.Y - width);
                 float y = MathUtils.Constrain(value.Y, yBounds_.X, yBounds_.Y - height);
-                if (y != value.Y)
-                {
-                    grounded_ = true;
-                }
-                else
-                {
-                    grounded_ = false;
-                }
+                grounded_ = (y != value.Y);
                 position_ = new Vector2(x, y);
             }
         }

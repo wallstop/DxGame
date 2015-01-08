@@ -16,12 +16,11 @@ namespace DXGame.Core.Components.Advanced
         protected PhysicsComponent physics_;
         protected StateComponent state_;
 
-        private Vector2 lastAcceleration = new Vector2();
+        private Vector2 lastAcceleration_;
 
-        public SimplePlayerInputComponent(PhysicsComponent physics = null, GameObject parent = null)
-            : base(parent)
+        public SimplePlayerInputComponent(Game game)
+            : base(game)
         {
-            physics_ = physics;
             UpdatePriority = UpdatePriority.HIGH;
         }
 
@@ -96,7 +95,7 @@ namespace DXGame.Core.Components.Advanced
                             }
                             break;
                         case "Jumping":
-                            if (lastAcceleration.Y == 0  && acceleration.Y == 0 && velocity.Y == 0)
+                            if (lastAcceleration_.Y == 0  && acceleration.Y == 0 && velocity.Y == 0)
                             {
                                 state = "None";
                             }
@@ -122,7 +121,7 @@ namespace DXGame.Core.Components.Advanced
             physics_.Velocity = velocity;
             state_.State = state;
 
-            lastAcceleration = physics_.Acceleration;
+            lastAcceleration_ = physics_.Acceleration;
         }
     }
 }

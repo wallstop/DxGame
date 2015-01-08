@@ -15,7 +15,7 @@ namespace DXGame.Core
         private int totalFrames_;
         protected PositionalComponent position_;
 
-        public Animation(String spriteSheet = "", int totalFrames = 1)
+        public Animation(String spriteSheet, int totalFrames = 1)
         {
             assetName_ = spriteSheet;
             totalFrames_ = totalFrames;
@@ -35,11 +35,11 @@ namespace DXGame.Core
         }
 
         //TODO: make this actually handle spritesheets and animations
-        public bool Draw(SpriteBatch spriteBatch)
+        // TOOD: Pass in GameTime
+        public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(spriteSheet_, position_.Position, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
                 SpriteEffects.None, 0);
-            return true;
         }
 
         public void Reset()

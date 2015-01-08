@@ -19,7 +19,7 @@ namespace DXGame.Core.Models
     </summary>
     */
 
-    public class MapModel : GameComponentCollection
+    public class MapModel : DrawableGameComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapModel));
 

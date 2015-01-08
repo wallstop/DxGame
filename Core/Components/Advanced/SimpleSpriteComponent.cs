@@ -26,8 +26,8 @@ namespace DXGame.Core.Components.Advanced
             set { assetName_ = value; }
         }
 
-        public SimpleSpriteComponent(Game game, GameObject parent)
-            : base(game, parent)
+        public SimpleSpriteComponent(Game game)
+            : base(game)
         {
         }
 

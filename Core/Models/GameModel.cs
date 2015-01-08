@@ -1,9 +1,13 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Basic;
 using DXGame.Core.Generators;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using NUnit.Framework;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace DXGame.Core.Models
@@ -33,9 +37,9 @@ namespace DXGame.Core.Models
         public override void Initialize()
         {
             base.Initialize();
-            MapModel = MapModel.InitializeFromGenerator(Game, new MapGenerator("Content/Map/SimpleMap.txt"));
+            MapModel = MapModel.InitializeFromGenerator(Game, new MapGenerator(Game, "Content/Map/SimpleMap.txt"));
 
-            PlayerGenerator playerGenerator = new PlayerGenerator(MapModel.PlayerPosition, MapModel.MapBounds);
+            PlayerGenerator playerGenerator = new PlayerGenerator(Game, MapModel.PlayerPosition, MapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;
             AddGameObjects(MapModel.MapObjects);
             AddGameObjects(playerGenerator.Generate());
@@ -46,18 +50,40 @@ namespace DXGame.Core.Models
             graphics.PreferredBackBufferWidth = Screen.Width;
 
             Game.Content.RootDirectory = "Content";
-        }
 
-        protected override void LoadContent()
-        {
-            SpriteBatch = new SpriteBatch(GraphicsDevice);
-            foreach (DrawableGameComponent component in Components)
+            foreach (GameComponent component in Components)
             {
-                
+                Game.Components.Add(component);
             }
         }
 
+        /*
+            Since we can't properly control how we add/remove each component from the gamestate,
+            we entrust the runtime to call dispose, which is where we remove all
+        */
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            foreach (GameComponent component in Components)
+            {
+                Game.Components.Remove(component);
+            }
+        }
 
+        public bool AddComponent(GameComponent component)
+        {
+            bool alreadyExists = Components.Contains(component);
+            if (!alreadyExists)
+            {
+                Components.Add(component);
+            }
+            return alreadyExists;
+        }
+
+        public bool RemoveComponent(GameComponent component)
+        {
+            return Components.Remove(component);
+        }
     }
 
 

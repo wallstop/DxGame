@@ -17,11 +17,12 @@ namespace DXGame.Core.Components.Advanced
         protected StateComponent state_;
         protected PositionalComponent position_;
 
-        public AnimationComponent(StateComponent state = null, GameObject parent = null) 
-            : base(parent)
+
+
+        public AnimationComponent(Game game)
+            : base(game)
         {
-            state_ = state;
-            lastState_ = "";
+            (SpriteBatch)game.Services.GetService(typeof(SpriteBatch))
         }
 
         public AnimationComponent WithPosition(PositionalComponent position)
@@ -38,28 +39,28 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public void AddAnimation(String state = "", String assetName = "")
+        public void AddAnimation(String state, String assetName)
         {
             var animation = new Animation(assetName).WithPosition(position_);
             stateMap_.Add(state, animation);
         }
 
-        //protected override void Draw(SpriteBatch spriteBatch)
-        //{
-        //    if (lastState_ != state_.State)
-        //    {
-        //        stateMap_[lastState_].Reset();
-        //    }
-        //    stateMap_[state_.State].Draw(spriteBatch);
-        //    lastState_ = state_.State;
-        //}
-
         protected override void LoadContent()
         {
             foreach (var pair in stateMap_)
             {
-                pair.Value.LoadContent(contentManager);
+                pair.Value.LoadContent(Game.Content);
             }
+        }
+
+        public override void Draw(GameTime gameTime)
+        {
+            if (lastState_ != state_.State)
+            {
+                stateMap_[lastState_].Reset();
+            }
+            stateMap_[state_.State].Draw(spriteBatch_);
+            lastState_ = state_.State;
         }
     }
 }

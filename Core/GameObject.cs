@@ -27,7 +27,7 @@ namespace DXGame.Core
 
     public class GameObject
     {
-        private readonly List<Component> components_ = new List<Component>();
+        private readonly List<GameComponent> components_ = new List<GameComponent>();
         private readonly UniqueId id_ = new UniqueId();
 
         public UniqueId Id
@@ -63,7 +63,7 @@ namespace DXGame.Core
         </summary>
         */
 
-        protected GameObject AttachComponent(Component component)
+        protected GameObject AttachComponent(GameComponent component)
         {
             Debug.Assert(component != null, "Cannot assign a null component to a GameObject");
             components_.Add(component);
@@ -84,7 +84,7 @@ namespace DXGame.Core
         </summary>
         */
 
-        public GameObject AttachComponents(params Component[] components)
+        public GameObject AttachComponents(params GameComponent[] components)
         {
             Debug.Assert(components != null, "Cannot assign a null components to a GameObject");
             components_.AddRange(components);

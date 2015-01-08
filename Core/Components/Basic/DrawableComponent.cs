@@ -22,12 +22,54 @@ namespace DXGame.Core.Components.Basic
     </summary>
     */
 
-    public abstract class DrawableComponent : DrawableGameComponent
+    public class DrawableComponent : DrawableGameComponent
     {
-        protected DrawableComponent(Game game, GameObject parent)
+        /**
+            Note: This id_ field is the UniqueId of the Component, *NOT* of the GameObject. 
+            This is a very important distinction.
+        */
+        protected readonly UniqueId id_ = new UniqueId();
+
+        protected SpriteBatch spriteBatch_;
+
+        public UniqueId Id
+        {
+            get { return id_; }
+        }
+
+        public DrawableComponent(Game game)
             : base(game)
         {
+            spriteBatch_ = (SpriteBatch)game.Services.GetService(typeof(SpriteBatch));
+            UpdatePriority = UpdatePriority.NORMAL;
         }
+
+        protected UpdatePriority UpdatePriority
+        {
+            set { UpdateOrder = (int) value; }
+            get { return (UpdatePriority) UpdateOrder; }
+        }
+
+        protected DrawPriority DrawPriority
+        {
+            set { DrawOrder = (int)value; }
+            get { return (DrawPriority)DrawOrder; }
+        }
+
+        public override void Draw(GameTime gameTime)
+        {
+            base.Draw(gameTime);
+        }
+    }
+
+    public enum DrawPriority
+    {
+        INIT_SPRITEBATCH = -100,
+        HIGHEST = -99,
+        HIGH = 1,
+        NORMAL = 5,
+        LOW = 10,
+        END_SPRITEBATCH = 1000;
     }
 }
 

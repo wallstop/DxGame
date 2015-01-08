@@ -19,12 +19,14 @@ namespace DXGame.Core.Generators
         private readonly StateComponent state_;
         //private readonly SimpleSpriteComponent sprite_;
         private readonly AnimationComponent animation_;
+        private readonly Game game_;
 
         // Addendum to prior TODO: change isLocalPlayer to something that's not a bool
-        public PlayerGenerator(Vector2 playerPosition, Rectangle bounds)
+        public PlayerGenerator(Game game, Vector2 playerPosition, Rectangle bounds)
         {
+            game_ = game;
             space_ =
-                (BoundedSpatialComponent) new BoundedSpatialComponent().WithXMin(bounds.X)
+                (BoundedSpatialComponent) new BoundedSpatialComponent(game_).WithXMin(bounds.X)
                     .WithXMax(bounds.Width)
                     .WithXMin(bounds.Y)
                     .WithYMax(bounds.Height)
@@ -34,9 +36,9 @@ namespace DXGame.Core.Generators
             state_ = new StateComponent();
             AddPlayerStates();
             //sprite_ = new SimpleSpriteComponent().WithAsset(PLAYER).WithPosition(space_);
-            animation_ = new AnimationComponent().WithPosition(space_).WithState(state_);
+            animation_ = new AnimationComponent(game_).WithPosition(space_).WithState(state_);
             AddPlayerAnimations();
-            input_ = new SimplePlayerInputComponent().WithPhysics(physics_).WithPlayerState(state_);
+            input_ = new SimplePlayerInputComponent(game_).WithPhysics(physics_).WithPlayerState(state_);
         }
 
         public override List<GameObject> Generate()

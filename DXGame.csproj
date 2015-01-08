@@ -104,6 +104,8 @@
     <Compile Include="Core\Components\Advanced\PositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
     <Compile Include="Core\Components\Basic\DrawableComponent.cs" />
+    <Compile Include="Core\Components\Basic\SpriteBatchEnder.cs" />
+    <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
     <Compile Include="Core\GameComponentCollection.cs" />
     <Compile Include="Core\GameObject.cs" />
     <Compile Include="Core\Generators\WorldGravityGenerator.cs" />

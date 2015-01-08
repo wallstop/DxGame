@@ -38,9 +38,9 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public void AddAnimation(String state = "", String assetName = "")
+        public void AddAnimation(String state = "", String assetName = "", int totalFrames = 1)
         {
-            var animation = new Animation(assetName).WithPosition(position_);
+            var animation = new Animation(assetName, totalFrames).WithPosition(position_);
             stateMap_.Add(state, animation);
         }
 
@@ -50,6 +50,7 @@ namespace DXGame.Core.Components.Advanced
             {
                 stateMap_[lastState_].Reset();
             }
+            Debug.Assert(stateMap_.ContainsKey(state_.State), "AnimationComponent has no corresponding state animation");
             stateMap_[state_.State].Draw(spriteBatch);
             lastState_ = state_.State;
         }

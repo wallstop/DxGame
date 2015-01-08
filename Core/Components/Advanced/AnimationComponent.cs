@@ -44,7 +44,7 @@ namespace DXGame.Core.Components.Advanced
             stateMap_.Add(state, animation);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        protected override void Draw(SpriteBatch spriteBatch)
         {
             if (lastState_ != state_.State)
             {
@@ -54,14 +54,12 @@ namespace DXGame.Core.Components.Advanced
             lastState_ = state_.State;
         }
 
-        public override bool LoadContent(ContentManager contentManager)
+        protected override void LoadContent()
         {
-            Debug.Assert(contentManager != null, "ContentManager cannot be null during LoadContent");
             foreach (var pair in stateMap_)
             {
                 pair.Value.LoadContent(contentManager);
             }
-            return true;
         }
     }
 }

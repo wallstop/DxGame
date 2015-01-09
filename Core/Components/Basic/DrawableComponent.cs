@@ -1,7 +1,5 @@
-﻿
-
-﻿using Microsoft.Xna.Framework;
-﻿using Microsoft.Xna.Framework.Content;
+﻿using DXGame.Main;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Components.Basic
@@ -37,10 +35,15 @@ namespace DXGame.Core.Components.Basic
             get { return id_; }
         }
 
-        public DrawableComponent(Game game)
+        public DxGame DxGame
+        {
+            get { return (DxGame) Game; }
+        }
+
+        public DrawableComponent(DxGame game)
             : base(game)
         {
-            spriteBatch_ = (SpriteBatch)game.Services.GetService(typeof(SpriteBatch));
+            spriteBatch_ = (SpriteBatch) game.Services.GetService(typeof (SpriteBatch));
             UpdatePriority = UpdatePriority.NORMAL;
         }
 
@@ -52,8 +55,8 @@ namespace DXGame.Core.Components.Basic
 
         protected DrawPriority DrawPriority
         {
-            set { DrawOrder = (int)value; }
-            get { return (DrawPriority)DrawOrder; }
+            set { DrawOrder = (int) value; }
+            get { return (DrawPriority) DrawOrder; }
         }
 
         public override void Draw(GameTime gameTime)
@@ -72,4 +75,3 @@ namespace DXGame.Core.Components.Basic
         END_SPRITEBATCH = 1000
     }
 }
-

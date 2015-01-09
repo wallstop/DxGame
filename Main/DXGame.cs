@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DXGame.Core;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
@@ -40,11 +41,23 @@ namespace DXGame.Main
     /// <summary>
     ///     This is the main type for your game
     /// </summary>
-    public class DXGame : Game
+    public class DxGame : Game
     {
-        public DXGame()
+        private List<GameComponent> models_ = new List<GameComponent>();
+
+        public DxGame()
         {
             var playMenu = new MainMenu(this);
+        }
+
+        public T Model<T>() where T : GameComponent
+        {
+            return models_.OfType<T>().First();
+        }
+
+        public bool AttachModel(GameComponent model)
+        {
+            bool alreadyExists = models_.Contains(model);
         }
 
         protected override void Initialize()

@@ -1,5 +1,6 @@
 ﻿using System;
 using DXGame.Core.Utils;
+using DXGame.Main;
 using log4net;
 using Microsoft.Xna.Framework;
 
@@ -18,7 +19,7 @@ namespace DXGame.Core.Components.Advanced
         protected Vector2 xBounds_;
         protected Vector2 yBounds_;
 
-        public BoundedSpatialComponent(Game game)
+        public BoundedSpatialComponent(DxGame game)
             : base(game)
         {
         }

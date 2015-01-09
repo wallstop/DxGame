@@ -1,5 +1,6 @@
 ﻿using DXGame.Core.Components.Advanced;
 using DXGame.Core.Generators;
+using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -23,16 +24,16 @@ namespace DXGame.Core.Models
 
         protected SpriteBatch SpriteBatch { get; set; }
 
-        public GameModel(Game game) : base(game)
+        public GameModel(DxGame game) : base(game)
         {
         }
 
         public override void Initialize()
         {
             base.Initialize();
-            MapModel = MapModel.InitializeFromGenerator(Game, new MapGenerator(Game, "Content/Map/SimpleMap.txt"));
+            MapModel = MapModel.InitializeFromGenerator(Game, new MapGenerator(DxGame, "Content/Map/SimpleMap.txt"));
 
-            PlayerGenerator playerGenerator = new PlayerGenerator(Game, MapModel.PlayerPosition, MapModel.MapBounds);
+            PlayerGenerator playerGenerator = new PlayerGenerator(DxGame, MapModel.PlayerPosition, MapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;
             AddGameObjects(MapModel.MapObjects);
             AddGameObjects(playerGenerator.Generate());
@@ -52,9 +53,8 @@ namespace DXGame.Core.Models
 
         /*
             Since we can't properly control how we add/remove each component from the gamestate,
-            we entrust the runtime to call dispose, which is where we remove all
+            we entrust the runtime to call dispose, which is where we remove all of our added components
         */
-
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
@@ -79,37 +79,4 @@ namespace DXGame.Core.Models
             return Components.Remove(component);
         }
     }
-
-
-    //// TODO: Make this class thredsafe
-    //public static class GameState
-    //{
-    //    private static readonly ILog LOG = LogManager.GetLogger(typeof(GameState));
-
-    //    private static readonly List<Model> models_ = new List<Model>();
-
-    //    public static T Model<T>() where T : Model
-    //    {
-    //        return models_.OfType<T>().FirstOrDefault();
-    //    }
-
-    //    public static bool AttachModel(Model model)
-    //    {
-    //        bool alreadyContainsModel = models_.Contains(model);
-    //        Debug.Assert(!alreadyContainsModel, String.Format("GameState already contains {0}", model));
-    //        if (!alreadyContainsModel)
-    //        {
-    //            models_.Add(model);
-    //        }
-
-    //        return !alreadyContainsModel;
-    //    }
-
-    //    public static bool RemoveModel(Model model)
-    //    {
-    //        bool alreadyContainsModel = models_.Remove(model);
-    //        Debug.Assert(alreadyContainsModel, String.Format("GameState doesn't already contain {0}", model));
-    //        return alreadyContainsModel;
-    //    }
-    //}
 }

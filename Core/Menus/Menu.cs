@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using DXGame.Core.Models;
+﻿using System.Collections.Generic;
+using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -11,9 +10,8 @@ namespace DXGame.Core.Menus
         protected List<MenuItem> MenuItems { get; set; }
         protected SpriteFont menuItem_;
 
-        public Menu(Game game) : base(game)
+        public Menu(DxGame game) : base(game)
         {
         }
-
     }
 }

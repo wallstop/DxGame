@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DXGame.Main;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core
@@ -11,7 +12,12 @@ namespace DXGame.Core
     {
         public List<GameComponent> Components { get; set; }
 
-        public GameComponentCollection(Game game) : base(game)
+        public DxGame DxGame
+        {
+            get { return (DxGame) Game; }
+        }
+
+        public GameComponentCollection(DxGame game) : base(game)
         {
         }
 

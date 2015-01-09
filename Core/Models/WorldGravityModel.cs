@@ -1,26 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 
-namespace DXGame.Core.Components.Advanced
+namespace DXGame.Core.Models
 {
-    /**
-    <summary>
-        WorldGravityComponent is a somewhat Unique component, being a singleton. Any PhysicsComponent that wishes to be acted upon by 
-        the WorldGravity need only add themselves to it. This is done by:
-
-        <code>
-            PhysicsComponent myPhysicsComponent = new PhysicsComponent();
-            WorldGravityComponent.Get().WithPhysicsComponent(myPhysicsComponent);
-        </code>
-
-        WorldGravity should generally affect only moveable Entities, like enemies and the players. Map Entities should not be added.
-    </summary>        
-    */
-
-    public class WorldGravityComponent : Component
+    public class WorldGravityModel : Component
     {
         private const float gravity_ = 0.7f;
         private static readonly HashSet<PhysicsComponent> physics_ = new HashSet<PhysicsComponent>();
@@ -30,17 +17,22 @@ namespace DXGame.Core.Components.Advanced
             get { return gravity_; }
         }
 
-        public WorldGravityComponent(DxGame game)
+        public WorldGravityModel(DxGame game)
             : base(game)
         {
+            UpdatePriority = UpdatePriority.HIGHEST;
         }
 
-
-        public WorldGravityComponent WithPhysicsComponent(PhysicsComponent physics)
+        public bool AttachPhysicsComponent(PhysicsComponent physics)
         {
             Debug.Assert(physics != null, "World Gravity Component cannot be assigned to a null physics component");
-            physics_.Add(physics);
-            return this;
+            bool alreadyExists = physics_.Contains(physics);
+            if (!alreadyExists)
+            {
+                physics_.Add(physics);
+            }
+
+            return alreadyExists;
         }
 
         public override void Update(GameTime gameTime)

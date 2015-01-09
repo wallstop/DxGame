@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using DXGame.Main;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Basic
 {
-    class SpriteBatchEnder : DrawableComponent
+    internal class SpriteBatchEnder : DrawableComponent
     {
-        public SpriteBatchEnder(Game game) 
+        public SpriteBatchEnder(DxGame game)
             : base(game)
         {
         }

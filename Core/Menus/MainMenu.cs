@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using DXGame.Core.Models;
-using Microsoft.Xna.Framework;
+using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Menus
 {
     public class MainMenu : Menu
     {
-        private Game game_;
+        private readonly DxGame game_;
 
-        public MainMenu(Game game) : base(game)
+        public MainMenu(DxGame game) : base(game)
         {
             Debug.Assert(game != null, "Main Menu cannot be initialized with a null game!");
             menuItem_ = Game.Content.Load<SpriteFont>("MainMenu");

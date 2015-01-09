@@ -1,23 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework.Graphics;
+﻿using System.Diagnostics;
 
 namespace DXGame.Core.Menus
 {
     public class MenuItem
     {
-
         public delegate void MenuAction();
 
         public string Text { get; set; }
         public MenuAction Action { get; set; }
-
-        public MenuItem()
-        {
-        }
 
         public MenuItem WithText(string text)
         {
@@ -35,7 +25,7 @@ namespace DXGame.Core.Menus
 
         public void OnAction()
         {
-            if(Action != null) 
+            if (Action != null)
                 Action();
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using DXGame.Core.Components.Advanced;
+using DXGame.Main;
 using log4net;
 using Microsoft.Xna.Framework;
 
@@ -26,11 +27,11 @@ namespace DXGame.Core.Generators
             LogManager.GetLogger(typeof (MapGenerator));
 
         private readonly List<GameObject> map_;
-        private readonly Rectangle mapBounds_;
-        private readonly Vector2 playerPosition_;
-        private readonly Game game_;
+        private Rectangle mapBounds_;
+        private Vector2 playerPosition_;
+        private readonly DxGame game_;
 
-        public MapGenerator(Game game, string mapPath)
+        public MapGenerator(DxGame game, string mapPath)
         {
             map_ = InitMap(mapPath);
             game_ = game;

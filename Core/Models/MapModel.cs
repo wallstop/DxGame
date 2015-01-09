@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Basic;
 using DXGame.Core.Generators;
 using DXGame.Core.Utils;
+using DXGame.Main;
 using log4net;
 using Microsoft.Xna.Framework;
 
@@ -19,24 +20,16 @@ namespace DXGame.Core.Models
     </summary>
     */
 
-    public class MapModel : DrawableGameComponent
+    public class MapModel : DrawableComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapModel));
 
         private readonly KeyValuePair<GameObject, SpatialComponent>[,] map_;
         private readonly int blockSize_;
-        private Vector2 playerPosition_;
-        private Rectangle mapBounds_;
 
-        public Vector2 PlayerPosition
-        {
-            get { return playerPosition_; }
-        }
+        public Vector2 PlayerPosition { get; private set; }
 
-        public Rectangle MapBounds
-        {
-            get { return mapBounds_; }
-        }
+        public Rectangle MapBounds { get; private set; }
 
         public int BlockSize
         {
@@ -47,12 +40,6 @@ namespace DXGame.Core.Models
         {
             get
             {
-                // This statement is ridiculously expensive... why?
-                //return
-                //    map_.ToEnumerable<KeyValuePair<GameObject, SpatialComponent>>()
-                //        .Select(mapElement => mapElement.Key)
-                //        .Where(element => element != null)
-                //        .ToList();
                 var mapObjects = new List<GameObject>();
                 foreach (KeyValuePair<GameObject, SpatialComponent> element in map_)
                 {
@@ -66,7 +53,7 @@ namespace DXGame.Core.Models
             }
         }
 
-        public MapModel(Game game, int width, int height, int blockSize)
+        public MapModel(DxGame game, int width, int height, int blockSize)
             : base(game)
         {
             map_ = new KeyValuePair<GameObject, SpatialComponent>[width, height];
@@ -81,9 +68,10 @@ namespace DXGame.Core.Models
         public static MapModel InitializeFromGenerator(Game game, MapGenerator generator)
         {
             List<GameObject> mapObjects = generator.Generate();
-            var model = new MapModel(game, generator.MapBounds.Width / MapGenerator.BlockSize, generator.MapBounds.Height / MapGenerator.BlockSize, MapGenerator.BlockSize);
-            model.playerPosition_ = generator.PlayerPosition;
-            model.mapBounds_ = generator.MapBounds;
+            var model = new MapModel(game, generator.MapBounds.Width / MapGenerator.BlockSize,
+                generator.MapBounds.Height / MapGenerator.BlockSize, MapGenerator.BlockSize);
+            model.PlayerPosition = generator.PlayerPosition;
+            model.MapBounds = generator.MapBounds;
             foreach (GameObject mapObject in mapObjects)
             {
                 model.AddObject(mapObject);
@@ -142,15 +130,19 @@ namespace DXGame.Core.Models
             var objects = new List<KeyValuePair<GameObject, SpatialComponent>>();
             // Make sure to wrap the requested values to those servable by the map
             // TODO: Clean this up
-            int x = MathUtils.Constrain(range.X / blockSize_, MapBounds.X / blockSize_, (MapBounds.X + MapBounds.Width) / blockSize_);
-            int width = MathUtils.Constrain((int)Math.Ceiling((float)range.Width / blockSize_ + 1), 0, (MapBounds.X + MapBounds.Width) / blockSize_ - x);
-            int y = MathUtils.Constrain(range.Y / blockSize_, MapBounds.Y / blockSize_, (MapBounds.Y + MapBounds.Height) / blockSize_);
-            int height = MathUtils.Constrain((int)Math.Ceiling((float)range.Height / blockSize_), 0, (MapBounds.Y + MapBounds.Height) / blockSize_ - y);
+            int x = MathUtils.Constrain(range.X / blockSize_, MapBounds.X / blockSize_,
+                (MapBounds.X + MapBounds.Width) / blockSize_);
+            int width = MathUtils.Constrain((int) Math.Ceiling((float) range.Width / blockSize_ + 1), 0,
+                (MapBounds.X + MapBounds.Width) / blockSize_ - x);
+            int y = MathUtils.Constrain(range.Y / blockSize_, MapBounds.Y / blockSize_,
+                (MapBounds.Y + MapBounds.Height) / blockSize_);
+            int height = MathUtils.Constrain((int) Math.Ceiling((float) range.Height / blockSize_), 0,
+                (MapBounds.Y + MapBounds.Height) / blockSize_ - y);
             for (int i = 0; i < width; ++i)
             {
                 for (int j = 0; j < height; ++j)
                 {
-                    var objectPair = map_[x + i,y + j];
+                    var objectPair = map_[x + i, y + j];
                     if (objectPair.Value != null)
                     {
                         objects.Add(objectPair);
@@ -244,13 +236,9 @@ namespace DXGame.Core.Models
                 for (int j = 0; j < height; ++j)
                 {
                     map_[x + i, y + j] = new KeyValuePair<GameObject, SpatialComponent>(gameObject, space);
-                    Components.Add(space);
+                    DxGame.Components.Add(space);
                 }
             }
         }
-
-        // TODO: Handle Map-Specific stuff here (collision!)
-
-        // This class will act as a global singleton, available at any level.
     }
 }

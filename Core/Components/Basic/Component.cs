@@ -1,4 +1,4 @@
-﻿using System;
+﻿using DXGame.Main;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Basic
@@ -62,7 +62,12 @@ namespace DXGame.Core.Components.Basic
             get { return id_; }
         }
 
-        protected Component(Game game)
+        public DxGame DxGame
+        {
+            get { return (DxGame) Game; }
+        }
+
+        protected Component(DxGame game)
             : base(game)
         {
             UpdatePriority = UpdatePriority.NORMAL;
@@ -77,9 +82,9 @@ namespace DXGame.Core.Components.Basic
 
     public enum UpdatePriority
     {
+        HIGHEST = -1,
         HIGH = 1,
         NORMAL = 5,
         LOW = 10
     }
-
 }

@@ -1,6 +1,6 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using DXGame.Core.Utils;
+using DXGame.Main;
 using log4net;
 using Microsoft.Xna.Framework;
 
@@ -45,7 +45,7 @@ namespace DXGame.Core.Components.Advanced
             get { return dimensions_; }
         }
 
-        public SpatialComponent(Game game)
+        public SpatialComponent(DxGame game)
             : base(game)
         {
         }
@@ -66,7 +66,7 @@ namespace DXGame.Core.Components.Advanced
 
         public virtual Vector2 Center
         {
-            get { return position_ + dimensions_/2.0f; }
+            get { return position_ + dimensions_ / 2.0f; }
         }
     }
 }

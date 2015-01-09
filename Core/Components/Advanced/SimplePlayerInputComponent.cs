@@ -1,8 +1,6 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using DXGame.Core.Components.Basic;
-using DXGame.Core.Models;
+using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -18,7 +16,7 @@ namespace DXGame.Core.Components.Advanced
 
         private Vector2 lastAcceleration_;
 
-        public SimplePlayerInputComponent(Game game)
+        public SimplePlayerInputComponent(DxGame game)
             : base(game)
         {
             UpdatePriority = UpdatePriority.HIGH;
@@ -62,7 +60,7 @@ namespace DXGame.Core.Components.Advanced
                     case Keys.Left:
                         if (velocity.X < 0)
                         {
-                            velocity.X = 1.5f * - MOVE_SPEED;
+                            velocity.X = 1.5f * -MOVE_SPEED;
                         }
                         else
                         {
@@ -95,7 +93,7 @@ namespace DXGame.Core.Components.Advanced
                             }
                             break;
                         case "Jumping":
-                            if (lastAcceleration_.Y == 0  && acceleration.Y == 0 && velocity.Y == 0)
+                            if (lastAcceleration_.Y == 0 && acceleration.Y == 0 && velocity.Y == 0)
                             {
                                 state = "None";
                             }
@@ -112,7 +110,7 @@ namespace DXGame.Core.Components.Advanced
             }
             //Really just want to know if they never pressed left or right so
             //horizontal movement can be stopped even while jumping. 
-            if(!isMoving)
+            if (!isMoving)
             {
                 velocity.X = 0;
             }

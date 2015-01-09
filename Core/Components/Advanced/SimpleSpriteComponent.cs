@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
+using DXGame.Main;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Components.Advanced
@@ -26,7 +26,7 @@ namespace DXGame.Core.Components.Advanced
             set { assetName_ = value; }
         }
 
-        public SimpleSpriteComponent(Game game)
+        public SimpleSpriteComponent(DxGame game)
             : base(game)
         {
         }
@@ -54,17 +54,17 @@ namespace DXGame.Core.Components.Advanced
 
         public override void Draw(GameTime gametime)
         {
-            spriteBatch.Draw(texture_, position_.Position, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
+            spriteBatch_.Draw(texture_, position_.Position, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
                 SpriteEffects.None, 0);
         }
 
         protected override void LoadContent()
         {
-            Debug.Assert(contentManager != null, "ContentManager cannot be null during LoadContent");
-            texture_ = contentManager.Load<Texture2D>(assetName_);
+            Debug.Assert(Game.Content != null, "ContentManager cannot be null during LoadContent");
+            texture_ = Game.Content.Load<Texture2D>(assetName_);
             // Assign boundingBox to be the shape of the texture only if it hasn't been custom-set
             // TODO: Change to an isLoaded bool flag / state
-            if(GenericUtils.IsNullOrDefault(boundingBox_))
+            if (GenericUtils.IsNullOrDefault(boundingBox_))
             {
                 boundingBox_ = new Rectangle(0, 0, texture_.Width, texture_.Height);
             }

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
+using DXGame.Main;
 using log4net;
 using Microsoft.Xna.Framework;
 
@@ -11,7 +12,7 @@ namespace DXGame.Core.Components.Advanced
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapCollideablePhysicsComponent));
 
-        public MapCollideablePhysicsComponent(Game game)
+        public MapCollideablePhysicsComponent(DxGame game)
             : base(game)
         {
         }
@@ -36,7 +37,7 @@ namespace DXGame.Core.Components.Advanced
         {
             get
             {
-                int blockSize = GameModel.Model<MapModel>().BlockSize;
+                int blockSize = DxGame.Model<MapModel>().BlockSize;
                 return new Rectangle(Space.X - blockSize, Space.Y - blockSize, Space.Width + blockSize * 2,
                     Space.Height + blockSize * 2);
             }
@@ -59,7 +60,7 @@ namespace DXGame.Core.Components.Advanced
             */
             base.Update(gameTime);
 
-            var map = GameModel.Model<MapModel>();
+            var map = DxGame.Model<MapModel>();
             IEnumerable<SpatialComponent> mapTiles = map.SpatialsInRange(MapQueryRegion);
 
             /*

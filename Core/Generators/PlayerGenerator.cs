@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using DXGame.Core.Components.Advanced;
+using DXGame.Main;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Generators
@@ -19,10 +20,10 @@ namespace DXGame.Core.Generators
         private readonly StateComponent state_;
         //private readonly SimpleSpriteComponent sprite_;
         private readonly AnimationComponent animation_;
-        private readonly Game game_;
+        private readonly DxGame game_;
 
         // Addendum to prior TODO: change isLocalPlayer to something that's not a bool
-        public PlayerGenerator(Game game, Vector2 playerPosition, Rectangle bounds)
+        public PlayerGenerator(DxGame game, Vector2 playerPosition, Rectangle bounds)
         {
             game_ = game;
             space_ =
@@ -32,8 +33,8 @@ namespace DXGame.Core.Generators
                     .WithYMax(bounds.Height)
                     .WithDimensions(new Vector2(50, 100)) // TODO: un-hard code these
                     .WithPosition(playerPosition);
-            physics_ = new MapCollideablePhysicsComponent().WithMaxVelocity(MAX_VELOCITY).WithPositionalComponent(space_);
-            state_ = new StateComponent();
+            physics_ = new MapCollideablePhysicsComponent(game_).WithMaxVelocity(MAX_VELOCITY).WithPositionalComponent(space_);
+            state_ = new StateComponent(game_);
             AddPlayerStates();
             //sprite_ = new SimpleSpriteComponent().WithAsset(PLAYER).WithPosition(space_);
             animation_ = new AnimationComponent(game_).WithPosition(space_).WithState(state_);
@@ -45,7 +46,7 @@ namespace DXGame.Core.Generators
         {
             var objects = new List<GameObject>();
             var player = new GameObject();
-            WorldGravityComponent.WithPhysicsComponent(physics_);
+            var worldGravity = new WorldGravityComponent(game_).WithPhysicsComponent(physics_);
             player.AttachComponents(space_, physics_, animation_, input_, state_);
             objects.Add(player);
             return objects;

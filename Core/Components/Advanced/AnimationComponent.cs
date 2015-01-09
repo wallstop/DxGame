@@ -1,25 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using DXGame.Core.Components.Basic;
+using DXGame.Main;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Components.Advanced
 {
-    class AnimationComponent : DrawableComponent
+    internal class AnimationComponent : DrawableComponent
     {
         private readonly Dictionary<String, Animation> stateMap_ = new Dictionary<string, Animation>();
         private String lastState_;
         protected StateComponent state_;
         protected PositionalComponent position_;
 
-
-
-        public AnimationComponent(Game game)
+        public AnimationComponent(DxGame game)
             : base(game)
         {
         }

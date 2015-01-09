@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using DXGame.Core.Components.Basic;
-using DXGame.Core.Utils;
+using DXGame.Main;
 using log4net;
 using Microsoft.Xna.Framework;
 
@@ -48,16 +48,16 @@ namespace DXGame.Core.Components.Advanced
             </code>
         </summary>
         */
+
         public virtual Vector2 Position
         {
             get { return position_; }
-            set { position_ = value;  }
+            set { position_ = value; }
         }
 
-        public PositionalComponent(Game game)
+        public PositionalComponent(DxGame game)
             : base(game)
         {
-            
         }
 
         public virtual PositionalComponent WithPosition(float x, float y)

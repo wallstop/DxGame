@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
+using DXGame.Main;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
@@ -19,7 +20,7 @@ namespace DXGame.Core.Components.Advanced
         protected PositionalComponent position_;
         protected Vector2 velocity_;
 
-        public PhysicsComponent(Game game)
+        public PhysicsComponent(DxGame game)
             : base(game)
         {
             maxVelocity_ = new Vector2(5.0f, 5.0f);

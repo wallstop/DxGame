@@ -108,7 +108,6 @@
     <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
     <Compile Include="Core\GameComponentCollection.cs" />
     <Compile Include="Core\GameObject.cs" />
-    <Compile Include="Core\Generators\WorldGravityGenerator.cs" />
     <Compile Include="Core\Models\GameModel.cs" />
     <Compile Include="Core\Generators\MapGenerator.cs" />
     <Compile Include="Core\Generators\PlayerGenerator.cs" />
@@ -120,7 +119,7 @@
     <Compile Include="Core\Menus\PlayMenu.cs" />
     <Compile Include="Core\Model.cs" />
     <Compile Include="Core\Models\MapModel.cs" />
-    <Compile Include="Core\Models\PhysicsModel.cs" />
+    <Compile Include="Core\Models\WorldGravityModel.cs" />
     <Compile Include="Core\NetworkFrame.cs" />
     <Compile Include="Core\UniqueId.cs" />
     <Compile Include="Core\Utils\CollectionUtils.cs" />

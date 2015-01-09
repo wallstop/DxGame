@@ -99,7 +99,6 @@
     <Compile Include="Core\Components\Advanced\MapCollideablePhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\StateComponent.cs" />
     <Compile Include="Core\Components\Advanced\SpatialComponent.cs" />
-    <Compile Include="Core\Components\Advanced\WorldGravityComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimplePlayerInputComponent.cs" />
     <Compile Include="Core\Components\Advanced\PositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />

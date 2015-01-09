@@ -65,7 +65,7 @@ namespace DXGame.Core.Models
             internal elements to Models. Until then, use something like this.
         */
 
-        public static MapModel InitializeFromGenerator(Game game, MapGenerator generator)
+        public static MapModel InitializeFromGenerator(DxGame game, MapGenerator generator)
         {
             List<GameObject> mapObjects = generator.Generate();
             var model = new MapModel(game, generator.MapBounds.Width / MapGenerator.BlockSize,

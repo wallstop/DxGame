@@ -29,6 +29,8 @@ namespace DXGame.Core.Components.Basic
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch_.Begin();
             // TODO: Store screen info & ref to player position here, do transform
+
+            
         }
     }
 }

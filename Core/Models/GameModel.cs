@@ -31,7 +31,7 @@ namespace DXGame.Core.Models
         public override void Initialize()
         {
             base.Initialize();
-            MapModel = MapModel.InitializeFromGenerator(Game, new MapGenerator(DxGame, "Content/Map/SimpleMap.txt"));
+            MapModel = MapModel.InitializeFromGenerator(DxGame, new MapGenerator(DxGame, "Content/Map/SimpleMap.txt"));
 
             PlayerGenerator playerGenerator = new PlayerGenerator(DxGame, MapModel.PlayerPosition, MapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;

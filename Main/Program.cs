@@ -20,7 +20,7 @@ namespace DXGame.Main
         {
             log4net.Config.XmlConfigurator.Configure();
 
-            using (var game = new DXGame())
+            using (var game = new DxGame())
                 game.Run();
         }
     }

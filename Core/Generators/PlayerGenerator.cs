@@ -18,7 +18,6 @@ namespace DXGame.Core.Generators
         private readonly PhysicsComponent physics_;
         private readonly SpatialComponent space_;
         private readonly StateComponent state_;
-        //private readonly SimpleSpriteComponent sprite_;
         private readonly AnimationComponent animation_;
         private readonly DxGame game_;
 
@@ -36,7 +35,6 @@ namespace DXGame.Core.Generators
             physics_ = new MapCollideablePhysicsComponent(game_).WithMaxVelocity(MAX_VELOCITY).WithPositionalComponent(space_);
             state_ = new StateComponent(game_);
             AddPlayerStates();
-            //sprite_ = new SimpleSpriteComponent().WithAsset(PLAYER).WithPosition(space_);
             animation_ = new AnimationComponent(game_).WithPosition(space_).WithState(state_);
             AddPlayerAnimations();
             input_ = new SimplePlayerInputComponent(game_).WithPhysics(physics_).WithPlayerState(state_);
@@ -46,7 +44,6 @@ namespace DXGame.Core.Generators
         {
             var objects = new List<GameObject>();
             var player = new GameObject();
-            var worldGravity = new WorldGravityComponent(game_).WithPhysicsComponent(physics_);
             player.AttachComponents(space_, physics_, animation_, input_, state_);
             objects.Add(player);
             return objects;

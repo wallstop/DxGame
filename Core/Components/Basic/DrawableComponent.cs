@@ -1,9 +1,21 @@
-﻿using DXGame.Main;
+﻿using System.Diagnostics;
+using DXGame.Core.Utils;
+using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Components.Basic
 {
+    public enum DrawPriority
+    {
+        INIT_SPRITEBATCH = -100,
+        HIGHEST = -99,
+        HIGH = 1,
+        NORMAL = 5,
+        LOW = 10,
+        END_SPRITEBATCH = 1000
+    }
+
     /**
     <summary>
         DrawableComponent forms the base of all Components that wish to be rendered at some point in time.
@@ -43,8 +55,10 @@ namespace DXGame.Core.Components.Basic
         public DrawableComponent(DxGame game)
             : base(game)
         {
+            Debug.Assert(!GenericUtils.IsNullOrDefault(game), "DrawableComponent cannot be initialized with a null game");
             spriteBatch_ = game.SpriteBatch;
             UpdatePriority = UpdatePriority.NORMAL;
+            DrawPriority = DrawPriority.NORMAL;
         }
 
         protected UpdatePriority UpdatePriority
@@ -63,15 +77,15 @@ namespace DXGame.Core.Components.Basic
         {
             base.Draw(gameTime);
         }
-    }
 
-    public enum DrawPriority
-    {
-        INIT_SPRITEBATCH = -100,
-        HIGHEST = -99,
-        HIGH = 1,
-        NORMAL = 5,
-        LOW = 10,
-        END_SPRITEBATCH = 1000
+        public override void Initialize()
+        {
+            base.Initialize();
+        }
+
+        protected override void LoadContent()
+        {
+            base.LoadContent();
+        }
     }
 }

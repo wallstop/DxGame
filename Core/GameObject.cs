@@ -51,6 +51,13 @@ namespace DXGame.Core
             return components_.OfType<T>().ToList();
         }
 
+        public T ComponentOfType<T>() where T : GameComponent
+        {
+            return components_.OfType<T>().First();
+        }
+
+        public List<GameComponent> Components { get { return components_; }} 
+
         /**
         <summary>
             Given a component, properly determines if it is a Drawable / Initializable / Updateable, adds it
@@ -84,7 +91,7 @@ namespace DXGame.Core
         </summary>
         */
 
-        public GameObject AttachComponents(params GameComponent[] components)
+        public GameObject WithComponents(params GameComponent[] components)
         {
             Debug.Assert(components != null, "Cannot assign a null components to a GameObject");
             components_.AddRange(components);

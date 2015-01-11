@@ -44,7 +44,7 @@ namespace DXGame.Core.Generators
         {
             var objects = new List<GameObject>();
             var player = new GameObject();
-            player.AttachComponents(space_, physics_, animation_, input_, state_);
+            player.WithComponents(space_, physics_, animation_, input_, state_);
             objects.Add(player);
             return objects;
         }

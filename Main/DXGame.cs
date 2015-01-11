@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DXGame.Core;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Menus;
 using DXGame.Core.Models;
@@ -59,7 +60,7 @@ namespace DXGame.Main
 
         public T Model<T>() where T : GameComponent
         {
-            return models_.OfType<T>().First();
+            return models_.OfType<T>().FirstOrDefault();
         }
 
         public bool AttachModel(GameComponent model)
@@ -81,14 +82,10 @@ namespace DXGame.Main
         {
             get
             {
-                GameModel gameModel;
-                try
+                GameModel gameModel = Model<GameModel>();
+                if(GenericUtils.IsNullOrDefault(gameModel))
                 {
-                    gameModel = Model<GameModel>();
-                }
-                catch (InvalidOperationException e)
-                {
-                    LOG.Error("Could not find GameModel, returning default screen", e);
+                    LOG.Info("Could not find GameModel, returning default screen");
                     return new Rectangle2f(Screen);
                 }
                 MapModel mapModel = Model<MapModel>();
@@ -107,19 +104,50 @@ namespace DXGame.Main
 
         }
 
+        public void AddAndInitializeComponent(GameComponent component)
+        {
+            component.Initialize();
+            Components.Add(component);
+        }
+
+        public void AddAndInitializeComponents(params GameComponent [] components)
+        {
+            foreach (GameComponent component in components)
+            {
+                AddAndInitializeComponent(component);
+            }
+        }
+
+        public void AddAndInitializeGameObjects(IEnumerable<GameObject> gameObjects)
+        {
+            foreach (var component in gameObjects.Select(gameObject => gameObject.Components).SelectMany(components => components))
+            {
+                AddAndInitializeComponent(component);
+            }
+        }
+
+        public void RemoveGameObject(GameObject gameObject)
+        {
+            List<GameComponent> components = gameObject.Components;
+            foreach (var component in components)
+            {
+                Components.Remove(component);
+            }
+        }
+
         protected override void Initialize()
         {
+            SpriteBatch = new SpriteBatch(GraphicsDevice);
+            Components.Add(new SpriteBatchInitializer(this));
+            Components.Add(new SpriteBatchEnder(this));
+            var playMenu = new MainMenu(this);
+            Components.Add(playMenu);
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             base.LoadContent();
-            SpriteBatch = new SpriteBatch(GraphicsDevice);
-
-            var playMenu = new MainMenu(this);
-            Components.Add(new SpriteBatchInitializer(this));
-            Components.Add(new SpriteBatchEnder(this));
         }
 
         protected override void UnloadContent()

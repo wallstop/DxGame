@@ -38,19 +38,5 @@ namespace DXGame.Core
                 Game.Components.Remove(component);
             }
         }
-
-        // TODO: Check for already-existing status
-        public void AddGameObjects(IEnumerable<GameObject> gameObjects)
-        {
-            foreach (GameObject gameObject in gameObjects)
-            {
-                var list = gameObject.ComponentsOfType<GameComponent>();
-                Components.AddRange(gameObject.ComponentsOfType<GameComponent>());
-                foreach (GameComponent component in list)
-                {
-                    Game.Components.Add(component);
-                }
-            }
-        }
     }
 }

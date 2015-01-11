@@ -1,6 +1,4 @@
-﻿using System;
-using DXGame.Core.Models;
-using DXGame.Core.Utils;
+﻿using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 
@@ -11,6 +9,7 @@ namespace DXGame.Core.Components.Basic
         public SpriteBatchInitializer(DxGame game)
             : base(game)
         {
+            DrawPriority = DrawPriority.INIT_SPRITEBATCH;
         }
 
         public override void Draw(GameTime gameTime)

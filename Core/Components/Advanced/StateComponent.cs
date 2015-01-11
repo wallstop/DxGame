@@ -36,9 +36,9 @@ namespace DXGame.Core.Components.Advanced
             }
         }
 
-        public List<string> GetStateList()
+        public List<string> States
         {
-            return states_;
+            get { return states_; }
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using DXGame.Core.Components.Advanced;
+﻿using System.Linq;
+using System.Runtime.InteropServices;
+using DXGame.Core.Components.Advanced;
 using DXGame.Core.Generators;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
@@ -28,32 +30,34 @@ namespace DXGame.Core.Models
 
         public override void Initialize()
         {
-            base.Initialize();
             MapModel = MapModel.InitializeFromGenerator(DxGame, new MapGenerator(DxGame, "Content/Map/SimpleMap.txt"));
-
+            var worldGravity = new WorldGravityModel(DxGame);
             PlayerGenerator playerGenerator = new PlayerGenerator(DxGame, MapModel.PlayerPosition, MapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;
-            AddGameObjects(MapModel.MapObjects);
-            AddGameObjects(playerGenerator.Generate());
-
-            foreach (GameComponent component in Components)
+            var player = playerGenerator.Generate().First();
+            var physicsComponents = player.ComponentsOfType<PhysicsComponent>();
+            foreach (var physicsComponent in physicsComponents)
             {
-                Game.Components.Add(component);
+                worldGravity.AttachPhysicsComponent(physicsComponent);
             }
+
+            DxGame.AddAndInitializeGameObjects(MapModel.MapObjects);
+            DxGame.AddAndInitializeGameObjects(playerGenerator.Generate());
+            DxGame.AddAndInitializeComponent(worldGravity);
+            DxGame.AttachModel(this);
+            DxGame.AttachModel(MapModel);
+            DxGame.AttachModel(worldGravity);
+            base.Initialize();
         }
 
         /*
             Since we can't properly control how we add/remove each component from the gamestate,
             we entrust the runtime to call dispose, which is where we remove all of our added components
         */
-
+        // TODO:
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            foreach (GameComponent component in Components)
-            {
-                Game.Components.Remove(component);
-            }
         }
 
         public bool AddComponent(GameComponent component)

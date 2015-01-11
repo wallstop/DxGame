@@ -72,7 +72,11 @@ namespace DXGame.Core.Utils
         public Rectangle ToRectangle()
         {
             return new Rectangle((int) X, (int) Y, (int) Width, (int) Height);
+        }
 
+        public Vector2 XY()
+        {
+            return new Vector2(X, Y);
         }
 
         public static bool operator ==(Rectangle2f lhs, Rectangle2f rhs)
@@ -101,6 +105,11 @@ namespace DXGame.Core.Utils
         }
 
         public bool Contains(Vector2 point)
+        {
+            return Contains(point.X, point.Y);
+        }
+
+        public bool Contains(Point point)
         {
             return Contains(point.X, point.Y);
         }

@@ -85,7 +85,7 @@ namespace DXGame.Core.Components.Advanced
                         {
                         case "Walking":
                         case "None":
-                            if (state_.GetStateList().Contains("Jumping"))
+                            if (state_.States.Contains("Jumping"))
                             {
                                 state = "Jumping";
                                 velocity.Y -= JUMP_SPEED;

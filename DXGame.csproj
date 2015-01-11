@@ -94,6 +94,7 @@
   <ItemGroup>
     <Compile Include="Core\Animation.cs" />
     <Compile Include="Core\Components\Advanced\AnimationComponent.cs" />
+    <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
     <Compile Include="Core\Components\Basic\Component.cs" />
     <Compile Include="Core\Components\Advanced\BoundedSpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\MapCollideablePhysicsComponent.cs" />
@@ -170,11 +171,18 @@
     <Content Include="Content\Map\SimpleMap.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\PlayerJumping.png" />
+    <Content Include="Content\MousePointer.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\PlayerJumping.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\PlayerNone.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\PlayerWalking.png" />
+    <Content Include="Content\PlayerWalking.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Main\Icon.ico" />
     <Content Include="README.txt" />
   </ItemGroup>
@@ -202,6 +210,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Content Include="Content\Fonts\Gungsuh.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

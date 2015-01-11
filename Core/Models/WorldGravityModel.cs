@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 
@@ -25,7 +26,7 @@ namespace DXGame.Core.Models
 
         public bool AttachPhysicsComponent(PhysicsComponent physics)
         {
-            Debug.Assert(physics != null, "World Gravity Component cannot be assigned to a null physics component");
+            Debug.Assert(!(GenericUtils.IsNullOrDefault(physics)), "World Gravity Component cannot be assigned to a null physics component");
             bool alreadyExists = physics_.Contains(physics);
             if (!alreadyExists)
             {
@@ -47,6 +48,7 @@ namespace DXGame.Core.Models
                 acceleration.Y += gravity_;
                 component.Acceleration = acceleration;
             }
+            base.Update(gameTime);
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.CodeDom;
 using DXGame.Core.Models;
+using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -8,25 +8,24 @@ namespace DXGame.Core.Menus
 {
     public class MainMenu : Menu
     {
-        private readonly DxGame game_;
-
-        public MainMenu(DxGame game) : base(game)
+        public MainMenu(DxGame game)
+            : base(game)
         {
-            Debug.Assert(game != null, "Main Menu cannot be initialized with a null game!");
-            game_ = game;
         }
 
         public override void Initialize()
         {
-            List<MenuItem> menuItems = new List<MenuItem>();
-
-            MenuItem play = new MenuItem().WithText("Play").WithAction(PlayAction);
+            var spriteFont = DxGame.Content.Load<SpriteFont>("Fonts/Gungsuh");
+            MenuItem play = new MenuItem().WithText("Play").WithAction(PlayAction).WithSpriteFont(spriteFont).WithSpace(new Rectangle2f(400, 400, 100, 100));
+            MenuItems.Add(play); 
+            base.Initialize();
         }
 
         private void PlayAction()
         {
             Game.Components.Remove(this);
-            Game.Components.Add(new GameModel(game_));
+            base.Remove();
+            DxGame.AddAndInitializeComponent(new GameModel(DxGame));
         }
     }
 }

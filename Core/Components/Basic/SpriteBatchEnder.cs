@@ -8,6 +8,7 @@ namespace DXGame.Core.Components.Basic
         public SpriteBatchEnder(DxGame game)
             : base(game)
         {
+            DrawPriority = DrawPriority.END_SPRITEBATCH;
         }
 
         public override void Draw(GameTime gameTime)

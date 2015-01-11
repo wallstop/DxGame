@@ -1,7 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using log4net;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -9,6 +11,8 @@ namespace DXGame.Core.Components.Advanced
 {
     public class SimpleSpriteComponent : DrawableComponent
     {
+        private static readonly ILog LOG = LogManager.GetLogger(typeof (SimpleSpriteComponent));
+
         protected string assetName_;
         protected Rectangle boundingBox_;
         protected PositionalComponent position_;
@@ -52,15 +56,23 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override void Draw(GameTime gametime)
+        public override void Draw(GameTime gameTime)
         {
-            spriteBatch_.Draw(texture_, position_.Position, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
-                SpriteEffects.None, 0);
+            try
+            {
+                spriteBatch_.Draw(texture_, position_.Position, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
+                    SpriteEffects.None, 0);
+            }
+            catch (Exception e)
+            {
+                LOG.Error("Caught exception while attempting to Draw spriteBatch", e);
+            }
+            base.Draw(gameTime);
         }
 
-        protected override void LoadContent()
+        public override void Initialize()
         {
-            Debug.Assert(Game.Content != null, "ContentManager cannot be null during LoadContent");
+            Debug.Assert(Game.Content != null, "ContentManager cannot be null during Initialize");
             texture_ = Game.Content.Load<Texture2D>(assetName_);
             // Assign boundingBox to be the shape of the texture only if it hasn't been custom-set
             // TODO: Change to an isLoaded bool flag / state
@@ -68,6 +80,12 @@ namespace DXGame.Core.Components.Advanced
             {
                 boundingBox_ = new Rectangle(0, 0, texture_.Width, texture_.Height);
             }
+            base.Initialize();
+        }
+
+        protected override void LoadContent()
+        {
+            base.LoadContent();
         }
     }
 }

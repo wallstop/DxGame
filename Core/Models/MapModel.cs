@@ -252,7 +252,6 @@ namespace DXGame.Core.Models
                 for (int j = 0; j < height; ++j)
                 {
                     map_[x + i, y + j] = new KeyValuePair<GameObject, SpatialComponent>(gameObject, space);
-                    DxGame.Components.Add(space);
                 }
             }
         }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 
@@ -28,8 +30,9 @@ namespace DXGame.Core.Components.Advanced
 
         public AnimationComponent WithState(StateComponent state)
         {
-            Debug.Assert(state != null, "Sprite position cannot be null on assignment");
+            Debug.Assert(!GenericUtils.IsNullOrDefault(state) || !state.States.Any(), "Sprite position cannot be null on assignment");
             state_ = state;
+            lastState_ = state.States.First();
             return this;
         }
 

@@ -33,8 +33,8 @@ namespace DXGame.Core.Generators
 
         public MapGenerator(DxGame game, string mapPath)
         {
-            map_ = InitMap(mapPath);
             game_ = game;
+            map_ = InitMap(mapPath);
         }
 
         public Vector2 PlayerPosition
@@ -85,7 +85,7 @@ namespace DXGame.Core.Generators
                                         row * BLOCK_WIDTH);
                             SimpleSpriteComponent sprite =
                                 new SimpleSpriteComponent(game_).WithAsset(asset).WithPosition(position);
-                            GameObject block = new GameObject().AttachComponents(position, sprite);
+                            GameObject block = new GameObject().WithComponents(position, sprite);
                             blocks.Add(block);
                             ++numBlocks;
                         }

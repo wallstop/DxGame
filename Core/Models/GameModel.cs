@@ -26,12 +26,13 @@ namespace DXGame.Core.Models
 
         public GameModel(DxGame game) : base(game)
         {
+            var mapGenerator = new MapGenerator(DxGame, "Content/Map/SimpleMap.txt");
+            MapModel = MapModel.InitializeFromGenerator(DxGame, mapGenerator);
+            DxGame.AddAndInitializeComponent(MapModel);
         }
 
         public override void Initialize()
         {
-            var mapGenerator = new MapGenerator(DxGame, "Content/Map/SimpleMap.txt");
-            MapModel = MapModel.InitializeFromGenerator(DxGame, mapGenerator);
             var worldGravity = new WorldGravityModel(DxGame);
             PlayerGenerator playerGenerator = new PlayerGenerator(DxGame, MapModel.PlayerPosition, MapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;
@@ -42,7 +43,7 @@ namespace DXGame.Core.Models
                 worldGravity.AttachPhysicsComponent(physicsComponent);
             }
 
-            DxGame.AddAndInitializeGameObjects(MapModel.MapObjects);
+
             DxGame.AddAndInitializeGameObjects(playerGenerator.Generate());
             DxGame.AddAndInitializeComponent(worldGravity);
             DxGame.AttachModel(this);

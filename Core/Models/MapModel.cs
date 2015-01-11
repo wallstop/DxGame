@@ -197,6 +197,24 @@ namespace DXGame.Core.Models
             base.Draw(gameTime);
         }
 
+        public override void Initialize()
+        {
+            foreach (var keyValuePair in map_)
+            {
+                if (GenericUtils.IsNullOrDefault(keyValuePair))
+                {
+                    continue;
+                }
+                var gameObject = keyValuePair.Key;
+                var drawables = gameObject.ComponentsOfType<DrawableComponent>();
+                foreach (var drawable in drawables)
+                {
+                    drawable.Initialize();
+                }
+            }
+            base.Initialize();
+        }
+
 
         // TODO: Consolidate these methods
         private bool CanInsertIntoMap(SpatialComponent space)

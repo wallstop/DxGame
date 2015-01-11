@@ -85,7 +85,6 @@ namespace DXGame.Main
                 GameModel gameModel = Model<GameModel>();
                 if(GenericUtils.IsNullOrDefault(gameModel))
                 {
-                    LOG.Info("Could not find GameModel, returning default screen");
                     return new Rectangle2f(Screen);
                 }
                 MapModel mapModel = Model<MapModel>();
@@ -106,7 +105,6 @@ namespace DXGame.Main
 
         public void AddAndInitializeComponent(GameComponent component)
         {
-            component.Initialize();
             Components.Add(component);
         }
 

@@ -4,8 +4,6 @@ using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace DXGame.Core.Menus
 {
@@ -22,21 +20,21 @@ namespace DXGame.Core.Menus
 
         protected Menu(DxGame game) : base(game)
         {
-        }
-
-        public override void Initialize()
-        {
             var mousePosition = new MouseTrackingComponent(DxGame).WithPosition(0, 0);
             var mouseSprite = new SimpleSpriteComponent(DxGame).WithAsset("MousePointer").WithPosition(mousePosition);
             mousePointer_ = new GameObject().WithComponents(mousePosition, mouseSprite);
             DxGame.AddAndInitializeComponents(mousePosition, mouseSprite);
+        }
+
+        public override void Initialize()
+        {
+
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             base.LoadContent();
-
         }
 
         public override void Draw(GameTime gameTime)
@@ -51,16 +49,16 @@ namespace DXGame.Core.Menus
         {
             var mousePosition = mousePointer_.ComponentOfType<MouseTrackingComponent>();
             var mouseSprite = mousePointer_.ComponentOfType<SimpleSpriteComponent>();
-            if(mousePosition.Clicked)
+            if (mousePosition.Clicked)
             {
                 Point center = mouseSprite.BoundingBox.Center;
                 // We need to translate the center of the sprite's bounding box to where the mouse currently is.
                 Vector2 mouseXY = mousePosition.Position;
-                center.X += (int)mouseXY.X;
-                center.Y += (int)mouseXY.Y;
+                center.X += (int) mouseXY.X;
+                center.Y += (int) mouseXY.Y;
 
                 MenuItem clickedMenuItem = MenuItems.FirstOrDefault(menuItem => menuItem.Space.Contains(center));
-                if(clickedMenuItem != null)
+                if (clickedMenuItem != null)
                 {
                     clickedMenuItem.OnAction();
                 }

@@ -25,7 +25,7 @@ namespace DXGame.Core.Components.Advanced
         {
             maxVelocity_ = new Vector2(5.0f, 5.0f);
             maxAcceleration_ = new Vector2(5.0f, 5.0f);
-            UpdatePriority = UpdatePriority.HIGHEST;
+            UpdatePriority = UpdatePriority.PHYSICS;
         }
 
         public virtual Vector2 Velocity

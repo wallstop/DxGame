@@ -21,6 +21,7 @@ namespace DXGame.Core.Models
         public WorldGravityModel(DxGame game)
             : base(game)
         {
+            UpdatePriority = UpdatePriority.WORLD_GRAVITY;
         }
 
         public bool AttachPhysicsComponent(PhysicsComponent physics)

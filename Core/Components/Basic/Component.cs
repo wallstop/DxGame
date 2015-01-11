@@ -83,8 +83,10 @@ namespace DXGame.Core.Components.Basic
     public enum UpdatePriority
     {
         HIGHEST = -1,
+        PHYSICS = HIGHEST,
         HIGH = 1,
         NORMAL = 5,
+        WORLD_GRAVITY = NORMAL,
         LOW = 10
     }
 }

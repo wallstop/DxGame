@@ -92,12 +92,12 @@ namespace DXGame.Core.Components.Advanced
                                 acceleration.Y -= JUMP_SPEED;
                             }
                             break;
-                        case "Jumping":
-                            if (lastAcceleration_.Y == 0 && acceleration.Y == 0 && velocity.Y == 0)
-                            {
-                                state = "None";
-                            }
-                            break;
+                        //case "Jumping":
+                        //    if (lastAcceleration_.Y == 0 && acceleration.Y == 0 && velocity.Y == 0)
+                        //    {
+                        //        state = "None";
+                        //    }
+                        //    break;
 
                         default:
                             break;
@@ -109,7 +109,15 @@ namespace DXGame.Core.Components.Advanced
                 }
             }
             //Really just want to know if they never pressed left or right so
-            //horizontal movement can be stopped even while jumping. 
+            //horizontal movement can be stopped even while jumping.
+            if (lastAcceleration_.Y == 0 && acceleration.Y == 0 && velocity.Y == 0)
+            {
+                state = "None";
+            }
+            if ((state != "Jumping") && isMoving)
+            {
+                state = "Walking";
+            }
             if (!isMoving)
             {
                 velocity.X = 0;

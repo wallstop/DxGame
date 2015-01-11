@@ -58,15 +58,8 @@ namespace DXGame.Core.Components.Advanced
 
         public override void Draw(GameTime gameTime)
         {
-            try
-            {
-                spriteBatch_.Draw(texture_, position_.Position, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
-                    SpriteEffects.None, 0);
-            }
-            catch (Exception e)
-            {
-                LOG.Error("Caught exception while attempting to Draw spriteBatch", e);
-            }
+            spriteBatch_.Draw(texture_, position_.Position, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
+                SpriteEffects.None, 0);
             base.Draw(gameTime);
         }
 

@@ -181,6 +181,22 @@ namespace DXGame.Core.Models
             return ObjectsAndSpatialsInRange(range).Select(element => element.Value);
         }
 
+        public override void Draw(GameTime gameTime)
+        {
+            var screenRegion = DxGame.ScreenRegion.ToRectangle();
+            screenRegion.X = -screenRegion.X;
+            screenRegion.Y = -screenRegion.Y;
+
+            var mapObjects = ObjectsInRange(screenRegion);
+            var drawables = GameObjectUtils.ComponentsOfType<DrawableComponent>(mapObjects);
+            foreach (DrawableComponent component in drawables)
+            {
+                component.Draw(gameTime);
+            }
+
+            base.Draw(gameTime);
+        }
+
 
         // TODO: Consolidate these methods
         private bool CanInsertIntoMap(SpatialComponent space)

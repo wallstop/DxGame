@@ -18,9 +18,9 @@ namespace DXGame.Core.Models
 
         public MapModel MapModel { get; set; }
 
-        protected SpatialComponent FocalPoint { get; set; }
+        public SpatialComponent FocalPoint { get; protected set; }
 
-        protected Rectangle Screen { get; set; }
+        public Rectangle Screen { get; protected set; }
 
         protected SpriteBatch SpriteBatch { get; set; }
 
@@ -55,6 +55,7 @@ namespace DXGame.Core.Models
             Since we can't properly control how we add/remove each component from the gamestate,
             we entrust the runtime to call dispose, which is where we remove all of our added components
         */
+
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);

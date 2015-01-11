@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -40,6 +41,7 @@ namespace DXGame.Core
         {
             spriteBatch.Draw(spriteSheet_, position_.Position, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
                 SpriteEffects.None, 0);
+            currentFrame_ = MathUtils.WrappedAdd(currentFrame_, 1, totalFrames_);
         }
 
         public void Reset()

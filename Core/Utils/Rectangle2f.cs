@@ -45,12 +45,26 @@ namespace DXGame.Core.Utils
         {
         }
 
+        public Rectangle2f(Vector2 x, Vector2 y)
+        {
+            X = x.X;
+            Width = x.Y;
+            Y = y.X;
+            Height = y.Y;
+        }
+
         public Rectangle2f(float x, float y, float width, float height)
         {
             X = x;
             Y = y;
             Width = width;
             Height = height;
+        }
+
+        public Rectangle ToRectangle()
+        {
+            return new Rectangle((int) X, (int) Y, (int) Width, (int) Height);
+
         }
 
         public static bool operator ==(Rectangle2f lhs, Rectangle2f rhs)

@@ -19,6 +19,21 @@ namespace DXGame.Core.Components.Advanced
         protected Vector2 xBounds_;
         protected Vector2 yBounds_;
 
+        public Vector2 XBounds
+        {
+            get { return xBounds_; }
+        }
+
+        public Vector2 YBounds
+        {
+            get { return yBounds_; }
+        }
+
+        public Rectangle2f Bounds
+        {
+            get { return new Rectangle2f(XBounds, YBounds);  }
+        }
+
         public BoundedSpatialComponent(DxGame game)
             : base(game)
         {

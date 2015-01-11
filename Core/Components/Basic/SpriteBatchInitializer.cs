@@ -1,26 +1,16 @@
-﻿using System.Diagnostics;
-using DXGame.Core.Components.Advanced;
+﻿using System;
+using DXGame.Core.Models;
+using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Basic
 {
-    internal class SpriteBatchInitializer : DrawableComponent
+    public class SpriteBatchInitializer : DrawableComponent
     {
-        private PositionalComponent playerPosition_;
-        private BoundedSpatialComponent mainWindow_;
-
-        // TODO: Think about BoundedSpatialComponent, can it be something else?
-        public SpriteBatchInitializer(DxGame game, PositionalComponent playerPosition,
-            BoundedSpatialComponent mainWindow)
+        public SpriteBatchInitializer(DxGame game)
             : base(game)
         {
-            Debug.Assert(playerPosition != null,
-                "SpriteBatchInitializer cannot be initialized with a null player position component");
-            Debug.Assert(mainWindow != null,
-                "SpriteBatchInitializer cannot be initialized with a null main window component");
-            playerPosition_ = playerPosition;
-            mainWindow_ = mainWindow;
         }
 
         public override void Draw(GameTime gameTime)
@@ -28,9 +18,11 @@ namespace DXGame.Core.Components.Basic
             base.Draw(gameTime);
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch_.Begin();
-            // TODO: Store screen info & ref to player position here, do transform
 
-            
+            Rectangle2f screen = DxGame.ScreenRegion;
+
+            Matrix cameraShift = Matrix.CreateTranslation(screen.X, screen.Y, 0);
+            spriteBatch_.Begin(0, null, null, null, null, null, cameraShift);
         }
     }
 }

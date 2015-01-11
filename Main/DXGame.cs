@@ -65,6 +65,27 @@ namespace DXGame.Main
             return !alreadyExists;
         }
 
+        public Rectangle2f ScreenRegion
+        {
+            get
+            {
+                GameModel gameModel = Model<GameModel>();
+                MapModel mapModel = Model<MapModel>();
+                float x = gameModel.Screen.Width / 2.0f - gameModel.FocalPoint.Position.X;
+                x = MathUtils.Constrain(x,
+                    Math.Max(float.MinValue, -(mapModel.MapBounds.X + mapModel.MapBounds.Width - gameModel.Screen.Width)),
+                    mapModel.MapBounds.X);
+
+                float y = gameModel.Screen.Height / 2.0f - gameModel.FocalPoint.Position.Y;
+                y = MathUtils.Constrain(y,
+                    Math.Max(0, mapModel.MapBounds.Y + mapModel.MapBounds.Height - gameModel.Screen.Height),
+                    mapModel.MapBounds.Y);
+
+                return new Rectangle2f(x, y, gameModel.Screen.Width, gameModel.Screen.Height);
+            }
+
+        }
+
         protected override void Initialize()
         {
             base.Initialize();
@@ -111,37 +132,6 @@ namespace DXGame.Main
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            /*
-                    TODO: Only draw the objects that are on-screen at the current time. This can be done via naive methods, 
-                    such as iterate-over-all-objects and only draw those on screen, or advanced techniques, like http://gamedev.stackexchange.com/questions/14713/culling-for-a-2d-platformer-game,
-                    http://www.codeproject.com/Articles/18113/KD-Tree-Searching-in-N-dimensions-Part-I, http://qstuff.blogspot.com/2008/05/spatial-sorting-with-kd-trees-part-1.html.
-                */
-
-            /*
-                    TODO: Instead of doing a clear, see if we can take a diff. That way, we only have to re-draw certain objects (the ones that have changed)
-                */
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Oh god what have I done? Do some proper math, hidden in a function, like a CameraUtils class or something
-            float x = width_ / 2.0f - playerSpace_.Center.X;
-            x = MathUtils.Constrain(x, Math.Max(float.MinValue, -(mapBounds_.X + mapBounds_.Width - width_)),
-                mapBounds_.X);
-            float y = height_ / 2.0f - playerSpace_.Center.Y;
-            y = MathUtils.Constrain(y, Math.Max(0, (mapBounds_.Y + mapBounds_.Height - height_)), mapBounds_.Y);
-
-            Matrix cameraShift = Matrix.CreateTranslation(x, y, 0);
-            spriteBatch_.Begin(0, null, null, null, null, null, cameraShift);
-
-            var screenRegion = new Rectangle(0 - (int) x, 0 - (int) y, width_, height_);
-            var map = GameModel.Model<MapModel>();
-            var mapObjects = map.ObjectsInRange(screenRegion);
-            var drawables = GameObjectUtils.ComponentsOfType<DrawableComponent>(mapObjects);
-
-            // Draw map items
-            foreach (DrawableComponent component in drawables)
-            {
-                component.Draw(spriteBatch_);
-            }
             base.Draw(gameTime);
         }
     }

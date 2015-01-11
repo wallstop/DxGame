@@ -13,7 +13,6 @@ namespace DXGame.Core.Menus
         public MainMenu(DxGame game) : base(game)
         {
             Debug.Assert(game != null, "Main Menu cannot be initialized with a null game!");
-            menuItem_ = Game.Content.Load<SpriteFont>("MainMenu");
             game_ = game;
         }
 

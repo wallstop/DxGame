@@ -17,7 +17,6 @@ namespace DXGame.Core.Components.Basic
         {
             base.Draw(gameTime);
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            spriteBatch_.Begin();
 
             Rectangle2f screen = DxGame.ScreenRegion;
 

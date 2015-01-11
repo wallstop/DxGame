@@ -43,7 +43,7 @@ namespace DXGame.Core.Components.Basic
         public DrawableComponent(DxGame game)
             : base(game)
         {
-            spriteBatch_ = (SpriteBatch) game.Services.GetService(typeof (SpriteBatch));
+            spriteBatch_ = game.SpriteBatch;
             UpdatePriority = UpdatePriority.NORMAL;
         }
 

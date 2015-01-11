@@ -8,7 +8,7 @@ namespace DXGame.Core.Menus
     public abstract class Menu : DrawableGameComponent
     {
         protected List<MenuItem> MenuItems { get; set; }
-        protected SpriteFont menuItem_;
+        protected SpriteFont menuFont_;
 
         public Menu(DxGame game) : base(game)
         {

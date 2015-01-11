@@ -20,8 +20,6 @@ namespace DXGame.Core.Models
 
         public SpatialComponent FocalPoint { get; protected set; }
 
-        public Rectangle Screen { get; protected set; }
-
         protected SpriteBatch SpriteBatch { get; set; }
 
         public GameModel(DxGame game) : base(game)
@@ -37,13 +35,6 @@ namespace DXGame.Core.Models
             FocalPoint = playerGenerator.PlayerSpace;
             AddGameObjects(MapModel.MapObjects);
             AddGameObjects(playerGenerator.Generate());
-
-            Screen = new Rectangle(0, 0, 1280, 720);
-            var graphics = new GraphicsDeviceManager(Game);
-            graphics.PreferredBackBufferHeight = Screen.Height;
-            graphics.PreferredBackBufferWidth = Screen.Width;
-
-            Game.Content.RootDirectory = "Content";
 
             foreach (GameComponent component in Components)
             {

@@ -53,6 +53,14 @@ namespace DXGame.Core.Utils
             Height = y.Y;
         }
 
+        public Rectangle2f(Rectangle rectangle)
+        {
+            X = rectangle.X;
+            Y = rectangle.Y;
+            Width = rectangle.Width;
+            Height = rectangle.Height;
+        }
+
         public Rectangle2f(float x, float y, float width, float height)
         {
             X = x;

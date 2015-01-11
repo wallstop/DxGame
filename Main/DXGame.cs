@@ -9,6 +9,7 @@ using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using log4net;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 #endregion
@@ -40,9 +41,20 @@ namespace DXGame.Main
         private static readonly ILog LOG = LogManager.GetLogger(typeof (DxGame));
         private readonly List<GameComponent> models_ = new List<GameComponent>();
 
+        public Rectangle Screen { get; protected set; }
+
+        public SpriteBatch SpriteBatch { get; private set; }
+
         public DxGame()
         {
-            var playMenu = new MainMenu(this);
+            Screen = new Rectangle(0, 0, 1280, 720);
+            var graphics = new GraphicsDeviceManager(this)
+            {
+                PreferredBackBufferHeight = Screen.Height,
+                PreferredBackBufferWidth = Screen.Width
+            };
+
+            Content.RootDirectory = "Content";
         }
 
         public T Model<T>() where T : GameComponent
@@ -69,19 +81,28 @@ namespace DXGame.Main
         {
             get
             {
-                GameModel gameModel = Model<GameModel>();
+                GameModel gameModel;
+                try
+                {
+                    gameModel = Model<GameModel>();
+                }
+                catch (InvalidOperationException e)
+                {
+                    LOG.Error("Could not find GameModel, returning default screen", e);
+                    return new Rectangle2f(Screen);
+                }
                 MapModel mapModel = Model<MapModel>();
-                float x = gameModel.Screen.Width / 2.0f - gameModel.FocalPoint.Position.X;
+                float x = Screen.Width / 2.0f - gameModel.FocalPoint.Position.X;
                 x = MathUtils.Constrain(x,
-                    Math.Max(float.MinValue, -(mapModel.MapBounds.X + mapModel.MapBounds.Width - gameModel.Screen.Width)),
+                    Math.Max(float.MinValue, -(mapModel.MapBounds.X + mapModel.MapBounds.Width - Screen.Width)),
                     mapModel.MapBounds.X);
 
-                float y = gameModel.Screen.Height / 2.0f - gameModel.FocalPoint.Position.Y;
+                float y = Screen.Height / 2.0f - gameModel.FocalPoint.Position.Y;
                 y = MathUtils.Constrain(y,
-                    Math.Max(0, mapModel.MapBounds.Y + mapModel.MapBounds.Height - gameModel.Screen.Height),
+                    Math.Max(0, mapModel.MapBounds.Y + mapModel.MapBounds.Height - Screen.Height),
                     mapModel.MapBounds.Y);
 
-                return new Rectangle2f(x, y, gameModel.Screen.Width, gameModel.Screen.Height);
+                return new Rectangle2f(x, y, Screen.Width, Screen.Height);
             }
 
         }
@@ -94,6 +115,11 @@ namespace DXGame.Main
         protected override void LoadContent()
         {
             base.LoadContent();
+            SpriteBatch = new SpriteBatch(GraphicsDevice);
+
+            var playMenu = new MainMenu(this);
+            Components.Add(new SpriteBatchInitializer(this));
+            Components.Add(new SpriteBatchEnder(this));
         }
 
         protected override void UnloadContent()

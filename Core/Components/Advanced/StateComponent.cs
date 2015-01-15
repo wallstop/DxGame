@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Utils;
 using DXGame.Main;
+using log4net;
+using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
-    public class StateComponent : Component
+    public abstract class StateComponent : Component
     {
-        private readonly List<string> states_ = new List<string>();
+        private static readonly ILog LOG = LogManager.GetLogger(typeof(StateComponent));
+
+        private readonly HashSet<string> states_ = new HashSet<string>();
 
         public string State { get; set; }
 
@@ -19,7 +25,15 @@ namespace DXGame.Core.Components.Advanced
 
         public StateComponent WithState(string state)
         {
-            State = state;
+            Debug.Assert(!GenericUtils.IsNullOrDefault(state), "StateComponent cannot have its state to an empty state");
+            Debug.Assert(states_.Contains(state),
+                String.Format("StateComponent cannot have its state set to one it doesn't know about: {0}, {1}", state,
+                    states_));
+            if (!states_.Contains(state))
+            {
+                State = state;
+            }
+
             return this;
         }
 
@@ -32,13 +46,15 @@ namespace DXGame.Core.Components.Advanced
         {
             foreach (var state in states)
             {
-                states_.Add(state);
+                AddState(state);
             }
         }
 
-        public List<string> States
+        public IEnumerable<string> States
         {
             get { return states_; }
         }
+
+        public abstract override void Update(GameTime gameTime);
     }
 }

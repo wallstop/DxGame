@@ -8,7 +8,6 @@ namespace DXGame.Core.Components.Advanced
 {
     public class SimplePlayerInputComponent : Component
     {
-        //ivate static readonly float DECAY_AMOUNT = 0.1f;
         private static readonly float JUMP_SPEED = 10.0f;
         private static readonly float MOVE_SPEED = 10.0f;
         protected PhysicsComponent physics_;
@@ -91,15 +90,6 @@ namespace DXGame.Core.Components.Advanced
                                 velocity.Y -= JUMP_SPEED;
                                 acceleration.Y -= JUMP_SPEED;
                             }
-                            break;
-                        //case "Jumping":
-                        //    if (lastAcceleration_.Y == 0 && acceleration.Y == 0 && velocity.Y == 0)
-                        //    {
-                        //        state = "None";
-                        //    }
-                        //    break;
-
-                        default:
                             break;
                         }
                         break;

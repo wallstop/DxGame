@@ -155,7 +155,7 @@ namespace DXGame.Core.Generators
 
         private static bool CanCreatePlayerFrom(char character)
         {
-            return character == 'Z';
+            return character == PLAYER_CHARACTER;
         }
 
         public override List<GameObject> Generate()

@@ -30,7 +30,7 @@ namespace DXGame.Core.Components.Advanced
         private static readonly ILog LOG = LogManager.GetLogger(typeof (PositionalComponent));
 
         protected Vector2 position_;
-        protected bool grounded_;
+        protected bool grounded_; // TODO: Remove, come up with a better way of determining "grounded" status
 
 
         /**

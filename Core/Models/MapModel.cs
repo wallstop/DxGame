@@ -89,13 +89,9 @@ namespace DXGame.Core.Models
 
         public bool AddObject(GameObject gameObject)
         {
-            List<SpatialComponent> spatials = gameObject.ComponentsOfType<SpatialComponent>();
+            var spatials = gameObject.ComponentsOfType<SpatialComponent>();
             // Make sure we can fit all of the spatial components into the map before we add them
-            bool allInserted = true;
-            foreach (SpatialComponent spatial in spatials)
-            {
-                allInserted = allInserted && CanInsertIntoMap(spatial);
-            }
+            bool allInserted = spatials.Aggregate(true, (current, spatial) => current && CanInsertIntoMap(spatial));
 
             // If they all fit, add them
             if (allInserted)

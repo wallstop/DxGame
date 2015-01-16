@@ -9,9 +9,9 @@ using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
-    internal class AnimationComponent : DrawableComponent
+    public class AnimationComponent : DrawableComponent
     {
-        private readonly Dictionary<String, Animation> stateMap_ = new Dictionary<string, Animation>();
+        private readonly Dictionary<String, Animation> states_ = new Dictionary<string, Animation>();
         private String lastState_;
         protected StateComponent state_;
         protected PositionalComponent position_;
@@ -23,14 +23,15 @@ namespace DXGame.Core.Components.Advanced
 
         public AnimationComponent WithPosition(PositionalComponent position)
         {
-            Debug.Assert(position != null, "Sprite position cannot be null on assignment");
+            Debug.Assert(!GenericUtils.IsNullOrDefault(position), "Sprite position cannot be null on assignment");
             position_ = position;
             return this;
         }
 
         public AnimationComponent WithState(StateComponent state)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(state) || !state.States.Any(), "Sprite position cannot be null on assignment");
+            Debug.Assert(!GenericUtils.IsNullOrDefault(state) || !state.States.Any(),
+                "Sprite position cannot be null on assignment");
             state_ = state;
             lastState_ = state.States.First();
             return this;
@@ -39,12 +40,20 @@ namespace DXGame.Core.Components.Advanced
         public void AddAnimation(String state, String assetName)
         {
             var animation = new Animation(assetName).WithPosition(position_);
-            stateMap_.Add(state, animation);
+            states_.Add(state, animation);
+        }
+
+        public override void Initialize()
+        {
+            foreach (var pair in states_)
+            {
+                pair.Value.LoadContent(Game.Content);
+            }
         }
 
         protected override void LoadContent()
         {
-            foreach (var pair in stateMap_)
+            foreach (var pair in states_)
             {
                 pair.Value.LoadContent(Game.Content);
             }
@@ -52,11 +61,12 @@ namespace DXGame.Core.Components.Advanced
 
         public override void Draw(GameTime gameTime)
         {
+            // TODO: Do timing based on gameTime
             if (lastState_ != state_.State)
             {
-                stateMap_[lastState_].Reset();
+                states_[lastState_].Reset();
             }
-            stateMap_[state_.State].Draw(spriteBatch_);
+            states_[state_.State].Draw(spriteBatch_);
             lastState_ = state_.State;
         }
     }

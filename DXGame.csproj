@@ -95,6 +95,7 @@
     <Compile Include="Core\Animation.cs" />
     <Compile Include="Core\Components\Advanced\AnimationComponent.cs" />
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
+    <Compile Include="Core\Components\Advanced\PlayerStateComponent.cs" />
     <Compile Include="Core\Components\Basic\Component.cs" />
     <Compile Include="Core\Components\Advanced\BoundedSpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\MapCollideablePhysicsComponent.cs" />

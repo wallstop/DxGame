@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
-    public abstract class StateComponent : Component
+    public class StateComponent : Component
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof(StateComponent));
 
@@ -54,7 +54,5 @@ namespace DXGame.Core.Components.Advanced
         {
             get { return states_; }
         }
-
-        public abstract override void Update(GameTime gameTime);
     }
 }

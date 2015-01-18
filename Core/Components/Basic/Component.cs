@@ -86,7 +86,7 @@ namespace DXGame.Core.Components.Basic
         PHYSICS = HIGHEST,
         HIGH = 1,
         NORMAL = 5,
-        WORLD_GRAVITY = NORMAL,
-        LOW = 10
+        LOW = 10,
+        WORLD_GRAVITY = 100
     }
 }

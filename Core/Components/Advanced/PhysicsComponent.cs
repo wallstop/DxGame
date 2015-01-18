@@ -40,6 +40,18 @@ namespace DXGame.Core.Components.Advanced
             set { acceleration_ = VectorUtils.ConstrainVector(value, maxAcceleration_); }
         }
 
+        public virtual Vector2 Position
+        {
+            get { return position_.Position; }
+            set { position_.Position = value; }
+        }
+
+        public virtual PositionalComponent PositionalComponent
+        {
+            get { return position_; }
+            set { WithPositionalComponent(value); }
+        }
+
         public PhysicsComponent WithVelocity(Vector2 velocity)
         {
             Debug.Assert(velocity != null, "PhysicsComponent cannot be initialized with null velocity");

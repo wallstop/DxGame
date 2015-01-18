@@ -19,6 +19,7 @@ namespace DXGame.Core.Generators
         private readonly SpatialComponent space_;
         private readonly StateComponent state_;
         private readonly AnimationComponent animation_;
+        private readonly WeaponComponent weapon_;
         private readonly DxGame game_;
 
         // Addendum to prior TODO: change isLocalPlayer to something that's not a bool
@@ -37,14 +38,15 @@ namespace DXGame.Core.Generators
             AddPlayerStates();
             animation_ = new AnimationComponent(game_).WithPosition(space_).WithState(state_);
             AddPlayerAnimations();
-            input_ = new SimplePlayerInputComponent(game_).WithPhysics(physics_).WithPlayerState(state_);
+            weapon_ = new RangedWeaponComponent(game_).WithPhysicsComponent(physics_).WithDamage(50);
+            input_ = new SimplePlayerInputComponent(game_).WithPhysics(physics_).WithPlayerState(state_).WithWeapon(weapon_);
         }
 
         public override List<GameObject> Generate()
         {
             var objects = new List<GameObject>();
             var player = new GameObject();
-            player.WithComponents(space_, physics_, animation_, input_, state_);
+            player.WithComponents(space_, physics_, animation_, input_, state_, weapon_);
             objects.Add(player);
             return objects;
         }

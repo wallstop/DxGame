@@ -17,12 +17,6 @@ namespace DXGame.Core.Components.Advanced
         {
         }
 
-        private Vector2 Position
-        {
-            get { return position_.Position; }
-            set { position_.Position = value; }
-        }
-
         private Rectangle Space
         {
             get { return ((SpatialComponent) position_).Space; }
@@ -58,6 +52,7 @@ namespace DXGame.Core.Components.Advanced
                 we are collision free. The PhysicsComponent's update cycle may place us into some kind of state where
                 we're colliding with the map, so we need to handle that.
             */
+            var temp = this;
             base.Update(gameTime);
 
             var map = DxGame.Model<MapModel>();

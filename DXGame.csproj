@@ -95,7 +95,11 @@
     <Compile Include="Core\Animation.cs" />
     <Compile Include="Core\Components\Advanced\AnimationComponent.cs" />
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
+    <Compile Include="Core\Components\Advanced\PlayerProperties.cs" />
     <Compile Include="Core\Components\Advanced\PlayerStateComponent.cs" />
+    <Compile Include="Core\Components\Advanced\PropertiesComponent.cs" />
+    <Compile Include="Core\Components\Advanced\RangedWeaponComponent.cs" />
+    <Compile Include="Core\Components\Advanced\WeaponComponent.cs" />
     <Compile Include="Core\Components\Basic\Component.cs" />
     <Compile Include="Core\Components\Advanced\BoundedSpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\MapCollideablePhysicsComponent.cs" />
@@ -109,6 +113,7 @@
     <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
     <Compile Include="Core\GameComponentCollection.cs" />
     <Compile Include="Core\GameObject.cs" />
+    <Compile Include="Core\Models\CollisionModel.cs" />
     <Compile Include="Core\Models\GameModel.cs" />
     <Compile Include="Core\Generators\MapGenerator.cs" />
     <Compile Include="Core\Generators\PlayerGenerator.cs" />
@@ -140,6 +145,9 @@
     </Reference>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MSBuildExtensionsPath)\..\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
@@ -173,6 +181,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\MousePointer.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Orb.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\PlayerJumping.png">

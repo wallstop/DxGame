@@ -29,6 +29,7 @@ namespace DXGame.Core.Components.Advanced
             Debug.Assert(states_.Contains(state),
                 String.Format("StateComponent cannot have its state set to one it doesn't know about: {0}, {1}", state,
                     states_));
+
             if (!states_.Contains(state))
             {
                 State = state;

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -13,6 +14,7 @@ namespace DXGame.Core.Components.Advanced
         private static readonly float MOVE_SPEED = 10.0f;
         protected PhysicsComponent physics_;
         protected StateComponent state_;
+        protected WeaponComponent weapon_;
 
         private Vector2 lastAcceleration_;
 
@@ -24,24 +26,32 @@ namespace DXGame.Core.Components.Advanced
 
         public SimplePlayerInputComponent WithPhysics(PhysicsComponent physics)
         {
-            Debug.Assert(physics != null, "SimplePlayerInput cannot be assigned a null PhysicsComponent");
+            Debug.Assert(!GenericUtils.IsNullOrDefault(physics), "SimplePlayerInput cannot be assigned a null PhysicsComponent");
             physics_ = physics;
             return this;
         }
 
         public SimplePlayerInputComponent WithPlayerState(StateComponent state)
         {
-            Debug.Assert(state != null, "SimplePlayerInput cannot be initialized with a null PlayerState");
+            Debug.Assert(!GenericUtils.IsNullOrDefault(state), "SimplePlayerInput cannot be initialized with a null PlayerState");
             state_ = state;
+            return this;
+        }
+
+        public SimplePlayerInputComponent WithWeapon(WeaponComponent weapon)
+        {
+            Debug.Assert(!GenericUtils.IsNullOrDefault(weapon),
+                "SimplePlayerInput cannot be initialized with a null weapon");
+            weapon_ = weapon;
             return this;
         }
 
         public override void Update(GameTime gameTime)
         {
-            HandleInput();
+            HandleInput(gameTime);
         }
 
-        protected virtual void HandleInput()
+        protected virtual void HandleInput(GameTime gameTime)
         {
             Vector2 acceleration = physics_.Acceleration;
             Vector2 velocity = physics_.Velocity;
@@ -57,7 +67,7 @@ namespace DXGame.Core.Components.Advanced
                 {
                     switch (key)
                     {
-                    case Keys.Left:
+                    case Keys.A:
                         if (velocity.X < 0)
                         {
                             velocity.X = 1.5f * -MOVE_SPEED;
@@ -68,7 +78,7 @@ namespace DXGame.Core.Components.Advanced
                         }
                         isMoving = true;
                         break;
-                    case Keys.Right:
+                    case Keys.D:
                         if (velocity.X > 0)
                         {
                             velocity.X = 1.5f * MOVE_SPEED;
@@ -79,7 +89,7 @@ namespace DXGame.Core.Components.Advanced
                         }
                         isMoving = true;
                         break;
-                    case Keys.Up:
+                    case Keys.W:
                         // TODO: Remove shit code, replace with proper collision.
                         switch (state_.State)
                         {
@@ -94,9 +104,13 @@ namespace DXGame.Core.Components.Advanced
                             break;
                         }
                         break;
-                    case Keys.Down:
+                    case Keys.S:
+                        break;
+                    case Keys.F:
+                        weapon_.Attack(gameTime);
                         break;
                     }
+
                 }
             }
             //Really just want to know if they never pressed left or right so

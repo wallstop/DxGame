@@ -124,6 +124,14 @@ namespace DXGame.Main
             }
         }
 
+        public void AddAndInitializeGameObject(GameObject gameObject)
+        {
+            foreach (var component in gameObject.Components)
+            {
+                AddAndInitializeComponent(component);
+            }
+        }
+
         public void RemoveGameObject(GameObject gameObject)
         {
             List<GameComponent> components = gameObject.Components;

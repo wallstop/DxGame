@@ -11,7 +11,7 @@ namespace DXGame.Core.Components.Advanced
 {
     public class AnimationComponent : DrawableComponent
     {
-        private readonly Dictionary<String, Animation> states_ = new Dictionary<string, Animation>();
+        private readonly Dictionary<string, Animation> states_ = new Dictionary<string, Animation>();
         private String lastState_;
         protected StateComponent state_;
         protected PositionalComponent position_;
@@ -61,6 +61,15 @@ namespace DXGame.Core.Components.Advanced
 
         public override void Draw(GameTime gameTime)
         {
+            var currentState = state_.State;
+            if (lastState_ != currentState && states_.ContainsKey(currentState))
+            {
+                states_[lastState_].Reset();
+                lastState_ = currentState;
+            }
+
+            states_[lastState_].Draw(spriteBatch_);
+
             // TODO: Do timing based on gameTime
             if (lastState_ != state_.State)
             {

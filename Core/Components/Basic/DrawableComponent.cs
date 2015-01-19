@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
@@ -39,6 +40,8 @@ namespace DXGame.Core.Components.Basic
             This is a very important distinction.
         */
         protected readonly UniqueId id_ = new UniqueId();
+
+        public GameObject Parent { get; set; }
 
         protected SpriteBatch spriteBatch_;
 
@@ -86,6 +89,10 @@ namespace DXGame.Core.Components.Basic
         protected override void LoadContent()
         {
             base.LoadContent();
+        }
+
+        public virtual void HandleMessage(Message message)
+        {
         }
     }
 }

@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using DXGame.Core.Components.Basic;
+using DXGame.Core.Messaging;
+using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core
@@ -20,13 +24,15 @@ namespace DXGame.Core
         turn, are passed on to be held in structures in the main game class, where the Components will be
         properly Initialized/Updated/Drawn.
 
-        GameObject should gemerally not be inherited / derived from / held references to.
+        GameObject should generally not be inherited / derived from / held references to.
     </summary>
     */
 
     public class GameObject
     {
-        private readonly List<GameComponent> components_ = new List<GameComponent>();
+        private readonly List<Component> dxComponents_ = new List<Component>();
+        private readonly List<DrawableComponent> drawableComponents_ = new List<DrawableComponent>();
+        private readonly List<GameComponent> gameComponents_ = new List<GameComponent>(); 
         private readonly UniqueId id_ = new UniqueId();
 
         public UniqueId Id
@@ -48,7 +54,7 @@ namespace DXGame.Core
 
         public IEnumerable<T> ComponentsOfType<T>() where T : GameComponent
         {
-            return components_.OfType<T>();
+            return AllComponents.OfType<T>();
         }
 
         public T ComponentOfType<T>() where T : GameComponent
@@ -58,7 +64,12 @@ namespace DXGame.Core
 
         public List<GameComponent> Components
         {
-            get { return components_; }
+            get { return AllComponents.ToList(); }
+        }
+
+        private IEnumerable<GameComponent> AllComponents
+        {
+            get { return dxComponents_.Union(gameComponents_).Union(drawableComponents_); }
         }
 
         /**
@@ -68,15 +79,15 @@ namespace DXGame.Core
 
             The following code will produce a GameObject with component1 and component2 attached.
             <code>
-                GameObject object = new GameObject().AttachComponent(component1).AttachComponent(component2);
+                GameObject object = new GameObject().WithComponent(component1).WithComponent(component2);
             </code>
         </summary>
         */
 
-        protected GameObject AttachComponent(GameComponent component)
+        public GameObject WithComponent(GameComponent component)
         {
-            Debug.Assert(component != null, "Cannot assign a null component to a GameObject");
-            components_.Add(component);
+            Debug.Assert(!GenericUtils.IsNullOrDefault(component), "Cannot assign a null component to a GameObject");
+            AddComponent(component);
             return this;
         }
 
@@ -96,10 +107,48 @@ namespace DXGame.Core
 
         public GameObject WithComponents(params GameComponent[] components)
         {
-            Debug.Assert(components != null, "Cannot assign a null components to a GameObject");
-            components_.AddRange(components);
+            Debug.Assert(!GenericUtils.IsNullOrDefault(components), "Cannot assign a null components to a GameObject");
+            foreach (var component in components)
+            {
+                WithComponent(component);
+            }
             return this;
         }
+
+        // TODO: Check for prior containment
+        private void AddComponent(GameComponent component)
+        {
+            var dxComponent = component as Component;
+            if (dxComponent != null)
+            {
+                dxComponent.Parent = this;
+                dxComponents_.Add(dxComponent);
+                return;
+            }
+
+            var drawableComponent = component as DrawableComponent;
+            if (drawableComponent != null)
+            {
+                drawableComponent.Parent = this;
+                drawableComponents_.Add(drawableComponent);
+                return;
+            }
+
+            gameComponents_.Add(component);
+        }
+
+        public void BroadcastMessage(Message message)
+        {
+            foreach (var dxComponent in dxComponents_)
+            {
+                dxComponent.HandleMessage(message);
+            }
+            foreach (var drawableComponent in drawableComponents_)
+            {
+                drawableComponent.HandleMessage(message);
+            }
+        }
+
     }
 #pragma warning restore 649
 }

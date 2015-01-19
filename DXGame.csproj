@@ -94,6 +94,7 @@
   <ItemGroup>
     <Compile Include="Core\Animation.cs" />
     <Compile Include="Core\Components\Advanced\AnimationComponent.cs" />
+    <Compile Include="Core\Components\Advanced\CollisionDestructibleComponent.cs" />
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
     <Compile Include="Core\Components\Advanced\PlayerProperties.cs" />
     <Compile Include="Core\Components\Advanced\PlayerStateComponent.cs" />
@@ -113,6 +114,8 @@
     <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
     <Compile Include="Core\GameComponentCollection.cs" />
     <Compile Include="Core\GameObject.cs" />
+    <Compile Include="Core\Messaging\CollisionMessage.cs" />
+    <Compile Include="Core\Messaging\Message.cs" />
     <Compile Include="Core\Models\CollisionModel.cs" />
     <Compile Include="Core\Models\GameModel.cs" />
     <Compile Include="Core\Generators\MapGenerator.cs" />

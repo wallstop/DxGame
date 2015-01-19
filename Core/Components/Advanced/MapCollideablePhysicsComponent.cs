@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -52,11 +54,12 @@ namespace DXGame.Core.Components.Advanced
                 we are collision free. The PhysicsComponent's update cycle may place us into some kind of state where
                 we're colliding with the map, so we need to handle that.
             */
-            var temp = this;
             base.Update(gameTime);
 
             var map = DxGame.Model<MapModel>();
             IEnumerable<SpatialComponent> mapTiles = map.SpatialsInRange(MapQueryRegion);
+
+            CollisionMessage collision = new CollisionMessage();
 
             /*
                 Additionally, we should really re-query the map after we find a collision and update our position / velocity. 
@@ -96,10 +99,12 @@ namespace DXGame.Core.Components.Advanced
                     if (Position.Y + Dimensions.Y > mapBlockPosition.Y && mapBlockPosition.Y > Position.Y)
                     {
                         Position = new Vector2(Position.X, mapBlockPosition.Y - Dimensions.Y);
+                        collision.CollisionDirections.Add(CollisionDirection.South);
                     }
                     else // above collision
                     {
                         Position = new Vector2(Position.X, mapBlockPosition.Y + mapBlockDimensions.Y);
+                        collision.CollisionDirections.Add(CollisionDirection.North);
                     }
                     Velocity = new Vector2(Velocity.X, 0);
                     Acceleration = new Vector2(Acceleration.X, 0);
@@ -114,14 +119,22 @@ namespace DXGame.Core.Components.Advanced
                     if (Position.X < mapBlockPosition.X + mapBlockDimensions.X && mapBlockPosition.X < Position.X)
                     {
                         Position = new Vector2(mapBlockPosition.X + mapBlockDimensions.X, Position.Y);
+                        collision.CollisionDirections.Add(CollisionDirection.West);
                     }
                     else // right collision
                     {
                         Position = new Vector2(mapBlockPosition.X - Dimensions.X, Position.Y);
+                        collision.CollisionDirections.Add(CollisionDirection.East);
                     }
                     Velocity = new Vector2(0, Velocity.Y);
                     Acceleration = new Vector2(0, Acceleration.Y);
                 }
+            }
+
+            // Let everyone else know we collided (only if we collided with anything)
+            if (collision.CollisionDirections.Any())
+            {
+                Parent.BroadcastMessage(collision);
             }
         }
     }

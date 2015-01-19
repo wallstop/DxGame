@@ -1,8 +1,20 @@
-﻿using DXGame.Main;
+﻿using DXGame.Core.Messaging;
+using DXGame.Main;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Basic
 {
+
+    public enum UpdatePriority
+    {
+        HIGHEST = -1,
+        PHYSICS = HIGHEST,
+        HIGH = 1,
+        NORMAL = 5,
+        LOW = 10,
+        WORLD_GRAVITY = 100
+    }
+
     /**
     <summary>
         This class forms the base class for all Components. Components are a methodology for 
@@ -57,6 +69,8 @@ namespace DXGame.Core.Components.Basic
         */
         protected readonly UniqueId id_ = new UniqueId();
 
+        public GameObject Parent { get; set; }
+
         public UniqueId Id
         {
             get { return id_; }
@@ -78,15 +92,9 @@ namespace DXGame.Core.Components.Basic
             set { UpdateOrder = (int) value; }
             get { return (UpdatePriority) UpdateOrder; }
         }
-    }
 
-    public enum UpdatePriority
-    {
-        HIGHEST = -1,
-        PHYSICS = HIGHEST,
-        HIGH = 1,
-        NORMAL = 5,
-        LOW = 10,
-        WORLD_GRAVITY = 100
+        public virtual void HandleMessage(Message message)
+        {
+        }
     }
 }

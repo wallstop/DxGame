@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
@@ -68,7 +69,7 @@ namespace DXGame.Core.Components.Advanced
 
         public PhysicsComponent WithPositionalComponent(PositionalComponent position)
         {
-            Debug.Assert(position != null, "PhysicsComponent cannot be initialized with null position");
+            Debug.Assert(!GenericUtils.IsNullOrDefault(position), "PhysicsComponent cannot be initialized with null position");
             position_ = position;
             return this;
         }
@@ -95,22 +96,35 @@ namespace DXGame.Core.Components.Advanced
             Vector2 previousPosition = position_.Position;
             position_.Position += velocity;
 
-            // These checks will cease an object's velocity and acceleration in a direction if it was unable to move
-            // TODO: Remove shit code, replace with proper collision
-
-            if (previousPosition.X == position_.Position.X)
-            {
-                velocity.X = 0;
-                acceleration.X = 0;
-            }
-            if (previousPosition.Y == position_.Position.Y)
-            {
-                velocity.Y = 0;
-                acceleration.Y = 0;
-            }
-
             Velocity = velocity;
             Acceleration = acceleration;
+        }
+
+        public override void HandleMessage(Message message)
+        {
+            base.HandleMessage(message);
+            var messageAsCollision = message as CollisionMessage;
+            if (messageAsCollision != null)
+            {
+                var collisionDirections = messageAsCollision.CollisionDirections;
+                var velocity = Velocity;
+                // Check for x-wise collisions 
+                var acceleration = Acceleration;
+                if (collisionDirections.Contains(CollisionDirection.East) ||
+                    collisionDirections.Contains(CollisionDirection.West))
+                {
+                    velocity.X = 0;
+                    acceleration.X = 0;
+                }
+                if (collisionDirections.Contains(CollisionDirection.South) ||
+                    collisionDirections.Contains(CollisionDirection.North))
+                {
+                    velocity.Y = 0;
+                    acceleration.Y = 0;
+                }
+                Velocity = velocity;
+                Acceleration = acceleration;
+            }
         }
     }
 }

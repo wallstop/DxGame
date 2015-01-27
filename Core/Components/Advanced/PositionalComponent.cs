@@ -30,8 +30,6 @@ namespace DXGame.Core.Components.Advanced
         private static readonly ILog LOG = LogManager.GetLogger(typeof (PositionalComponent));
 
         protected Vector2 position_;
-        protected bool grounded_; // TODO: Remove, come up with a better way of determining "grounded" status
-
 
         /**
         <summary>
@@ -72,12 +70,6 @@ namespace DXGame.Core.Components.Advanced
             Debug.Assert(position != null, "PositionalComponent cannot be initialized with a null position");
             position_ = position;
             return this;
-        }
-
-        public bool Grounded
-        {
-            get { return grounded_; }
-            set { grounded_ = value; }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Messaging
 {
@@ -23,6 +24,27 @@ namespace DXGame.Core.Messaging
         {
             CollisionDirections.Add(direction);
             return this;
+        }
+
+        public CollisionMessage(Vector2 collisionVector)
+            : this()
+        {
+            if (collisionVector.X > 0)
+            {
+                WithDirection(CollisionDirection.East);
+            }
+            if (collisionVector.X < 0)
+            {
+                WithDirection(CollisionDirection.West);
+            }
+            if (collisionVector.Y > 0)
+            {
+                WithDirection(CollisionDirection.South);
+            }
+            if (collisionVector.Y < 0)
+            {
+                WithDirection(CollisionDirection.North);
+            }
         }
     }
 }

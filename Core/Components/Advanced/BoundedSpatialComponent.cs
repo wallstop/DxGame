@@ -1,4 +1,5 @@
 ﻿using System;
+using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
@@ -102,8 +103,13 @@ namespace DXGame.Core.Components.Advanced
                 float height = dimensions_.Y;
                 float x = MathUtils.Constrain(value.X, xBounds_.X, xBounds_.Y - width);
                 float y = MathUtils.Constrain(value.Y, yBounds_.X, yBounds_.Y - height);
-                grounded_ = (y != value.Y);
-                position_ = new Vector2(x, y);
+                var newPosition = new Vector2(x, y);
+                position_ = newPosition;
+                if (newPosition != value)
+                {
+                    Parent.BroadcastMessage(new CollisionMessage(value - newPosition));
+                }
+                
             }
         }
     }

@@ -9,7 +9,7 @@ namespace DXGame.Core.Components.Advanced
 {
     public class RangedWeaponComponent : WeaponComponent
     {
-        private const float velocity_ = 2.0f;
+        private const float velocity_ = 7.0f;
 
         public Vector2 Direction { get; set; }
 
@@ -22,7 +22,7 @@ namespace DXGame.Core.Components.Advanced
         public RangedWeaponComponent(DxGame game)
             : base(game)
         {
-            Cooldown = TimeSpan.FromSeconds(3);
+            Cooldown = TimeSpan.FromSeconds(0);
         }
 
         public RangedWeaponComponent WithDirection(Vector2 direction)

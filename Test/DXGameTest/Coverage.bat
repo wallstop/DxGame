@@ -2,4 +2,4 @@
 
 "../../packages/ReportGenerator.2.0.4.0/ReportGenerator.exe" "-reports:CodeCoverageResult.xml" "-targetdir:CodeCoverageReport"
 
-start file://%~dps0CodeCoverageReport\index.htm
+start file://%~dps0CodeCoverageReport/index.htm

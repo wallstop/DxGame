@@ -8,9 +8,12 @@ namespace DXGame.Core.Components.Advanced
     {
         public bool Clicked { get; private set; }
 
+        private bool ClickInProgress { get; set; }
+
         public MouseTrackingComponent(DxGame game) : base(game)
         {
             Clicked = false;
+            ClickInProgress = false;
         }
 
         public override void Update(GameTime gameTime)
@@ -18,7 +21,12 @@ namespace DXGame.Core.Components.Advanced
             base.Update(gameTime);
             MouseState mouseState = Mouse.GetState();
             Position = new Vector2(mouseState.Position.X, mouseState.Position.Y);
-            Clicked = mouseState.LeftButton == ButtonState.Pressed; // Only check left button for now. We can enhance this later.
+            if (ClickInProgress)
+            {
+                // Only check left button for now. We can enhance this later.
+                Clicked = mouseState.LeftButton == ButtonState.Released;
+            }
+            ClickInProgress = mouseState.LeftButton == ButtonState.Pressed;
         }
     }
 }

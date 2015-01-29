@@ -10,8 +10,8 @@ namespace DXGame.Core.Components.Advanced
 {
     public class SimplePlayerInputComponent : Component
     {
-        private static readonly float JUMP_SPEED = 10.0f;
-        private static readonly float MOVE_SPEED = 10.0f;
+        private const float JUMP_SPEED = 10.0f;
+        private const float MOVE_SPEED = 10.0f;
         protected PhysicsComponent physics_;
         protected StateComponent state_;
         protected WeaponComponent weapon_;
@@ -115,7 +115,7 @@ namespace DXGame.Core.Components.Advanced
             }
             //Really just want to know if they never pressed left or right so
             //horizontal movement can be stopped even while jumping.
-            if (lastAcceleration_.Y == 0 && acceleration.Y == 0 && velocity.Y == 0)
+            if (MathUtils.FuzzyCompare(lastAcceleration_.Y, 0) == 0 && MathUtils.FuzzyCompare(acceleration.Y, 0) == 0 && MathUtils.FuzzyCompare(velocity.Y, 0) == 0)
             {
                 state = "None";
             }

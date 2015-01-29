@@ -41,6 +41,7 @@ namespace DXGame.Core.Models
             get
             {
                 var mapObjects = new List<GameObject>();
+                // Do not convert this to LINQ - it sucks
                 foreach (KeyValuePair<GameObject, SpatialComponent> element in map_)
                 {
                     if (element.Key != null && element.Value != null)
@@ -69,9 +70,11 @@ namespace DXGame.Core.Models
         {
             List<GameObject> mapObjects = generator.Generate();
             var model = new MapModel(game, generator.MapBounds.Width / MapGenerator.BlockSize,
-                generator.MapBounds.Height / MapGenerator.BlockSize, MapGenerator.BlockSize);
-            model.PlayerPosition = generator.PlayerPosition;
-            model.MapBounds = generator.MapBounds;
+                generator.MapBounds.Height / MapGenerator.BlockSize, MapGenerator.BlockSize)
+            {
+                PlayerPosition = generator.PlayerPosition,
+                MapBounds = generator.MapBounds
+            };
             foreach (GameObject mapObject in mapObjects)
             {
                 model.AddObject(mapObject);
@@ -91,12 +94,13 @@ namespace DXGame.Core.Models
         {
             var spatials = gameObject.ComponentsOfType<SpatialComponent>();
             // Make sure we can fit all of the spatial components into the map before we add them
-            bool allInserted = spatials.Aggregate(true, (current, spatial) => current && CanInsertIntoMap(spatial));
+            var spatialComponents = spatials as SpatialComponent[] ?? spatials.ToArray();
+            bool allInserted = spatialComponents.Aggregate(true, (current, spatial) => current && CanInsertIntoMap(spatial));
 
             // If they all fit, add them
             if (allInserted)
             {
-                foreach (SpatialComponent spatial in spatials)
+                foreach (SpatialComponent spatial in spatialComponents)
                 {
                     InsertIntoMap(gameObject, spatial);
                 }
@@ -229,28 +233,26 @@ namespace DXGame.Core.Models
                 return false;
             }
 
-            bool insertedOk = true;
             for (int i = 0; i < width; ++i)
             {
                 for (int j = 0; j < height; ++j)
                 {
                     var mapElement = map_[x + i, y + j];
                     /* We only care if the Value (SpatialComponent) is null. If a GameObject is there, but has no space, then there really isn't anything there */
-                    insertedOk = insertedOk && (mapElement.Value == null);
-                    if (!insertedOk)
-                    {
-                        Debug.Assert(insertedOk,
-                            String.Format(
-                                "Map element {0} already existed, found ({1}, {2}, {3}, {4}), tried to insert ({5}, {6}, {7}, {8})",
-                                mapElement.Value,
-                                mapElement.Value.Space.X, mapElement.Value.Space.Y, mapElement.Value.Space.Width,
-                                mapElement.Value.Space.Height, space.Space.X, space.Space.Y, space.Space.Width,
-                                space.Space.Height));
-                    }
+                    if (mapElement.Value == null) continue;
+                    // Only assert on false
+                    Debug.Assert(false,
+                        String.Format(
+                            "Map element {0} already existed, found ({1}, {2}, {3}, {4}), tried to insert ({5}, {6}, {7}, {8})",
+                            mapElement.Value,
+                            mapElement.Value.Space.X, mapElement.Value.Space.Y, mapElement.Value.Space.Width,
+                            mapElement.Value.Space.Height, space.Space.X, space.Space.Y, space.Space.Width,
+                            space.Space.Height));
+                    return false;
                 }
             }
 
-            return insertedOk;
+            return true;
         }
 
         private void InsertIntoMap(GameObject gameObject, SpatialComponent space)

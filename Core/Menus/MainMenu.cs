@@ -1,5 +1,4 @@
-﻿using DXGame.Core.Models;
-using DXGame.Core.Utils;
+﻿using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -26,9 +25,8 @@ namespace DXGame.Core.Menus
 
         private void PlayAction()
         {
-            Game.Components.Remove(this);
             Remove();
-            DxGame.AddAndInitializeComponent(new GameModel(DxGame));
+            DxGame.AddAndInitializeComponent(new PlayMenu(DxGame));
         }
     }
 }

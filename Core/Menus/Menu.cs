@@ -11,7 +11,7 @@ namespace DXGame.Core.Menus
     {
         private readonly List<MenuItem> menuItems_ = new List<MenuItem>();
 
-        private GameObject mousePointer_;
+        private readonly GameObject mousePointer_;
 
         protected List<MenuItem> MenuItems
         {
@@ -69,6 +69,7 @@ namespace DXGame.Core.Menus
 
         protected void Remove()
         {
+            DxGame.Components.Remove(this);
             DxGame.RemoveGameObject(mousePointer_);
         }
     }

@@ -13,7 +13,7 @@ namespace DXGame.Core
         private String assetName_;
         private Texture2D spriteSheet_;
         private int currentFrame_;
-        private int totalFrames_;
+        private readonly int totalFrames_;
         protected PositionalComponent position_;
 
         public Animation(String spriteSheet, int totalFrames = 1)

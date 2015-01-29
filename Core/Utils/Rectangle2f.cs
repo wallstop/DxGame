@@ -189,7 +189,7 @@ namespace DXGame.Core.Utils
             try
             {
                 var rectangle = (Rectangle2f) rhs;
-                return this.Equals(rectangle);
+                return Equals(rectangle);
             }
             catch (Exception)
             {
@@ -219,9 +219,7 @@ namespace DXGame.Core.Utils
 
         public bool Equals(Rectangle2f rhs)
         {
-            if (rhs != null)
-                return this == rhs;
-            return false;
+            return this == rhs;
         }
     }
 }

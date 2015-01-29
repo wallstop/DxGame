@@ -20,26 +20,24 @@ namespace DXGame.Core.Generators
         private readonly StateComponent state_;
         private readonly AnimationComponent animation_;
         private readonly WeaponComponent weapon_;
-        private readonly DxGame game_;
 
         // Addendum to prior TODO: change isLocalPlayer to something that's not a bool
         public PlayerGenerator(DxGame game, Vector2 playerPosition, Rectangle bounds)
         {
-            game_ = game;
             space_ =
-                (BoundedSpatialComponent) new BoundedSpatialComponent(game_).WithXMin(bounds.X)
+                (BoundedSpatialComponent) new BoundedSpatialComponent(game).WithXMin(bounds.X)
                     .WithXMax(bounds.Width)
                     .WithXMin(bounds.Y)
                     .WithYMax(bounds.Height)
                     .WithDimensions(new Vector2(50, 100)) // TODO: un-hard code these
                     .WithPosition(playerPosition);
-            physics_ = new MapCollideablePhysicsComponent(game_).WithMaxVelocity(MAX_VELOCITY).WithPositionalComponent(space_);
-            state_ = new StateComponent(game_);
+            physics_ = new MapCollideablePhysicsComponent(game).WithMaxVelocity(MAX_VELOCITY).WithPositionalComponent(space_);
+            state_ = new StateComponent(game);
             AddPlayerStates();
-            animation_ = new AnimationComponent(game_).WithPosition(space_).WithState(state_);
+            animation_ = new AnimationComponent(game).WithPosition(space_).WithState(state_);
             AddPlayerAnimations();
-            weapon_ = new RangedWeaponComponent(game_).WithPhysicsComponent(physics_).WithDamage(50);
-            input_ = new SimplePlayerInputComponent(game_).WithPhysics(physics_).WithPlayerState(state_).WithWeapon(weapon_);
+            weapon_ = new RangedWeaponComponent(game).WithPhysicsComponent(physics_).WithDamage(50);
+            input_ = new SimplePlayerInputComponent(game).WithPhysics(physics_).WithPlayerState(state_).WithWeapon(weapon_);
         }
 
         public override List<GameObject> Generate()

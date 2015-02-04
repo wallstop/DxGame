@@ -114,6 +114,10 @@
     <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
     <Compile Include="Core\GameComponentCollection.cs" />
     <Compile Include="Core\GameObject.cs" />
+    <Compile Include="Core\Input\InputEvent.cs" />
+    <Compile Include="Core\Input\InputHandler.cs" />
+    <Compile Include="Core\Input\KeyboardEvent.cs" />
+    <Compile Include="Core\Input\MouseEvent.cs" />
     <Compile Include="Core\Menus\HostMultiplayerMenu.cs" />
     <Compile Include="Core\Menus\JoinMultiplayerMenu.cs" />
     <Compile Include="Core\Messaging\CollisionMessage.cs" />
@@ -129,6 +133,7 @@
     <Compile Include="Core\Menus\MenuItem.cs" />
     <Compile Include="Core\Menus\PlayMenu.cs" />
     <Compile Include="Core\Model.cs" />
+    <Compile Include="Core\Models\InputModel.cs" />
     <Compile Include="Core\Models\MapModel.cs" />
     <Compile Include="Core\Models\WorldGravityModel.cs" />
     <Compile Include="Core\NetworkFrame.cs" />

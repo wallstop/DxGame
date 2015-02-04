@@ -1,6 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Input;
+using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
@@ -48,10 +51,11 @@ namespace DXGame.Core.Components.Advanced
 
         public override void Update(GameTime gameTime)
         {
-            HandleInput(gameTime);
+            IEnumerable<KeyboardEvent> events = DxGame.Model<InputModel>().Events;
+            HandleInput(events, gameTime);
         }
 
-        protected virtual void HandleInput(GameTime gameTime)
+        protected virtual void HandleInput(IEnumerable<KeyboardEvent> events, GameTime gameTime)
         {
             Vector2 acceleration = physics_.Acceleration;
             Vector2 velocity = physics_.Velocity;
@@ -59,15 +63,11 @@ namespace DXGame.Core.Components.Advanced
 
             bool isMoving = false;
 
-            KeyboardState keyboardState = Keyboard.GetState();
-            Keys[] pressedKeys = keyboardState.GetPressedKeys();
-            if (pressedKeys.Length > 0)
+            foreach (KeyboardEvent keyEvent in events)
             {
-                foreach (Keys key in pressedKeys)
+                switch (keyEvent.Key)
                 {
-                    switch (key)
-                    {
-                    case Keys.A:
+                    case Keys.Left:
                         if (velocity.X < 0)
                         {
                             velocity.X = 1.5f * -MOVE_SPEED;
@@ -78,7 +78,7 @@ namespace DXGame.Core.Components.Advanced
                         }
                         isMoving = true;
                         break;
-                    case Keys.D:
+                    case Keys.Right:
                         if (velocity.X > 0)
                         {
                             velocity.X = 1.5f * MOVE_SPEED;
@@ -89,30 +89,29 @@ namespace DXGame.Core.Components.Advanced
                         }
                         isMoving = true;
                         break;
-                    case Keys.W:
+                    case Keys.Up:
                         // TODO: Remove shit code, replace with proper collision.
                         switch (state_.State)
                         {
-                        case "Walking":
-                        case "None":
-                            if (state_.States.Contains("Jumping"))
-                            {
-                                state = "Jumping";
-                                velocity.Y -= JUMP_SPEED;
-                                acceleration.Y -= JUMP_SPEED;
-                            }
-                            break;
+                            case "Walking":
+                            case "None":
+                                if (state_.States.Contains("Jumping"))
+                                {
+                                    state = "Jumping";
+                                    velocity.Y -= JUMP_SPEED;
+                                    acceleration.Y -= JUMP_SPEED;
+                                }
+                                break;
                         }
                         break;
-                    case Keys.S:
+                    case Keys.Down:
                         break;
-                    case Keys.F:
+                    case Keys.Space:
                         weapon_.Attack(gameTime);
                         break;
-                    }
-
                 }
             }
+
             //Really just want to know if they never pressed left or right so
             //horizontal movement can be stopped even while jumping.
             if (MathUtils.FuzzyCompare(lastAcceleration_.Y, 0) == 0 && MathUtils.FuzzyCompare(acceleration.Y, 0) == 0 && MathUtils.FuzzyCompare(velocity.Y, 0) == 0)

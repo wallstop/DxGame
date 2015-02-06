@@ -112,6 +112,8 @@
     <Compile Include="Core\Components\Basic\DrawableComponent.cs" />
     <Compile Include="Core\Components\Basic\SpriteBatchEnder.cs" />
     <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
+    <Compile Include="Core\Frames\AbstractFrame.cs" />
+    <Compile Include="Core\Frames\GameTimeFrame.cs" />
     <Compile Include="Core\GameComponentCollection.cs" />
     <Compile Include="Core\GameObject.cs" />
     <Compile Include="Core\Input\InputEvent.cs" />

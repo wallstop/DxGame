@@ -20,8 +20,6 @@ namespace DXGame.Core.Models
         // TODO: Move this out of here. Models should not contain other models.
         public MapModel MapModel { get; set; }
 
-        public InputModel InputModel { get; set; }
-
         public SpatialComponent FocalPoint { get; protected set; }
 
         protected SpriteBatch SpriteBatch { get; set; }
@@ -45,16 +43,12 @@ namespace DXGame.Core.Models
                 worldGravity.AttachPhysicsComponent(physicsComponent);
             }
 
-            var inputModel = new InputModel(DxGame);
-
             // TODO: Split these out into some kind of unified loading... thing
-            DxGame.AddAndInitializeComponent(inputModel);
             DxGame.AddAndInitializeGameObjects(playerGenerator.Generate());
             DxGame.AddAndInitializeComponent(worldGravity);
             DxGame.AttachModel(this);
             DxGame.AttachModel(MapModel);
             DxGame.AttachModel(worldGravity);
-            DxGame.AttachModel(inputModel);
             base.Initialize();
         }
 

@@ -122,6 +122,7 @@
     <Compile Include="Core\Input\MouseEvent.cs" />
     <Compile Include="Core\Menus\HostMultiplayerMenu.cs" />
     <Compile Include="Core\Menus\JoinMultiplayerMenu.cs" />
+    <Compile Include="Core\Menus\TextBox.cs" />
     <Compile Include="Core\Messaging\CollisionMessage.cs" />
     <Compile Include="Core\Messaging\Message.cs" />
     <Compile Include="Core\Models\CollisionModel.cs" />

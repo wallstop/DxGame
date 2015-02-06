@@ -55,6 +55,9 @@ namespace DXGame.Main
                 PreferredBackBufferWidth = Screen.Width
             };
 
+            TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 60.0f);
+            IsFixedTimeStep = false;
+
             Content.RootDirectory = "Content";
         }
 

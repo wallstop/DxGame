@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework.Input;
+
 #endregion
 
 namespace DXGame.Main
@@ -19,7 +21,6 @@ namespace DXGame.Main
         static void Main(string [] args)
         {
             log4net.Config.XmlConfigurator.Configure();
-
             using (var game = new DxGame())
                 game.Run();
         }

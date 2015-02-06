@@ -1,4 +1,5 @@
-﻿using DXGame.Core.Utils;
+﻿using DXGame.Core.Models;
+using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -20,6 +21,12 @@ namespace DXGame.Core.Menus
                     .WithSpriteFont(spriteFont)
                     .WithSpace(new Rectangle2f(400, 400, 100, 100));
             MenuItems.Add(play);
+
+            var inputModel = new InputModel(DxGame);
+            inputModel.Initialize();
+            DxGame.AddAndInitializeComponent(inputModel);
+            DxGame.AttachModel(inputModel);
+
             base.Initialize();
         }
 

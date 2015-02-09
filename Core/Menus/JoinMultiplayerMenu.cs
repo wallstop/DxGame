@@ -8,8 +8,11 @@ namespace DXGame.Core.Menus
 {
     public class JoinMultiplayerMenu : Menu
     {
-        public JoinMultiplayerMenu(DxGame game) : base(game)
+        public JoinMultiplayerMenu(DxGame game) 
+            : base(game)
         {
         }
+
+
     }
 }

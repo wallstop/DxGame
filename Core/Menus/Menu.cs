@@ -67,10 +67,10 @@ namespace DXGame.Core.Menus
             base.Update(gameTime);
         }
 
-        protected virtual void Remove()
+        public override void Remove()
         {
-            DxGame.Components.Remove(this);
             DxGame.RemoveGameObject(mousePointer_);
+            base.Remove();
         }
     }
 }

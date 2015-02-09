@@ -14,6 +14,7 @@ namespace DXGame.Core.Menus
 
         public override void Initialize()
         {
+            // TODO: Remove dependence on hardcoded font values
             var spriteFont = DxGame.Content.Load<SpriteFont>("Fonts/Gungsuh");
             MenuItem play =
                 new MenuItem().WithText("Play")

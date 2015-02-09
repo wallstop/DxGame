@@ -96,5 +96,10 @@ namespace DXGame.Core.Components.Basic
         public virtual void HandleMessage(Message message)
         {
         }
+
+        public virtual void Remove()
+        {
+            DxGame.RemoveComponent(this);
+        }
     }
 }

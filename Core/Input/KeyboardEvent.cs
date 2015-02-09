@@ -73,7 +73,7 @@ namespace DXGame.Core.Input
             {Keys.OemTilde, '`'},
             {Keys.OemBackslash, '\\'},
             {Keys.OemMinus, '-'},
-            {Keys.OemPipe, '|'},
+            {Keys.OemPipe, '|'}
         };
 
         public Keys Key { get; set; }

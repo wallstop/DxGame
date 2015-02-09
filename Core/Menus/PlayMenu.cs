@@ -1,4 +1,5 @@
 ﻿using DXGame.Core.Components.Advanced;
+using DXGame.Core.GraphicsWidgets;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -21,20 +22,20 @@ namespace DXGame.Core.Menus
         {
             var spriteFont = DxGame.Content.Load<SpriteFont>("Fonts/Gungsuh");
             MenuItem singlePlayer = new MenuItem().WithText("Single Player")
-                                                  .WithAction(SinglePlayerAction)
-                                                  .WithSpriteFont(spriteFont)
-                                                  .WithSpace(new Rectangle2f(400, 400, 100, 100));
+                .WithAction(SinglePlayerAction)
+                .WithSpriteFont(spriteFont)
+                .WithSpace(new Rectangle2f(400, 400, 100, 100));
             // TODO: Base these off some centroid of screen
 
             MenuItem hostMultiplayer = new MenuItem().WithText("Host Multiplayer")
-                                                     .WithAction(HostMultiplayer)
-                                                     .WithSpriteFont(spriteFont)
-                                                     .WithSpace(new Rectangle2f(400, 500, 100, 200));
+                .WithAction(HostMultiplayer)
+                .WithSpriteFont(spriteFont)
+                .WithSpace(new Rectangle2f(400, 500, 100, 200));
 
             MenuItem joinMultiplayer = new MenuItem().WithText("Join Multiplayer")
-                                                     .WithAction(JoinMultiplayer)
-                                                     .WithSpriteFont(spriteFont)
-                                                     .WithSpace(new Rectangle2f(400, 600, 100, 200));
+                .WithAction(JoinMultiplayer)
+                .WithSpriteFont(spriteFont)
+                .WithSpace(new Rectangle2f(400, 600, 100, 200));
 
             SetupTextBox();
 
@@ -51,8 +52,8 @@ namespace DXGame.Core.Menus
                 new SpatialComponent(DxGame).WithDimensions(new Vector2 {X = 200.0f, Y = 50.0f}).WithPosition(600, 500);
             var textBox =
                 new TextBox(DxGame).WithSpatialComponent(spatial)
-                                   .WithBackGroundColor(Color.WhiteSmoke)
-                                   .WithTextColor(Color.SteelBlue);
+                    .WithBackGroundColor(Color.WhiteSmoke)
+                    .WithTextColor(Color.SteelBlue);
 
             var spriteFont = DxGame.Content.Load<SpriteFont>("Fonts/Gungsuh");
 
@@ -62,9 +63,9 @@ namespace DXGame.Core.Menus
             DxGame.AddAndInitializeComponent(ScratchBox);
         }
 
-        protected override void Remove()
+        public override void Remove()
         {
-            DxGame.Components.Remove(ScratchBox);
+            DxGame.RemoveComponent(ScratchBox);
             base.Remove();
         }
 
@@ -76,10 +77,14 @@ namespace DXGame.Core.Menus
 
         private void HostMultiplayer()
         {
+            Remove();
+            DxGame.AddAndInitializeComponent(new HostMultiplayerMenu(DxGame));
         }
 
         private void JoinMultiplayer()
         {
+            Remove();
+            DxGame.AddAndInitializeComponent(new JoinMultiplayerMenu(DxGame));
         }
     }
 }

@@ -144,6 +144,19 @@ namespace DXGame.Main
             }
         }
 
+        public void RemoveComponent(GameComponent component)
+        {
+            Components.Remove(component);
+        }
+
+        public void RemoveComponents(params GameComponent[] components)
+        {
+            foreach (var component in components)
+            {
+                RemoveComponent(component);
+            }
+        }
+
         protected override void Initialize()
         {
             SpriteBatch = new SpriteBatch(GraphicsDevice);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Main;
@@ -62,7 +61,7 @@ namespace DXGame.Core.Input
             }
 
             // Check for new events
-            foreach (KeyboardEvent keyEvent in currentKeys.Select(key => new KeyboardEvent()
+            foreach (KeyboardEvent keyEvent in currentKeys.Select(key => new KeyboardEvent
             {
                 Key = key,
                 Duration = TimeSpan.FromSeconds(0),

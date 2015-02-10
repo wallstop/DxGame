@@ -24,7 +24,7 @@ namespace DXGame.Core.Menus
             var spatial = (SpatialComponent)
                 new SpatialComponent(DxGame).WithDimensions(new Vector2 {X = 200.0f, Y = spriteFont.LineSpacing}).WithPosition(600, 500);
 
-            // Ports have a range of 0 - 65536 ( 2 ^ 16 - 1) -> max length of 5
+            // Ports have a range of 0 - 65536 (2 ^ 16 - 1) -> max length of 5
             var portBox =
                 new TextBox(DxGame).WithSpatialComponent(spatial)
                     .WithBackGroundColor(Color.White)

@@ -30,6 +30,10 @@ namespace DXGame.Core.GraphicsWidgets
             {
                 // TODO: Move the bounding logic more into here (will have to change how keypresses are handled - each keystroke will update the string)
                 cursorPosition_ = Math.Max(value, 0);
+                if (IsMaxLengthSet())
+                {
+                    cursorPosition_ = MathUtils.Constrain(cursorPosition_, 0, MaxLength);
+                }
             }
         }
 
@@ -167,10 +171,16 @@ namespace DXGame.Core.GraphicsWidgets
             }
 
             Text = preCursor + typedText + postCursor;
-            if (MaxLength != 0 && MaxLength < Text.Length)
+            if (IsMaxLengthSet() && MaxLength < Text.Length)
             {
                 Text = Text.Substring(0, MaxLength);
             }
+        }
+
+
+        protected bool IsMaxLengthSet()
+        {
+            return MaxLength != 0;
         }
     }
 }

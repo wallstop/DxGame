@@ -20,8 +20,11 @@ namespace DXGame.Core.GraphicsWidgets
 {
     public class TextBox : DrawableComponent
     {
-        private int cursorPosition_;
         public string Text { get; protected set; }
+        public SpatialComponent SpatialComponent { get; protected set; }
+
+        private int cursorPosition_;
+        private BlinkingCursor blinkingCursor_;
 
         protected int CursorPosition
         {
@@ -38,7 +41,6 @@ namespace DXGame.Core.GraphicsWidgets
         }
 
         protected SpriteFont SpriteFont { get; set; }
-        public SpatialComponent SpatialComponent { get; protected set; }
         protected Texture2D Texture { get; set; }
         protected Color TextColor { get; set; }
         protected int MaxLength { get; set; }
@@ -97,6 +99,7 @@ namespace DXGame.Core.GraphicsWidgets
         {
             GenericUtils.CheckNullOrDefault(SpatialComponent);
             GenericUtils.CheckNullOrDefault(SpriteFont);
+            GenericUtils.CheckNullOrDefault(Texture);
 
             spriteBatch_.Draw(Texture, SpatialComponent.Position);
             spriteBatch_.DrawString(SpriteFont, Text, SpatialComponent.Position, TextColor);

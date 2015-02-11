@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -15,9 +14,12 @@ namespace DXGame.Core.GraphicsWidgets
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (BlinkingCursor));
 
+        public Vector2 Origin { get; set; }
+        public float Width { get; protected set; }
+        public float Height { get; protected set; }
         public TimeSpan BlinkRate { get; protected set; }
-        public SpatialComponent SpatialComponent { get; protected set; }
         public bool Drawn { get; protected set; }
+        public Color Color { get; protected set; }
 
         protected TimeSpan LastToggled { get; set; }
         protected Texture2D Texture { get; set; }
@@ -25,11 +27,13 @@ namespace DXGame.Core.GraphicsWidgets
         public BlinkingCursor(DxGame game)
             : base(game)
         {
+            // TODO: Move this kind of thing to Initialize()? IDK what the idiomatic approach is
             Drawn = false;
             LastToggled = TimeSpan.FromSeconds(0);
+            WithBlinkRate(2);
         }
 
-        public BlinkingCursor WithBlinkRate(int blinkRate)
+        public BlinkingCursor WithBlinkRate(float blinkRate)
         {
             return WithBlinkRate(TimeSpan.FromSeconds(1.0 / blinkRate));
         }
@@ -38,30 +42,33 @@ namespace DXGame.Core.GraphicsWidgets
         {
             Debug.Assert(blinkRate > TimeSpan.FromSeconds(0),
                 "Blinking Cursor cannot be initialized with a zero timespan!");
-            LOG.Debug(String.Format("Setting Blinking Cursor {0} BlinkRate to {1}", this, blinkRate));
             BlinkRate = blinkRate;
             return this;
         }
 
-        public BlinkingCursor WithSpatialComponent(SpatialComponent spatial)
+        public BlinkingCursor WithWidth(float width)
         {
-            GenericUtils.CheckNullOrDefault(spatial,
-                "Blinking Cursor cannot be instantiaed with a null Spatial Component");
-            SpatialComponent = spatial;
-            var width = (int) SpatialComponent.Width;
-            var height = (int) SpatialComponent.Height;
-            Texture = new Texture2D(GraphicsDevice, width, height);
+            Debug.Assert(width > 0, "Blinking Cursor cannot be initialized with a non-positive width");
+            Width = width;
+            return this;
+        }
+
+        public BlinkingCursor WithHeight(float height)
+        {
+            Debug.Assert(height > 0, "Blinking Cursor cannot be initialized with a non-positive height");
+            Height = height;
+            return this;
+        }
+
+        public BlinkingCursor WithOrigin(Vector2 origin)
+        {
+            Origin = origin;
             return this;
         }
 
         public BlinkingCursor WithColor(Color color)
         {
-            GenericUtils.CheckNullOrDefault(Texture,
-                String.Format("Blinking Cursor cannot be initialized with color {0} without a valid Texture", color));
-            LOG.Debug(String.Format("Setting Blinking Cursor {0} Color to {1}", this, color));
-            var width = (int) SpatialComponent.Width;
-            var height = (int) SpatialComponent.Height;
-            Texture.SetData(Enumerable.Repeat(color, width * height).ToArray());
+            Color = color;
             return this;
         }
 
@@ -80,12 +87,15 @@ namespace DXGame.Core.GraphicsWidgets
         public override void Draw(GameTime gameTime)
         {
             // Only draw ourselves if we're in our "Drawn" state
-            GenericUtils.CheckNullOrDefault(SpatialComponent);
-            GenericUtils.CheckNullOrDefault(Texture);
+            if (GenericUtils.IsNullOrDefault(Texture))
+            {
+                Texture = new Texture2D(GraphicsDevice, (int) Width, (int) Height);
+                Texture.SetData(Enumerable.Repeat(Color, (int) (Width * Height)).ToArray());
+            }
 
             if (Drawn)
             {
-                spriteBatch_.Draw(Texture, SpatialComponent.Position);
+                spriteBatch_.Draw(Texture, Origin);
             }
             base.Draw(gameTime);
         }

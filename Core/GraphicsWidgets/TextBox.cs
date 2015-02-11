@@ -12,10 +12,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-/*
-    TODO: Blinking cursor (separate class)
-*/
-
 namespace DXGame.Core.GraphicsWidgets
 {
     public class TextBox : DrawableComponent
@@ -24,7 +20,7 @@ namespace DXGame.Core.GraphicsWidgets
         public SpatialComponent SpatialComponent { get; protected set; }
 
         private int cursorPosition_;
-        private BlinkingCursor blinkingCursor_;
+        private readonly BlinkingCursor blinkingCursor_;
 
         protected int CursorPosition
         {
@@ -51,12 +47,18 @@ namespace DXGame.Core.GraphicsWidgets
             Text = "";
             CursorPosition = 0;
             MaxLength = 0;
+            blinkingCursor_ = new BlinkingCursor(DxGame).WithHeight(1); // 1-pixel blinking cursor by default
         }
 
         public TextBox WithSpriteFont(SpriteFont spriteFont)
         {
             GenericUtils.CheckNullOrDefault(spriteFont, "Cannot instantiate a TextBox with a null SpriteFont!");
             SpriteFont = spriteFont;
+
+            const string testString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            var stringMeasurement = SpriteFont.MeasureString(testString);
+            // Take an average width over the alphabet
+            blinkingCursor_.WithWidth(stringMeasurement.X / testString.Length);
             return this;
         }
 
@@ -85,6 +87,7 @@ namespace DXGame.Core.GraphicsWidgets
         public TextBox WithTextColor(Color color)
         {
             TextColor = color;
+            blinkingCursor_.WithColor(color);
             return this;
         }
 
@@ -103,6 +106,8 @@ namespace DXGame.Core.GraphicsWidgets
 
             spriteBatch_.Draw(Texture, SpatialComponent.Position);
             spriteBatch_.DrawString(SpriteFont, Text, SpatialComponent.Position, TextColor);
+
+            blinkingCursor_.Draw(gameTime);
             base.Draw(gameTime);
         }
 
@@ -122,6 +127,13 @@ namespace DXGame.Core.GraphicsWidgets
                     inputModel.Events.Where(key => (key.HeldDown && !KeyboardEvent.KeyCharacters.ContainsKey(key.Key)));
                 HandleKeyboardEvents(longPressedKeys);
             }
+
+            var textSubstring = Text.Substring(0, CursorPosition);
+            blinkingCursor_.WithOrigin(new Vector2(
+                SpatialComponent.Position.X + SpriteFont.MeasureString(textSubstring).X,
+                SpatialComponent.Position.Y + SpriteFont.MeasureString(textSubstring.Length == 0 ? "a" : textSubstring).Y));
+            blinkingCursor_.Update(gameTime);
+
             base.Update(gameTime);
         }
 

@@ -53,7 +53,7 @@ namespace DXGame.Core.Menus
             var textBox =
                 new TextBox(DxGame).WithSpatialComponent(spatial)
                     .WithBackGroundColor(Color.WhiteSmoke)
-                    .WithTextColor(Color.SteelBlue);
+                    .WithTextColor(Color.Black);
 
             var spriteFont = DxGame.Content.Load<SpriteFont>("Fonts/Gungsuh");
 

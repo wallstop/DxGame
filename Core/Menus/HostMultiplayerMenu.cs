@@ -28,7 +28,7 @@ namespace DXGame.Core.Menus
             var portBox =
                 new TextBox(DxGame).WithSpatialComponent(spatial)
                     .WithBackGroundColor(Color.White)
-                    .WithTextColor(Color.DarkSeaGreen)
+                    .WithTextColor(Color.Black)
                     .WithMaxLength(5);
 
             

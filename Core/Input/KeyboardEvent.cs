@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework.Input;
 
 namespace DXGame.Core.Input
@@ -75,6 +76,77 @@ namespace DXGame.Core.Input
             {Keys.OemMinus, '-'},
             {Keys.OemPipe, '|'}
         };
+
+        public static Keys[] NumericKeys
+        {
+            get
+            {
+                return new[]
+                {
+                    Keys.D0,
+                    Keys.NumPad0,
+                    Keys.D1,
+                    Keys.NumPad1,
+                    Keys.D2,
+                    Keys.NumPad2,
+                    Keys.D3,
+                    Keys.NumPad3,
+                    Keys.D4,
+                    Keys.NumPad4,
+                    Keys.D5,
+                    Keys.NumPad5,
+                    Keys.D6,
+                    Keys.NumPad6,
+                    Keys.D7,
+                    Keys.NumPad7,
+                    Keys.D8,
+                    Keys.NumPad8,
+                    Keys.D9,
+                    Keys.NumPad9
+                };
+            }
+        }
+
+        public static Keys[] AlphaKeys
+        {
+            get
+            {
+                return new[]
+                {
+                    Keys.A,
+                    Keys.B,
+                    Keys.C,
+                    Keys.D,
+                    Keys.E,
+                    Keys.F,
+                    Keys.G,
+                    Keys.H,
+                    Keys.I,
+                    Keys.J,
+                    Keys.K,
+                    Keys.L,
+                    Keys.M,
+                    Keys.N,
+                    Keys.O,
+                    Keys.P,
+                    Keys.Q,
+                    Keys.R,
+                    Keys.S,
+                    Keys.T,
+                    Keys.U,
+                    Keys.V,
+                    Keys.W,
+                    Keys.X,
+                    Keys.Y,
+                    Keys.Z
+                };
+            }
+        }
+
+        public static Keys[] AlphaNumericKeys
+        {
+            get { return AlphaKeys.Concat(NumericKeys).ToArray(); }
+        }
 
         public Keys Key { get; set; }
         public TimeSpan Duration { get; set; }

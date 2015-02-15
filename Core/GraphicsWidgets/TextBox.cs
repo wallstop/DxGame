@@ -18,6 +18,8 @@ namespace DXGame.Core.GraphicsWidgets
     {
         public string Text { get; protected set; }
         public SpatialComponent SpatialComponent { get; protected set; }
+        public IEnumerable<Keys> ValidKeys { get;
+            protected set { value = value.Concat(Keys.Back, Keys.Delete); }; }
 
         private int cursorPosition_;
         private readonly BlinkingCursor blinkingCursor_;
@@ -31,7 +33,7 @@ namespace DXGame.Core.GraphicsWidgets
                 cursorPosition_ = Math.Max(value, 0);
                 if (IsMaxLengthSet())
                 {
-                    cursorPosition_ = MathUtils.Constrain(cursorPosition_, 0, MaxLength);
+                    cursorPosition_ = MathUtils.Constrain(cursorPosition_, 0, MaxLength - 1);
                 }
             }
         }
@@ -41,6 +43,16 @@ namespace DXGame.Core.GraphicsWidgets
         protected Color TextColor { get; set; }
         protected int MaxLength { get; set; }
 
+        protected bool InFocus
+        {
+            get
+            {
+                var mouseState = Mouse.GetState();
+                var mousePosition = mouseState.Position;
+                return SpatialComponent.Space.Contains(mousePosition);
+            }
+        }
+
         public TextBox(DxGame game)
             : base(game)
         {
@@ -48,6 +60,7 @@ namespace DXGame.Core.GraphicsWidgets
             CursorPosition = 0;
             MaxLength = 0;
             blinkingCursor_ = new BlinkingCursor(DxGame).WithHeight(1); // 1-pixel blinking cursor by default
+            ValidKeys = KeyboardEvent.KeyCharacters.Keys;
         }
 
         public TextBox WithSpriteFont(SpriteFont spriteFont)
@@ -98,40 +111,55 @@ namespace DXGame.Core.GraphicsWidgets
             return this;
         }
 
+        public TextBox WithValidKeys(IEnumerable<Keys> validKeys)
+        {
+            var validKeysEnumerated = validKeys as Keys[] ?? validKeys.ToArray();
+            GenericUtils.CheckNullOrDefault(validKeysEnumerated,
+                "Cannot initialize a TextBox with an empty set of valid keys");
+            ValidKeys = validKeysEnumerated;
+            return this;
+        }
+
         public override void Draw(GameTime gameTime)
         {
-            GenericUtils.CheckNullOrDefault(SpatialComponent);
-            GenericUtils.CheckNullOrDefault(SpriteFont);
-            GenericUtils.CheckNullOrDefault(Texture);
+            GenericUtils.CheckNullOrDefault(SpatialComponent, "Can't use a TextBox without a spatial component!");
+            GenericUtils.CheckNullOrDefault(SpriteFont, "Can't use a TextBox without a sprite font!");
+            GenericUtils.CheckNullOrDefault(Texture, "Can't use a TextBox without a Texture!");
 
             spriteBatch_.Draw(Texture, SpatialComponent.Position);
             spriteBatch_.DrawString(SpriteFont, Text, SpatialComponent.Position, TextColor);
 
-            blinkingCursor_.Draw(gameTime);
+            // TODO: Change this to some kind of focused-style state, possible set via the owner
+            if (InFocus)
+            {
+                blinkingCursor_.Draw(gameTime);
+            }
+
             base.Draw(gameTime);
         }
 
         public override void Update(GameTime gameTime)
         {
             // TODO: Have this linked to some cursor object instead of directly reading the mouse state
-            var mouseState = Mouse.GetState();
-            var mousePosition = mouseState.Position;
 
             // Only update if we have focus
-            if (SpatialComponent.Space.Contains(mousePosition))
+            if (InFocus)
             {
                 var inputModel = DxGame.Model<InputModel>();
-                IEnumerable<KeyboardEvent> finishedKeys = inputModel.FinishedEvents;
+                IEnumerable<KeyboardEvent> finishedKeys =
+                    inputModel.FinishedEvents.Where(key => (ValidKeys.Contains(key.Key)));
                 HandleKeyboardEvents(finishedKeys);
                 IEnumerable<KeyboardEvent> longPressedKeys =
-                    inputModel.Events.Where(key => (key.HeldDown && !KeyboardEvent.KeyCharacters.ContainsKey(key.Key)));
+                    inputModel.Events.Where(key => (key.HeldDown && !ValidKeys.Contains(key.Key)));
                 HandleKeyboardEvents(longPressedKeys);
             }
 
             var textSubstring = Text.Substring(0, CursorPosition);
             blinkingCursor_.WithOrigin(new Vector2(
                 SpatialComponent.Position.X + SpriteFont.MeasureString(textSubstring).X,
-                SpatialComponent.Position.Y + SpriteFont.MeasureString(textSubstring.Length == 0 ? "a" : textSubstring).Y));
+                SpatialComponent.Position.Y +
+                // TODO: Find some better way of determining string height when the string is empty than hard-coded "a"
+                SpriteFont.MeasureString(textSubstring.Length == 0 ? "a" : textSubstring).Y));
             blinkingCursor_.Update(gameTime);
 
             base.Update(gameTime);

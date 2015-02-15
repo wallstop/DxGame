@@ -18,11 +18,16 @@ namespace DXGame.Core.GraphicsWidgets
     {
         public string Text { get; protected set; }
         public SpatialComponent SpatialComponent { get; protected set; }
-        public IEnumerable<Keys> ValidKeys { get;
-            protected set { value = value.Concat(Keys.Back, Keys.Delete); }; }
+
+        public IEnumerable<Keys> ValidKeys
+        {
+            get { return validKeys_; }
+            protected set { validKeys_ = value.Concat(new[] {Keys.Back, Keys.Delete, Keys.Left, Keys.Right}).ToList(); }
+        }
 
         private int cursorPosition_;
         private readonly BlinkingCursor blinkingCursor_;
+        private List<Keys> validKeys_;
 
         protected int CursorPosition
         {
@@ -33,7 +38,7 @@ namespace DXGame.Core.GraphicsWidgets
                 cursorPosition_ = Math.Max(value, 0);
                 if (IsMaxLengthSet())
                 {
-                    cursorPosition_ = MathUtils.Constrain(cursorPosition_, 0, MaxLength - 1);
+                    cursorPosition_ = MathUtils.Constrain(cursorPosition_, 0, MaxLength);
                 }
             }
         }

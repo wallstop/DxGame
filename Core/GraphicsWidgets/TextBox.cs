@@ -155,7 +155,7 @@ namespace DXGame.Core.GraphicsWidgets
                     inputModel.FinishedEvents.Where(key => (ValidKeys.Contains(key.Key)));
                 HandleKeyboardEvents(finishedKeys);
                 IEnumerable<KeyboardEvent> longPressedKeys =
-                    inputModel.Events.Where(key => (key.HeldDown && !ValidKeys.Contains(key.Key)));
+                    inputModel.Events.Where(key => (key.HeldDown && ValidKeys.Contains(key.Key)));
                 HandleKeyboardEvents(longPressedKeys);
             }
 

@@ -124,9 +124,12 @@
     <Compile Include="Core\Menus\HostMultiplayerMenu.cs" />
     <Compile Include="Core\Menus\JoinMultiplayerMenu.cs" />
     <Compile Include="Core\GraphicsWidgets\TextBox.cs" />
+    <Compile Include="Core\Menus\MultiplayerReceiveMenu.cs" />
+    <Compile Include="Core\Menus\MultiplayerSendMenu.cs" />
     <Compile Include="Core\Messaging\CollisionMessage.cs" />
     <Compile Include="Core\Messaging\Message.cs" />
     <Compile Include="Core\Models\CollisionModel.cs" />
+    <Compile Include="Core\Models\FrameModel.cs" />
     <Compile Include="Core\Models\GameModel.cs" />
     <Compile Include="Core\Generators\MapGenerator.cs" />
     <Compile Include="Core\Generators\PlayerGenerator.cs" />

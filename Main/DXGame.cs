@@ -164,6 +164,10 @@ namespace DXGame.Main
             Components.Add(new SpriteBatchEnder(this));
             var playMenu = new MainMenu(this);
             Components.Add(playMenu);
+
+            var frameModel = new FrameModel(this);
+            AttachModel(frameModel);
+
             base.Initialize();
         }
 

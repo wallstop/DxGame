@@ -76,7 +76,14 @@ namespace DXGame.Core.Menus
         {
             FrameModel frameModel = DxGame.Model<FrameModel>();
             GameTimeFrame latestFrame = frameModel.LatestFrame();
-            NetworkText.Text = latestFrame.TestString;
+            if (!GenericUtils.IsNullOrDefault(latestFrame))
+            {
+                NetworkText.Text = latestFrame.TestString;
+            }
+            else
+            {
+                NetworkText.Text = "";
+            }
             base.Update(gameTime);
         }
     }

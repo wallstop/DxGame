@@ -34,7 +34,7 @@ namespace DXGame.Core.Models
 
         public GameTimeFrame LatestFrame()
         {
-            return Frames.Last();
+            return Frames.LastOrDefault();
         }
 
         protected void CullFrames()

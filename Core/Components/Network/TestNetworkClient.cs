@@ -86,6 +86,9 @@ namespace DXGame.Core.Components.Network
                 frame.TestString = receivedText;
                 frameModel.AttachFrame(frame);
             }
+
+            NetOutgoingMessage outMessage = Connection.CreateMessage();
+            ((NetClient)Connection).SendMessage(outMessage, NetDeliveryMethod.ReliableOrdered);
         }
     }
 }

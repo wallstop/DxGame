@@ -95,6 +95,8 @@ namespace DXGame.Core.Menus
             MenuItems.Add(portLabel);
             MenuItems.Add(addressLabel);
             MenuItems.Add(connectButton);
+            DxGame.AddAndInitializeComponent(AddressBox);
+            DxGame.AddAndInitializeComponent(PortBox);
         }
 
         public override void Remove()

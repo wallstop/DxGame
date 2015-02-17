@@ -24,12 +24,12 @@ namespace DXGame.Core.Menus
             MenuItem hostMultiplayer = new MenuItem().WithText("Host Multiplayer")
                 .WithAction(HostMultiplayer)
                 .WithSpriteFont(spriteFont)
-                .WithSpace(new Rectangle2f(400, 500, 100, 200));
+                .WithSpace(new Rectangle2f(400, 500, 100, 100));
 
             MenuItem joinMultiplayer = new MenuItem().WithText("Join Multiplayer")
                 .WithAction(JoinMultiplayer)
                 .WithSpriteFont(spriteFont)
-                .WithSpace(new Rectangle2f(400, 600, 100, 200));
+                .WithSpace(new Rectangle2f(400, 600, 100, 100));
 
             MenuItems.Add(singlePlayer);
             MenuItems.Add(hostMultiplayer);

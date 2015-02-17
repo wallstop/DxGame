@@ -86,7 +86,7 @@ namespace DXGame.Core.Menus
             int port = 0;
             try
             {
-                port = Convert.ToInt32(PortBox);
+                port = Convert.ToInt32(PortBox.Text);
             }
             catch (Exception e)
             {

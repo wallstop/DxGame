@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DXGame.Core.Components.Basic;
 using DXGame.Core.Frames;
 using DXGame.Core.Utils;
+using DXGame.Main;
 
 namespace DXGame.Core.Models
 {
-    public class FrameModel
+    public class FrameModel : Component
     {
         public TimeSpan FrameRetention { get; protected set; }
         protected List<GameTimeFrame> Frames { get; set; }
 
-        public FrameModel()
+        public FrameModel(DxGame game)
+            : base(game)
         {
             Frames = new List<GameTimeFrame>();
         }
@@ -46,6 +49,7 @@ namespace DXGame.Core.Models
             */
             foreach (GameTimeFrame frame in Frames)
             {
+                // TODO
             }
         }
     }

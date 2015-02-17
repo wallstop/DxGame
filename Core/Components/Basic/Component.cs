@@ -7,12 +7,14 @@ namespace DXGame.Core.Components.Basic
 
     public enum UpdatePriority
     {
+        NETWORK_RECEIVE = -100,
         HIGHEST = -1,
         PHYSICS = HIGHEST,
         HIGH = 1,
         NORMAL = 5,
         LOW = 10,
-        WORLD_GRAVITY = 100
+        WORLD_GRAVITY = 100,
+        NETWORK_SEND = 101,
     }
 
     /**

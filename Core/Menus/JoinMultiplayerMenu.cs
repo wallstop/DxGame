@@ -4,6 +4,7 @@ using DXGame.Core.GraphicsWidgets;
 using DXGame.Core.Input;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -104,7 +105,12 @@ namespace DXGame.Core.Menus
 
         protected void ConnectAction()
         {
-            throw new NotImplementedException("TODO LOL");
+
+            NetPeerConfiguration config = new NetPeerConfiguration("DxGame");
+            MultiplayerReceiveMenu clientMenu = new MultiplayerReceiveMenu(DxGame).WithNetConfig(config);
+
+            Remove();
+            DxGame.AddAndInitializeComponent(clientMenu);
         }
     }
 }

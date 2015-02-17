@@ -62,7 +62,7 @@ namespace DXGame.Core.Components.Network
 
                 NetOutgoingMessage outMessage = Connection.CreateMessage();
                 outMessage.Write(Menu.SendText.Text);
-                LOG.Info(String.Format("Sending message: {0}, outMessage"));
+                LOG.Info(String.Format("Sending message: {0}", Menu.SendText.Text));
                 Connection.SendMessage(outMessage, inMessage.SenderConnection, NetDeliveryMethod.ReliableOrdered, 0);
             }
 

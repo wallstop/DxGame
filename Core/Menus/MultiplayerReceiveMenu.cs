@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Net;
 using DXGame.Core.Frames;
 using DXGame.Core.Models;
@@ -78,7 +79,9 @@ namespace DXGame.Core.Menus
             GameTimeFrame latestFrame = frameModel.LatestFrame();
             if (!GenericUtils.IsNullOrDefault(latestFrame))
             {
-                NetworkText.Text = latestFrame.TestString;
+                var testString = latestFrame.TestString;
+                LOG.Info(String.Format("Received message: {0}", testString));
+                NetworkText.Text = testString;
             }
             else
             {

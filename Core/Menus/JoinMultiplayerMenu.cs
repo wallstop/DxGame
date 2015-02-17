@@ -30,14 +30,14 @@ namespace DXGame.Core.Menus
                 {
                     X = 200.0f,
                     Y = spriteFont.LineSpacing + 2 /* wiggle room for cursor */ // TODO: Fix this
-                }).WithPosition(600, 500);
+                }).WithPosition(400, 300);
 
             var addressBoxSpatial = (SpatialComponent)
                 new SpatialComponent(DxGame).WithDimensions(new Vector2
                 {
                     X = 200.0f,
                     Y = spriteFont.LineSpacing + 2 /* wiggle room for cursor */ // TODO: Fix this
-                }).WithPosition(500, 500);
+                }).WithPosition(400, 400);
 
             // Ports have a range of 0 - 65536 (2 ^ 16 - 1) -> max length of 5
             PortBox =
@@ -57,8 +57,8 @@ namespace DXGame.Core.Menus
                     {
                         X = portBoxSpatial.Space.X - /* Pixel Width of "Port:" */ spriteFont.MeasureString(portString).X,
                         Y = portBoxSpatial.Space.Y,
-                        Width = portBoxSpatial.Width,
-                        Height = portBoxSpatial.Height
+                        Width = spriteFont.MeasureString(portString).X,
+                        Height = spriteFont.MeasureString(portString).Y
                     });
 
             AddressBox =
@@ -78,17 +78,18 @@ namespace DXGame.Core.Menus
                             addressBoxSpatial.Space.X - /* Pixel Width of "Address:" */
                             spriteFont.MeasureString(addressString).X,
                         Y = addressBoxSpatial.Space.Y,
-                        Width = addressBoxSpatial.Width,
-                        Height = addressBoxSpatial.Height
+                        Width = spriteFont.MeasureString(addressString).X,
+                        Height = spriteFont.MeasureString(addressString).Y
                     });
 
-            var connectButton = new MenuItem().WithSpriteFont(spriteFont).WithText("Connect")
+            const string connectString = "Connect";
+            var connectButton = new MenuItem().WithSpriteFont(spriteFont).WithText(connectString)
                 .WithSpace(new Rectangle2f
                 {
-                    X = portLabel.Space.X,
-                    Y = portLabel.Space.Y + 100,
-                    Width = portLabel.Space.Width,
-                    Height = portLabel.Space.Height
+                    X = addressLabel.Space.X,
+                    Y = addressLabel.Space.Y + 100,
+                    Width = spriteFont.MeasureString(connectString).X,
+                    Height = spriteFont.MeasureString(connectString).Y
                 })
                 .WithAction(ConnectAction);
 

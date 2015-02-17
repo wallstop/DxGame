@@ -15,6 +15,7 @@ namespace DXGame.Core.Menus
     {
         protected TextBox PortBox { get; set; }
         protected TextBox AddressBox { get; set; }
+        protected SpriteFont SpriteFont { get; set; }
 
         public JoinMultiplayerMenu(DxGame game)
             : base(game)
@@ -23,20 +24,20 @@ namespace DXGame.Core.Menus
 
         public override void Initialize()
         {
-            var spriteFont = DxGame.Content.Load<SpriteFont>("Fonts/ComicSans");
+            SpriteFont = DxGame.Content.Load<SpriteFont>("Fonts/ComicSans");
 
             var portBoxSpatial = (SpatialComponent)
                 new SpatialComponent(DxGame).WithDimensions(new Vector2
                 {
                     X = 200.0f,
-                    Y = spriteFont.LineSpacing + 2 /* wiggle room for cursor */ // TODO: Fix this
+                    Y = SpriteFont.LineSpacing + 2 /* wiggle room for cursor */ // TODO: Fix this
                 }).WithPosition(400, 300);
 
             var addressBoxSpatial = (SpatialComponent)
                 new SpatialComponent(DxGame).WithDimensions(new Vector2
                 {
                     X = 200.0f,
-                    Y = spriteFont.LineSpacing + 2 /* wiggle room for cursor */ // TODO: Fix this
+                    Y = SpriteFont.LineSpacing + 2 /* wiggle room for cursor */ // TODO: Fix this
                 }).WithPosition(400, 400);
 
             // Ports have a range of 0 - 65536 (2 ^ 16 - 1) -> max length of 5
@@ -47,18 +48,18 @@ namespace DXGame.Core.Menus
                     .WithMaxLength(5)
                     // Only allow numeric values for ports
                     .WithValidKeys(KeyboardEvent.NumericKeys)
-                    .WithSpriteFont(spriteFont);
+                    .WithSpriteFont(SpriteFont);
 
             const string portString = "Port:";
             var portLabel =
-                new MenuItem().WithSpriteFont(spriteFont)
+                new MenuItem().WithSpriteFont(SpriteFont)
                     .WithText(portString)
                     .WithSpace(new Rectangle2f
                     {
-                        X = portBoxSpatial.Space.X - /* Pixel Width of "Port:" */ spriteFont.MeasureString(portString).X,
+                        X = portBoxSpatial.Space.X - /* Pixel Width of "Port:" */ SpriteFont.MeasureString(portString).X,
                         Y = portBoxSpatial.Space.Y,
-                        Width = spriteFont.MeasureString(portString).X,
-                        Height = spriteFont.MeasureString(portString).Y
+                        Width = SpriteFont.MeasureString(portString).X,
+                        Height = SpriteFont.MeasureString(portString).Y
                     });
 
             AddressBox =
@@ -66,30 +67,30 @@ namespace DXGame.Core.Menus
                     .WithBackGroundColor(Color.White)
                     .WithTextColor(Color.Black)
                     .WithMaxLength(100)
-                    .WithSpriteFont(spriteFont);
+                    .WithSpriteFont(SpriteFont);
 
             const string addressString = "Address:";
             var addressLabel =
-                new MenuItem().WithSpriteFont(spriteFont)
+                new MenuItem().WithSpriteFont(SpriteFont)
                     .WithText(addressString)
                     .WithSpace(new Rectangle2f
                     {
                         X =
                             addressBoxSpatial.Space.X - /* Pixel Width of "Address:" */
-                            spriteFont.MeasureString(addressString).X,
+                            SpriteFont.MeasureString(addressString).X,
                         Y = addressBoxSpatial.Space.Y,
-                        Width = spriteFont.MeasureString(addressString).X,
-                        Height = spriteFont.MeasureString(addressString).Y
+                        Width = SpriteFont.MeasureString(addressString).X,
+                        Height = SpriteFont.MeasureString(addressString).Y
                     });
 
             const string connectString = "Connect";
-            var connectButton = new MenuItem().WithSpriteFont(spriteFont).WithText(connectString)
+            var connectButton = new MenuItem().WithSpriteFont(SpriteFont).WithText(connectString)
                 .WithSpace(new Rectangle2f
                 {
                     X = addressLabel.Space.X,
                     Y = addressLabel.Space.Y + 100,
-                    Width = spriteFont.MeasureString(connectString).X,
-                    Height = spriteFont.MeasureString(connectString).Y
+                    Width = SpriteFont.MeasureString(connectString).X,
+                    Height = SpriteFont.MeasureString(connectString).Y
                 })
                 .WithAction(ConnectAction);
 
@@ -113,7 +114,8 @@ namespace DXGame.Core.Menus
             MultiplayerReceiveMenu clientMenu =
                 new MultiplayerReceiveMenu(DxGame).WithNetConfig(config)
                     .WithIpAddress(AddressBox.Text)
-                    .WithPort(Convert.ToInt32(PortBox.Text));
+                    .WithPort(Convert.ToInt32(PortBox.Text))
+                    .WithSpriteFont(SpriteFont);
 
             Remove();
             DxGame.AddAndInitializeComponent(clientMenu);

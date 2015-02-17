@@ -77,17 +77,21 @@ namespace DXGame.Core.Components.Network
             NetIncomingMessage message = Connection.ReadMessage();
             if (message != null)
             {
-                string receivedText = message.ReadString();
-                LOG.Info(String.Format("Received message: {0}", receivedText));
-                var frameModel = DxGame.Model<FrameModel>();
+                if (message.MessageType == NetIncomingMessageType.Data)
+                {
+                    string receivedText = message.ReadString();
+                    LOG.Info(String.Format("Received message: {0}", receivedText));
+                    var frameModel = DxGame.Model<FrameModel>();
 
-                GameTimeFrame frame = new GameTimeFrame();
-                frame.TimeStamp = gameTime.TotalGameTime;
-                frame.TestString = receivedText;
-                frameModel.AttachFrame(frame);
+                    GameTimeFrame frame = new GameTimeFrame();
+                    frame.TimeStamp = gameTime.TotalGameTime;
+                    frame.TestString = receivedText;
+                    frameModel.AttachFrame(frame);
+                }
             }
 
             NetOutgoingMessage outMessage = Connection.CreateMessage();
+            outMessage.Write("HELLO MAN");
             ((NetClient)Connection).SendMessage(outMessage, NetDeliveryMethod.ReliableOrdered);
         }
     }

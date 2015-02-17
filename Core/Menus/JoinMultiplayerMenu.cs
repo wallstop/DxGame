@@ -1,5 +1,6 @@
 ﻿using System;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Network;
 using DXGame.Core.GraphicsWidgets;
 using DXGame.Core.Input;
 using DXGame.Core.Utils;
@@ -113,6 +114,8 @@ namespace DXGame.Core.Menus
 
             Remove();
             DxGame.AddAndInitializeComponent(clientMenu);
+            var networkClient = new TestNetworkClient(DxGame).WithMultiplayerReceiveMenu(clientMenu);
+            DxGame.AddAndInitializeComponent(networkClient);
         }
     }
 }

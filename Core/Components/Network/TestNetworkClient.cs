@@ -30,7 +30,7 @@ namespace DXGame.Core.Components.Network
             Connected = false;
         }
 
-        public TestNetworkClient WithMultiplayer(MultiplayerReceiveMenu receiveMenu)
+        public TestNetworkClient WithMultiplayerReceiveMenu(MultiplayerReceiveMenu receiveMenu)
         {
             GenericUtils.CheckNullOrDefault(receiveMenu,
                 "Cannot create a client based off of a null/default Multiplayer Receive Menu");

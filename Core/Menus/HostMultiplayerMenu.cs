@@ -1,5 +1,6 @@
 ﻿using System;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Network;
 using DXGame.Core.GraphicsWidgets;
 using DXGame.Core.Input;
 using DXGame.Core.Utils;
@@ -100,6 +101,9 @@ namespace DXGame.Core.Menus
 
             MultiplayerSendMenu sendMenu = new MultiplayerSendMenu(DxGame).WithNetConfig(config);
             DxGame.AddAndInitializeComponent(sendMenu);
+
+            var networkServer = new TestNetworkServer(DxGame).WithMultiplayerMenu(sendMenu);
+            DxGame.AddAndInitializeComponent(networkServer);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Net;
 using DXGame.Core.Frames;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
@@ -15,7 +16,7 @@ namespace DXGame.Core.Menus
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MultiplayerReceiveMenu));
 
         public NetPeerConfiguration NetConfig { get; set; }
-        public string IPAddress { get; set; }
+        public string IpAddress { get; set; }
         public int Port { get; set; }
 
         protected MenuItem NetworkText { get; set; }
@@ -40,10 +41,10 @@ namespace DXGame.Core.Menus
             return this;
         }
 
-        public MultiplayerReceiveMenu WithIPAddress(string ipAddress)
+        public MultiplayerReceiveMenu WithIpAddress(string ipAddress)
         {
             GenericUtils.CheckNullOrDefault(ipAddress, "Cannot have a null/default string as an IP Address!");
-            IPAddress = ipAddress;
+            IpAddress = ipAddress;
             return this;
         }
 

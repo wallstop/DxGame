@@ -110,8 +110,13 @@
     <Compile Include="Core\Components\Advanced\PositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
     <Compile Include="Core\Components\Basic\DrawableComponent.cs" />
+    <Compile Include="Core\Components\Basic\NetworkComponent.cs" />
     <Compile Include="Core\Components\Basic\SpriteBatchEnder.cs" />
     <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
+    <Compile Include="Core\Components\Network\NetworkClient.cs" />
+    <Compile Include="Core\Components\Network\NetworkServer.cs" />
+    <Compile Include="Core\Components\Network\TestNetworkClient.cs" />
+    <Compile Include="Core\Components\Network\TestNetworkServer.cs" />
     <Compile Include="Core\Frames\AbstractFrame.cs" />
     <Compile Include="Core\Frames\GameTimeFrame.cs" />
     <Compile Include="Core\GameComponentCollection.cs" />
@@ -144,6 +149,8 @@
     <Compile Include="Core\Models\MapModel.cs" />
     <Compile Include="Core\Models\WorldGravityModel.cs" />
     <Compile Include="Core\NetworkFrame.cs" />
+    <Compile Include="Core\Network\NetworkMessage.cs" />
+    <Compile Include="Core\Network\PacketTypes.cs" />
     <Compile Include="Core\UniqueId.cs" />
     <Compile Include="Core\Utils\CollectionUtils.cs" />
     <Compile Include="Core\Utils\GameObjectUtils.cs" />

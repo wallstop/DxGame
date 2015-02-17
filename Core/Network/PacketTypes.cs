@@ -10,6 +10,7 @@ namespace DXGame.Core.Network
     */
     public enum PacketTypes
     {
-        LOGIN, 
+        LOGIN,
+
     }
 }

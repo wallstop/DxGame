@@ -105,9 +105,11 @@ namespace DXGame.Core.Menus
 
         protected void ConnectAction()
         {
-
             NetPeerConfiguration config = new NetPeerConfiguration("DxGame");
-            MultiplayerReceiveMenu clientMenu = new MultiplayerReceiveMenu(DxGame).WithNetConfig(config);
+            MultiplayerReceiveMenu clientMenu =
+                new MultiplayerReceiveMenu(DxGame).WithNetConfig(config)
+                    .WithIpAddress(AddressBox.Text)
+                    .WithPort(Convert.ToInt32(PortBox.Text));
 
             Remove();
             DxGame.AddAndInitializeComponent(clientMenu);

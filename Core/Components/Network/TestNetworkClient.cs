@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using DXGame.Core.Frames;
 using DXGame.Core.Menus;
+using DXGame.Core.Models;
 using DXGame.Core.Network;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -50,18 +52,40 @@ namespace DXGame.Core.Components.Network
 
             if (!Connected)
             {
-                NetOutgoingMessage outMessage = Connection.CreateMessage();
-                outMessage.Write((byte) PacketTypes.LOGIN);
-                Connection.Connect(receiveMenu)
-
+                EstablishConnection();
             }
             else
             {
-                
+                ReceiveData(gameTime);
             }
 
-
             base.Update(gameTime);
+        }
+
+        private void EstablishConnection()
+        {
+            LOG.Info(String.Format("Attempting connection to {0} : {1}", Menu.IpAddress, Menu.Port));
+            NetOutgoingMessage outMessage = Connection.CreateMessage();
+            outMessage.Write((byte)PacketTypes.LOGIN);
+            Connection.Connect(Menu.IpAddress, Menu.Port, outMessage);
+            Connected = true;
+            LOG.Info(String.Format("Established connection to {0} : {1}", Menu.IpAddress, Menu.Port));
+        }
+
+        private void ReceiveData(GameTime gameTime)
+        {
+            NetIncomingMessage message = Connection.ReadMessage();
+            if (message != null)
+            {
+                string receivedText = message.ReadString();
+                LOG.Info(String.Format("Received message: {0}", receivedText));
+                var frameModel = DxGame.Model<FrameModel>();
+
+                GameTimeFrame frame = new GameTimeFrame();
+                frame.TimeStamp = gameTime.TotalGameTime;
+                frame.TestString = receivedText;
+                frameModel.AttachFrame(frame);
+            }
         }
     }
 }

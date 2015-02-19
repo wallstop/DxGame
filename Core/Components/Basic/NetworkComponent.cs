@@ -5,7 +5,7 @@ using Lidgren.Network;
 namespace DXGame.Core.Components.Basic
 {
     /*
-        Basic networked component. In general, there should really only be two of these - Client & Server
+        Basic networked component. In general, there should really only be two types of these - Client & Server
     */
     public abstract class NetworkComponent : Component
     {
@@ -29,5 +29,11 @@ namespace DXGame.Core.Components.Basic
             Connection = new NetPeer(config);
             return this;
         }
+
+        protected abstract void EstablishConnection();
+
+        public abstract void ReceiveData();
+
+        public abstract void SendData();
     }
 }

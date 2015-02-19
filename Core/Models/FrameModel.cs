@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Frames;
@@ -29,12 +30,18 @@ namespace DXGame.Core.Models
 
         public void AttachFrame(GameTimeFrame frame)
         {
+            Debug.Assert(!Frames.Contains(frame), "FrameModel already has this frame!");
             Frames.Add(frame);
         }
 
         public GameTimeFrame LatestFrame()
         {
             return Frames.LastOrDefault();
+        }
+
+        public bool HasFrame()
+        {
+            return Frames.Any();
         }
 
         protected void CullFrames()

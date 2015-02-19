@@ -168,6 +168,9 @@ namespace DXGame.Main
             var frameModel = new FrameModel(this);
             AttachModel(frameModel);
 
+            var netModel = new NetworkModel(this);
+            AttachModel(netModel);
+
             base.Initialize();
         }
 
@@ -202,8 +205,12 @@ namespace DXGame.Main
                 I'd like, we need to have a dedicated InputSystem that is capable of short-polling (on the order of 1/10th of a millisecond) the keyboard/gamepad/mouse state, 
                 diffing the previous state, and publishing events if there is a change. Then it's a matter of hooking up subscribers to these events.
             */
+            var networkModel = Model<NetworkModel>();
 
+            // Should probably thread this... but wait until we have perf testing :)
+            networkModel.ReceiveData();
             base.Update(gameTime);
+            networkModel.SendData();
         }
 
         /// <summary>

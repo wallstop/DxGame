@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using DXGame.Core.Frames;
 using DXGame.Core.Menus;
 using DXGame.Core.Models;
@@ -18,7 +14,7 @@ namespace DXGame.Core.Components.Network
     // TODO: Remove
     public class TestNetworkClient : NetworkClient
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof(TestNetworkClient));
+        private static readonly ILog LOG = LogManager.GetLogger(typeof (TestNetworkClient));
 
         protected MultiplayerReceiveMenu Menu { get; set; }
 
@@ -66,7 +62,7 @@ namespace DXGame.Core.Components.Network
         {
             LOG.Info(String.Format("Attempting connection to {0} : {1}", Menu.IpAddress, Menu.Port));
             NetOutgoingMessage outMessage = Connection.CreateMessage();
-            outMessage.Write((byte)PacketTypes.LOGIN);
+            outMessage.Write((byte) PacketTypes.LOGIN);
             Connection.Connect(Menu.IpAddress, Menu.Port, outMessage);
             Connected = true;
             LOG.Info(String.Format("Established connection to {0} : {1}", Menu.IpAddress, Menu.Port));
@@ -80,7 +76,6 @@ namespace DXGame.Core.Components.Network
                 if (message.MessageType == NetIncomingMessageType.Data)
                 {
                     string receivedText = message.ReadString();
-                    LOG.Info(String.Format("Received message: {0}", receivedText));
                     var frameModel = DxGame.Model<FrameModel>();
 
                     GameTimeFrame frame = new GameTimeFrame();
@@ -92,7 +87,7 @@ namespace DXGame.Core.Components.Network
 
             NetOutgoingMessage outMessage = Connection.CreateMessage();
             outMessage.Write("HELLO MAN");
-            ((NetClient)Connection).SendMessage(outMessage, NetDeliveryMethod.ReliableOrdered);
+            ((NetClient) Connection).SendMessage(outMessage, NetDeliveryMethod.ReliableOrdered);
         }
     }
 }

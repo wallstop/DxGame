@@ -4,14 +4,20 @@ using System.Linq;
 using System.Text;
 using DXGame.Core.Components.Basic;
 using DXGame.Main;
+using Lidgren.Network;
 
 namespace DXGame.Core.Components.Network
 {
     public class NetworkServer : NetworkComponent
     {
-        public NetworkServer(DxGame game) : base(game)
+        public NetServer ServerConnection
         {
-            UpdatePriority = UpdatePriority.NETWORK_RECEIVE;
+            get { return Connection as NetServer; }
+        }
+
+        public NetworkServer(DxGame game) 
+            : base(game)
+        {
         }
     }
 }

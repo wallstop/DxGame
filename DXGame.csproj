@@ -147,6 +147,7 @@
     <Compile Include="Core\Model.cs" />
     <Compile Include="Core\Models\InputModel.cs" />
     <Compile Include="Core\Models\MapModel.cs" />
+    <Compile Include="Core\Models\NetworkModel.cs" />
     <Compile Include="Core\Models\WorldGravityModel.cs" />
     <Compile Include="Core\NetworkFrame.cs" />
     <Compile Include="Core\Network\NetworkMessage.cs" />

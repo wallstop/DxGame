@@ -103,7 +103,6 @@ namespace DXGame.Main
 
                 return new Rectangle2f(x, y, Screen.Width, Screen.Height);
             }
-
         }
 
         public void AddAndInitializeComponent(GameComponent component)

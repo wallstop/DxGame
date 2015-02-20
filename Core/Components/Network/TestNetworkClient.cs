@@ -62,7 +62,7 @@ namespace DXGame.Core.Components.Network
         {
             LOG.Info(String.Format("Attempting connection to {0} : {1}", Menu.IpAddress, Menu.Port));
             NetOutgoingMessage outMessage = Connection.CreateMessage();
-            outMessage.Write((byte) PacketTypes.LOGIN);
+            outMessage.Write((byte) MessageType.LOGIN);
             Connection.Connect(Menu.IpAddress, Menu.Port, outMessage);
             Connected = true;
             LOG.Info(String.Format("Established connection to {0} : {1}", Menu.IpAddress, Menu.Port));

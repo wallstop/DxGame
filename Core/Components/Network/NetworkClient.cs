@@ -21,5 +21,20 @@ namespace DXGame.Core.Components.Network
         {
             base.Update(gameTime);
         }
+
+        protected override void EstablishConnection()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void ReceiveData()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void SendData()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

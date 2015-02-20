@@ -71,7 +71,8 @@ namespace DXGame.Core.Components.Network
         private void HandleConnectionApproval(NetIncomingMessage message)
         {
             // TODO: Come up with common serialize / deserialize format.
-            if (message.ReadByte() == (byte) PacketTypes.LOGIN)
+            message.Decrypt
+            if (message.ReadByte() == (byte) MessageType.LOGIN)
             {
                 LOG.Info(String.Format("Received LOGIN message"));
                 message.SenderConnection.Approve();

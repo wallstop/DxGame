@@ -150,8 +150,9 @@
     <Compile Include="Core\Models\NetworkModel.cs" />
     <Compile Include="Core\Models\WorldGravityModel.cs" />
     <Compile Include="Core\NetworkFrame.cs" />
+    <Compile Include="Core\Network\ClientConnectionRequest.cs" />
     <Compile Include="Core\Network\NetworkMessage.cs" />
-    <Compile Include="Core\Network\PacketTypes.cs" />
+    <Compile Include="Core\Network\MessageType.cs" />
     <Compile Include="Core\UniqueId.cs" />
     <Compile Include="Core\Utils\CollectionUtils.cs" />
     <Compile Include="Core\Utils\GameObjectUtils.cs" />

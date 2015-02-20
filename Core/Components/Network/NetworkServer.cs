@@ -19,5 +19,20 @@ namespace DXGame.Core.Components.Network
             : base(game)
         {
         }
+
+        protected override void EstablishConnection()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ReceiveData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SendData()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

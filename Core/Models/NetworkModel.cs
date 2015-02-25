@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Network;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using Lidgren.Network;
 
 namespace DXGame.Core.Models
 {
@@ -15,7 +12,7 @@ namespace DXGame.Core.Models
     {
         protected List<NetworkComponent> connections_ = new List<NetworkComponent>();
 
-
+        // TODO: Empty checks
         public IEnumerable<NetworkClient> Clients
         {
             get { return connections_.OfType<NetworkClient>(); }
@@ -26,51 +23,46 @@ namespace DXGame.Core.Models
             get { return connections_.OfType<NetworkServer>(); }
         }
 
-        public NetworkModel(DxGame game) 
+        public NetworkModel(DxGame game)
             : base(game)
         {
         }
 
         public NetworkModel WithClient(NetworkClient client)
         {
-            AddNetPeer(client);
+            AddNetworkComponent(client);
             return this;
         }
 
         public NetworkModel WithServer(NetworkClient server)
         {
             Debug.Assert(!Servers.Any(), "Can only add one server to a NetworkModel!"); // Really? Why not more?
-            AddNetPeer(server);
+            AddNetworkComponent(server);
             return this;
         }
 
-        protected void AddNetPeer(NetworkComponent netPeer)
+        protected void AddNetworkComponent(NetworkComponent netComponent)
         {
-            GenericUtils.CheckNullOrDefault(netPeer, "Cannot add a null/default NetworkComponent to NetworkModel");
-            Debug.Assert(!connections_.Contains(netPeer), "Cannot add a NetworkComponent that already exists in the NetworkModel");
-            connections_.Add(netPeer);
+            GenericUtils.CheckNullOrDefault(netComponent, "Cannot add a null/default NetworkComponent to NetworkModel");
+            Debug.Assert(!connections_.Contains(netComponent),
+                "Cannot add a NetworkComponent that already exists in the NetworkModel");
+            connections_.Add(netComponent);
         }
 
         public void ReceiveData()
         {
-            if (!Servers.Any())
+            foreach (NetworkComponent connection in connections_)
             {
-                return;
+                connection.ReceiveData();
             }
-
-            foreach (NetworkServer server in Servers)
-            {
-                
-            }
-            
         }
 
         public void SendData()
         {
-            
+            foreach (NetworkComponent connection in connections_)
+            {
+                connection.SendData();
+            }
         }
-
-
-
     }
 }

@@ -1,27 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Lidgren.Network;
-
-namespace DXGame.Core.Network
+﻿namespace DXGame.Core.Network
 {
     public class ClientConnectionRequest : NetworkMessage
     {
+        public string PlayerName { get; set; }
 
-        public String PlayerName
-        {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
-        }
+        // TODO: Maybe store IP here too so we can do some kind of reconnect logic later?
 
-        public ClientConnectionRequest(NetIncomingMessage incomingMessage) 
-            : base(incomingMessage)
-        {
-        }
-
-
-
-
+        // TODO: Finish fleshing out what needs to be in a request
     }
 }

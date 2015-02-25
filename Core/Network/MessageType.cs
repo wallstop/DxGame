@@ -7,9 +7,10 @@
 
     public enum MessageType
     {
-        CLIENT_REQUEST_CONNECTION,  // Client connect to server
-        CLIENT_DATA_DIFF,           // Client info of how it thought a frame went
-        SERVER_DATA_DIFF,           // Server info of the diff between it's last update and "now"
-        SERVER_DATA_KEYFRAME        // Server full-state dump
+        CLIENT_CONNECTION_REQUEST, // Client connect to server
+        CLIENT_DATA_DIFF, // Client info of how it thought a frame went
+        CLIENT_KEY_FRAME, // Client full-state dump
+        SERVER_DATA_DIFF, // Server info of the diff between it's last update and "now"
+        SERVER_DATA_KEYFRAME // Server full-state dump
     }
 }

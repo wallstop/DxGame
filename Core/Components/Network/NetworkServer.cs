@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Models;
 using DXGame.Core.Network;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -18,6 +20,8 @@ namespace DXGame.Core.Components.Network
             get { return Connection as NetServer; }
         }
 
+        public Dictionary<NetConnection, FrameModel> ClientFrameStates { get; set; }
+
         public NetworkServer(DxGame game)
             : base(game)
         {
@@ -31,6 +35,12 @@ namespace DXGame.Core.Components.Network
         public override void ReceiveData()
         {
             GenericUtils.CheckNullOrDefault(ServerConnection, "Cannot receive data from a null Server Connection");
+            /*
+                We should probably do a for(int i = 0; i < numClients; ++i) { ServerConnection.ReadMessage(); } 
+                Style of thing here... but then we run into the issue of out of order messages / delayed messages...
+                
+                This will require some thought to get it to work properly
+            */
             var incomingMessage = ServerConnection.ReadMessage();
             if (incomingMessage == null)
             {
@@ -52,13 +62,13 @@ namespace DXGame.Core.Components.Network
             var networkMessage = NetworkMessage.FromNetIncomingMessage(message);
             GenericUtils.CheckNull(networkMessage,
                 "Could not properly format a NetworkMessage from the NetIncomingMessage");
-            switch(networkMessage.MessageType)
+            switch (networkMessage.MessageType)
             {
             case MessageType.CLIENT_DATA_DIFF:
                 HandleClientDataDiff(networkMessage);
                 break;
             case MessageType.CLIENT_CONNECTION_REQUEST:
-                HandleClientRequestConnection(networkMessage);
+                HandleClientConnectionRequest(networkMessage);
                 break;
             case MessageType.SERVER_DATA_DIFF:
                 HandleServerDataDiff(networkMessage);
@@ -86,9 +96,22 @@ namespace DXGame.Core.Components.Network
             throw new NotImplementedException();
         }
 
-        protected void HandleClientRequestConnection(NetworkMessage message)
+        protected void HandleClientConnectionRequest(NetworkMessage message)
         {
-            // TODO 
+            var clientConnectionRequest = message as ClientConnectionRequest;
+            if (clientConnectionRequest == null)
+            {
+                // TODO: Log metrics on this
+                var logMessage = String.Format(
+                    "Received ClientConnectionRequest message type, but was unable to cast message as ClientConnectionRequest ({0})",
+                    message);
+                LOG.Error(logMessage);
+                Debug.Assert(false, logMessage);
+            }
+
+            // TODO
+            var clientConnection = clientConnectionRequest
+
             throw new NotImplementedException();
         }
 

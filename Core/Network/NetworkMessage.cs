@@ -17,8 +17,19 @@ namespace DXGame.Core.Network
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (NetworkMessage));
 
+        protected NetIncomingMessage message_;
+
         public TimeSpan TimeStamp { get; set; }
         public MessageType MessageType { get; set; }
+
+        public NetConnection Connection
+        {
+            get { return message_.SenderConnection; }
+            set
+            {
+                /* No-op */
+            }
+        }
 
         public static NetworkMessage FromNetIncomingMessage(NetIncomingMessage message)
         {
@@ -37,7 +48,7 @@ namespace DXGame.Core.Network
                 var logMessage =
                     String.Format("Could not create a Network Message for type {0}, something went horribly wrong.",
                         typeString);
-                LOG.Error(logMessage);
+                LOG.Error(logMessage, e);
                 Debug.Assert(false, logMessage);
                 return new NetworkMessage();
             }
@@ -52,33 +63,38 @@ namespace DXGame.Core.Network
 
         public virtual void LoadFromNetIncomingMessage(NetIncomingMessage message)
         {
+            message_ = message;
             message.ReadAllProperties(this);
         }
 
         /*
             Default behavior is to write out:
-                -Type (string)
                 -All Properties
 
             You should have a *VERY GOOD REASON* for over-riding this. If you do, make sure the LoadFromNetIncomingMessage
             and ToNetOutgoingMessage line up. 
-
-            Additionally, we ALWAYS need to write the type first. Always always always, no matter how stupid your
-            implementation of this. This is a data contract that we hold with the NetworkComponents.
         */
 
-        public virtual NetOutgoingMessage ToNetOutgoingMessage(NetPeer connection)
+        public virtual NetOutgoingMessage WriteToNetOutgoingMessage(NetOutgoingMessage message)
+        {
+            message.WriteAllProperties(this);
+            return message;
+        }
+
+        public NetOutgoingMessage ToNetOutgoingMessage(NetPeer connection)
         {
             GenericUtils.CheckNull(connection,
                 String.Format(
                     "Cannot create a NetOutgoingMessage from {0}, the connection provided connection is null!", this));
 
+            /*
+                We always rely on having the type (as a string) be the first thing in a message, so 
+                let's go ahead and make it an invariant."
+            */
             var type = GetType();
-
             var message = connection.CreateMessage();
             message.Write(type.ToString());
-            message.WriteAllProperties(this);
-            return connection.CreateMessage();
+            return WriteToNetOutgoingMessage(message);
         }
     }
 }

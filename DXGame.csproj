@@ -115,8 +115,6 @@
     <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
     <Compile Include="Core\Components\Network\NetworkClient.cs" />
     <Compile Include="Core\Components\Network\NetworkServer.cs" />
-    <Compile Include="Core\Components\Network\TestNetworkClient.cs" />
-    <Compile Include="Core\Components\Network\TestNetworkServer.cs" />
     <Compile Include="Core\Frames\AbstractFrame.cs" />
     <Compile Include="Core\Frames\GameTimeFrame.cs" />
     <Compile Include="Core\GameComponentCollection.cs" />
@@ -129,8 +127,6 @@
     <Compile Include="Core\Menus\HostMultiplayerMenu.cs" />
     <Compile Include="Core\Menus\JoinMultiplayerMenu.cs" />
     <Compile Include="Core\GraphicsWidgets\TextBox.cs" />
-    <Compile Include="Core\Menus\MultiplayerReceiveMenu.cs" />
-    <Compile Include="Core\Menus\MultiplayerSendMenu.cs" />
     <Compile Include="Core\Messaging\CollisionMessage.cs" />
     <Compile Include="Core\Messaging\Message.cs" />
     <Compile Include="Core\Models\CollisionModel.cs" />

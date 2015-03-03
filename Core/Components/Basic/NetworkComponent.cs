@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using DXGame.Core.Network;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
@@ -96,24 +97,56 @@ namespace DXGame.Core.Components.Basic
         {
         }
 
-        public NetworkComponent WithConnection(NetPeer connection)
+        public virtual NetworkComponent WithConnection(NetPeer connection)
         {
             GenericUtils.CheckNullOrDefault(connection, "Cannot create a NetworkComponent with a null/default NetPeer");
             Connection = connection;
             return this;
         }
 
-        public NetworkComponent WithConfiguration(NetPeerConfiguration config)
+        public virtual NetworkComponent WithConfiguration(NetPeerConfiguration config)
         {
             GenericUtils.CheckNull(config, "Cannot create a NetworkComponent with a null NetPeerConfiguration");
             Connection = new NetPeer(config);
             return this;
         }
 
-        protected abstract void EstablishConnection();
+        protected static T ConvertMessageType<T>(NetworkMessage message) where T : class
+        {
+            return GenericUtils.CheckedCast<T>(message, LOG,
+                String.Format("Received message expecting type {0}, but was unable to dynamic cast", typeof(T)));
+        }
 
         // We need to know the GameTime in order to Receive Data
-        public abstract void ReceiveData(GameTime gameTime);
+        public virtual void ReceiveData(GameTime gameTime)
+        {
+            int maxMessages = MessageQueue.Count;
+            for (int i = 0; i < maxMessages; ++i)
+            {
+                NetIncomingMessage incomingMessage = null;
+                bool couldDequeue = MessageQueue.TryDequeue(out incomingMessage);
+                if (!couldDequeue)
+                {
+                    // If we couldn't dequeue anything, hard-bail
+                    LOG.Info(
+                        String.Format("Expected {0} messages, but only received {1} before we could not dequeue any.",
+                            maxMessages, i));
+                    return;
+                }
+
+                if (incomingMessage == null)
+                {
+                    LOG.Info(String.Format("Found a null message inside the MessageQueue. This shouldn't happen."));
+                    continue;
+                }
+
+                RouteDataOnMessageType(incomingMessage, gameTime);
+            }
+        }
+
+        protected abstract void EstablishConnection();
+
+        public abstract void RouteDataOnMessageType(NetIncomingMessage message, GameTime gameTime);
 
         // ...and also to send data
         public abstract void SendData(GameTime gameTime);

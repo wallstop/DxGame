@@ -3,6 +3,7 @@ using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Network;
 using DXGame.Core.GraphicsWidgets;
 using DXGame.Core.Input;
+using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using Lidgren.Network;
@@ -111,16 +112,21 @@ namespace DXGame.Core.Menus
         protected void ConnectAction()
         {
             NetPeerConfiguration config = new NetPeerConfiguration("DxGame");
-            MultiplayerReceiveMenu clientMenu =
-                new MultiplayerReceiveMenu(DxGame).WithNetConfig(config)
-                    .WithIpAddress(AddressBox.Text)
-                    .WithPort(Convert.ToInt32(PortBox.Text))
-                    .WithSpriteFont(SpriteFont);
+            var networkClientConfig = new NetworkClientConfig
+            {
+                IpAddress = AddressBox.Text,
+                Port = Convert.ToInt32(PortBox.Text),
+                PlayerName = "DickButt"
+            };
+
+            var client =
+                ((NetworkClient) new NetworkClient(DxGame).WithConfiguration(config)).WithNetworkClientConfig(
+                    networkClientConfig);
+            var networkModel = DxGame.Model<NetworkModel>();
+            networkModel.AttachClient(client);
 
             Remove();
-            DxGame.AddAndInitializeComponent(clientMenu);
-            var networkClient = new TestNetworkClient(DxGame).WithMultiplayerReceiveMenu(clientMenu);
-            DxGame.AddAndInitializeComponent(networkClient);
+            DxGame.AddAndInitializeComponent(new GameModel(DxGame));
         }
     }
 }

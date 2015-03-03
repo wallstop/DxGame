@@ -5,6 +5,7 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Network;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Models
 {
@@ -34,11 +35,21 @@ namespace DXGame.Core.Models
             return this;
         }
 
-        public NetworkModel WithServer(NetworkClient server)
+        public NetworkModel WithServer(NetworkServer server)
         {
             Debug.Assert(!Servers.Any(), "Can only add one server to a NetworkModel!"); // Really? Why not more?
             AddNetworkComponent(server);
             return this;
+        }
+
+        public void AttachServer(NetworkServer server)
+        {
+            WithServer(server);
+        }
+
+        public void AttachClient(NetworkClient client)
+        {
+            WithClient(client);
         }
 
         protected void AddNetworkComponent(NetworkComponent netComponent)
@@ -49,19 +60,19 @@ namespace DXGame.Core.Models
             connections_.Add(netComponent);
         }
 
-        public void ReceiveData()
+        public void ReceiveData(GameTime gameTime)
         {
             foreach (NetworkComponent connection in connections_)
             {
-                connection.ReceiveData();
+                connection.ReceiveData(gameTime);
             }
         }
 
-        public void SendData()
+        public void SendData(GameTime gameTime)
         {
             foreach (NetworkComponent connection in connections_)
             {
-                connection.SendData();
+                connection.SendData(gameTime);
             }
         }
     }

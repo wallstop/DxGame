@@ -3,6 +3,7 @@ using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Network;
 using DXGame.Core.GraphicsWidgets;
 using DXGame.Core.Input;
+using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
@@ -99,11 +100,12 @@ namespace DXGame.Core.Menus
 
             Remove();
 
-            MultiplayerSendMenu sendMenu = new MultiplayerSendMenu(DxGame).WithNetConfig(config);
-            DxGame.AddAndInitializeComponent(sendMenu);
+            NetworkServer server = (NetworkServer) new NetworkServer(DxGame).WithConfiguration(config);
+            var networkModel = DxGame.Model<NetworkModel>();
+            networkModel.AttachServer(server);
 
-            var networkServer = new TestNetworkServer(DxGame).WithMultiplayerMenu(sendMenu);
-            DxGame.AddAndInitializeComponent(networkServer);
+            Remove();
+            DxGame.AddAndInitializeComponent(new GameModel(DxGame));
         }
     }
 }

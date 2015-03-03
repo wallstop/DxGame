@@ -105,14 +105,14 @@ namespace DXGame.Main
             }
         }
 
-        public void AddAndInitializeComponent(GameComponent component)
+        public void AddAndInitializeComponent(IGameComponent component)
         {
             Components.Add(component);
         }
 
-        public void AddAndInitializeComponents(params GameComponent [] components)
+        public void AddAndInitializeComponents(params IGameComponent [] components)
         {
-            foreach (GameComponent component in components)
+            foreach (var component in components)
             {
                 AddAndInitializeComponent(component);
             }
@@ -143,16 +143,26 @@ namespace DXGame.Main
             }
         }
 
-        public void RemoveComponent(GameComponent component)
+        public void RemoveComponent(IGameComponent component)
         {
             Components.Remove(component);
         }
 
-        public void RemoveComponents(params GameComponent[] components)
+        public void RemoveComponents(params IGameComponent[] components)
         {
             foreach (var component in components)
             {
                 RemoveComponent(component);
+            }
+        }
+
+        // TODO: Remove. This is currently only for testing
+        public void ResetComponents(IEnumerable<IGameComponent> components)
+        {
+            Components.Clear();
+            foreach (var gameComponent in components)
+            {
+                AddAndInitializeComponent(gameComponent);
             }
         }
 
@@ -207,9 +217,9 @@ namespace DXGame.Main
             var networkModel = Model<NetworkModel>();
 
             // Should probably thread this... but wait until we have perf testing :)
-            networkModel.ReceiveData();
+            networkModel.ReceiveData(gameTime);
             base.Update(gameTime);
-            networkModel.SendData();
+            networkModel.SendData(gameTime);
         }
 
         /// <summary>

@@ -28,54 +28,38 @@ namespace DXGame.Core.Components.Network
         {
         }
 
-        protected override void EstablishConnection()
+        public override NetworkComponent WithConfiguration(NetPeerConfiguration configuration)
         {
-            //ServerConnection.
+            // Make sure we enable connection approval (used to establish/verify a connection)
+            configuration.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
+            return base.WithConfiguration(configuration);
         }
 
-        public override void ReceiveData(GameTime gameTime)
+        protected override void EstablishConnection()
         {
-            // TODO: Feed gameTime into the below methods somehow
+            ServerConnection.Start();
+        }
 
-            GenericUtils.CheckNullOrDefault(ServerConnection, "Cannot receive data from a null Server Connection");
-            /*
-                We should probably do a for(int i = 0; i < numClients; ++i) { ServerConnection.ReadMessage(); } 
-                Style of thing here... but then we run into the issue of out of order messages / delayed messages...
-                
-                This will require some thought to get it to work properly
-            */
-
-            /*
-                Always listen for one-more-than the number of connections we currently have in case someone is trying to connect
-            */
-            int maxMessages = ServerConnection.ConnectionsCount + 1;
-            for (int i = 0; i < maxMessages; ++i)
+        public override void RouteDataOnMessageType(NetIncomingMessage incomingMessage, GameTime gameTime)
+        {
+            // TODO: Deal with gameTime
+            switch (incomingMessage.MessageType)
             {
-                var incomingMessage = ServerConnection.ReadMessage();
-                if (incomingMessage == null)
-                {
-                    // If we don't have a message, we're done here.
-                    return;
-                }
-
-                switch (incomingMessage.MessageType)
-                {
-                    case NetIncomingMessageType.Error:
-                        ProcessError(incomingMessage);
-                        break;
-                    case NetIncomingMessageType.Data:
-                        ProcessData(incomingMessage);
-                        break;
-                    case NetIncomingMessageType.ConnectionLatencyUpdated:
-                        ProcessConnectionLatencyUpdated(incomingMessage);
-                        break;
-                    case NetIncomingMessageType.ConnectionApproval:
-                        ProcessConnectionApproval(incomingMessage);
-                        break;
-                    default:
-                        ProcessUnhandledMessageType(incomingMessage);
-                        break;
-                }
+                case NetIncomingMessageType.Error:
+                    ProcessError(incomingMessage);
+                    break;
+                case NetIncomingMessageType.Data:
+                    ProcessData(incomingMessage);
+                    break;
+                case NetIncomingMessageType.ConnectionLatencyUpdated:
+                    ProcessConnectionLatencyUpdated(incomingMessage);
+                    break;
+                case NetIncomingMessageType.ConnectionApproval:
+                    ProcessConnectionApproval(incomingMessage);
+                    break;
+                default:
+                    ProcessUnhandledMessageType(incomingMessage);
+                    break;
             }
         }
 
@@ -172,12 +156,6 @@ namespace DXGame.Core.Components.Network
         protected void HandleClientDataKeyFrame(NetworkMessage message)
         {
             // TODO: Nice lerp logic. For now, just ignore client messages
-        }
-
-        protected static T ConvertMessageType<T>(NetworkMessage message) where T : class
-        {
-            return GenericUtils.CheckedCast<T>(message, LOG,
-                String.Format("Received message expecting type {0}, but was unable to dynamic cast", typeof (T)));
         }
 
         protected void HandleClientConnectionRequest(NetworkMessage message)

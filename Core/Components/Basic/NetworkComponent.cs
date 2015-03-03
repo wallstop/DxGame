@@ -5,6 +5,7 @@ using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
 using Lidgren.Network;
+using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Basic
 {
@@ -111,8 +112,12 @@ namespace DXGame.Core.Components.Basic
 
         protected abstract void EstablishConnection();
 
-        public abstract void ReceiveData();
+        // We need to know the GameTime in order to Receive Data
+        public abstract void ReceiveData(GameTime gameTime);
 
-        public abstract void SendData();
+        // ...and also to send data
+        public abstract void SendData(GameTime gameTime);
+
+        public abstract void Shutdown();
     }
 }

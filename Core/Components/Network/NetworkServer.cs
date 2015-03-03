@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Models;
 using DXGame.Core.Network;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using log4net;
 using Lidgren.Network;
+using log4net;
+using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Network
 {
@@ -29,11 +30,13 @@ namespace DXGame.Core.Components.Network
 
         protected override void EstablishConnection()
         {
-            throw new NotImplementedException();
+            //ServerConnection.
         }
 
-        public override void ReceiveData()
+        public override void ReceiveData(GameTime gameTime)
         {
+            // TODO: Feed gameTime into the below methods somehow
+
             GenericUtils.CheckNullOrDefault(ServerConnection, "Cannot receive data from a null Server Connection");
             /*
                 We should probably do a for(int i = 0; i < numClients; ++i) { ServerConnection.ReadMessage(); } 
@@ -41,19 +44,94 @@ namespace DXGame.Core.Components.Network
                 
                 This will require some thought to get it to work properly
             */
-            var incomingMessage = ServerConnection.ReadMessage();
-            if (incomingMessage == null)
-            {
-                // If we don't have a message, we're done here.
-                return;
-            }
 
-            ProcessData(incomingMessage);
+            /*
+                Always listen for one-more-than the number of connections we currently have in case someone is trying to connect
+            */
+            int maxMessages = ServerConnection.ConnectionsCount + 1;
+            for (int i = 0; i < maxMessages; ++i)
+            {
+                var incomingMessage = ServerConnection.ReadMessage();
+                if (incomingMessage == null)
+                {
+                    // If we don't have a message, we're done here.
+                    return;
+                }
+
+                switch (incomingMessage.MessageType)
+                {
+                    case NetIncomingMessageType.Error:
+                        ProcessError(incomingMessage);
+                        break;
+                    case NetIncomingMessageType.Data:
+                        ProcessData(incomingMessage);
+                        break;
+                    case NetIncomingMessageType.ConnectionLatencyUpdated:
+                        ProcessConnectionLatencyUpdated(incomingMessage);
+                        break;
+                    case NetIncomingMessageType.ConnectionApproval:
+                        ProcessConnectionApproval(incomingMessage);
+                        break;
+                    default:
+                        ProcessUnhandledMessageType(incomingMessage);
+                        break;
+                }
+            }
         }
 
-        public override void SendData()
+        public override void SendData(GameTime gameTime)
         {
+            foreach (NetConnection connection in ClientFrameStates.Keys)
+            {
+                // Quick and dirty for now - do some nice differentials later
+                var message = new GameStateKeyFrame {Components = DxGame.Components.ToList(), GameTime = gameTime, MessageType = MessageType.SERVER_DATA_KEYFRAME};
+                var outgoingMessage = message.ToNetOutgoingMessage(connection.Peer);
+                connection.SendMessage(outgoingMessage, NetDeliveryMethod.ReliableOrdered, 0);
+            }
+        }
+
+        public override void Shutdown()
+        {
+            LOG.Info("Shutting down NetworkServer");
+            ServerConnection.Shutdown("NetworkServer shutting down calmly");
+        }
+
+        protected void ProcessUnhandledMessageType(NetIncomingMessage message)
+        {
+            GenericUtils.HardFail(LOG,
+                String.Format("NetworkServer currently doesn't support messages of the type {0}. Message: {1}",
+                    message.MessageType, message));
+        }
+
+        protected void ProcessError(NetIncomingMessage message)
+        {
+            GenericUtils.HardFail(LOG,
+                String.Format("Received IncomingMessage with error type, this shouldn't happen! Message: {0}", message));
+        }
+
+        protected void ProcessConnectionLatencyUpdated(NetIncomingMessage message)
+        {
+            // TODO: Handle latency updates (currently not supported)
+            LOG.Info(String.Format("Received LatencyUpdate {0}", message));
             throw new NotImplementedException();
+        }
+
+        protected void ProcessConnectionApproval(NetIncomingMessage message)
+        {
+            if (ClientFrameStates.ContainsKey(message.SenderConnection))
+            {
+                // TODO: Metrics
+                LOG.Error(String.Format("Denying Connection {0}, this connection is currently already approved.",
+                    message.SenderConnection));
+                message.SenderConnection.Deny();
+            }
+
+            /*
+                Only approve the connection here - wait to instantiate the client's FrameModel until they send our 
+                own special ClientApproval packet 
+            */
+            LOG.Info(String.Format("Approving NetworkServer client connection {0}", message.SenderConnection));
+            message.SenderConnection.Approve();
         }
 
         protected void ProcessData(NetIncomingMessage message)
@@ -64,11 +142,14 @@ namespace DXGame.Core.Components.Network
                 "Could not properly format a NetworkMessage from the NetIncomingMessage");
             switch (networkMessage.MessageType)
             {
+            case MessageType.CLIENT_CONNECTION_REQUEST:
+                HandleClientConnectionRequest(networkMessage);
+                break;
             case MessageType.CLIENT_DATA_DIFF:
                 HandleClientDataDiff(networkMessage);
                 break;
-            case MessageType.CLIENT_CONNECTION_REQUEST:
-                HandleClientConnectionRequest(networkMessage);
+            case MessageType.CLIENT_KEY_FRAME:
+                HandleClientDataKeyFrame(networkMessage);
                 break;
             case MessageType.SERVER_DATA_DIFF:
                 HandleServerDataDiff(networkMessage);
@@ -81,56 +162,56 @@ namespace DXGame.Core.Components.Network
 
         protected void HandleClientDataDiff(NetworkMessage message)
         {
-            var clientDataDiffMessage = message as GameStateDiff;
-            if (clientDataDiffMessage == null)
-            {
-                // TODO: Log metrics on this
-                var logMessage = String.Format(
-                    "Received ClientDataDiff message type, but was unable to cast message as a GameStateDiff ({0})",
-                    message);
-                LOG.Error(logMessage);
-                Debug.Assert(false, logMessage);
-            }
+            var clientDataDiffMessage = ConvertMessageType<GameStateDiff>(message);
 
-            // TODO
-            throw new NotImplementedException();
+            // TODO: Nice lerp logic. For now, just ignore client messages
+
+            //var clientConnection = clientDataDiffMessage.Connection;
+        }
+
+        protected void HandleClientDataKeyFrame(NetworkMessage message)
+        {
+            // TODO: Nice lerp logic. For now, just ignore client messages
+        }
+
+        protected static T ConvertMessageType<T>(NetworkMessage message) where T : class
+        {
+            return GenericUtils.CheckedCast<T>(message, LOG,
+                String.Format("Received message expecting type {0}, but was unable to dynamic cast", typeof (T)));
         }
 
         protected void HandleClientConnectionRequest(NetworkMessage message)
         {
-            var clientConnectionRequest = message as ClientConnectionRequest;
-            if (clientConnectionRequest == null)
+            var clientConnectionRequest = ConvertMessageType<ClientConnectionRequest>(message);
+
+            var clientConnection = clientConnectionRequest.Connection;
+            if (ClientFrameStates.ContainsKey(clientConnection))
             {
-                // TODO: Log metrics on this
-                var logMessage = String.Format(
-                    "Received ClientConnectionRequest message type, but was unable to cast message as ClientConnectionRequest ({0})",
-                    message);
-                LOG.Error(logMessage);
-                Debug.Assert(false, logMessage);
+                GenericUtils.HardFail(LOG,
+                    String.Format(
+                        "Received ClientConnectionRequest that we're already tracking, this is an issue! Request: {0}",
+                        clientConnectionRequest));
+                return;
             }
 
-            // TODO
-            var clientConnection = clientConnectionRequest
-
-            throw new NotImplementedException();
+            var frameModel = new FrameModel(DxGame);
+            ClientFrameStates.Add(clientConnection, frameModel);
+            LOG.Info(String.Format("Successfully initialized ClientConnection {0} for player {1}", clientConnection,
+                clientConnectionRequest.PlayerName));
         }
 
         protected void HandleServerDataDiff(NetworkMessage message)
         {
-            var logMessage = String.Format("Received a Server Data Diff {0} from a client. This should not happen",
-                message);
-            LOG.Error(logMessage);
-            // Might want to raise an exception for release mode
-            Debug.Assert(false, logMessage);
+            GenericUtils.HardFail(LOG,
+                String.Format("Received a Server Data Diff {0} from a client. This should not happen",
+                    message));
         }
 
         protected void HandleServerDataKeyframe(NetworkMessage message)
         {
-            var logMessage = String.Format("Received a Server Data Keyframe {0} from a client. This should not happen",
-                message);
-            LOG.Error(logMessage);
-            // Might want to raise an exception for release mode
-            Debug.Assert(false, logMessage);
+            GenericUtils.HardFail(LOG,
+                String.Format("Received a Server Data Keyframe {0} from a client. This should not happen",
+                    message));
         }
     }
 }

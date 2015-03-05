@@ -98,8 +98,6 @@ namespace DXGame.Core.Menus
             // TODO: Change this to 4 / whatever our max player limit is
             config.MaximumConnections = 1;
 
-            Remove();
-
             NetworkServer server = (NetworkServer) new NetworkServer(DxGame).WithConfiguration(config);
             var networkModel = DxGame.Model<NetworkModel>();
             networkModel.AttachServer(server);

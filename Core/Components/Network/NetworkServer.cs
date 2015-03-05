@@ -26,6 +26,7 @@ namespace DXGame.Core.Components.Network
         public NetworkServer(DxGame game)
             : base(game)
         {
+            ClientFrameStates = new Dictionary<NetConnection, FrameModel>();
         }
 
         public override NetworkComponent WithConfiguration(NetPeerConfiguration configuration)

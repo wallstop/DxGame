@@ -95,6 +95,7 @@ namespace DXGame.Core.Components.Basic
         protected NetworkComponent(DxGame game)
             : base(game)
         {
+            MessageQueue = new ConcurrentQueue<NetIncomingMessage>();
         }
 
         public virtual NetworkComponent WithConnection(NetPeer connection)

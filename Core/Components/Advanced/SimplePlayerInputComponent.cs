@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DXGame.Core.Components.Basic;
@@ -15,6 +16,7 @@ namespace DXGame.Core.Components.Advanced
     {
         private const float JUMP_SPEED = 10.0f;
         private const float MOVE_SPEED = 10.0f;
+        public string StateRequest { get; set; }
         protected PhysicsComponent physics_;
         protected StateComponent state_;
         protected WeaponComponent weapon_;
@@ -61,7 +63,8 @@ namespace DXGame.Core.Components.Advanced
             Vector2 velocity = physics_.Velocity;
             string state = state_.State;
 
-            bool isMoving = false;
+            bool isMovingLeft = false;
+            bool isMovingRight = false;
 
             foreach (KeyboardEvent keyEvent in events)
             {
@@ -76,7 +79,7 @@ namespace DXGame.Core.Components.Advanced
                         {
                             velocity.X = -MOVE_SPEED;
                         }
-                        isMoving = true;
+                        isMovingLeft = true;
                         break;
                     case Keys.Right:
                         if (velocity.X > 0)
@@ -87,21 +90,14 @@ namespace DXGame.Core.Components.Advanced
                         {
                             velocity.X = MOVE_SPEED;
                         }
-                        isMoving = true;
+                        isMovingRight = true;
                         break;
                     case Keys.Up:
-                        // TODO: Remove shit code, replace with proper collision.
-                        switch (state_.State)
+                        if (state_.State != "Jumping")
                         {
-                            case "Walking":
-                            case "None":
-                                if (state_.States.Contains("Jumping"))
-                                {
-                                    state = "Jumping";
-                                    velocity.Y -= JUMP_SPEED;
-                                    acceleration.Y -= JUMP_SPEED;
-                                }
-                                break;
+                            StateRequest = "Jumping";
+                            velocity.Y -= JUMP_SPEED;
+                            acceleration.Y -= JUMP_SPEED;
                         }
                         break;
                     case Keys.Down:
@@ -112,17 +108,22 @@ namespace DXGame.Core.Components.Advanced
                 }
             }
 
-            //Really just want to know if they never pressed left or right so
-            //horizontal movement can be stopped even while jumping.
             if (MathUtils.FuzzyCompare(lastAcceleration_.Y, 0) == 0 && MathUtils.FuzzyCompare(acceleration.Y, 0) == 0 && MathUtils.FuzzyCompare(velocity.Y, 0) == 0)
             {
-                state = "None";
+                StateRequest = "None";
             }
-            if ((state != "Jumping") && isMoving)
+            if ((StateRequest != "Jumping"))
             {
-                state = "Walking";
+                if (isMovingLeft)
+                {
+                    StateRequest = "Walking_Left";
+                }
+                else if (isMovingRight)
+                {
+                    StateRequest = "Walking_Right";
+                }
             }
-            if (!isMoving)
+            if (!(isMovingLeft || isMovingRight))
             {
                 velocity.X = 0;
             }

@@ -9,6 +9,7 @@ namespace DXGame.Core.Components.Basic
     {
         HIGHEST = -1,
         PHYSICS = HIGHEST,
+        STATE = 0,
         HIGH = 1,
         NORMAL = 5,
         LOW = 10,

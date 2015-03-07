@@ -25,10 +25,6 @@ namespace DXGame.Core.Network
         public NetConnection Connection
         {
             get { return message_.SenderConnection; }
-            set
-            {
-                /* No-op */
-            }
         }
 
         public static NetworkMessage FromNetIncomingMessage(NetIncomingMessage message)

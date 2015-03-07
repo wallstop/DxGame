@@ -63,8 +63,10 @@ namespace DXGame.Core.Components.Network
                     // TODO: Handle
                     break;
                 default:
-                    ProcessUnhandledMessageType(incomingMessage);
+                    // TODO: Handle
                     break;
+                    //ProcessUnhandledMessageType(incomingMessage);
+                    //break;
             }
         }
 
@@ -74,8 +76,8 @@ namespace DXGame.Core.Components.Network
             {
                 // Quick and dirty for now - do some nice differentials later
                 var message = new GameStateKeyFrame {Components = DxGame.Components.ToList(), GameTime = gameTime, MessageType = MessageType.SERVER_DATA_KEYFRAME};
-                var outgoingMessage = message.ToNetOutgoingMessage(connection.Peer);
-                connection.SendMessage(outgoingMessage, NetDeliveryMethod.ReliableOrdered, 0);
+                var outgoingMessage = message.ToNetOutgoingMessage(ServerConnection);
+                ServerConnection.SendMessage(outgoingMessage, connection, NetDeliveryMethod.ReliableOrdered, 0);
             }
         }
 
@@ -121,6 +123,7 @@ namespace DXGame.Core.Components.Network
             */
             LOG.Info(String.Format("Approving NetworkServer client connection {0}", message.SenderConnection));
             message.SenderConnection.Approve();
+            ProcessData(message);
         }
 
         protected void ProcessData(NetIncomingMessage message)

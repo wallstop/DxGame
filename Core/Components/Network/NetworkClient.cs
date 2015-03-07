@@ -46,7 +46,7 @@ namespace DXGame.Core.Components.Network
             GenericUtils.CheckNullOrDefault(configuration,
                 "Cannot create a NetworkClient with a null/default NetPeerConfiguration");
             Connection = new NetClient(configuration);
-            throw new NotImplementedException();
+            return this;
         }
 
         public override void EstablishConnection()
@@ -66,6 +66,9 @@ namespace DXGame.Core.Components.Network
             {
             case NetIncomingMessageType.Data:
                 ProcessData(message);
+                break;
+            case NetIncomingMessageType.StatusChanged:
+                // TODO: Handle lol
                 break;
             default:
                 throw new NotImplementedException(String.Format("Currently not dealing with on MessageType {0} (TODO)",

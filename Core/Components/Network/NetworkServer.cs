@@ -59,6 +59,9 @@ namespace DXGame.Core.Components.Network
                 case NetIncomingMessageType.ConnectionApproval:
                     ProcessConnectionApproval(incomingMessage);
                     break;
+                case NetIncomingMessageType.StatusChanged:
+                    // TODO: Handle
+                    break;
                 default:
                     ProcessUnhandledMessageType(incomingMessage);
                     break;

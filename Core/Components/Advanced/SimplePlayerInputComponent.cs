@@ -82,6 +82,7 @@ namespace DXGame.Core.Components.Advanced
                             velocity.X = -MOVE_SPEED;
                         }
                         isMovingLeft = true;
+                        isMovingRight = false;
                         break;
                     case Keys.Right:
                         if (velocity.X > 0)
@@ -93,6 +94,7 @@ namespace DXGame.Core.Components.Advanced
                             velocity.X = MOVE_SPEED;
                         }
                         isMovingRight = true;
+                        isMovingLeft = false;
                         break;
                     case Keys.Up:
                         if (state_.State != "Jumping")

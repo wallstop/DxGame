@@ -24,6 +24,7 @@ namespace DXGame.Core.Components.Advanced
         {
             var stateRequest = GenericUtils.CheckedCast<StateChangeRequestMessage>(message);
             stateRequest_ = stateRequest.State;
+            // If we want to jump, we jump! No problem.
             if (stateRequest_ == "Jumping")
             {
                 State = "Jumping";
@@ -35,7 +36,8 @@ namespace DXGame.Core.Components.Advanced
             var collisionMessage = GenericUtils.CheckedCast<CollisionMessage>(message);
             var collisionDirections = collisionMessage.CollisionDirections;
 
-            if (collisionDirections.Contains(CollisionDirection.South))
+            // If we collide southwards, we stop jumping if we were jumping
+            if (collisionDirections.Contains(CollisionDirection.South) && State == "Jumping")
             {
                 State = "None";
             }
@@ -46,20 +48,13 @@ namespace DXGame.Core.Components.Advanced
                 return;
             }
 
-            var stateChanged = new StateChangeRequestMessage();
-
             switch (stateRequest_)
             {
             case "Walking_Left":
-                
                 State = !collisionDirections.Contains(CollisionDirection.West) ? "Walking_Left" : "None";
                 break;
             case "Walking_Right":
                 State = !collisionDirections.Contains(CollisionDirection.East) ? "Walking_Right" : "None";
-                break;
-            // If we want to jump, we jump! No problem.
-            case "Jumping":
-                State = "Jumping";
                 break;
             case "None":
                 State = "None";

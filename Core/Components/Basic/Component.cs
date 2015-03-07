@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using DXGame.Core.Messaging;
 using DXGame.Main;
@@ -103,13 +104,15 @@ namespace DXGame.Core.Components.Basic
 
         public void HandleMessage(Message message)
         {
-            IEnumerable<MessageHandler> messageHandlers = typesToMessageHandlers_[message.GetType()];
-            if (messageHandlers == null)
+            // If we don't know about the type, we can't continue, so just bail.
+            if (!typesToMessageHandlers_.ContainsKey(message.GetType()))
             {
                 return;
             }
 
-            foreach (MessageHandler messageHandler in messageHandlers)
+            IEnumerable<MessageHandler> messageHandlers = typesToMessageHandlers_[message.GetType()];
+
+            foreach (var messageHandler in messageHandlers)
             {
                 messageHandler(message);
             }
@@ -117,12 +120,10 @@ namespace DXGame.Core.Components.Basic
 
         protected void RegisterMessageHandler(Type type, MessageHandler handler)
         {
-            List<MessageHandler> messageHandlers = typesToMessageHandlers_[type];
-            if (messageHandlers == null)
-            {
-                messageHandlers = new List<MessageHandler>();
-            }
-            
+            List<MessageHandler> messageHandlers = (typesToMessageHandlers_.ContainsKey(type)
+                ? typesToMessageHandlers_[type]
+                : new List<MessageHandler>());
+
             messageHandlers.Add(handler);
             typesToMessageHandlers_[type] = messageHandlers;
         }

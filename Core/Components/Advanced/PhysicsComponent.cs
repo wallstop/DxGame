@@ -24,6 +24,7 @@ namespace DXGame.Core.Components.Advanced
         public PhysicsComponent(DxGame game)
             : base(game)
         {
+            RegisterMessageHandler(typeof (CollisionMessage), HandleCollisionMessage);
             maxVelocity_ = new Vector2(5.0f, 5.0f);
             maxAcceleration_ = new Vector2(5.0f, 5.0f);
             UpdatePriority = UpdatePriority.PHYSICS;
@@ -69,7 +70,8 @@ namespace DXGame.Core.Components.Advanced
 
         public PhysicsComponent WithPositionalComponent(PositionalComponent position)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(position), "PhysicsComponent cannot be initialized with null position");
+            Debug.Assert(!GenericUtils.IsNullOrDefault(position),
+                "PhysicsComponent cannot be initialized with null position");
             position_ = position;
             return this;
         }
@@ -93,38 +95,33 @@ namespace DXGame.Core.Components.Advanced
         {
             Vector2 acceleration = Acceleration;
             Vector2 velocity = VectorUtils.ConstrainVector(Velocity + acceleration_, maxVelocity_);
-            Vector2 previousPosition = position_.Position;
             position_.Position += velocity;
 
             Velocity = velocity;
             Acceleration = acceleration;
         }
 
-        public override void HandleMessage(Message message)
+        protected void HandleCollisionMessage(Message message)
         {
-            base.HandleMessage(message);
-            var messageAsCollision = message as CollisionMessage;
-            if (messageAsCollision != null)
+            var messageAsCollision = GenericUtils.CheckedCast<CollisionMessage>(message);
+            var collisionDirections = messageAsCollision.CollisionDirections;
+            var velocity = Velocity;
+            // Check for x-wise collisions 
+            var acceleration = Acceleration;
+            if (collisionDirections.Contains(CollisionDirection.East) ||
+                collisionDirections.Contains(CollisionDirection.West))
             {
-                var collisionDirections = messageAsCollision.CollisionDirections;
-                var velocity = Velocity;
-                // Check for x-wise collisions 
-                var acceleration = Acceleration;
-                if (collisionDirections.Contains(CollisionDirection.East) ||
-                    collisionDirections.Contains(CollisionDirection.West))
-                {
-                    velocity.X = 0;
-                    acceleration.X = 0;
-                }
-                if (collisionDirections.Contains(CollisionDirection.South) ||
-                    collisionDirections.Contains(CollisionDirection.North))
-                {
-                    velocity.Y = 0;
-                    acceleration.Y = 0;
-                }
-                Velocity = velocity;
-                Acceleration = acceleration;
+                velocity.X = 0;
+                acceleration.X = 0;
             }
+            if (collisionDirections.Contains(CollisionDirection.South) ||
+                collisionDirections.Contains(CollisionDirection.North))
+            {
+                velocity.Y = 0;
+                acceleration.Y = 0;
+            }
+            Velocity = velocity;
+            Acceleration = acceleration;
         }
     }
 }

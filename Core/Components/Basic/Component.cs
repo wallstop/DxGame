@@ -1,4 +1,6 @@
-﻿using DXGame.Core.Messaging;
+﻿using System;
+using System.Collections.Generic;
+using DXGame.Core.Messaging;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 
@@ -62,6 +64,8 @@ namespace DXGame.Core.Components.Basic
     </summary>            
     */
 
+    public delegate void MessageHandler(Message message);
+
     public abstract class Component : GameComponent
     {
         /**
@@ -69,6 +73,9 @@ namespace DXGame.Core.Components.Basic
             This is a very important distinction.
         */
         protected readonly UniqueId id_ = new UniqueId();
+
+        private readonly Dictionary<Type, List<MessageHandler>> typesToMessageHandlers_ =
+            new Dictionary<Type, List<MessageHandler>>();
 
         public GameObject Parent { get; set; }
 
@@ -94,8 +101,30 @@ namespace DXGame.Core.Components.Basic
             get { return (UpdatePriority) UpdateOrder; }
         }
 
-        public virtual void HandleMessage(Message message)
+        public void HandleMessage(Message message)
         {
+            IEnumerable<MessageHandler> messageHandlers = typesToMessageHandlers_[message.GetType()];
+            if (messageHandlers == null)
+            {
+                return;
+            }
+
+            foreach (MessageHandler messageHandler in messageHandlers)
+            {
+                messageHandler(message);
+            }
+        }
+
+        protected void RegisterMessageHandler(Type type, MessageHandler handler)
+        {
+            List<MessageHandler> messageHandlers = typesToMessageHandlers_[type];
+            if (messageHandlers == null)
+            {
+                messageHandlers = new List<MessageHandler>();
+            }
+            
+            messageHandlers.Add(handler);
+            typesToMessageHandlers_[type] = messageHandlers;
         }
 
         public virtual void Remove()

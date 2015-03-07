@@ -9,17 +9,12 @@ namespace DXGame.Core.Components.Advanced
         public CollisionDestructibleComponent(DxGame game) 
             : base(game)
         {
+            RegisterMessageHandler(typeof (CollisionMessage), HandleCollision);
         }
 
-        public override void HandleMessage(Message message)
+        protected void HandleCollision(Message message)
         {
-            base.HandleMessage(message);
-            var messageType = message.GetType();
-
-            if (messageType == typeof(CollisionMessage))
-            {
-                DxGame.RemoveGameObject(Parent);
-            }
+            DxGame.RemoveGameObject(Parent);
         }
     }
 }

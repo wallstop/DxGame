@@ -105,12 +105,7 @@ namespace DXGame.Core.Components.Basic
             return this;
         }
 
-        public virtual NetworkComponent WithConfiguration(NetPeerConfiguration config)
-        {
-            GenericUtils.CheckNull(config, "Cannot create a NetworkComponent with a null NetPeerConfiguration");
-            Connection = new NetPeer(config);
-            return this;
-        }
+        public abstract NetworkComponent WithConfiguration(NetPeerConfiguration config);
 
         protected static T ConvertMessageType<T>(NetworkMessage message) where T : class
         {

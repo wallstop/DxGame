@@ -41,6 +41,14 @@ namespace DXGame.Core.Components.Network
             return this;
         }
 
+        public override NetworkComponent WithConfiguration(NetPeerConfiguration configuration)
+        {
+            GenericUtils.CheckNullOrDefault(configuration,
+                "Cannot create a NetworkClient with a null/default NetPeerConfiguration");
+            Connection = new NetClient(configuration);
+            throw new NotImplementedException();
+        }
+
         public override void EstablishConnection()
         {
             ClientConnection.Start();

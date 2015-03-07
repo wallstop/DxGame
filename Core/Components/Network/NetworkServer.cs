@@ -31,9 +31,10 @@ namespace DXGame.Core.Components.Network
 
         public override NetworkComponent WithConfiguration(NetPeerConfiguration configuration)
         {
-            // Make sure we enable connection approval (used to establish/verify a connection)
+            // Make sure we enable Approvals so we can accept Client Connections
             configuration.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
-            return base.WithConfiguration(configuration);
+            Connection = new NetServer(configuration);
+            return this;
         }
 
         public override void EstablishConnection()

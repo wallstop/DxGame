@@ -98,8 +98,8 @@ namespace DXGame.Core.Components.Advanced
                         if (state_.State != "Jumping")
                         {
                             request.State = "Jumping";
-                            velocity.Y -= JUMP_SPEED;
-                            acceleration.Y -= JUMP_SPEED;
+                            velocity.Y = -JUMP_SPEED;
+                            acceleration.Y = -JUMP_SPEED;
                         }
                         break;
                     case Keys.Down:

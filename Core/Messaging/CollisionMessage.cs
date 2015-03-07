@@ -11,6 +11,10 @@ namespace DXGame.Core.Messaging
         West
     }
 
+    /*
+        Collision Messages may or may not contain any CollisionDirections. Users should not rely on the fact that 
+        the emission of a Collision Message actually means a Collision occurs.
+    */
     public class CollisionMessage : Message
     {
         public List<CollisionDirection> CollisionDirections { get; set; }

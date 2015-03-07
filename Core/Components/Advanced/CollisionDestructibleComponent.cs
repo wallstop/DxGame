@@ -1,5 +1,7 @@
-﻿using DXGame.Core.Components.Basic;
+﻿using System.Linq;
+using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
+using DXGame.Core.Utils;
 using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced
@@ -14,7 +16,11 @@ namespace DXGame.Core.Components.Advanced
 
         protected void HandleCollision(Message message)
         {
-            DxGame.RemoveGameObject(Parent);
+            var collisionMessage = GenericUtils.CheckedCast<CollisionMessage>(message);
+            if (collisionMessage.CollisionDirections.Any())
+            {
+                DxGame.RemoveGameObject(Parent);
+            }
         }
     }
 }

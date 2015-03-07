@@ -41,7 +41,7 @@ namespace DXGame.Core.Components.Network
             return this;
         }
 
-        protected override void EstablishConnection()
+        public override void EstablishConnection()
         {
             ClientConnection.Start();
 

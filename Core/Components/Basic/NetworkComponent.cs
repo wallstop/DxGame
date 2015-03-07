@@ -25,8 +25,6 @@ namespace DXGame.Core.Components.Basic
         protected Thread ConnectionListener { get; set; }
         protected ConcurrentQueue<NetIncomingMessage> MessageQueue { get; set; }
 
-        private bool connectionEstablished_ = false;
-
         protected void ReadFromConnection()
         {
             TimeSpan sleepTime = DxGame.TargetElapsedTime;

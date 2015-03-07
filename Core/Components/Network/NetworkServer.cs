@@ -36,7 +36,7 @@ namespace DXGame.Core.Components.Network
             return base.WithConfiguration(configuration);
         }
 
-        protected override void EstablishConnection()
+        public override void EstablishConnection()
         {
             ServerConnection.Start();
         }

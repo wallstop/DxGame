@@ -39,7 +39,6 @@ namespace DXGame.Core.Generators
             AddPlayerAnimations();
             weapon_ = new RangedWeaponComponent(game).WithPhysicsComponent(physics_).WithDamage(50);
             input_ = new SimplePlayerInputComponent(game).WithPhysics(physics_).WithPlayerState(state_).WithWeapon(weapon_);
-            state_.WithInput(input_);
         }
 
         public override List<GameObject> Generate()

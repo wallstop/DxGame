@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using DXGame.Core.Components.Basic;
+﻿using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -10,20 +9,20 @@ namespace DXGame.Core.Components.Advanced
     public class PlayerStateComponent : StateComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapCollideablePhysicsComponent));
-        protected SimplePlayerInputComponent input_;
+        protected string stateRequest_;
 
         public PlayerStateComponent(DxGame game)
             : base(game)
         {
             RegisterMessageHandler(typeof (CollisionMessage), HandleCollision);
+            RegisterMessageHandler(typeof (StateChangeRequestMessage), HandleStateChangeRequest);
             UpdatePriority = UpdatePriority.STATE;
         }
 
-        public PlayerStateComponent WithInput(SimplePlayerInputComponent input)
+        public void HandleStateChangeRequest(Message message)
         {
-            Debug.Assert(input != null, "Player input component cannot be null on assignment");
-            input_ = input;
-            return this;
+            var stateRequest = GenericUtils.CheckedCast<StateChangeRequestMessage>(message);
+            stateRequest_ = stateRequest.State;
         }
 
         public void HandleCollision(Message message)
@@ -31,7 +30,13 @@ namespace DXGame.Core.Components.Advanced
             var collisionMessage = GenericUtils.CheckedCast<CollisionMessage>(message);
             var collisionDirections = collisionMessage.CollisionDirections;
 
-            switch (input_.StateRequest)
+            // If we don't know about a request, don't do anything :( 
+            if (stateRequest_ == null)
+            {
+                return;
+            }
+
+            switch (stateRequest_)
             {
             case "Walking_Left":
                 State = !collisionDirections.Contains(CollisionDirection.West) ? "Walking_Left" : "None";
@@ -49,6 +54,8 @@ namespace DXGame.Core.Components.Advanced
                 State = "None";
                 break;
             }
+
+            stateRequest_ = null;
         }
     }
 }

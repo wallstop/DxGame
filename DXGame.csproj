@@ -129,6 +129,7 @@
     <Compile Include="Core\GraphicsWidgets\TextBox.cs" />
     <Compile Include="Core\Messaging\CollisionMessage.cs" />
     <Compile Include="Core\Messaging\Message.cs" />
+    <Compile Include="Core\Messaging\StateChangeRequestMessage.cs" />
     <Compile Include="Core\Models\CollisionModel.cs" />
     <Compile Include="Core\Models\FrameModel.cs" />
     <Compile Include="Core\Models\GameModel.cs" />

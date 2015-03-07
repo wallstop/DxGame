@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Input;
+using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -16,7 +17,6 @@ namespace DXGame.Core.Components.Advanced
     {
         private const float JUMP_SPEED = 10.0f;
         private const float MOVE_SPEED = 10.0f;
-        public string StateRequest { get; set; }
         protected PhysicsComponent physics_;
         protected StateComponent state_;
         protected WeaponComponent weapon_;
@@ -66,6 +66,8 @@ namespace DXGame.Core.Components.Advanced
             bool isMovingLeft = false;
             bool isMovingRight = false;
 
+            StateChangeRequestMessage request = new StateChangeRequestMessage();
+
             foreach (KeyboardEvent keyEvent in events)
             {
                 switch (keyEvent.Key)
@@ -95,7 +97,7 @@ namespace DXGame.Core.Components.Advanced
                     case Keys.Up:
                         if (state_.State != "Jumping")
                         {
-                            StateRequest = "Jumping";
+                            request.State = "Jumping";
                             velocity.Y -= JUMP_SPEED;
                             acceleration.Y -= JUMP_SPEED;
                         }
@@ -108,19 +110,20 @@ namespace DXGame.Core.Components.Advanced
                 }
             }
 
+            // TODO: Change this garbage
             if (MathUtils.FuzzyCompare(lastAcceleration_.Y, 0) == 0 && MathUtils.FuzzyCompare(acceleration.Y, 0) == 0 && MathUtils.FuzzyCompare(velocity.Y, 0) == 0)
             {
-                StateRequest = "None";
+                request.State = "None";
             }
-            if ((StateRequest != "Jumping"))
+            if ((request.State != "Jumping"))
             {
                 if (isMovingLeft)
                 {
-                    StateRequest = "Walking_Left";
+                    request.State = "Walking_Left";
                 }
                 else if (isMovingRight)
                 {
-                    StateRequest = "Walking_Right";
+                    request.State = "Walking_Right";
                 }
             }
             if (!(isMovingLeft || isMovingRight))
@@ -133,6 +136,8 @@ namespace DXGame.Core.Components.Advanced
             state_.State = state;
 
             lastAcceleration_ = physics_.Acceleration;
+
+            Parent.BroadcastMessage(request);
         }
     }
 }

@@ -101,6 +101,7 @@ namespace DXGame.Core.Menus
             NetworkServer server = (NetworkServer) new NetworkServer(DxGame).WithConfiguration(config);
             var networkModel = DxGame.Model<NetworkModel>();
             networkModel.AttachServer(server);
+            server.EstablishConnection();
 
             Remove();
             DxGame.AddAndInitializeComponent(new GameModel(DxGame));

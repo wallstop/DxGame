@@ -41,15 +41,9 @@ namespace DXGame.Core.Components.Network
             return this;
         }
 
-        public override void Update(GameTime gameTime)
-        {
-            base.Update(gameTime);
-        }
-
         protected override void EstablishConnection()
         {
             ClientConnection.Start();
-            var configuration = ClientConnection.Configuration;
 
             ClientConnectionRequest request = new ClientConnectionRequest {PlayerName = ClientConfig.PlayerName};
             var outMessage = request.ToNetOutgoingMessage(ClientConnection);

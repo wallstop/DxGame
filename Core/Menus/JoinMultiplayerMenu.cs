@@ -124,6 +124,7 @@ namespace DXGame.Core.Menus
                     networkClientConfig);
             var networkModel = DxGame.Model<NetworkModel>();
             networkModel.AttachClient(client);
+            client.EstablishConnection();
 
             Remove();
             DxGame.AddAndInitializeComponent(new GameModel(DxGame));

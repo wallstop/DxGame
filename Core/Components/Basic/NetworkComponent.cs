@@ -25,6 +25,8 @@ namespace DXGame.Core.Components.Basic
         protected Thread ConnectionListener { get; set; }
         protected ConcurrentQueue<NetIncomingMessage> MessageQueue { get; set; }
 
+        private bool connectionEstablished_ = false;
+
         protected void ReadFromConnection()
         {
             TimeSpan sleepTime = DxGame.TargetElapsedTime;
@@ -119,7 +121,7 @@ namespace DXGame.Core.Components.Basic
         }
 
         // We need to know the GameTime in order to Receive Data
-        public virtual void ReceiveData(GameTime gameTime)
+        public void ReceiveData(GameTime gameTime)
         {
             int maxMessages = MessageQueue.Count;
             for (int i = 0; i < maxMessages; ++i)
@@ -145,7 +147,7 @@ namespace DXGame.Core.Components.Basic
             }
         }
 
-        protected abstract void EstablishConnection();
+        public abstract void EstablishConnection();
 
         public abstract void RouteDataOnMessageType(NetIncomingMessage message, GameTime gameTime);
 

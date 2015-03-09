@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Main;
+using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -73,6 +74,16 @@ namespace DXGame.Core.Input
 
             // Remove all the CurrentEvents where an event has the same key as one in FinishedEvents
             CurrentEvents.RemoveAll(key => FinishedEvents.Select(finishedKey => finishedKey.Key).Contains(key.Key));
+        }
+
+        public override void Write(NetOutgoingMessage message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Read(NetIncomingMessage message)
+        {
+            throw new NotImplementedException();
         }
     }
 }

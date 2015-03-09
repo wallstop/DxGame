@@ -17,15 +17,7 @@ namespace DXGame.Core.Network
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (NetworkMessage));
 
-        protected NetIncomingMessage message_;
-
-        public TimeSpan TimeStamp { get; set; }
         public MessageType MessageType { get; set; }
-
-        public NetConnection Connection
-        {
-            get { return message_.SenderConnection; }
-        }
 
         public static NetworkMessage FromNetIncomingMessage(NetIncomingMessage message)
         {
@@ -33,8 +25,8 @@ namespace DXGame.Core.Network
             var typeString = message.ReadString();
             try
             {
-                var type = Type.GetType(typeString, true);
-                var networkMessage = (NetworkMessage) Activator.CreateInstance(type);
+                var networkMessage = NetworkUtils.ReadTypeFrom<NetworkMessage>(message);
+                networkMessage.MessageType = (MessageType) message.ReadUInt32();
                 networkMessage.LoadFromNetIncomingMessage(message);
                 return networkMessage;
             }
@@ -51,30 +43,23 @@ namespace DXGame.Core.Network
         }
 
         /*
-            Default behavior is to read in :
-                -All properties
-
-            Override this only if you must.
+            Override this with whatever custom behavior you want
         */
 
         public virtual void LoadFromNetIncomingMessage(NetIncomingMessage message)
         {
-            message_ = message;
-            message.ReadAllProperties(this);
+            throw new NotImplementedException(String.Format(
+                "LoadFromNetIncomingMessage needs to be implemented for {0}", GetType()));
         }
 
         /*
-            Default behavior is to write out:
-                -All Properties
-
-            You should have a *VERY GOOD REASON* for over-riding this. If you do, make sure the LoadFromNetIncomingMessage
-            and ToNetOutgoingMessage line up. 
+            Override this with whatever custom behavior you want
         */
 
         public virtual NetOutgoingMessage WriteToNetOutgoingMessage(NetOutgoingMessage message)
         {
-            message.WriteAllProperties(this);
-            return message;
+            throw new NotImplementedException(String.Format(
+                "WriteToNetOutgoingMessage needs to be implemented for {0}", GetType()));
         }
 
         public NetOutgoingMessage ToNetOutgoingMessage(NetPeer connection)
@@ -87,9 +72,9 @@ namespace DXGame.Core.Network
                 We always rely on having the type (as a string) be the first thing in a message, so 
                 let's go ahead and make it an invariant."
             */
-            var type = GetType();
             var message = connection.CreateMessage();
-            message.Write(type.ToString());
+            NetworkUtils.WriteTypeTo(this, message);
+            message.Write((uint)MessageType);
             return WriteToNetOutgoingMessage(message);
         }
     }

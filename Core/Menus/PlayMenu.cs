@@ -1,6 +1,7 @@
 ﻿using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using Lidgren.Network;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Menus
@@ -35,6 +36,16 @@ namespace DXGame.Core.Menus
             MenuItems.Add(hostMultiplayer);
             MenuItems.Add(joinMultiplayer);
             base.Initialize();
+        }
+
+        public override void Write(NetOutgoingMessage message)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Read(NetIncomingMessage message)
+        {
+            throw new System.NotImplementedException();
         }
 
         private void SinglePlayerAction()

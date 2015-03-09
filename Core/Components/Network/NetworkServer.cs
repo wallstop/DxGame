@@ -132,27 +132,35 @@ namespace DXGame.Core.Components.Network
             var networkMessage = NetworkMessage.FromNetIncomingMessage(message);
             GenericUtils.CheckNull(networkMessage,
                 "Could not properly format a NetworkMessage from the NetIncomingMessage");
+
+            DeMarshall demarshall;
+
             switch (networkMessage.MessageType)
             {
             case MessageType.CLIENT_CONNECTION_REQUEST:
-                HandleClientConnectionRequest(networkMessage);
+                demarshall = HandleClientConnectionRequest;
                 break;
             case MessageType.CLIENT_DATA_DIFF:
-                HandleClientDataDiff(networkMessage);
+                demarshall = HandleClientDataDiff;
                 break;
             case MessageType.CLIENT_KEY_FRAME:
-                HandleClientDataKeyFrame(networkMessage);
+                demarshall = HandleClientDataKeyFrame;
                 break;
             case MessageType.SERVER_DATA_DIFF:
-                HandleServerDataDiff(networkMessage);
+                demarshall = HandleServerDataDiff;
                 break;
             case MessageType.SERVER_DATA_KEYFRAME:
-                HandleServerDataKeyframe(networkMessage);
+                demarshall = HandleServerDataKeyframe;
+                break;
+            default:
+                demarshall = HandleUnhandledType;
                 break;
             }
+
+            demarshall(networkMessage, message.SenderConnection);
         }
 
-        protected void HandleClientDataDiff(NetworkMessage message)
+        protected void HandleClientDataDiff(NetworkMessage message, NetConnection connection)
         {
             var clientDataDiffMessage = ConvertMessageType<GameStateDiff>(message);
 
@@ -161,17 +169,16 @@ namespace DXGame.Core.Components.Network
             //var clientConnection = clientDataDiffMessage.Connection;
         }
 
-        protected void HandleClientDataKeyFrame(NetworkMessage message)
+        protected void HandleClientDataKeyFrame(NetworkMessage message, NetConnection connection)
         {
             // TODO: Nice lerp logic. For now, just ignore client messages
         }
 
-        protected void HandleClientConnectionRequest(NetworkMessage message)
+        protected void HandleClientConnectionRequest(NetworkMessage message, NetConnection connection)
         {
             var clientConnectionRequest = ConvertMessageType<ClientConnectionRequest>(message);
 
-            var clientConnection = clientConnectionRequest.Connection;
-            if (ClientFrameStates.ContainsKey(clientConnection))
+            if (ClientFrameStates.ContainsKey(connection))
             {
                 GenericUtils.HardFail(LOG,
                     String.Format(
@@ -181,23 +188,40 @@ namespace DXGame.Core.Components.Network
             }
 
             var frameModel = new FrameModel(DxGame);
-            ClientFrameStates.Add(clientConnection, frameModel);
-            LOG.Info(String.Format("Successfully initialized ClientConnection {0} for player {1}", clientConnection,
+            ClientFrameStates.Add(connection, frameModel);
+            LOG.Info(String.Format("Successfully initialized ClientConnection {0} for player {1}", connection,
                 clientConnectionRequest.PlayerName));
         }
 
-        protected void HandleServerDataDiff(NetworkMessage message)
+        protected void HandleServerDataDiff(NetworkMessage message, NetConnection connection)
         {
             GenericUtils.HardFail(LOG,
                 String.Format("Received a Server Data Diff {0} from a client. This should not happen",
                     message));
         }
 
-        protected void HandleServerDataKeyframe(NetworkMessage message)
+        protected void HandleServerDataKeyframe(NetworkMessage message, NetConnection connection)
         {
             GenericUtils.HardFail(LOG,
                 String.Format("Received a Server Data Keyframe {0} from a client. This should not happen",
                     message));
+        }
+
+        protected void HandleUnhandledType(NetworkMessage message, NetConnection connection)
+        {
+            GenericUtils.HardFail(LOG,
+                String.Format("Received an unexpected messagetype {0} from a client. This should not happen",
+                    message));
+        }
+
+        public override void Write(NetOutgoingMessage message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Read(NetIncomingMessage message)
+        {
+            throw new NotImplementedException();
         }
     }
 }

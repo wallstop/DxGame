@@ -7,6 +7,7 @@
 
     public enum MessageType
     {
+        INVALID,
         CLIENT_CONNECTION_REQUEST, // Client connect to server
         CLIENT_DATA_DIFF, // Client info of how it thought a frame went
         CLIENT_KEY_FRAME, // Client full-state dump

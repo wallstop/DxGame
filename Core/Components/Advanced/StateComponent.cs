@@ -5,6 +5,7 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
+using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
@@ -54,6 +55,16 @@ namespace DXGame.Core.Components.Advanced
         public IEnumerable<string> States
         {
             get { return states_; }
+        }
+
+        public override void Write(NetOutgoingMessage message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Read(NetIncomingMessage message)
+        {
+            throw new NotImplementedException();
         }
     }
 }

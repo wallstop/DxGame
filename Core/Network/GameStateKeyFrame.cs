@@ -9,7 +9,7 @@ namespace DXGame.Core.Network
 
     public class GameStateKeyFrame : NetworkMessage
     {
-        public GameTime GameTime { get; set; }
-        public List<IGameComponent> Components { get; set; }
+        public GameTime GameTime = new GameTime();
+        public List<IGameComponent> Components = new List<IGameComponent>();
     }
 }

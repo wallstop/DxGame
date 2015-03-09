@@ -2,6 +2,7 @@
 using DXGame.Core.Components.Basic;
 using DXGame.Main;
 using log4net;
+using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
@@ -70,6 +71,16 @@ namespace DXGame.Core.Components.Advanced
             Debug.Assert(position != null, "PositionalComponent cannot be initialized with a null position");
             position_ = position;
             return this;
+        }
+
+        public override void Write(NetOutgoingMessage message)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Read(NetIncomingMessage message)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

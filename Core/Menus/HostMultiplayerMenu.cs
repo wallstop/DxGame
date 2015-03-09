@@ -81,6 +81,16 @@ namespace DXGame.Core.Menus
             base.Remove();
         }
 
+        public override void Write(NetOutgoingMessage message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Read(NetIncomingMessage message)
+        {
+            throw new NotImplementedException();
+        }
+
         private void HostAction()
         {
             NetPeerConfiguration config = new NetPeerConfiguration("DxGame");

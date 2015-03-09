@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Network
@@ -9,9 +11,25 @@ namespace DXGame.Core.Network
 
     public class GameStateDiff : NetworkMessage
     {
-        public GameTime GameTime { get; set; }
-        public List<GameComponent> Added { get; set; }
-        public List<GameComponent> Updated { get; set; }
-        public List<GameComponent> Removed { get; set; }
+        public GameTime GameTime = new GameTime();
+        public List<IGameComponent> Added = new List<IGameComponent>();
+        public List<IGameComponent> Updated = new List<IGameComponent>();
+        public List<IGameComponent> Removed = new List<IGameComponent>();
+
+        public override void LoadFromNetIncomingMessage(NetIncomingMessage message)
+        {
+            GameTime.TotalGameTime = TimeSpan.FromMilliseconds(message.ReadDouble());
+            GameTime.ElapsedGameTime = TimeSpan.FromMilliseconds(message.ReadDouble());
+            GameTime.IsRunningSlowly = message.ReadBoolean();
+        }
+
+        public override NetOutgoingMessage WriteToNetOutgoingMessage(NetOutgoingMessage message)
+        {
+            message.Write(GameTime.TotalGameTime.TotalMilliseconds);
+            message.Write(GameTime.ElapsedGameTime.TotalMilliseconds);
+            message.Write(GameTime.IsRunningSlowly);
+            NetworkMarshalling.Write(Added, message);
+            return message;
+        }
     }
 }

@@ -5,6 +5,7 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
+using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -98,6 +99,16 @@ namespace DXGame.Core.GraphicsWidgets
                 spriteBatch_.Draw(Texture, Origin);
             }
             base.Draw(gameTime);
+        }
+
+        public override void Write(NetOutgoingMessage message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Read(NetIncomingMessage message)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -18,6 +18,8 @@ namespace DXGame.Core.Components.Basic
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (NetworkComponent));
 
+        public delegate void DeMarshall(NetworkMessage message, NetConnection connection);
+
         /*
             Make sure you know what you're doing when you get/set this. 
             This Connection listener should only be set via Connection setter and never gotten

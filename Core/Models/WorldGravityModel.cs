@@ -4,6 +4,7 @@ using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Models
@@ -49,6 +50,16 @@ namespace DXGame.Core.Models
                 component.Acceleration = acceleration;
             }
             base.Update(gameTime);
+        }
+
+        public override void Write(NetOutgoingMessage message)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Read(NetIncomingMessage message)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -3,6 +3,7 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
+using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -78,6 +79,16 @@ namespace DXGame.Core.Components.Advanced
         protected override void LoadContent()
         {
             base.LoadContent();
+        }
+
+        public override void Write(NetOutgoingMessage message)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Read(NetIncomingMessage message)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

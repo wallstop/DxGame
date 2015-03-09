@@ -8,6 +8,7 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -140,6 +141,16 @@ namespace DXGame.Core.Components.Advanced
             lastAcceleration_ = physics_.Acceleration;
 
             Parent.BroadcastMessage(request);
+        }
+
+        public override void Write(NetOutgoingMessage message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Read(NetIncomingMessage message)
+        {
+            throw new NotImplementedException();
         }
     }
 }

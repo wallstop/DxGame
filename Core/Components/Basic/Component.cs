@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DXGame.Core.Messaging;
 using DXGame.Main;
+using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Basic
@@ -132,5 +133,9 @@ namespace DXGame.Core.Components.Basic
         {
             DxGame.RemoveComponent(this);
         }
+
+        public abstract void Write(NetOutgoingMessage message);
+
+        public abstract void Read(NetIncomingMessage message);
     }
 }

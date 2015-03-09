@@ -8,6 +8,7 @@ using DXGame.Core.Generators;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
+using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Models
@@ -213,6 +214,16 @@ namespace DXGame.Core.Models
                 }
             }
             base.Initialize();
+        }
+
+        public override void Write(NetOutgoingMessage message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Read(NetIncomingMessage message)
+        {
+            throw new NotImplementedException();
         }
 
 

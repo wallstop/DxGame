@@ -2,6 +2,7 @@
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -33,7 +34,7 @@ namespace DXGame.Core.Components.Basic
     </summary>
     */
 
-    public class DrawableComponent : DrawableGameComponent
+    public abstract class DrawableComponent : DrawableGameComponent
     {
         /**
             Note: This id_ field is the UniqueId of the Component, *NOT* of the GameObject. 
@@ -55,7 +56,7 @@ namespace DXGame.Core.Components.Basic
             get { return (DxGame) Game; }
         }
 
-        public DrawableComponent(DxGame game)
+        protected DrawableComponent(DxGame game)
             : base(game)
         {
             Debug.Assert(!GenericUtils.IsNullOrDefault(game), "DrawableComponent cannot be initialized with a null game");
@@ -99,5 +100,9 @@ namespace DXGame.Core.Components.Basic
         {
             DxGame.RemoveComponent(this);
         }
+
+        public abstract void Write(NetOutgoingMessage message);
+
+        public abstract void Read(NetIncomingMessage message);
     }
 }

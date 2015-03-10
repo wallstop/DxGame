@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using DXGame.Core.Components.Basic;
-using DXGame.Core.Utils;
+using System.Linq;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
@@ -11,17 +10,31 @@ namespace DXGame.Core.Network
     {
         static NetworkMarshalling()
         {
+
             NetworkMarshaller<int>.RegisterSerializerAndDeserializer(SerializeInt32, DeserializeInt32);
             NetworkMarshaller<Int32>.RegisterSerializerAndDeserializer(SerializeInt32, DeserializeInt32);
+            NetworkMarshaller<short>.RegisterSerializerAndDeserializer(SerializeInt16, DeserializeInt16);
             NetworkMarshaller<Int16>.RegisterSerializerAndDeserializer(SerializeInt16, DeserializeInt16);
             NetworkMarshaller<byte>.RegisterSerializerAndDeserializer(SerializeByte, DeserializeByte);
+            NetworkMarshaller<Byte>.RegisterSerializerAndDeserializer(SerializeByte, DeserializeByte);
+            NetworkMarshaller<sbyte>.RegisterSerializerAndDeserializer(SerializeSbyte, DeserializeSbyte);
+            NetworkMarshaller<SByte>.RegisterSerializerAndDeserializer(SerializeSbyte, DeserializeSbyte);
             NetworkMarshaller<bool>.RegisterSerializerAndDeserializer(SerializeBool, DeserializeBool);
+            NetworkMarshaller<Boolean>.RegisterSerializerAndDeserializer(SerializeBool, DeserializeBool);
             NetworkMarshaller<float>.RegisterSerializerAndDeserializer(SerializeFloat, DeserializeFloat);
             NetworkMarshaller<double>.RegisterSerializerAndDeserializer(SerializeDouble, DeserializeDouble);
+            NetworkMarshaller<Double>.RegisterSerializerAndDeserializer(SerializeDouble, DeserializeDouble);
             NetworkMarshaller<long>.RegisterSerializerAndDeserializer(SerializeLong, DeserializeLong);
             NetworkMarshaller<Int64>.RegisterSerializerAndDeserializer(SerializeLong, DeserializeLong);
+            NetworkMarshaller<uint>.RegisterSerializerAndDeserializer(SerializeUint, DeserializeUint);
+            NetworkMarshaller<UInt32>.RegisterSerializerAndDeserializer(SerializeUint, DeserializeUint);
+            NetworkMarshaller<ushort>.RegisterSerializerAndDeserializer(SerializeUint16, DeserializeUint16);
+            NetworkMarshaller<UInt16>.RegisterSerializerAndDeserializer(SerializeUint16, DeserializeUint16);
+            NetworkMarshaller<string>.RegisterSerializerAndDeserializer(SerializeString, DeserializeString);
+            NetworkMarshaller<String>.RegisterSerializerAndDeserializer(SerializeString, DeserializeString);
 
             NetworkMarshaller<Vector2>.RegisterSerializerAndDeserializer(SerializeVector2, DeserializeVector2);
+            NetworkMarshaller<Type>.RegisterSerializerAndDeserializer(SerializeType, DeserializeType);
         }
 
         public static void Init()
@@ -31,73 +44,84 @@ namespace DXGame.Core.Network
             */
         }
 
-        public static void Write(List<IGameComponent> components, NetOutgoingMessage message)
+        public static void SerializeIEnumerable<U, T>(U collection, NetOutgoingMessage message) where U : IEnumerable<T>
+            where T : INetworkSerializable
         {
-            if (components == null || components.Count == 0)
+            var networkSerializables = collection as IList<T> ?? collection.ToList();
+
+            if (collection == null || !networkSerializables.Any())
             {
-                message.WriteVariableUInt32(0);
+                NetworkMarshaller<int>.Serialize(0, message);
                 return;
             }
 
-            message.WriteVariableUInt32((uint) components.Count);
-            foreach (var gameComponent in components)
+            NetworkMarshaller<int>.Serialize(networkSerializables.Count(), message);
+            foreach (var networkSerializable in networkSerializables)
             {
-                Write(gameComponent, message);
+                networkSerializable.SerializeTo(message);
             }
         }
 
-        public static List<IGameComponent> ReadGameComponentList(NetIncomingMessage message)
+        /*
+            TODO: See if this works. Likely, we need some kind of higher-level object that knows to automagically 
+            write out types & instantiate stuff so we get proper virtual methods going
+        */
+
+        public static List<T> DeserializeIEnumerable<T>(NetIncomingMessage message) where T : INetworkSerializable
         {
-            uint count = message.ReadUInt32();
-            List<IGameComponent> components = new List<IGameComponent>((int) count);
-            for (int i = 0; i < count; ++i)
+            var collectionSize = NetworkMarshaller<int>.Deserialize(message);
+            var serializables = new List<T>(collectionSize);
+            for (var i = 0; i < collectionSize; ++i)
             {
-                components.Add(ReadGameComponent(message));
+                var serializable = NetworkMarshaller<T>.Deserialize(message);
+                serializables.Add(serializable);
             }
 
-            return components;
+            return serializables;
         }
 
-        public static void Write(IGameComponent gameComponent, NetOutgoingMessage message)
+        public static void SerializeDictionary<T, K, V>(T input, NetOutgoingMessage message) where T : IDictionary<K, V>
+            where K : INetworkSerializable where V : INetworkSerializable
         {
-            var component = gameComponent as Component;
-            if (component != null)
+            if (input == null || !input.Any())
             {
-                Write(component, message);
+                NetworkMarshaller<int>.Serialize(0, message);
+                return;
             }
 
-            var drawableComponent = gameComponent as DrawableComponent;
-            if (drawableComponent != null)
+            NetworkMarshaller<int>.Serialize(input.Count, message);
+            foreach (var keyValuePair in input)
             {
-                Write(drawableComponent, message);
+                K key = keyValuePair.Key;
+                V value = keyValuePair.Value;
+                key.SerializeTo(message);
+                value.SerializeTo(message);
             }
-
-            throw new NotImplementedException(String.Format("Currently do not support lidgren I/O for {0}",
-                gameComponent.GetType()));
         }
 
-        public static IGameComponent ReadGameComponent(NetIncomingMessage message)
+        public static Dictionary<K, V> DeserializeDictionary<K, V>(NetIncomingMessage message)
+            where K : INetworkSerializable where V : INetworkSerializable
         {
-            IGameComponent component = NetworkUtils.ReadTypeFrom<IGameComponent>(message);
-            message.ReadAllFields(component);
-            message.ReadAllProperties(component);
-            return component;
-        }
-
-        public static Component ReadComponent(NetIncomingMessage message)
-        {
-            return (Component) ReadGameComponent(message);
+            var dictionarySize = NetworkMarshaller<int>.Deserialize(message);
+            Dictionary<K, V> output = new Dictionary<K, V>();
+            for (int i = 0; i < dictionarySize; ++i)
+            {
+                K key = NetworkMarshaller<K>.Deserialize(message);
+                V value = NetworkMarshaller<V>.Deserialize(message);
+                output[key] = value;
+            }
+            return output;
         }
 
         public static void SerializeVector2(Vector2 vector, NetOutgoingMessage message)
         {
-            message.Write(vector.X);
-            message.Write(vector.Y);
+            NetworkMarshaller<float>.Serialize(vector.X, message);
+            NetworkMarshaller<float>.Serialize(vector.Y, message);
         }
 
         public static Vector2 DeserializeVector2(NetIncomingMessage message)
         {
-            return new Vector2 {X = message.ReadFloat(), Y = message.ReadFloat()};
+            return new Vector2 { X = NetworkMarshaller<float>.Deserialize(message), Y = NetworkMarshaller<float>.Deserialize(message) };
         }
 
         public static Int32 DeserializeInt32(NetIncomingMessage message)
@@ -116,6 +140,16 @@ namespace DXGame.Core.Network
         }
 
         public static void SerializeInt16(Int16 input, NetOutgoingMessage message)
+        {
+            message.Write(input);
+        }
+
+        public static UInt16 DeserializeUint16(NetIncomingMessage message)
+        {
+            return message.ReadUInt16();
+        }
+
+        public static void SerializeUint16(UInt16 input, NetOutgoingMessage message)
         {
             message.Write(input);
         }
@@ -160,6 +194,16 @@ namespace DXGame.Core.Network
             message.Write(input);
         }
 
+        public static sbyte DeserializeSbyte(NetIncomingMessage message)
+        {
+            return message.ReadSByte();
+        }
+
+        public static void SerializeSbyte(sbyte input, NetOutgoingMessage message)
+        {
+            message.Write(input);
+        }
+
         public static void SerializeLong(long input, NetOutgoingMessage message)
         {
             message.Write(input);
@@ -170,9 +214,35 @@ namespace DXGame.Core.Network
             return message.ReadVariableInt64();
         }
 
+        public static void SerializeUint(uint input, NetOutgoingMessage message)
+        {
+            message.Write(input);
+        }
+
         public static uint DeserializeUint(NetIncomingMessage message)
         {
             return message.ReadUInt32();
+        }
+
+        public static void SerializeString(string input, NetOutgoingMessage message)
+        {
+            message.Write(input);
+        }
+
+        public static string DeserializeString(NetIncomingMessage message)
+        {
+            return message.ReadString();
+        }
+
+        public static Type DeserializeType(NetIncomingMessage message)
+        {
+            var typeString = message.ReadString();
+            return Type.GetType(typeString, true);
+        }
+
+        public static void SerializeType(Type input, NetOutgoingMessage message)
+        {
+            message.Write(input.ToString());
         }
     }
 }

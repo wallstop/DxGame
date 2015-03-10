@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Network;
@@ -9,7 +8,6 @@ using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Basic
 {
-
     public enum UpdatePriority
     {
         HIGHEST = -1,
@@ -18,7 +16,7 @@ namespace DXGame.Core.Components.Basic
         HIGH = 1,
         NORMAL = 5,
         LOW = 10,
-        WORLD_GRAVITY = 100,
+        WORLD_GRAVITY = 100
     }
 
     /**

@@ -160,7 +160,6 @@
     <Compile Include="Core\Utils\GameObjectUtils.cs" />
     <Compile Include="Core\Utils\GenericUtils.cs" />
     <Compile Include="Core\Utils\MathUtils.cs" />
-    <Compile Include="Core\Utils\NetworkUtils.cs" />
     <Compile Include="Core\Utils\Rectangle2f.cs" />
     <Compile Include="Core\Utils\VectorUtils.cs" />
     <Compile Include="Main\DXGame.cs" />

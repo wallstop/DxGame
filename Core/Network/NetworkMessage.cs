@@ -13,7 +13,7 @@ namespace DXGame.Core.Network
         and NetOutgoingMessages.
     */
 
-    public class NetworkMessage
+    public class NetworkMessage : INetworkSerializable
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (NetworkMessage));
 
@@ -22,12 +22,12 @@ namespace DXGame.Core.Network
         public static NetworkMessage FromNetIncomingMessage(NetIncomingMessage message)
         {
             GenericUtils.CheckNull(message, "Cannot create a NetworkMessage object from a null NetIncomingMessage!");
-            var typeString = message.ReadString();
+            var typeString = NetworkMarshaller<Type>.Deserialize(message);
             try
             {
-                var networkMessage = NetworkUtils.ReadTypeFrom<NetworkMessage>(message);
-                networkMessage.MessageType = (MessageType) message.ReadUInt32();
-                networkMessage.LoadFromNetIncomingMessage(message);
+                NetworkMessage networkMessage = GenericUtils.Create<NetworkMessage>(typeString);
+                networkMessage.MessageType = (MessageType) NetworkMarshaller<uint>.Deserialize(message);
+                networkMessage.DeserializeFrom(message);
                 return networkMessage;
             }
             catch (Exception e)
@@ -42,26 +42,6 @@ namespace DXGame.Core.Network
             }
         }
 
-        /*
-            Override this with whatever custom behavior you want
-        */
-
-        public virtual void LoadFromNetIncomingMessage(NetIncomingMessage message)
-        {
-            throw new NotImplementedException(String.Format(
-                "LoadFromNetIncomingMessage needs to be implemented for {0}", GetType()));
-        }
-
-        /*
-            Override this with whatever custom behavior you want
-        */
-
-        public virtual NetOutgoingMessage WriteToNetOutgoingMessage(NetOutgoingMessage message)
-        {
-            throw new NotImplementedException(String.Format(
-                "WriteToNetOutgoingMessage needs to be implemented for {0}", GetType()));
-        }
-
         public NetOutgoingMessage ToNetOutgoingMessage(NetPeer connection)
         {
             GenericUtils.CheckNull(connection,
@@ -73,9 +53,20 @@ namespace DXGame.Core.Network
                 let's go ahead and make it an invariant.
             */
             var message = connection.CreateMessage();
-            NetworkUtils.WriteTypeTo(this, message);
-            message.Write((uint)MessageType);
-            return WriteToNetOutgoingMessage(message);
+            NetworkMarshaller<Type>.Serialize(GetType(), message);
+            NetworkMarshaller<uint>.Serialize((uint) MessageType, message);
+            SerializeTo(message);
+            return message;
+        }
+
+        public virtual void SerializeTo(NetOutgoingMessage message)
+        {
+            throw new NotImplementedException(String.Format("{0} Needs to implement SerializeTo", GetType()));
+        }
+
+        public virtual void DeserializeFrom(NetIncomingMessage messsage)
+        {
+            throw new NotImplementedException(String.Format("{0} Needs to implement DeserializeFrom", GetType()));
         }
     }
 }

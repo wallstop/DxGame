@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using DXGame.Core.Messaging;
+using DXGame.Core.Network;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using Lidgren.Network;
@@ -34,7 +35,7 @@ namespace DXGame.Core.Components.Basic
     </summary>
     */
 
-    public abstract class DrawableComponent : DrawableGameComponent
+    public abstract class DrawableComponent : DrawableGameComponent, INetworkSerializable
     {
         /**
             Note: This id_ field is the UniqueId of the Component, *NOT* of the GameObject. 
@@ -101,8 +102,8 @@ namespace DXGame.Core.Components.Basic
             DxGame.RemoveComponent(this);
         }
 
-        public abstract void Write(NetOutgoingMessage message);
+        public abstract void SerializeTo(NetOutgoingMessage message);
 
-        public abstract void Read(NetIncomingMessage message);
+        public abstract void DeserializeFrom(NetIncomingMessage messsage);
     }
 }

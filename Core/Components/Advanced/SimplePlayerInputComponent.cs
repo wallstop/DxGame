@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Input;
 using DXGame.Core.Messaging;
@@ -32,14 +31,16 @@ namespace DXGame.Core.Components.Advanced
 
         public SimplePlayerInputComponent WithPhysics(PhysicsComponent physics)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(physics), "SimplePlayerInput cannot be assigned a null PhysicsComponent");
+            Debug.Assert(!GenericUtils.IsNullOrDefault(physics),
+                "SimplePlayerInput cannot be assigned a null PhysicsComponent");
             physics_ = physics;
             return this;
         }
 
         public SimplePlayerInputComponent WithPlayerState(StateComponent state)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(state), "SimplePlayerInput cannot be initialized with a null PlayerState");
+            Debug.Assert(!GenericUtils.IsNullOrDefault(state),
+                "SimplePlayerInput cannot be initialized with a null PlayerState");
             state_ = state;
             return this;
         }
@@ -73,48 +74,49 @@ namespace DXGame.Core.Components.Advanced
             {
                 switch (keyEvent.Key)
                 {
-                    case Keys.Left:
-                        if (velocity.X < 0)
-                        {
-                            velocity.X = 1.5f * -MOVE_SPEED;
-                        }
-                        else
-                        {
-                            velocity.X = -MOVE_SPEED;
-                        }
-                        isMovingLeft = true;
-                        isMovingRight = false;
-                        break;
-                    case Keys.Right:
-                        if (velocity.X > 0)
-                        {
-                            velocity.X = 1.5f * MOVE_SPEED;
-                        }
-                        else
-                        {
-                            velocity.X = MOVE_SPEED;
-                        }
-                        isMovingRight = true;
-                        isMovingLeft = false;
-                        break;
-                    case Keys.Up:
-                        if (state_.State != "Jumping")
-                        {
-                            request.State = "Jumping";
-                            velocity.Y = -JUMP_SPEED;
-                            acceleration.Y = -JUMP_SPEED;
-                        }
-                        break;
-                    case Keys.Down:
-                        break;
-                    case Keys.Space:
-                        weapon_.Attack(gameTime);
-                        break;
+                case Keys.Left:
+                    if (velocity.X < 0)
+                    {
+                        velocity.X = 1.5f * -MOVE_SPEED;
+                    }
+                    else
+                    {
+                        velocity.X = -MOVE_SPEED;
+                    }
+                    isMovingLeft = true;
+                    isMovingRight = false;
+                    break;
+                case Keys.Right:
+                    if (velocity.X > 0)
+                    {
+                        velocity.X = 1.5f * MOVE_SPEED;
+                    }
+                    else
+                    {
+                        velocity.X = MOVE_SPEED;
+                    }
+                    isMovingRight = true;
+                    isMovingLeft = false;
+                    break;
+                case Keys.Up:
+                    if (state_.State != "Jumping")
+                    {
+                        request.State = "Jumping";
+                        velocity.Y = -JUMP_SPEED;
+                        acceleration.Y = -JUMP_SPEED;
+                    }
+                    break;
+                case Keys.Down:
+                    break;
+                case Keys.Space:
+                    weapon_.Attack(gameTime);
+                    break;
                 }
             }
 
             // TODO: Change this garbage
-            if (MathUtils.FuzzyCompare(lastAcceleration_.Y, 0) == 0 && MathUtils.FuzzyCompare(acceleration.Y, 0) == 0 && MathUtils.FuzzyCompare(velocity.Y, 0) == 0)
+            if (MathUtils.FuzzyCompare(lastAcceleration_.Y, 0) == 0 && MathUtils.FuzzyCompare(acceleration.Y, 0) == 0 &&
+                MathUtils.FuzzyCompare(velocity.Y, 0) == 0)
             {
                 request.State = "None";
             }
@@ -143,12 +145,12 @@ namespace DXGame.Core.Components.Advanced
             Parent.BroadcastMessage(request);
         }
 
-        public override void Write(NetOutgoingMessage message)
+        public override void SerializeTo(NetOutgoingMessage message)
         {
             throw new NotImplementedException();
         }
 
-        public override void Read(NetIncomingMessage message)
+        public override void DeserializeFrom(NetIncomingMessage messsage)
         {
             throw new NotImplementedException();
         }

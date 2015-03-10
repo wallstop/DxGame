@@ -120,6 +120,7 @@
     <Compile Include="Core\GameComponentCollection.cs" />
     <Compile Include="Core\GameObject.cs" />
     <Compile Include="Core\GraphicsWidgets\BlinkingCursor.cs" />
+    <Compile Include="Core\Network\INetworkSerializable.cs" />
     <Compile Include="Core\Input\InputEvent.cs" />
     <Compile Include="Core\Input\InputHandler.cs" />
     <Compile Include="Core\Input\KeyboardEvent.cs" />

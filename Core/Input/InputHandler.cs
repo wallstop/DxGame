@@ -76,12 +76,12 @@ namespace DXGame.Core.Input
             CurrentEvents.RemoveAll(key => FinishedEvents.Select(finishedKey => finishedKey.Key).Contains(key.Key));
         }
 
-        public override void Write(NetOutgoingMessage message)
+        public override void SerializeTo(NetOutgoingMessage message)
         {
             throw new NotImplementedException();
         }
 
-        public override void Read(NetIncomingMessage message)
+        public override void DeserializeFrom(NetIncomingMessage messsage)
         {
             throw new NotImplementedException();
         }

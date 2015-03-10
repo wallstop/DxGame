@@ -70,7 +70,7 @@ namespace DXGame.Core.Network
 
             /*
                 We always rely on having the type (as a string) be the first thing in a message, so 
-                let's go ahead and make it an invariant."
+                let's go ahead and make it an invariant.
             */
             var message = connection.CreateMessage();
             NetworkUtils.WriteTypeTo(this, message);

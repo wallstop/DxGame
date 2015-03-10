@@ -27,7 +27,8 @@ namespace DXGame.Core.Models
 
         public bool AttachPhysicsComponent(PhysicsComponent physics)
         {
-            Debug.Assert(!(GenericUtils.IsNullOrDefault(physics)), "World Gravity Component cannot be assigned to a null physics component");
+            Debug.Assert(!(GenericUtils.IsNullOrDefault(physics)),
+                "World Gravity Component cannot be assigned to a null physics component");
             bool alreadyExists = physics_.Contains(physics);
             if (!alreadyExists)
             {
@@ -52,12 +53,12 @@ namespace DXGame.Core.Models
             base.Update(gameTime);
         }
 
-        public override void Write(NetOutgoingMessage message)
+        public override void SerializeTo(NetOutgoingMessage message)
         {
             throw new System.NotImplementedException();
         }
 
-        public override void Read(NetIncomingMessage message)
+        public override void DeserializeFrom(NetIncomingMessage messsage)
         {
             throw new System.NotImplementedException();
         }

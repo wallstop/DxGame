@@ -18,12 +18,12 @@ namespace DXGame.Core.Components.Basic
             spriteBatch_.End();
         }
 
-        public override void Write(NetOutgoingMessage message)
+        public override void SerializeTo(NetOutgoingMessage message)
         {
             throw new System.NotImplementedException();
         }
 
-        public override void Read(NetIncomingMessage message)
+        public override void DeserializeFrom(NetIncomingMessage messsage)
         {
             throw new System.NotImplementedException();
         }

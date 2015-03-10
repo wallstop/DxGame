@@ -96,7 +96,8 @@ namespace DXGame.Core.Models
             var spatials = gameObject.ComponentsOfType<SpatialComponent>();
             // Make sure we can fit all of the spatial components into the map before we add them
             var spatialComponents = spatials as SpatialComponent[] ?? spatials.ToArray();
-            bool allInserted = spatialComponents.Aggregate(true, (current, spatial) => current && CanInsertIntoMap(spatial));
+            bool allInserted = spatialComponents.Aggregate(true,
+                (current, spatial) => current && CanInsertIntoMap(spatial));
 
             // If they all fit, add them
             if (allInserted)
@@ -216,16 +217,15 @@ namespace DXGame.Core.Models
             base.Initialize();
         }
 
-        public override void Write(NetOutgoingMessage message)
+        public override void SerializeTo(NetOutgoingMessage message)
         {
             throw new NotImplementedException();
         }
 
-        public override void Read(NetIncomingMessage message)
+        public override void DeserializeFrom(NetIncomingMessage messsage)
         {
             throw new NotImplementedException();
         }
-
 
         // TODO: Consolidate these methods
         private bool CanInsertIntoMap(SpatialComponent space)

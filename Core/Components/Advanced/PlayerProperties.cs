@@ -6,9 +6,6 @@ namespace DXGame.Core.Components.Advanced
     {
         public int Health { get; set; }
 
-        //public int 
-
-
         public PlayerProperties(DxGame game)
             : base(game)
         {

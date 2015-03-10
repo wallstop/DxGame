@@ -6,13 +6,12 @@ using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
 using Lidgren.Network;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
     public class StateComponent : Component
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof(StateComponent));
+        private static readonly ILog LOG = LogManager.GetLogger(typeof (StateComponent));
 
         private readonly HashSet<string> states_ = new HashSet<string>();
 
@@ -57,12 +56,12 @@ namespace DXGame.Core.Components.Advanced
             get { return states_; }
         }
 
-        public override void Write(NetOutgoingMessage message)
+        public override void SerializeTo(NetOutgoingMessage message)
         {
             throw new NotImplementedException();
         }
 
-        public override void Read(NetIncomingMessage message)
+        public override void DeserializeFrom(NetIncomingMessage messsage)
         {
             throw new NotImplementedException();
         }

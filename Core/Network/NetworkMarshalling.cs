@@ -11,14 +11,24 @@ namespace DXGame.Core.Network
     {
         static NetworkMarshalling()
         {
-            NetworkMarshaller<Component>.RegisterReader(ReadComponent);
-            NetworkMarshaller<Vector2>.RegisterReader(ReadVector2);
-            NetworkMarshaller<Vector2>.RegisterWriter(Write);
+            NetworkMarshaller<int>.RegisterSerializerAndDeserializer(SerializeInt32, DeserializeInt32);
+            NetworkMarshaller<Int32>.RegisterSerializerAndDeserializer(SerializeInt32, DeserializeInt32);
+            NetworkMarshaller<Int16>.RegisterSerializerAndDeserializer(SerializeInt16, DeserializeInt16);
+            NetworkMarshaller<byte>.RegisterSerializerAndDeserializer(SerializeByte, DeserializeByte);
+            NetworkMarshaller<bool>.RegisterSerializerAndDeserializer(SerializeBool, DeserializeBool);
+            NetworkMarshaller<float>.RegisterSerializerAndDeserializer(SerializeFloat, DeserializeFloat);
+            NetworkMarshaller<double>.RegisterSerializerAndDeserializer(SerializeDouble, DeserializeDouble);
+            NetworkMarshaller<long>.RegisterSerializerAndDeserializer(SerializeLong, DeserializeLong);
+            NetworkMarshaller<Int64>.RegisterSerializerAndDeserializer(SerializeLong, DeserializeLong);
+
+            NetworkMarshaller<Vector2>.RegisterSerializerAndDeserializer(SerializeVector2, DeserializeVector2);
         }
 
         public static void Init()
         {
-            
+            /*
+                We define an empty Init function so the static constructor above gets called and registers all of our types :^)
+            */
         }
 
         public static void Write(List<IGameComponent> components, NetOutgoingMessage message)
@@ -66,20 +76,6 @@ namespace DXGame.Core.Network
                 gameComponent.GetType()));
         }
 
-        public static void Write(Component component, NetOutgoingMessage message)
-        {
-            NetworkUtils.WriteTypeTo(component, message);
-            message.WriteAllFields(component);
-            message.WriteAllProperties(component);
-        }
-
-        public static void Write(DrawableComponent drawableComponent, NetOutgoingMessage message)
-        {
-            NetworkUtils.WriteTypeTo(drawableComponent, message);
-            message.WriteAllFields(drawableComponent);
-            message.WriteAllProperties(drawableComponent);
-        }
-
         public static IGameComponent ReadGameComponent(NetIncomingMessage message)
         {
             IGameComponent component = NetworkUtils.ReadTypeFrom<IGameComponent>(message);
@@ -93,15 +89,90 @@ namespace DXGame.Core.Network
             return (Component) ReadGameComponent(message);
         }
 
-        public static void Write(Vector2 vector, NetOutgoingMessage message)
+        public static void SerializeVector2(Vector2 vector, NetOutgoingMessage message)
         {
             message.Write(vector.X);
             message.Write(vector.Y);
         }
 
-        public static Vector2 ReadVector2(NetIncomingMessage message)
+        public static Vector2 DeserializeVector2(NetIncomingMessage message)
         {
             return new Vector2 {X = message.ReadFloat(), Y = message.ReadFloat()};
+        }
+
+        public static Int32 DeserializeInt32(NetIncomingMessage message)
+        {
+            return message.ReadInt32();
+        }
+
+        public static void SerializeInt32(Int32 input, NetOutgoingMessage message)
+        {
+            message.Write(input);
+        }
+
+        public static Int16 DeserializeInt16(NetIncomingMessage message)
+        {
+            return message.ReadInt16();
+        }
+
+        public static void SerializeInt16(Int16 input, NetOutgoingMessage message)
+        {
+            message.Write(input);
+        }
+
+        public static bool DeserializeBool(NetIncomingMessage message)
+        {
+            return message.ReadBoolean();
+        }
+
+        public static void SerializeBool(bool input, NetOutgoingMessage message)
+        {
+            message.Write(input);
+        }
+
+        public static double DeserializeDouble(NetIncomingMessage message)
+        {
+            return message.ReadDouble();
+        }
+
+        public static void SerializeDouble(double input, NetOutgoingMessage message)
+        {
+            message.Write(input);
+        }
+
+        public static float DeserializeFloat(NetIncomingMessage message)
+        {
+            return message.ReadFloat();
+        }
+
+        public static void SerializeFloat(float input, NetOutgoingMessage message)
+        {
+            message.Write(input);
+        }
+
+        public static byte DeserializeByte(NetIncomingMessage message)
+        {
+            return message.ReadByte();
+        }
+
+        public static void SerializeByte(byte input, NetOutgoingMessage message)
+        {
+            message.Write(input);
+        }
+
+        public static void SerializeLong(long input, NetOutgoingMessage message)
+        {
+            message.Write(input);
+        }
+
+        public static long DeserializeLong(NetIncomingMessage message)
+        {
+            return message.ReadVariableInt64();
+        }
+
+        public static uint DeserializeUint(NetIncomingMessage message)
+        {
+            return message.ReadUInt32();
         }
     }
 }

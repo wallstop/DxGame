@@ -76,7 +76,7 @@ namespace DXGameTest.Core.Network
             var vector2 = new Vector2(300.4f, 102.33f);
             var outMessage = client_.CreateMessage();
             
-            NetworkMarshaller<Vector2>.Write(vector2, outMessage);
+            NetworkMarshaller<Vector2>.Serialize(vector2, outMessage);
             var outBits = outMessage.LengthBits;
             client_.SendMessage(outMessage, NetDeliveryMethod.ReliableOrdered);
 

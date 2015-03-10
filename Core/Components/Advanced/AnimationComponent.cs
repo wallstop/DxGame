@@ -65,16 +65,13 @@ namespace DXGame.Core.Components.Advanced
             }
         }
 
-        public override void Write(NetOutgoingMessage message)
+        public override void SerializeTo(NetOutgoingMessage message)
         {
-
             throw new NotImplementedException();
         }
 
-        public override void Read(NetIncomingMessage message)
+        public override void DeserializeFrom(NetIncomingMessage messsage)
         {
-            states_.Clear();
-
             throw new NotImplementedException();
         }
 

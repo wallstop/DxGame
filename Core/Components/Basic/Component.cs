@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DXGame.Core.Messaging;
+using DXGame.Core.Network;
 using DXGame.Main;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
@@ -68,7 +69,7 @@ namespace DXGame.Core.Components.Basic
 
     public delegate void MessageHandler(Message message);
 
-    public abstract class Component : GameComponent
+    public abstract class Component : GameComponent, INetworkSerializable
     {
         /**
             Note: This id_ field is the UniqueId of the Component, *NOT* of the GameObject. 
@@ -134,8 +135,8 @@ namespace DXGame.Core.Components.Basic
             DxGame.RemoveComponent(this);
         }
 
-        public abstract void Write(NetOutgoingMessage message);
+        public abstract void SerializeTo(NetOutgoingMessage message);
 
-        public abstract void Read(NetIncomingMessage message);
+        public abstract void DeserializeFrom(NetIncomingMessage messsage);
     }
 }

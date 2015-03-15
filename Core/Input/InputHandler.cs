@@ -75,15 +75,5 @@ namespace DXGame.Core.Input
             // Remove all the CurrentEvents where an event has the same key as one in FinishedEvents
             CurrentEvents.RemoveAll(key => FinishedEvents.Select(finishedKey => finishedKey.Key).Contains(key.Key));
         }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

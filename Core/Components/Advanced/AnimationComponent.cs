@@ -2,25 +2,22 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
+    [Serializable]
+    [DataContract]
     public class AnimationComponent : DrawableComponent
     {
         private readonly Dictionary<string, Animation> states_ = new Dictionary<string, Animation>();
         private string lastState_;
         protected StateComponent state_;
         protected PositionalComponent position_;
-
-        static AnimationComponent()
-        {
-            
-        }
 
         public AnimationComponent(DxGame game)
             : base(game)
@@ -63,16 +60,6 @@ namespace DXGame.Core.Components.Advanced
             {
                 pair.Value.LoadContent(Game.Content);
             }
-        }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new NotImplementedException();
         }
 
         public override void Draw(GameTime gameTime)

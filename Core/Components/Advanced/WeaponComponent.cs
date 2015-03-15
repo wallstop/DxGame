@@ -1,11 +1,14 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Main;
-using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
+    [Serializable]
+    [DataContract]
     public class WeaponComponent : Component
     {
         public int Damage { get; private set; }
@@ -25,16 +28,6 @@ namespace DXGame.Core.Components.Advanced
         public virtual void Attack(GameTime gameTime)
         {
             // No op in base
-        }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

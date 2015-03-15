@@ -1,7 +1,6 @@
 ﻿using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using Lidgren.Network;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Menus
@@ -21,7 +20,7 @@ namespace DXGame.Core.Menus
                 new MenuItem().WithText("Play")
                     .WithAction(PlayAction)
                     .WithSpriteFont(spriteFont)
-                    .WithSpace(new Rectangle2f(400, 400, 100, 100));
+                    .WithSpace(new Rectangle2F(400, 400, 100, 100));
             MenuItems.Add(play);
 
             var inputModel = new InputModel(DxGame);
@@ -30,16 +29,6 @@ namespace DXGame.Core.Menus
             DxGame.AttachModel(inputModel);
 
             base.Initialize();
-        }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new System.NotImplementedException();
         }
 
         private void PlayAction()

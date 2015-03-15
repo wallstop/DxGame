@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -7,6 +8,8 @@ using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
+    [Serializable]
+    [DataContract]
     public class RangedWeaponComponent : WeaponComponent
     {
         private const float velocity_ = 7.0f;

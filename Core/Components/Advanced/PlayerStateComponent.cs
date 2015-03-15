@@ -1,4 +1,6 @@
-﻿using DXGame.Core.Components.Basic;
+﻿using System;
+using System.Runtime.Serialization;
+using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -6,6 +8,8 @@ using log4net;
 
 namespace DXGame.Core.Components.Advanced
 {
+    [Serializable]
+    [DataContract]
     public class PlayerStateComponent : StateComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapCollideablePhysicsComponent));

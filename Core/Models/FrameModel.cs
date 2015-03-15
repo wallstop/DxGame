@@ -6,7 +6,6 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Frames;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using Lidgren.Network;
 
 namespace DXGame.Core.Models
 {
@@ -59,16 +58,6 @@ namespace DXGame.Core.Models
             {
                 // TODO
             }
-        }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new NotImplementedException();
         }
     }
 }

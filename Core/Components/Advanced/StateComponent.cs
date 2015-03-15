@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
-using Lidgren.Network;
 
 namespace DXGame.Core.Components.Advanced
 {
+    [Serializable]
+    [DataContract]
     public class StateComponent : Component
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (StateComponent));
@@ -54,16 +56,6 @@ namespace DXGame.Core.Components.Advanced
         public IEnumerable<string> States
         {
             get { return states_; }
-        }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new NotImplementedException();
         }
     }
 }

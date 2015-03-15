@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -9,6 +11,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Components.Advanced
 {
+    [Serializable]
+    [DataContract]
     public class SimpleSpriteComponent : DrawableComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (SimpleSpriteComponent));
@@ -79,16 +83,6 @@ namespace DXGame.Core.Components.Advanced
         protected override void LoadContent()
         {
             base.LoadContent();
-        }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

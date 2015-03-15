@@ -217,16 +217,6 @@ namespace DXGame.Core.Models
             base.Initialize();
         }
 
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new NotImplementedException();
-        }
-
         // TODO: Consolidate these methods
         private bool CanInsertIntoMap(SpatialComponent space)
         {

@@ -146,7 +146,6 @@
     <Compile Include="Core\Models\MapModel.cs" />
     <Compile Include="Core\Models\NetworkModel.cs" />
     <Compile Include="Core\Models\WorldGravityModel.cs" />
-    <Compile Include="Core\NetworkFrame.cs" />
     <Compile Include="Core\Network\ClientConnectionRequest.cs" />
     <Compile Include="Core\Network\GameStateDiff.cs" />
     <Compile Include="Core\Network\GameStateKeyFrame.cs" />
@@ -154,13 +153,12 @@
     <Compile Include="Core\Network\NetworkMessage.cs" />
     <Compile Include="Core\Network\MessageType.cs" />
     <Compile Include="Core\Serializer.cs" />
-    <Compile Include="Core\SerializationObject.cs" />
     <Compile Include="Core\UniqueId.cs" />
     <Compile Include="Core\Utils\CollectionUtils.cs" />
     <Compile Include="Core\Utils\GameObjectUtils.cs" />
     <Compile Include="Core\Utils\GenericUtils.cs" />
     <Compile Include="Core\Utils\MathUtils.cs" />
-    <Compile Include="Core\Utils\Rectangle2f.cs" />
+    <Compile Include="Core\Utils\Rectangle2F.cs" />
     <Compile Include="Core\Utils\VectorUtils.cs" />
     <Compile Include="Main\DXGame.cs" />
     <Compile Include="Main\Program.cs" />

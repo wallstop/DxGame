@@ -14,7 +14,7 @@ namespace DXGame.Core.Menus
 
         public string Text { get; set; }
         public MenuAction Action { get; set; }
-        public Rectangle2f Space { get; set; }
+        public Rectangle2F Space { get; set; }
         public SpriteFont SpriteFont { get; set; }
 
         public MenuItem WithText(string text)
@@ -31,7 +31,7 @@ namespace DXGame.Core.Menus
             return this;
         }
 
-        public MenuItem WithSpace(Rectangle2f space)
+        public MenuItem WithSpace(Rectangle2F space)
         {
             Debug.Assert(space != null, "Menu Item cannot be initialized with a null space");
             Space = space;

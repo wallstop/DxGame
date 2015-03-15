@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
@@ -13,6 +15,8 @@ namespace DXGame.Core.Components.Advanced
     </summary>
     */
 
+    [Serializable]
+    [DataContract]
     public class SpatialComponent : PositionalComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (SpatialComponent));

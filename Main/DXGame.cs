@@ -81,14 +81,14 @@ namespace DXGame.Main
             return !alreadyExists;
         }
 
-        public Rectangle2f ScreenRegion
+        public Rectangle2F ScreenRegion
         {
             get
             {
                 GameModel gameModel = Model<GameModel>();
                 if(GenericUtils.IsNullOrDefault(gameModel))
                 {
-                    return new Rectangle2f(Screen);
+                    return new Rectangle2F(Screen);
                 }
                 MapModel mapModel = Model<MapModel>();
                 float x = Screen.Width / 2.0f - gameModel.FocalPoint.Position.X;
@@ -101,7 +101,7 @@ namespace DXGame.Main
                     Math.Max(0, mapModel.MapBounds.Y + mapModel.MapBounds.Height - Screen.Height),
                     mapModel.MapBounds.Y);
 
-                return new Rectangle2f(x, y, Screen.Width, Screen.Height);
+                return new Rectangle2F(x, y, Screen.Width, Screen.Height);
             }
         }
 

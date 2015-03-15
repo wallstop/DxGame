@@ -144,16 +144,6 @@ namespace DXGame.Core.GraphicsWidgets
             base.Draw(gameTime);
         }
 
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void Update(GameTime gameTime)
         {
             // TODO: Have this linked to some cursor object instead of directly reading the mouse state

@@ -144,15 +144,5 @@ namespace DXGame.Core.Components.Advanced
 
             Parent.BroadcastMessage(request);
         }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -112,15 +112,5 @@ namespace DXGame.Core.Components.Network
             LOG.Info("Shutting down NetworkClient");
             ClientConnection.Shutdown("NetworkClient shutting down calmly");
         }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

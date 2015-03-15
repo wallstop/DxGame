@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Configuration;
+using System.Runtime.Serialization;
 using System.Threading;
 
 namespace DXGame.Core
@@ -11,6 +9,9 @@ namespace DXGame.Core
         UniqueId is a thread-safe, immutable, unique identifier. 
     </summary>
     */
+
+    [Serializable]
+    [DataContract]
     public class UniqueId : IComparable
     {
         private const Int64 INVALID_ID = 0;

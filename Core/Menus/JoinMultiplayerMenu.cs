@@ -55,7 +55,7 @@ namespace DXGame.Core.Menus
             var portLabel =
                 new MenuItem().WithSpriteFont(SpriteFont)
                     .WithText(portString)
-                    .WithSpace(new Rectangle2f
+                    .WithSpace(new Rectangle2F
                     {
                         X = portBoxSpatial.Space.X - /* Pixel Width of "Port:" */ SpriteFont.MeasureString(portString).X,
                         Y = portBoxSpatial.Space.Y,
@@ -74,7 +74,7 @@ namespace DXGame.Core.Menus
             var addressLabel =
                 new MenuItem().WithSpriteFont(SpriteFont)
                     .WithText(addressString)
-                    .WithSpace(new Rectangle2f
+                    .WithSpace(new Rectangle2F
                     {
                         X =
                             addressBoxSpatial.Space.X - /* Pixel Width of "Address:" */
@@ -86,7 +86,7 @@ namespace DXGame.Core.Menus
 
             const string connectString = "Connect";
             var connectButton = new MenuItem().WithSpriteFont(SpriteFont).WithText(connectString)
-                .WithSpace(new Rectangle2f
+                .WithSpace(new Rectangle2F
                 {
                     X = addressLabel.Space.X,
                     Y = addressLabel.Space.Y + 100,
@@ -107,16 +107,6 @@ namespace DXGame.Core.Menus
             DxGame.RemoveComponent(PortBox);
             DxGame.RemoveComponent(AddressBox);
             base.Remove();
-        }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new NotImplementedException();
         }
 
         protected void ConnectAction()

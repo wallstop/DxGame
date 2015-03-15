@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Main;
 using log4net;
@@ -26,6 +28,8 @@ namespace DXGame.Core.Components.Advanced
     </summary>
     */
 
+    [Serializable]
+    [DataContract]
     public class PositionalComponent : Component
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (PositionalComponent));
@@ -71,16 +75,6 @@ namespace DXGame.Core.Components.Advanced
             Debug.Assert(position != null, "PositionalComponent cannot be initialized with a null position");
             position_ = position;
             return this;
-        }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

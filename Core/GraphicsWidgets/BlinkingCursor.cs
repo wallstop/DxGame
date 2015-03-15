@@ -100,15 +100,5 @@ namespace DXGame.Core.GraphicsWidgets
             }
             base.Draw(gameTime);
         }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

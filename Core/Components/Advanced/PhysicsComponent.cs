@@ -1,9 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
@@ -14,6 +15,8 @@ namespace DXGame.Core.Components.Advanced
     </summary>
     */
 
+    [Serializable]
+    [DataContract]
     public class PhysicsComponent : Component
     {
         protected Vector2 acceleration_;
@@ -123,16 +126,6 @@ namespace DXGame.Core.Components.Advanced
             }
             Velocity = velocity;
             Acceleration = acceleration;
-        }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

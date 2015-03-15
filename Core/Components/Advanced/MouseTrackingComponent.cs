@@ -1,9 +1,13 @@
-﻿using DXGame.Main;
+﻿using System;
+using System.Runtime.Serialization;
+using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace DXGame.Core.Components.Advanced
 {
+    [Serializable]
+    [DataContract]
     public class MouseTrackingComponent : PositionalComponent
     {
         public bool Clicked { get; private set; }

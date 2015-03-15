@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -13,6 +14,8 @@ namespace DXGame.Core.Components.Advanced
     </summary>
     */
 
+    [Serializable]
+    [DataContract]
     public class BoundedSpatialComponent : SpatialComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (BoundedSpatialComponent));
@@ -30,9 +33,9 @@ namespace DXGame.Core.Components.Advanced
             get { return yBounds_; }
         }
 
-        public Rectangle2f Bounds
+        public Rectangle2F Bounds
         {
-            get { return new Rectangle2f(XBounds, YBounds);  }
+            get { return new Rectangle2F(XBounds, YBounds); }
         }
 
         public BoundedSpatialComponent(DxGame game)
@@ -94,6 +97,7 @@ namespace DXGame.Core.Components.Advanced
             The Position property on a BoundedSpatialComponent
         </summary>
         */
+
         public override Vector2 Position
         {
             get { return position_; }
@@ -109,7 +113,6 @@ namespace DXGame.Core.Components.Advanced
                 {
                     Parent.BroadcastMessage(new CollisionMessage(value - newPosition));
                 }
-                
             }
         }
     }

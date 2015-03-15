@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.Serialization;
 using DXGame.Core.Messaging;
-using DXGame.Core.Network;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -35,6 +35,8 @@ namespace DXGame.Core.Components.Basic
     </summary>
     */
 
+    [Serializable]
+    [DataContract]
     public abstract class DrawableComponent : DrawableGameComponent
     {
         /**
@@ -101,9 +103,5 @@ namespace DXGame.Core.Components.Basic
         {
             DxGame.RemoveComponent(this);
         }
-
-        public abstract void SerializeTo(NetOutgoingMessage message);
-
-        public abstract void DeserializeFrom(NetIncomingMessage messsage);
     }
 }

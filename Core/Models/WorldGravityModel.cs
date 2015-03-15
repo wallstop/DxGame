@@ -52,15 +52,5 @@ namespace DXGame.Core.Models
             }
             base.Update(gameTime);
         }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

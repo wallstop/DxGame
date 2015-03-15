@@ -6,7 +6,7 @@ namespace DXGame.Core.Utils
 {
     [Serializable]
     [DataContract]
-    public struct Rectangle2F : IEquatable<Rectangle2F>, ISerializable
+    public struct Rectangle2F : IEquatable<Rectangle2F>
     {
         private static readonly Rectangle2F EMPTY_RECTANGLE = new Rectangle2F();
         private const float TOLERANCE = 0.000001f;

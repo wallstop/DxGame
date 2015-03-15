@@ -47,7 +47,7 @@ namespace DXGame.Core.Menus
             var portLabel =
                 new MenuItem().WithSpriteFont(spriteFont)
                     .WithText("Port:")
-                    .WithSpace(new Rectangle2f
+                    .WithSpace(new Rectangle2F
                     {
                         X = portBoxSpatial.Space.X - /* Pixel Width of "Port:" */ spriteFont.MeasureString("Port:").X,
                         Y = portBoxSpatial.Space.Y,
@@ -60,7 +60,7 @@ namespace DXGame.Core.Menus
 
             var hostLabel = new MenuItem().WithSpriteFont(spriteFont)
                 .WithText("Host")
-                .WithSpace(new Rectangle2f
+                .WithSpace(new Rectangle2F
                 {
                     X = portLabel.Space.X,
                     Y = portLabel.Space.Y + 100,
@@ -79,16 +79,6 @@ namespace DXGame.Core.Menus
         {
             DxGame.RemoveComponent(PortBox);
             base.Remove();
-        }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new NotImplementedException();
         }
 
         private void HostAction()

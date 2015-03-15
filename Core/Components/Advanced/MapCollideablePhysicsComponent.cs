@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
@@ -10,6 +12,8 @@ using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
+    [Serializable]
+    [DataContract]
     public class MapCollideablePhysicsComponent : PhysicsComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapCollideablePhysicsComponent));
@@ -113,7 +117,7 @@ namespace DXGame.Core.Components.Advanced
                     Wrap to the X axis otherwise. 
                 */
                 else
-                    // if (intersection.Height > intersection.Width || MathUtils.FuzzyCompare(Velocity.Y, 0.0, MathUtils.DoubleTolerance) == 0)
+                // if (intersection.Height > intersection.Width || MathUtils.FuzzyCompare(Velocity.Y, 0.0, MathUtils.DoubleTolerance) == 0)
                 {
                     // left collision
                     if (Position.X < mapBlockPosition.X + mapBlockDimensions.X && mapBlockPosition.X < Position.X)

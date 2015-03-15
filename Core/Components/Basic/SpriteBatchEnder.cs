@@ -1,5 +1,4 @@
 ﻿using DXGame.Main;
-using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Basic
@@ -16,16 +15,6 @@ namespace DXGame.Core.Components.Basic
         {
             base.Draw(gameTime);
             spriteBatch_.End();
-        }
-
-        public override void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

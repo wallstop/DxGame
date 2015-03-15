@@ -120,7 +120,6 @@
     <Compile Include="Core\GameComponentCollection.cs" />
     <Compile Include="Core\GameObject.cs" />
     <Compile Include="Core\GraphicsWidgets\BlinkingCursor.cs" />
-    <Compile Include="Core\Network\INetworkSerializable.cs" />
     <Compile Include="Core\Input\InputEvent.cs" />
     <Compile Include="Core\Input\InputHandler.cs" />
     <Compile Include="Core\Input\KeyboardEvent.cs" />
@@ -152,9 +151,10 @@
     <Compile Include="Core\Network\GameStateDiff.cs" />
     <Compile Include="Core\Network\GameStateKeyFrame.cs" />
     <Compile Include="Core\Network\NetworkMarshaller.cs" />
-    <Compile Include="Core\Network\NetworkMarshalling.cs" />
     <Compile Include="Core\Network\NetworkMessage.cs" />
     <Compile Include="Core\Network\MessageType.cs" />
+    <Compile Include="Core\Serializer.cs" />
+    <Compile Include="Core\SerializationObject.cs" />
     <Compile Include="Core\UniqueId.cs" />
     <Compile Include="Core\Utils\CollectionUtils.cs" />
     <Compile Include="Core\Utils\GameObjectUtils.cs" />
@@ -180,6 +180,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>

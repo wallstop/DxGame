@@ -35,7 +35,7 @@ namespace DXGame.Core.Components.Basic
     </summary>
     */
 
-    public abstract class DrawableComponent : DrawableGameComponent, INetworkSerializable
+    public abstract class DrawableComponent : DrawableGameComponent
     {
         /**
             Note: This id_ field is the UniqueId of the Component, *NOT* of the GameObject. 

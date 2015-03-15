@@ -66,6 +66,7 @@ namespace DXGame.Core.Input
             {Keys.NumPad9, '9'},
             {Keys.OemComma, ','},
             {Keys.OemPeriod, '.'},
+            {Keys.Decimal, '.'},
             {Keys.OemQuestion, '?'},
             {Keys.OemPlus, '+'},
             {Keys.OemQuotes, '"'},

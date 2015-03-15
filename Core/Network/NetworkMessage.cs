@@ -13,7 +13,7 @@ namespace DXGame.Core.Network
         and NetOutgoingMessages.
     */
 
-    public class NetworkMessage : INetworkSerializable
+    public class NetworkMessage
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (NetworkMessage));
 

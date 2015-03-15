@@ -67,7 +67,7 @@ namespace DXGame.Core.Components.Basic
 
     public delegate void MessageHandler(Message message);
 
-    public abstract class Component : GameComponent, INetworkSerializable
+    public abstract class Component : GameComponent
     {
         /**
             Note: This id_ field is the UniqueId of the Component, *NOT* of the GameObject. 

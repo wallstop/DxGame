@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Models;
 using DXGame.Core.Network;
@@ -75,7 +76,7 @@ namespace DXGame.Core.Components.Network
             foreach (NetConnection connection in ClientFrameStates.Keys)
             {
                 // Quick and dirty for now - do some nice differentials later
-                var message = new GameStateKeyFrame {Components = DxGame.Components.ToList(), GameTime = gameTime, MessageType = MessageType.SERVER_DATA_KEYFRAME};
+                var message = new GameStateKeyFrame {Components = DxGame.Components.Where(n => !(n is SimplePlayerInputComponent)).ToList(), GameTime = gameTime, MessageType = MessageType.SERVER_DATA_KEYFRAME};
                 var outgoingMessage = message.ToNetOutgoingMessage(ServerConnection);
                 ServerConnection.SendMessage(outgoingMessage, connection, NetDeliveryMethod.ReliableOrdered, 0);
             }

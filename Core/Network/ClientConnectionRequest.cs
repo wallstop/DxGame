@@ -7,7 +7,11 @@ namespace DXGame.Core.Network
     [DataContract]
     public class ClientConnectionRequest : NetworkMessage
     {
-        [DataMember]
-        public string PlayerName = "";
+        [DataMember] public string PlayerName = "";
+
+        public ClientConnectionRequest()
+        {
+            MessageType = MessageType.CLIENT_CONNECTION_REQUEST;
+        }
     }
 }

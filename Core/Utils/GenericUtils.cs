@@ -73,5 +73,10 @@ namespace DXGame.Core.Utils
         {
             return (T) Activator.CreateInstance(type);
         }
+
+        public static T Create<T>(string type)
+        {
+            return Create<T>(Type.GetType(type));
+        }
     }
 }

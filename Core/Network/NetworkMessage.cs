@@ -22,13 +22,10 @@ namespace DXGame.Core.Network
         public static NetworkMessage FromNetIncomingMessage(NetIncomingMessage message)
         {
             GenericUtils.CheckNull(message, "Cannot create a NetworkMessage object from a null NetIncomingMessage!");
-            var typeString = NetworkMarshaller<Type>.Deserialize(message);
+            var typeString = message.ReadString();
             try
             {
-                NetworkMessage networkMessage = GenericUtils.Create<NetworkMessage>(typeString);
-                networkMessage.MessageType = (MessageType) NetworkMarshaller<uint>.Deserialize(message);
-                networkMessage.DeserializeFrom(message);
-                return networkMessage;
+                return Serializer<NetworkMessage>.BinaryDeserialize(message.PeekDataBuffer());
             }
             catch (Exception e)
             {
@@ -53,20 +50,9 @@ namespace DXGame.Core.Network
                 let's go ahead and make it an invariant.
             */
             var message = connection.CreateMessage();
-            NetworkMarshaller<Type>.Serialize(GetType(), message);
-            NetworkMarshaller<uint>.Serialize((uint) MessageType, message);
-            SerializeTo(message);
+            byte[] byteStream = Serializer<NetworkMessage>.BinarySerialize(this);
+            message.Write(byteStream);
             return message;
-        }
-
-        public virtual void SerializeTo(NetOutgoingMessage message)
-        {
-            throw new NotImplementedException(String.Format("{0} Needs to implement SerializeTo", GetType()));
-        }
-
-        public virtual void DeserializeFrom(NetIncomingMessage messsage)
-        {
-            throw new NotImplementedException(String.Format("{0} Needs to implement DeserializeFrom", GetType()));
         }
     }
 }

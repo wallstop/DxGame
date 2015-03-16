@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using log4net;
 using Lidgren.Network;
@@ -13,10 +14,13 @@ namespace DXGame.Core.Network
         and NetOutgoingMessages.
     */
 
+    [Serializable]
+    [DataContract]
     public class NetworkMessage
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (NetworkMessage));
 
+        [DataMember]
         public MessageType MessageType { get; set; }
 
         public static NetworkMessage FromNetIncomingMessage(NetIncomingMessage message)

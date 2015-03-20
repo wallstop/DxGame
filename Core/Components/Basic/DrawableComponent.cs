@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
-using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
@@ -37,27 +36,9 @@ namespace DXGame.Core.Components.Basic
 
     [Serializable]
     [DataContract]
-    public abstract class DrawableComponent : DrawableGameComponent
+    public abstract class DrawableComponent : Component
     {
-        /**
-            Note: This id_ field is the UniqueId of the Component, *NOT* of the GameObject. 
-            This is a very important distinction.
-        */
-        protected readonly UniqueId id_ = new UniqueId();
-
-        public GameObject Parent { get; set; }
-
         protected SpriteBatch spriteBatch_;
-
-        public UniqueId Id
-        {
-            get { return id_; }
-        }
-
-        public DxGame DxGame
-        {
-            get { return (DxGame) Game; }
-        }
 
         protected DrawableComponent(DxGame game)
             : base(game)
@@ -68,40 +49,12 @@ namespace DXGame.Core.Components.Basic
             DrawPriority = DrawPriority.NORMAL;
         }
 
-        protected UpdatePriority UpdatePriority
-        {
-            set { UpdateOrder = (int) value; }
-            get { return (UpdatePriority) UpdateOrder; }
-        }
+        public DrawPriority DrawPriority { get; set; }
 
-        protected DrawPriority DrawPriority
-        {
-            set { DrawOrder = (int) value; }
-            get { return (DrawPriority) DrawOrder; }
-        }
+        public abstract void Draw(GameTime gameTime);
 
-        public override void Draw(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
-            base.Draw(gameTime);
-        }
-
-        public override void Initialize()
-        {
-            base.Initialize();
-        }
-
-        protected override void LoadContent()
-        {
-            base.LoadContent();
-        }
-
-        public virtual void HandleMessage(Message message)
-        {
-        }
-
-        public virtual void Remove()
-        {
-            DxGame.RemoveComponent(this);
         }
     }
 }

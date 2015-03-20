@@ -12,6 +12,7 @@ using log4net;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Model = DXGame.Core.Models.Model;
 
 #endregion
 
@@ -40,7 +41,7 @@ namespace DXGame.Main
     public class DxGame : Game
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (DxGame));
-        private readonly List<GameComponent> models_ = new List<GameComponent>();
+        private readonly List<Model> models_ = new List<Model>();
 
         public Rectangle Screen { get; protected set; }
 
@@ -66,7 +67,7 @@ namespace DXGame.Main
             return models_.OfType<T>().FirstOrDefault();
         }
 
-        public bool AttachModel(GameComponent model)
+        public bool AttachModel(Model model)
         {
             bool alreadyExists = models_.Contains(model);
             if (!alreadyExists)
@@ -86,7 +87,7 @@ namespace DXGame.Main
             get
             {
                 GameModel gameModel = Model<GameModel>();
-                if(GenericUtils.IsNullOrDefault(gameModel))
+                if (GenericUtils.IsNullOrDefault(gameModel))
                 {
                     return new Rectangle2F(Screen);
                 }
@@ -105,12 +106,12 @@ namespace DXGame.Main
             }
         }
 
-        public void AddAndInitializeComponent(IGameComponent component)
+        public void AddAndInitializeComponent(Component component)
         {
             Components.Add(component);
         }
 
-        public void AddAndInitializeComponents(params IGameComponent [] components)
+        public void AddAndInitializeComponents(params Component[] components)
         {
             foreach (var component in components)
             {
@@ -120,7 +121,9 @@ namespace DXGame.Main
 
         public void AddAndInitializeGameObjects(IEnumerable<GameObject> gameObjects)
         {
-            foreach (var component in gameObjects.Select(gameObject => gameObject.Components).SelectMany(components => components))
+            foreach (
+                var component in
+                    gameObjects.Select(gameObject => gameObject.Components).SelectMany(components => components))
             {
                 AddAndInitializeComponent(component);
             }
@@ -143,12 +146,12 @@ namespace DXGame.Main
             }
         }
 
-        public void RemoveComponent(IGameComponent component)
+        public void RemoveComponent(Component component)
         {
             Components.Remove(component);
         }
 
-        public void RemoveComponents(params IGameComponent[] components)
+        public void RemoveComponents(params Component[] components)
         {
             foreach (var component in components)
             {
@@ -157,7 +160,7 @@ namespace DXGame.Main
         }
 
         // TODO: Remove. This is currently only for testing
-        public void ResetComponents(IEnumerable<IGameComponent> components)
+        public void ResetComponents(IEnumerable<Component> components)
         {
             Components.Clear();
             foreach (var gameComponent in components)

@@ -26,17 +26,6 @@ namespace DXGame.Core.Menus
             DxGame.AddAndInitializeComponents(mousePosition, mouseSprite);
         }
 
-        public override void Initialize()
-        {
-
-            base.Initialize();
-        }
-
-        protected override void LoadContent()
-        {
-            base.LoadContent();
-        }
-
         public override void Draw(GameTime gameTime)
         {
             foreach (MenuItem menuItem in MenuItems)

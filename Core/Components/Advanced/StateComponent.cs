@@ -6,6 +6,7 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
+using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {

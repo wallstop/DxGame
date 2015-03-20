@@ -14,8 +14,7 @@ namespace DXGame.Core.Components.Basic
 
         public override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            DxGame.GraphicsDevice.Clear(Color.CornflowerBlue);
 
             Rectangle2F screen = DxGame.ScreenRegion;
 

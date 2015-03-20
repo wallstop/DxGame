@@ -68,7 +68,7 @@ namespace DXGame.Core.Components.Basic
 
     [Serializable]
     [DataContract]
-    public abstract class Component : GameComponent
+    public abstract class Component
     {
         /**
             Note: This id_ field is the UniqueId of the Component, *NOT* of the GameObject. 
@@ -86,21 +86,13 @@ namespace DXGame.Core.Components.Basic
             get { return id_; }
         }
 
-        public DxGame DxGame
-        {
-            get { return (DxGame) Game; }
-        }
+        public DxGame DxGame { protected set; get; }
+        public UpdatePriority UpdatePriority { protected set; get; }
 
         protected Component(DxGame game)
-            : base(game)
         {
+            DxGame = game;
             UpdatePriority = UpdatePriority.NORMAL;
-        }
-
-        protected UpdatePriority UpdatePriority
-        {
-            set { UpdateOrder = (int) value; }
-            get { return (UpdatePriority) UpdateOrder; }
         }
 
         public void HandleMessage(Message message)
@@ -132,6 +124,18 @@ namespace DXGame.Core.Components.Basic
         public virtual void Remove()
         {
             DxGame.RemoveComponent(this);
+        }
+
+        public virtual void Update(GameTime gameTime)
+        {
+        }
+
+        public virtual void Initialize()
+        {
+        }
+
+        public virtual void LoadContent()
+        {
         }
     }
 }

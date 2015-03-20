@@ -9,7 +9,7 @@ using DXGame.Main;
 
 namespace DXGame.Core.Models
 {
-    public class FrameModel : Component
+    public class FrameModel : Model
     {
         public TimeSpan FrameRetention { get; protected set; }
         protected List<GameTimeFrame> Frames { get; set; }

@@ -13,7 +13,6 @@ namespace DXGame.Core.Components.Basic
 
         public override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
             spriteBatch_.End();
         }
     }

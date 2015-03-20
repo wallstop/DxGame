@@ -109,12 +109,15 @@
     <Compile Include="Core\Components\Advanced\SimplePlayerInputComponent.cs" />
     <Compile Include="Core\Components\Advanced\PositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
+    <Compile Include="Core\Components\Basic\ComponentCollection.cs" />
     <Compile Include="Core\Components\Basic\DrawableComponent.cs" />
     <Compile Include="Core\Components\Basic\NetworkComponent.cs" />
     <Compile Include="Core\Components\Basic\SpriteBatchEnder.cs" />
     <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
     <Compile Include="Core\Components\Network\NetworkClient.cs" />
     <Compile Include="Core\Components\Network\NetworkServer.cs" />
+    <Compile Include="Core\Components\Utils\DrawPriorityComparer.cs" />
+    <Compile Include="Core\Components\Utils\UpdatePriorityComparer.cs" />
     <Compile Include="Core\Frames\AbstractFrame.cs" />
     <Compile Include="Core\Frames\GameTimeFrame.cs" />
     <Compile Include="Core\GameComponentCollection.cs" />
@@ -130,6 +133,7 @@
     <Compile Include="Core\Messaging\CollisionMessage.cs" />
     <Compile Include="Core\Messaging\Message.cs" />
     <Compile Include="Core\Messaging\StateChangeRequestMessage.cs" />
+    <Compile Include="Core\Models\Model.cs" />
     <Compile Include="Core\Models\CollisionModel.cs" />
     <Compile Include="Core\Models\FrameModel.cs" />
     <Compile Include="Core\Models\GameModel.cs" />
@@ -141,7 +145,6 @@
     <Compile Include="Core\Menus\Menu.cs" />
     <Compile Include="Core\Menus\MenuItem.cs" />
     <Compile Include="Core\Menus\PlayMenu.cs" />
-    <Compile Include="Core\Model.cs" />
     <Compile Include="Core\Models\InputModel.cs" />
     <Compile Include="Core\Models\MapModel.cs" />
     <Compile Include="Core\Models\NetworkModel.cs" />

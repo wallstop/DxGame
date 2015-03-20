@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core
 {
@@ -32,7 +30,6 @@ namespace DXGame.Core
     {
         private readonly List<Component> dxComponents_ = new List<Component>();
         private readonly List<DrawableComponent> drawableComponents_ = new List<DrawableComponent>();
-        private readonly List<GameComponent> gameComponents_ = new List<GameComponent>(); 
         private readonly UniqueId id_ = new UniqueId();
 
         public UniqueId Id
@@ -52,24 +49,24 @@ namespace DXGame.Core
         </summary>
         */
 
-        public IEnumerable<T> ComponentsOfType<T>() where T : GameComponent
+        public IEnumerable<T> ComponentsOfType<T>() where T : Component
         {
             return AllComponents.OfType<T>();
         }
 
-        public T ComponentOfType<T>() where T : GameComponent
+        public T ComponentOfType<T>() where T : Component
         {
             return ComponentsOfType<T>().First();
         }
 
-        public List<GameComponent> Components
+        public List<Component> Components
         {
             get { return AllComponents.ToList(); }
         }
 
-        private IEnumerable<GameComponent> AllComponents
+        private IEnumerable<Component> AllComponents
         {
-            get { return dxComponents_.Union(gameComponents_).Union(drawableComponents_); }
+            get { return dxComponents_.Union(dxComponents_).Union(drawableComponents_); }
         }
 
         /**
@@ -84,7 +81,7 @@ namespace DXGame.Core
         </summary>
         */
 
-        public GameObject WithComponent(GameComponent component)
+        public GameObject WithComponent(Component component)
         {
             Debug.Assert(!GenericUtils.IsNullOrDefault(component), "Cannot assign a null component to a GameObject");
             AddComponent(component);
@@ -105,7 +102,7 @@ namespace DXGame.Core
         </summary>
         */
 
-        public GameObject WithComponents(params GameComponent[] components)
+        public GameObject WithComponents(params Component[] components)
         {
             Debug.Assert(!GenericUtils.IsNullOrDefault(components), "Cannot assign a null components to a GameObject");
             foreach (var component in components)
@@ -116,16 +113,8 @@ namespace DXGame.Core
         }
 
         // TODO: Check for prior containment
-        private void AddComponent(GameComponent component)
+        private void AddComponent(Component component)
         {
-            var dxComponent = component as Component;
-            if (dxComponent != null)
-            {
-                dxComponent.Parent = this;
-                dxComponents_.Add(dxComponent);
-                return;
-            }
-
             var drawableComponent = component as DrawableComponent;
             if (drawableComponent != null)
             {
@@ -134,7 +123,8 @@ namespace DXGame.Core
                 return;
             }
 
-            gameComponents_.Add(component);
+            component.Parent = this;
+            dxComponents_.Add(component);
         }
 
         public void BroadcastMessage(Message message)
@@ -148,7 +138,6 @@ namespace DXGame.Core
                 drawableComponent.HandleMessage(message);
             }
         }
-
     }
 #pragma warning restore 649
 }

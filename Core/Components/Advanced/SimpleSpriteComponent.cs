@@ -5,7 +5,6 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
-using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -64,13 +63,12 @@ namespace DXGame.Core.Components.Advanced
         {
             spriteBatch_.Draw(texture_, position_.Position, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
                 SpriteEffects.None, 0);
-            base.Draw(gameTime);
         }
 
         public override void Initialize()
         {
-            Debug.Assert(Game.Content != null, "ContentManager cannot be null during Initialize");
-            texture_ = Game.Content.Load<Texture2D>(assetName_);
+            Debug.Assert(DxGame.Content != null, "ContentManager cannot be null during Initialize");
+            texture_ = DxGame.Content.Load<Texture2D>(assetName_);
             // Assign boundingBox to be the shape of the texture only if it hasn't been custom-set
             // TODO: Change to an isLoaded bool flag / state
             if (GenericUtils.IsNullOrDefault(boundingBox_))
@@ -78,11 +76,6 @@ namespace DXGame.Core.Components.Advanced
                 boundingBox_ = new Rectangle(0, 0, texture_.Width, texture_.Height);
             }
             base.Initialize();
-        }
-
-        protected override void LoadContent()
-        {
-            base.LoadContent();
         }
     }
 }

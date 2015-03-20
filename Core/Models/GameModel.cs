@@ -13,7 +13,7 @@ namespace DXGame.Core.Models
         Paused
     }
 
-    public class GameModel : GameComponentCollection
+    public class GameModel : Model
     {
         public float GameSpeed { get; set; }
 
@@ -50,16 +50,6 @@ namespace DXGame.Core.Models
             DxGame.AttachModel(MapModel);
             DxGame.AttachModel(worldGravity);
             base.Initialize();
-        }
-
-        /*
-            Since we can't properly control how we add/remove each component from the gamestate,
-            we entrust the runtime to call dispose, which is where we remove all of our added components
-        */
-        // TODO:
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
         }
 
         public bool AddComponent(GameComponent component)

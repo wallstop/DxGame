@@ -50,15 +50,15 @@ namespace DXGame.Core.Components.Advanced
         {
             foreach (var pair in states_)
             {
-                pair.Value.LoadContent(Game.Content);
+                pair.Value.LoadContent(DxGame.Content);
             }
         }
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             foreach (var pair in states_)
             {
-                pair.Value.LoadContent(Game.Content);
+                pair.Value.LoadContent(DxGame.Content);
             }
         }
 

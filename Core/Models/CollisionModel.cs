@@ -1,6 +1,6 @@
 ﻿using System;
 using DXGame.Main;
-using Microsoft.Xna.Framework;
+
 
 namespace DXGame.Core.Models
 {

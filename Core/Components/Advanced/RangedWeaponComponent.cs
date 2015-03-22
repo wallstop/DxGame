@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 
@@ -42,7 +43,7 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(DxGameTime gameTime)
         {
             var velocity = Owner.Velocity;
             // If we're moving in the +/- X direction, update our Direction
@@ -54,7 +55,7 @@ namespace DXGame.Core.Components.Advanced
             base.Update(gameTime);
         }
 
-        public override void Attack(GameTime gameTime)
+        public override void Attack(DxGameTime gameTime)
         {
             // Check if we can fire the weapon again (
             var currentTime = gameTime.TotalGameTime;

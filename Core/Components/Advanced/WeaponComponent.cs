@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
@@ -25,7 +25,7 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public virtual void Attack(GameTime gameTime)
+        public virtual void Attack(DxGameTime gameTime)
         {
             // No op in base
         }

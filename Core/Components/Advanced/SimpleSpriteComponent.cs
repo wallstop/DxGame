@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
 using Microsoft.Xna.Framework;
@@ -59,7 +60,7 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(DxGameTime gameTime)
         {
             spriteBatch_.Draw(texture_, position_.Position, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
                 SpriteEffects.None, 0);

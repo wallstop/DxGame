@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Input;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
-using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -53,13 +52,13 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(DxGameTime gameTime)
         {
             IEnumerable<KeyboardEvent> events = DxGame.Model<InputModel>().Events;
             HandleInput(events, gameTime);
         }
 
-        protected virtual void HandleInput(IEnumerable<KeyboardEvent> events, GameTime gameTime)
+        protected virtual void HandleInput(IEnumerable<KeyboardEvent> events, DxGameTime gameTime)
         {
             Vector2 acceleration = physics_.Acceleration;
             Vector2 velocity = physics_.Velocity;

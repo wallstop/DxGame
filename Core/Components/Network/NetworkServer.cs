@@ -6,10 +6,10 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Models;
 using DXGame.Core.Network;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
-using Lidgren.Network;
 using log4net;
-using Microsoft.Xna.Framework;
+using Lidgren.Network;
 
 namespace DXGame.Core.Components.Network
 {
@@ -43,40 +43,45 @@ namespace DXGame.Core.Components.Network
             ServerConnection.Start();
         }
 
-        public override void RouteDataOnMessageType(NetIncomingMessage incomingMessage, GameTime gameTime)
+        public override void RouteDataOnMessageType(NetIncomingMessage incomingMessage, DxGameTime gameTime)
         {
             // TODO: Deal with gameTime
             switch (incomingMessage.MessageType)
             {
-                case NetIncomingMessageType.Error:
-                    ProcessError(incomingMessage);
-                    break;
-                case NetIncomingMessageType.Data:
-                    ProcessData(incomingMessage);
-                    break;
-                case NetIncomingMessageType.ConnectionLatencyUpdated:
-                    ProcessConnectionLatencyUpdated(incomingMessage);
-                    break;
-                case NetIncomingMessageType.ConnectionApproval:
-                    ProcessConnectionApproval(incomingMessage);
-                    break;
-                case NetIncomingMessageType.StatusChanged:
-                    // TODO: Handle
-                    break;
-                default:
-                    // TODO: Handle
-                    break;
-                    //ProcessUnhandledMessageType(incomingMessage);
-                    //break;
+            case NetIncomingMessageType.Error:
+                ProcessError(incomingMessage);
+                break;
+            case NetIncomingMessageType.Data:
+                ProcessData(incomingMessage);
+                break;
+            case NetIncomingMessageType.ConnectionLatencyUpdated:
+                ProcessConnectionLatencyUpdated(incomingMessage);
+                break;
+            case NetIncomingMessageType.ConnectionApproval:
+                ProcessConnectionApproval(incomingMessage);
+                break;
+            case NetIncomingMessageType.StatusChanged:
+                // TODO: Handle
+                break;
+            default:
+                // TODO: Handle
+                break;
+            //ProcessUnhandledMessageType(incomingMessage);
+            //break;
             }
         }
 
-        public override void SendData(GameTime gameTime)
+        public override void SendData(DxGameTime gameTime)
         {
             foreach (NetConnection connection in ClientFrameStates.Keys)
             {
                 // Quick and dirty for now - do some nice differentials later
-                var message = new GameStateKeyFrame {Components = DxGame.Components.Where(n => !(n is SimplePlayerInputComponent)).ToList(), GameTime = gameTime, MessageType = MessageType.SERVER_DATA_KEYFRAME};
+                var message = new GameStateKeyFrame
+                {
+                    Components = DxGame.DxComponents.Where<Component>(n => !(n is SimplePlayerInputComponent)).ToList(),
+                    GameTime = gameTime,
+                    MessageType = MessageType.SERVER_DATA_KEYFRAME
+                };
                 var outgoingMessage = message.ToNetOutgoingMessage(ServerConnection);
                 ServerConnection.SendMessage(outgoingMessage, connection, NetDeliveryMethod.ReliableOrdered, 0);
             }
@@ -214,6 +219,5 @@ namespace DXGame.Core.Components.Network
                 String.Format("Received an unexpected messagetype {0} from a client. This should not happen",
                     message));
         }
-
     }
 }

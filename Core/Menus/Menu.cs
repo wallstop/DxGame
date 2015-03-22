@@ -2,6 +2,7 @@
 using System.Linq;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 
@@ -26,7 +27,7 @@ namespace DXGame.Core.Menus
             DxGame.AddAndInitializeComponents(mousePosition, mouseSprite);
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(DxGameTime gameTime)
         {
             foreach (MenuItem menuItem in MenuItems)
             {
@@ -34,7 +35,7 @@ namespace DXGame.Core.Menus
             }
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(DxGameTime gameTime)
         {
             var mousePosition = mousePointer_.ComponentOfType<MouseTrackingComponent>();
             var mouseSprite = mousePointer_.ComponentOfType<SimpleSpriteComponent>();

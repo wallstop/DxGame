@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Network;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
 using Lidgren.Network;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Network
 {
@@ -59,7 +59,7 @@ namespace DXGame.Core.Components.Network
             ClientConnection.Connect(ClientConfig.IpAddress, ClientConfig.Port, outMessage);
         }
 
-        public override void RouteDataOnMessageType(NetIncomingMessage message, GameTime gameTime)
+        public override void RouteDataOnMessageType(NetIncomingMessage message, DxGameTime gameTime)
         {
             // TODO: Deal with gameTime
             switch (message.MessageType)
@@ -97,12 +97,12 @@ namespace DXGame.Core.Components.Network
         {
             var serverDataKeyFrame = ConvertMessageType<GameStateKeyFrame>(message);
 
-            IEnumerable<IGameComponent> components = serverDataKeyFrame.Components;
+            IEnumerable<Component> components = serverDataKeyFrame.Components;
 
             DxGame.ResetComponents(components);
         }
 
-        public override void SendData(GameTime gameTime)
+        public override void SendData(DxGameTime gameTime)
         {
             // TODO:
         }

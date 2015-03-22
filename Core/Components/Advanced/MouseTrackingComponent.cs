@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -10,8 +11,10 @@ namespace DXGame.Core.Components.Advanced
     [DataContract]
     public class MouseTrackingComponent : PositionalComponent
     {
+        [DataMember]
         public bool Clicked { get; private set; }
 
+        [DataMember]
         private bool ClickInProgress { get; set; }
 
         public MouseTrackingComponent(DxGame game) : base(game)
@@ -20,7 +23,7 @@ namespace DXGame.Core.Components.Advanced
             ClickInProgress = false;
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(DxGameTime gameTime)
         {
             base.Update(gameTime);
             MouseState mouseState = Mouse.GetState();

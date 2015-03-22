@@ -3,9 +3,9 @@ using System.Diagnostics;
 using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
-using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -73,7 +73,7 @@ namespace DXGame.Core.GraphicsWidgets
             return this;
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(DxGameTime gameTime)
         {
             var totalTime = gameTime.TotalGameTime;
             if (totalTime > LastToggled + BlinkRate)
@@ -85,12 +85,12 @@ namespace DXGame.Core.GraphicsWidgets
             base.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(DxGameTime gameTime)
         {
             // Only draw ourselves if we're in our "Drawn" state
             if (GenericUtils.IsNullOrDefault(Texture))
             {
-                Texture = new Texture2D(GraphicsDevice, (int) Width, (int) Height);
+                Texture = new Texture2D(DxGame.GraphicsDevice, (int) Width, (int) Height);
                 Texture.SetData(Enumerable.Repeat(Color, (int) (Width * Height)).ToArray());
             }
 
@@ -98,7 +98,6 @@ namespace DXGame.Core.GraphicsWidgets
             {
                 spriteBatch_.Draw(Texture, Origin);
             }
-            base.Draw(gameTime);
         }
     }
 }

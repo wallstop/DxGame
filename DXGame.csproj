@@ -133,8 +133,6 @@
     <Compile Include="Core\Messaging\CollisionMessage.cs" />
     <Compile Include="Core\Messaging\Message.cs" />
     <Compile Include="Core\Messaging\StateChangeRequestMessage.cs" />
-    <Compile Include="Core\Models\Model.cs" />
-    <Compile Include="Core\Models\CollisionModel.cs" />
     <Compile Include="Core\Models\FrameModel.cs" />
     <Compile Include="Core\Models\GameModel.cs" />
     <Compile Include="Core\Generators\MapGenerator.cs" />
@@ -147,6 +145,7 @@
     <Compile Include="Core\Menus\PlayMenu.cs" />
     <Compile Include="Core\Models\InputModel.cs" />
     <Compile Include="Core\Models\MapModel.cs" />
+    <Compile Include="Core\Models\Model.cs" />
     <Compile Include="Core\Models\NetworkModel.cs" />
     <Compile Include="Core\Models\WorldGravityModel.cs" />
     <Compile Include="Core\Network\ClientConnectionRequest.cs" />
@@ -160,9 +159,11 @@
     <Compile Include="Core\Utils\GameObjectUtils.cs" />
     <Compile Include="Core\Utils\GenericUtils.cs" />
     <Compile Include="Core\Utils\MathUtils.cs" />
-    <Compile Include="Core\Utils\Rectangle2F.cs" />
+    <Compile Include="Core\Wrappers\DxGameTime.cs" />
+    <Compile Include="Core\Wrappers\DxRectangle.cs" />
     <Compile Include="Core\Utils\VectorUtils.cs" />
-    <Compile Include="Main\DXGame.cs" />
+    <Compile Include="Core\Wrappers\DxVector2.cs" />
+    <Compile Include="Main\DxGame.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
 using Microsoft.Xna.Framework;
@@ -51,7 +52,7 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(DxGameTime gameTime)
         {
             /*
                 Perform the normal PhysicsComponent's update first. We assume that at the end of our last update cycle,

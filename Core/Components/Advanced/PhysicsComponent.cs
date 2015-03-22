@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 
@@ -95,7 +96,7 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(DxGameTime gameTime)
         {
             Vector2 acceleration = Acceleration;
             Vector2 velocity = VectorUtils.ConstrainVector(Velocity + acceleration_, maxVelocity_);

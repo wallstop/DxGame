@@ -7,8 +7,8 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Input;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
-using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -88,7 +88,7 @@ namespace DXGame.Core.GraphicsWidgets
             SpatialComponent = spatialComponent;
             var width = (int) SpatialComponent.Width;
             var height = (int) SpatialComponent.Height;
-            Texture = new Texture2D(GraphicsDevice, width, height);
+            Texture = new Texture2D(DxGame.GraphicsDevice, width, height);
             return WithBackGroundColor(Color.White);
         }
 
@@ -126,7 +126,7 @@ namespace DXGame.Core.GraphicsWidgets
             return this;
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(DxGameTime gameTime)
         {
             GenericUtils.CheckNullOrDefault(SpatialComponent, "Can't use a TextBox without a spatial component!");
             GenericUtils.CheckNullOrDefault(SpriteFont, "Can't use a TextBox without a sprite font!");
@@ -140,11 +140,9 @@ namespace DXGame.Core.GraphicsWidgets
             {
                 blinkingCursor_.Draw(gameTime);
             }
-
-            base.Draw(gameTime);
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(DxGameTime gameTime)
         {
             // TODO: Have this linked to some cursor object instead of directly reading the mouse state
 

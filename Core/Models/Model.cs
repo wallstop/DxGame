@@ -26,9 +26,5 @@ namespace DXGame.Core.Models
         {
             // No-op in base
         }
-
-        public abstract void Add();
-
-        public abstract void Remove();
     }
 }

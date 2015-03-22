@@ -33,11 +33,12 @@ namespace DXGame.Core.Components.Basic
 
         IEnumerator<Component> IEnumerable<Component>.GetEnumerator()
         {
-            return ((IEnumerable<Component>) components_).GetEnumerator();
+            return ((IEnumerable<Component>)components_).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
+            return ((IEnumerable<Component>)components_).GetEnumerator();
         }
 
         public void Add(Component component)

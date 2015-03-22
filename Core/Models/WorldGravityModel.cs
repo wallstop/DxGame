@@ -3,6 +3,7 @@ using System.Diagnostics;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 
@@ -21,7 +22,7 @@ namespace DXGame.Core.Models
         public WorldGravityModel(DxGame game)
             : base(game)
         {
-            UpdatePriority = UpdatePriority.WORLD_GRAVITY;
+            //UpdatePriority = UpdatePriority.WORLD_GRAVITY;
         }
 
         public bool AttachPhysicsComponent(PhysicsComponent physics)
@@ -37,7 +38,7 @@ namespace DXGame.Core.Models
             return alreadyExists;
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(DxGameTime gameTime)
         {
             /*
                 For now, I'm going to leave it up to each specific physics component to deal

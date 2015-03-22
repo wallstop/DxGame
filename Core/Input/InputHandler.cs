@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
-using Lidgren.Network;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace DXGame.Core.Input
@@ -24,9 +23,10 @@ namespace DXGame.Core.Input
         {
             CurrentEvents = new List<KeyboardEvent>();
             FinishedEvents = new List<KeyboardEvent>();
+            UpdatePriority = UpdatePriority.HIGHEST;
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(DxGameTime gameTime)
         {
             KeyboardState keyboardState = Keyboard.GetState();
             List<Keys> currentKeys = keyboardState.GetPressedKeys().ToList();
@@ -34,7 +34,7 @@ namespace DXGame.Core.Input
             DetermineEvents(gameTime, currentKeys);
         }
 
-        private void DetermineEvents(GameTime gameTime, List<Keys> currentKeys)
+        private void DetermineEvents(DxGameTime gameTime, List<Keys> currentKeys)
         {
             var elapsedTime = gameTime.ElapsedGameTime;
             var currentTime = gameTime.TotalGameTime;

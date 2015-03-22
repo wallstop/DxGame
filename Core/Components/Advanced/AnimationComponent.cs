@@ -7,7 +7,6 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {

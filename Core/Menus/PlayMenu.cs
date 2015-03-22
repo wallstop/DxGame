@@ -1,5 +1,6 @@
 ﻿using DXGame.Core.Models;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -18,18 +19,18 @@ namespace DXGame.Core.Menus
             MenuItem singlePlayer = new MenuItem().WithText("Single Player")
                 .WithAction(SinglePlayerAction)
                 .WithSpriteFont(spriteFont)
-                .WithSpace(new Rectangle2F(400, 400, 100, 100));
+                .WithSpace(new DxRectangle(400, 400, 100, 100));
             // TODO: Base these off some centroid of screen
 
             MenuItem hostMultiplayer = new MenuItem().WithText("Host Multiplayer")
                 .WithAction(HostMultiplayer)
                 .WithSpriteFont(spriteFont)
-                .WithSpace(new Rectangle2F(400, 500, 100, 100));
+                .WithSpace(new DxRectangle(400, 500, 100, 100));
 
             MenuItem joinMultiplayer = new MenuItem().WithText("Join Multiplayer")
                 .WithAction(JoinMultiplayer)
                 .WithSpriteFont(spriteFont)
-                .WithSpace(new Rectangle2F(400, 600, 100, 100));
+                .WithSpace(new DxRectangle(400, 600, 100, 100));
 
             MenuItems.Add(singlePlayer);
             MenuItems.Add(hostMultiplayer);

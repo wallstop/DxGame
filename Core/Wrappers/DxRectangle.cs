@@ -1,26 +1,30 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
-namespace DXGame.Core.Utils
+namespace DXGame.Core.Wrappers
 {
     [Serializable]
     [DataContract]
-    public struct Rectangle2F : IEquatable<Rectangle2F>
+    public struct DxRectangle : IEquatable<DxRectangle>
     {
-        private static readonly Rectangle2F EMPTY_RECTANGLE = new Rectangle2F();
+        private static readonly DxRectangle EMPTY_RECTANGLE = new DxRectangle();
         private const float TOLERANCE = 0.000001f;
 
         [DataMember]
         public float X { get; set; }
+
         [DataMember]
         public float Y { get; set; }
+
         [DataMember]
         public float Width { get; set; }
+
         [DataMember]
         public float Height { get; set; }
 
-        public Rectangle2F EmptyRectangle
+        public DxRectangle EmptyRectangle
         {
             get { return EMPTY_RECTANGLE; }
         }
@@ -45,11 +49,11 @@ namespace DXGame.Core.Utils
             get { return Y + Height; }
         }
 
-        static Rectangle2F()
+        static DxRectangle()
         {
         }
 
-        public Rectangle2F(Vector2 x, Vector2 y) : this()
+        public DxRectangle(Vector2 x, Vector2 y) : this()
         {
             X = x.X;
             Width = x.Y;
@@ -57,7 +61,15 @@ namespace DXGame.Core.Utils
             Height = y.Y;
         }
 
-        public Rectangle2F(Rectangle rectangle) : this()
+        public DxRectangle(DxVector2 x, DxVector2 y) : this()
+        {
+            X = x.X;
+            Width = x.Y;
+            Y = y.X;
+            Height = y.Y;
+        }
+
+        public DxRectangle(Rectangle rectangle) : this()
         {
             X = rectangle.X;
             Y = rectangle.Y;
@@ -65,7 +77,7 @@ namespace DXGame.Core.Utils
             Height = rectangle.Height;
         }
 
-        public Rectangle2F(float x, float y, float width, float height) : this()
+        public DxRectangle(float x, float y, float width, float height) : this()
         {
             X = x;
             Y = y;
@@ -78,9 +90,9 @@ namespace DXGame.Core.Utils
             return new Rectangle((int) X, (int) Y, (int) Width, (int) Height);
         }
 
-        public static Rectangle2F FromRectangle(Rectangle rectangle)
+        public static DxRectangle FromRectangle(Rectangle rectangle)
         {
-            return new Rectangle2F(rectangle);
+            return new DxRectangle(rectangle);
         }
 
         public Vector2 XY()
@@ -88,7 +100,7 @@ namespace DXGame.Core.Utils
             return new Vector2(X, Y);
         }
 
-        public static bool operator ==(Rectangle2F lhs, Rectangle2F rhs)
+        public static bool operator ==(DxRectangle lhs, DxRectangle rhs)
         {
             return MathUtils.FuzzyCompare(lhs.X, rhs.X, TOLERANCE) == 0
                    && MathUtils.FuzzyCompare(lhs.Y, rhs.Y, TOLERANCE) == 0
@@ -96,7 +108,7 @@ namespace DXGame.Core.Utils
                    && MathUtils.FuzzyCompare(lhs.Height, rhs.Height, TOLERANCE) == 0;
         }
 
-        public static bool operator !=(Rectangle2F lhs, Rectangle2F rhs)
+        public static bool operator !=(DxRectangle lhs, DxRectangle rhs)
         {
             return MathUtils.FuzzyCompare(lhs.X, rhs.X, TOLERANCE) != 0
                    && MathUtils.FuzzyCompare(lhs.Y, rhs.Y, TOLERANCE) != 0
@@ -135,7 +147,7 @@ namespace DXGame.Core.Utils
             return false;
         }
 
-        public bool Intersects(Rectangle2F rectangle)
+        public bool Intersects(DxRectangle rectangle)
         {
             if (MathUtils.FuzzyCompare(rectangle.Left, Right, TOLERANCE) < 0
                 && MathUtils.FuzzyCompare(Left, rectangle.Right, TOLERANCE) < 0
@@ -147,14 +159,14 @@ namespace DXGame.Core.Utils
             return false;
         }
 
-        static Rectangle2F Intersect(Rectangle2F lhs , Rectangle2F rhs)
+        private static DxRectangle Intersect(DxRectangle lhs, DxRectangle rhs)
         {
-            Rectangle2F intersection;
+            DxRectangle intersection;
             Intersect(lhs, rhs, out intersection);
             return intersection;
         }
 
-        static void Intersect(Rectangle2F lhs, Rectangle2F rhs, out Rectangle2F output)
+        private static void Intersect(DxRectangle lhs, DxRectangle rhs, out DxRectangle output)
         {
             if (lhs.Intersects(rhs))
             {
@@ -162,22 +174,22 @@ namespace DXGame.Core.Utils
                 float x = Math.Max(lhs.X, rhs.X);
                 float heightDifference = Math.Min(lhs.Y + lhs.Height, rhs.Y + rhs.Height);
                 float y = Math.Max(lhs.Y, rhs.Y);
-                output = new Rectangle2F(x, y, widthDifference - x, heightDifference - y);
+                output = new DxRectangle(x, y, widthDifference - x, heightDifference - y);
             }
             else
             {
-                output = new Rectangle2F(0, 0, 0, 0);
+                output = new DxRectangle(0, 0, 0, 0);
             }
         }
 
-        static Rectangle2F Intersect(Rectangle2F lhs, Rectangle rhs)
+        private static DxRectangle Intersect(DxRectangle lhs, Rectangle rhs)
         {
-            Rectangle2F intersection;
+            DxRectangle intersection;
             Intersect(lhs, rhs, out intersection);
             return intersection;
         }
 
-        static void Intersect(Rectangle2F lhs, Rectangle rhs, out Rectangle2F output)
+        private static void Intersect(DxRectangle lhs, Rectangle rhs, out DxRectangle output)
         {
             if (lhs.Intersects(rhs))
             {
@@ -185,11 +197,11 @@ namespace DXGame.Core.Utils
                 float x = Math.Max(lhs.X, rhs.X);
                 float heightDifference = Math.Min(lhs.Y + lhs.Height, rhs.Y + rhs.Height);
                 float y = Math.Max(lhs.Y, rhs.Y);
-                output = new Rectangle2F(x, y, widthDifference - x, heightDifference - y);
+                output = new DxRectangle(x, y, widthDifference - x, heightDifference - y);
             }
             else
             {
-                output = new Rectangle2F(0, 0, 0, 0);
+                output = new DxRectangle(0, 0, 0, 0);
             }
         }
 
@@ -197,7 +209,7 @@ namespace DXGame.Core.Utils
         {
             try
             {
-                var rectangle = (Rectangle2F) rhs;
+                var rectangle = (DxRectangle) rhs;
                 return Equals(rectangle);
             }
             catch (Exception)
@@ -231,7 +243,7 @@ namespace DXGame.Core.Utils
             throw new NotImplementedException();
         }
 
-        public bool Equals(Rectangle2F rhs)
+        public bool Equals(DxRectangle rhs)
         {
             return this == rhs;
         }

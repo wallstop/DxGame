@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 
@@ -62,7 +63,7 @@ namespace DXGame.Core.Components.Advanced
             }
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(DxGameTime gameTime)
         {
             var currentState = state_.State;
             if (lastState_ != currentState && states_.ContainsKey(currentState))

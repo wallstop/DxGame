@@ -1,5 +1,6 @@
 ﻿using DXGame.Core;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using NUnit.Framework;
 
 namespace DXGameTest.Core.Network
@@ -9,14 +10,14 @@ namespace DXGameTest.Core.Network
         [Test]
         public void SerializeRectangle2F()
         {
-            var rectangle = new Rectangle2F(200, 100, 300, 400);
-            byte[] serialized = Serializer<Rectangle2F>.BinarySerialize(rectangle);
-            var serializedRectangle = Serializer<Rectangle2F>.BinaryDeserialize(serialized);
+            var rectangle = new DxRectangle(200, 100, 300, 400);
+            byte[] serialized = Serializer<DxRectangle>.BinarySerialize(rectangle);
+            var serializedRectangle = Serializer<DxRectangle>.BinaryDeserialize(serialized);
             Assert.AreEqual(rectangle, serializedRectangle);
 
-            byte[] jsonSerialized = Serializer<Rectangle2F>.JsonSerialize(rectangle);
+            byte[] jsonSerialized = Serializer<DxRectangle>.JsonSerialize(rectangle);
             string jsonText = System.Text.Encoding.Default.GetString(jsonSerialized);
-            var jsonDeserialized = Serializer<Rectangle2F>.JsonDeserialize(jsonSerialized);
+            var jsonDeserialized = Serializer<DxRectangle>.JsonDeserialize(jsonSerialized);
             Assert.AreEqual(rectangle, jsonDeserialized);
         }
     }

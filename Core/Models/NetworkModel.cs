@@ -4,12 +4,12 @@ using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Network;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Models
 {
-    public class NetworkModel : GameComponentCollection
+    public class NetworkModel : Model
     {
         protected List<NetworkComponent> connections_ = new List<NetworkComponent>();
 
@@ -60,7 +60,7 @@ namespace DXGame.Core.Models
             connections_.Add(netComponent);
         }
 
-        public void ReceiveData(GameTime gameTime)
+        public void ReceiveData(DxGameTime gameTime)
         {
             foreach (NetworkComponent connection in connections_)
             {
@@ -68,7 +68,7 @@ namespace DXGame.Core.Models
             }
         }
 
-        public void SendData(GameTime gameTime)
+        public void SendData(DxGameTime gameTime)
         {
             foreach (NetworkComponent connection in connections_)
             {

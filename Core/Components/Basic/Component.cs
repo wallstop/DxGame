@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Messaging;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Basic
 {
@@ -126,7 +126,7 @@ namespace DXGame.Core.Components.Basic
             DxGame.RemoveComponent(this);
         }
 
-        public virtual void Update(GameTime gameTime)
+        public virtual void Update(DxGameTime gameTime)
         {
         }
 

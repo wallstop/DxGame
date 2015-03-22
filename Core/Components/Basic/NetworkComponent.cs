@@ -3,10 +3,10 @@ using System.Collections.Concurrent;
 using System.Threading;
 using DXGame.Core.Network;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
 using Lidgren.Network;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Basic
 {
@@ -112,11 +112,11 @@ namespace DXGame.Core.Components.Basic
         protected static T ConvertMessageType<T>(NetworkMessage message) where T : class
         {
             return GenericUtils.CheckedCast<T>(message, LOG,
-                String.Format("Received message expecting type {0}, but was unable to dynamic cast", typeof(T)));
+                String.Format("Received message expecting type {0}, but was unable to dynamic cast", typeof (T)));
         }
 
         // We need to know the GameTime in order to Receive Data
-        public void ReceiveData(GameTime gameTime)
+        public void ReceiveData(DxGameTime gameTime)
         {
             int maxMessages = MessageQueue.Count;
             for (int i = 0; i < maxMessages; ++i)
@@ -144,10 +144,10 @@ namespace DXGame.Core.Components.Basic
 
         public abstract void EstablishConnection();
 
-        public abstract void RouteDataOnMessageType(NetIncomingMessage message, GameTime gameTime);
+        public abstract void RouteDataOnMessageType(NetIncomingMessage message, DxGameTime gameTime);
 
         // ...and also to send data
-        public abstract void SendData(GameTime gameTime);
+        public abstract void SendData(DxGameTime gameTime);
 
         public abstract void Shutdown();
     }

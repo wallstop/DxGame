@@ -1,5 +1,5 @@
-﻿using DXGame.Main;
-using Microsoft.Xna.Framework;
+﻿using DXGame.Core.Wrappers;
+using DXGame.Main;
 
 namespace DXGame.Core.Components.Basic
 {
@@ -11,7 +11,7 @@ namespace DXGame.Core.Components.Basic
             DrawPriority = DrawPriority.END_SPRITEBATCH;
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(DxGameTime gameTime)
         {
             spriteBatch_.End();
         }

@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Components.Basic
@@ -51,9 +51,9 @@ namespace DXGame.Core.Components.Basic
 
         public DrawPriority DrawPriority { get; set; }
 
-        public abstract void Draw(GameTime gameTime);
+        public abstract void Draw(DxGameTime gameTime);
 
-        public override void Update(GameTime gameTime)
+        public override void Update(DxGameTime gameTime)
         {
         }
     }

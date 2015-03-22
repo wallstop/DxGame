@@ -4,12 +4,11 @@ using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Models
 {
-    public class WorldGravityModel : Component
+    public class WorldGravityModel : Model
     {
         private const float gravity_ = 0.7f;
         private static readonly HashSet<PhysicsComponent> physics_ = new HashSet<PhysicsComponent>();

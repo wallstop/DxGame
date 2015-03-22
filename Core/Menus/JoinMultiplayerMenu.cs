@@ -5,6 +5,7 @@ using DXGame.Core.GraphicsWidgets;
 using DXGame.Core.Input;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
@@ -55,7 +56,7 @@ namespace DXGame.Core.Menus
             var portLabel =
                 new MenuItem().WithSpriteFont(SpriteFont)
                     .WithText(portString)
-                    .WithSpace(new Rectangle2F
+                    .WithSpace(new DxRectangle
                     {
                         X = portBoxSpatial.Space.X - /* Pixel Width of "Port:" */ SpriteFont.MeasureString(portString).X,
                         Y = portBoxSpatial.Space.Y,
@@ -74,7 +75,7 @@ namespace DXGame.Core.Menus
             var addressLabel =
                 new MenuItem().WithSpriteFont(SpriteFont)
                     .WithText(addressString)
-                    .WithSpace(new Rectangle2F
+                    .WithSpace(new DxRectangle
                     {
                         X =
                             addressBoxSpatial.Space.X - /* Pixel Width of "Address:" */
@@ -86,7 +87,7 @@ namespace DXGame.Core.Menus
 
             const string connectString = "Connect";
             var connectButton = new MenuItem().WithSpriteFont(SpriteFont).WithText(connectString)
-                .WithSpace(new Rectangle2F
+                .WithSpace(new DxRectangle
                 {
                     X = addressLabel.Space.X,
                     Y = addressLabel.Space.Y + 100,

@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
 using Microsoft.Xna.Framework;
@@ -20,22 +21,22 @@ namespace DXGame.Core.Components.Advanced
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (BoundedSpatialComponent));
 
-        protected Vector2 xBounds_;
-        protected Vector2 yBounds_;
+        protected DxVector2 xBounds_;
+        protected DxVector2 yBounds_;
 
-        public Vector2 XBounds
+        public DxVector2 XBounds
         {
             get { return xBounds_; }
         }
 
-        public Vector2 YBounds
+        public DxVector2 YBounds
         {
             get { return yBounds_; }
         }
 
-        public Rectangle2F Bounds
+        public DxRectangle Bounds
         {
-            get { return new Rectangle2F(XBounds, YBounds); }
+            get { return new DxRectangle(XBounds, YBounds); }
         }
 
         public BoundedSpatialComponent(DxGame game)
@@ -45,35 +46,35 @@ namespace DXGame.Core.Components.Advanced
 
         public BoundedSpatialComponent WithXMin(float xMin)
         {
-            xBounds_ = new Vector2(xMin, xBounds_.Y);
+            xBounds_ = new DxVector2(xMin, xBounds_.Y);
             return this;
         }
 
         public BoundedSpatialComponent WithXMax(float xMax)
         {
-            xBounds_ = new Vector2(xBounds_.X, xMax);
+            xBounds_ = new DxVector2(xBounds_.X, xMax);
             return this;
         }
 
         public BoundedSpatialComponent WithYMin(float yMin)
         {
-            yBounds_ = new Vector2(yMin, yBounds_.Y);
+            yBounds_ = new DxVector2(yMin, yBounds_.Y);
             return this;
         }
 
         public BoundedSpatialComponent WithYMax(float yMax)
         {
-            yBounds_ = new Vector2(yBounds_.X, yMax);
+            yBounds_ = new DxVector2(yBounds_.X, yMax);
             return this;
         }
 
-        public BoundedSpatialComponent WithXBounds(Vector2 xBounds)
+        public BoundedSpatialComponent WithXBounds(DxVector2 xBounds)
         {
             xBounds_ = xBounds;
             return this;
         }
 
-        public BoundedSpatialComponent WithYBounds(Vector2 yBounds)
+        public BoundedSpatialComponent WithYBounds(DxVector2 yBounds)
         {
             yBounds_ = yBounds;
             return this;
@@ -85,10 +86,10 @@ namespace DXGame.Core.Components.Advanced
             // To ensure that we don't have any weird Rectangles with negative heights / widths, take the Max/Min
 
             // TODO: Remove the Min/Max checks, replace with an assert or similar
-            yBounds_ = new Vector2(Math.Min(bounds.Y, bounds.Y + bounds.Height),
+            yBounds_ = new DxVector2(Math.Min(bounds.Y, bounds.Y + bounds.Height),
                 Math.Max(bounds.Y, bounds.Y + bounds.Height));
             xBounds_ = new
-                Vector2(Math.Min(bounds.X, bounds.X + bounds.Width), Math.Max(bounds.X, bounds.X + bounds.Width));
+                DxVector2(Math.Min(bounds.X, bounds.X + bounds.Width), Math.Max(bounds.X, bounds.X + bounds.Width));
             return this;
         }
 

@@ -6,9 +6,9 @@ using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Generators;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
-using Lidgren.Network;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Models
@@ -21,7 +21,7 @@ namespace DXGame.Core.Models
     </summary>
     */
 
-    public class MapModel : DrawableComponent
+    public class MapModel : Model
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapModel));
 
@@ -183,7 +183,7 @@ namespace DXGame.Core.Models
             return ObjectsAndSpatialsInRange(range).Select(element => element.Value);
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(DxGameTime gameTime)
         {
             var screenRegion = DxGame.ScreenRegion.ToRectangle();
             screenRegion.X = -screenRegion.X;
@@ -214,7 +214,6 @@ namespace DXGame.Core.Models
                     drawable.Initialize();
                 }
             }
-            base.Initialize();
         }
 
         // TODO: Consolidate these methods

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+using DXGame.Core.Components.Basic;
 
 namespace DXGame.Core.Utils
 {
@@ -21,7 +21,7 @@ namespace DXGame.Core.Utils
         </summary>
         */
 
-        public static IEnumerable<T> ComponentsOfType<T>(IEnumerable<GameObject> gameObjects) where T : GameComponent
+        public static IEnumerable<T> ComponentsOfType<T>(IEnumerable<GameObject> gameObjects) where T : Component
         {
             var components = new List<T>();
             foreach (GameObject gameObject in gameObjects)

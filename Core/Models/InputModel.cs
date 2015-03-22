@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using DXGame.Core.Input;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Models
 {
-    public class InputModel : GameComponentCollection
+    public class InputModel : Model
     {
         public IEnumerable<KeyboardEvent> Events { get; private set; }
         public IEnumerable<KeyboardEvent> FinishedEvents { get; private set; }
@@ -22,7 +22,7 @@ namespace DXGame.Core.Models
             InputHandler = new InputHandler(DxGame);
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(DxGameTime gameTime)
         {
             InputHandler.Update(gameTime);
             Events = InputHandler.CurrentEvents;

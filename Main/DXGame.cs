@@ -8,6 +8,7 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Menus;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using log4net;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -47,6 +48,8 @@ namespace DXGame.Main
 
         public SpriteBatch SpriteBatch { get; private set; }
 
+        public ComponentCollection DxComponents { get; private set; }
+
         public DxGame()
         {
             Screen = new Rectangle(0, 0, 1280, 720);
@@ -59,10 +62,11 @@ namespace DXGame.Main
             TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 60.0f);
             IsFixedTimeStep = false;
 
+            DxComponents = new ComponentCollection();
             Content.RootDirectory = "Content";
         }
 
-        public T Model<T>() where T : GameComponent
+        public T Model<T>() where T : Model
         {
             return models_.OfType<T>().FirstOrDefault();
         }
@@ -82,14 +86,14 @@ namespace DXGame.Main
             return !alreadyExists;
         }
 
-        public Rectangle2F ScreenRegion
+        public DxRectangle ScreenRegion
         {
             get
             {
                 GameModel gameModel = Model<GameModel>();
                 if (GenericUtils.IsNullOrDefault(gameModel))
                 {
-                    return new Rectangle2F(Screen);
+                    return new DxRectangle(Screen);
                 }
                 MapModel mapModel = Model<MapModel>();
                 float x = Screen.Width / 2.0f - gameModel.FocalPoint.Position.X;
@@ -102,7 +106,7 @@ namespace DXGame.Main
                     Math.Max(0, mapModel.MapBounds.Y + mapModel.MapBounds.Height - Screen.Height),
                     mapModel.MapBounds.Y);
 
-                return new Rectangle2F(x, y, Screen.Width, Screen.Height);
+                return new DxRectangle(x, y, Screen.Width, Screen.Height);
             }
         }
 

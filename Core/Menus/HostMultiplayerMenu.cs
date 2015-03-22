@@ -5,6 +5,7 @@ using DXGame.Core.GraphicsWidgets;
 using DXGame.Core.Input;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
 using Lidgren.Network;
@@ -47,7 +48,7 @@ namespace DXGame.Core.Menus
             var portLabel =
                 new MenuItem().WithSpriteFont(spriteFont)
                     .WithText("Port:")
-                    .WithSpace(new Rectangle2F
+                    .WithSpace(new DxRectangle
                     {
                         X = portBoxSpatial.Space.X - /* Pixel Width of "Port:" */ spriteFont.MeasureString("Port:").X,
                         Y = portBoxSpatial.Space.Y,
@@ -60,7 +61,7 @@ namespace DXGame.Core.Menus
 
             var hostLabel = new MenuItem().WithSpriteFont(spriteFont)
                 .WithText("Host")
-                .WithSpace(new Rectangle2F
+                .WithSpace(new DxRectangle
                 {
                     X = portLabel.Space.X,
                     Y = portLabel.Space.Y + 100,

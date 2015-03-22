@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using log4net;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -14,7 +15,7 @@ namespace DXGame.Core.Menus
 
         public string Text { get; set; }
         public MenuAction Action { get; set; }
-        public Rectangle2F Space { get; set; }
+        public DxRectangle Space { get; set; }
         public SpriteFont SpriteFont { get; set; }
 
         public MenuItem WithText(string text)
@@ -31,7 +32,7 @@ namespace DXGame.Core.Menus
             return this;
         }
 
-        public MenuItem WithSpace(Rectangle2F space)
+        public MenuItem WithSpace(DxRectangle space)
         {
             Debug.Assert(space != null, "Menu Item cannot be initialized with a null space");
             Space = space;

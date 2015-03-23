@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DXGame.Core.Components.Utils;
 
@@ -13,7 +12,8 @@ namespace DXGame.Core.Components.Basic
         * Features Add/Remove
     </summary>
     */
-    public class ComponentCollection : IEnumerable<Component>, IEnumerable<DrawableComponent>
+
+    public class ComponentCollection
     {
         private readonly List<Component> components_ = new List<Component>();
         private readonly IComparer<Component> updatePriorityComparer_ = new UpdatePriorityComparer();
@@ -24,21 +24,16 @@ namespace DXGame.Core.Components.Basic
             get { return components_.Count; }
         }
 
-        IEnumerator<DrawableComponent> IEnumerable<DrawableComponent>.GetEnumerator()
+        public IEnumerable<Component> Components()
         {
-            var drawableComponents = ((List<DrawableComponent>) (components_.Where(n => (n is DrawableComponent))));
+            return components_;
+        }
+
+        public IEnumerable<DrawableComponent> Drawables()
+        {
+            var drawableComponents = components_.OfType<DrawableComponent>().ToList();
             drawableComponents.Sort(drawPriorityComparer_);
-            return drawableComponents.GetEnumerator();
-        }
-
-        IEnumerator<Component> IEnumerable<Component>.GetEnumerator()
-        {
-            return ((IEnumerable<Component>)components_).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<Component>)components_).GetEnumerator();
+            return drawableComponents;
         }
 
         public void Add(Component component)

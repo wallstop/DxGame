@@ -1,5 +1,4 @@
 ﻿using DXGame.Core.Models;
-using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
@@ -25,8 +24,6 @@ namespace DXGame.Core.Menus
             MenuItems.Add(play);
 
             var inputModel = new InputModel(DxGame);
-            inputModel.Initialize();
-            DxGame.AddAndInitializeComponent(inputModel);
             DxGame.AttachModel(inputModel);
 
             base.Initialize();

@@ -23,8 +23,7 @@ namespace DXGame.Core.Generators
         private const char CARRIAGE_RETURN = (char) 13;
         private const int BLOCK_WIDTH = 50;
 
-        private static readonly ILog LOG =
-            LogManager.GetLogger(typeof (MapGenerator));
+        private static readonly ILog LOG = LogManager.GetLogger(typeof (MapGenerator));
 
         private readonly List<GameObject> map_;
         private Rectangle mapBounds_;

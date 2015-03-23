@@ -78,7 +78,7 @@ namespace DXGame.Core.Components.Network
                 // Quick and dirty for now - do some nice differentials later
                 var message = new GameStateKeyFrame
                 {
-                    Components = DxGame.DxComponents.Where<Component>(n => !(n is SimplePlayerInputComponent)).ToList(),
+                    Components = DxGame.DxComponents.Components().Where(n => !(n is SimplePlayerInputComponent)).ToList(),
                     GameTime = gameTime,
                     MessageType = MessageType.SERVER_DATA_KEYFRAME
                 };

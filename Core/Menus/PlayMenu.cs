@@ -1,5 +1,4 @@
 ﻿using DXGame.Core.Models;
-using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
@@ -41,7 +40,7 @@ namespace DXGame.Core.Menus
         private void SinglePlayerAction()
         {
             Remove();
-            DxGame.AddAndInitializeComponent(new GameModel(DxGame));
+            DxGame.AttachModel(new GameModel(DxGame));
         }
 
         private void HostMultiplayer()

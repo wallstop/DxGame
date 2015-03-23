@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using log4net;
 using Microsoft.Xna.Framework.Graphics;

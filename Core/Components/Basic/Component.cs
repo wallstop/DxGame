@@ -4,6 +4,8 @@ using System.Runtime.Serialization;
 using DXGame.Core.Messaging;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
+using log4net;
+using log4net.Repository.Hierarchy;
 
 namespace DXGame.Core.Components.Basic
 {
@@ -70,16 +72,26 @@ namespace DXGame.Core.Components.Basic
     [DataContract]
     public abstract class Component
     {
+        private static readonly ILog LOG = LogManager.GetLogger(typeof(Component));
+
         /**
             Note: This id_ field is the UniqueId of the Component, *NOT* of the GameObject. 
             This is a very important distinction.
         */
+        [DataMember]
         protected readonly UniqueId id_ = new UniqueId();
 
+        [DataMember]
         private readonly Dictionary<Type, List<MessageHandler>> typesToMessageHandlers_ =
             new Dictionary<Type, List<MessageHandler>>();
 
+        [DataMember]
         public GameObject Parent { get; set; }
+
+        [DataMember]
+        public UpdatePriority UpdatePriority { protected set; get; }
+
+        [DataMember] private bool initialized_;
 
         public UniqueId Id
         {
@@ -87,12 +99,12 @@ namespace DXGame.Core.Components.Basic
         }
 
         public DxGame DxGame { protected set; get; }
-        public UpdatePriority UpdatePriority { protected set; get; }
 
         protected Component(DxGame game)
         {
             DxGame = game;
             UpdatePriority = UpdatePriority.NORMAL;
+            initialized_ = false;
         }
 
         public void HandleMessage(Message message)
@@ -132,6 +144,17 @@ namespace DXGame.Core.Components.Basic
 
         public virtual void Initialize()
         {
+            if (!initialized_)
+            {
+                initialized_ = true;
+            }
+            else
+            {
+                // TODO: Log metrics
+                var logMessage = String.Format("Initialize called on already Initialized component {0}", this);
+                LOG.Error(logMessage);
+                //throw new ArgumentException(logMessage);
+            }
         }
 
         public virtual void LoadContent()

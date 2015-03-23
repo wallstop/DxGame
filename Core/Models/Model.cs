@@ -1,28 +1,17 @@
-﻿using DXGame.Core.Wrappers;
+﻿using DXGame.Core.Components.Basic;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 
 namespace DXGame.Core.Models
 {
-    public abstract class Model
+    public abstract class Model : DrawableComponent
     {
-        protected DxGame DxGame;
-
         protected Model(DxGame game)
+            : base(game)
         {
-            DxGame = game;
         }
 
-        public virtual void Initialize()
-        {
-            // No-op in base
-        }
-
-        public virtual void Update(DxGameTime gameTime)
-        {
-            // No-op in base
-        }
-
-        public virtual void Draw(DxGameTime gameTime)
+        public override void Draw(DxGameTime gameTime)
         {
             // No-op in base
         }

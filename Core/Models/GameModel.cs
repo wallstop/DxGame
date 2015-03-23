@@ -2,8 +2,6 @@
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Generators;
 using DXGame.Main;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Models
 {
@@ -17,24 +15,19 @@ namespace DXGame.Core.Models
     {
         public float GameSpeed { get; set; }
 
-        // TODO: Move this out of here. Models should not contain other models.
-        public MapModel MapModel { get; set; }
-
         public SpatialComponent FocalPoint { get; protected set; }
-
-        protected SpriteBatch SpriteBatch { get; set; }
 
         public GameModel(DxGame game) : base(game)
         {
-            var mapGenerator = new MapGenerator(DxGame, "Content/Map/SimpleMap.txt");
-            MapModel = MapModel.InitializeFromGenerator(DxGame, mapGenerator);
-            DxGame.AddAndInitializeComponent(MapModel);
         }
 
         public override void Initialize()
         {
+            var mapGenerator = new MapGenerator(DxGame, "Content/Map/SimpleMap.txt");
+            var mapModel = MapModel.InitializeFromGenerator(DxGame, mapGenerator);
+            DxGame.AddAndInitializeComponent(mapModel);
             var worldGravity = new WorldGravityModel(DxGame);
-            PlayerGenerator playerGenerator = new PlayerGenerator(DxGame, MapModel.PlayerPosition, MapModel.MapBounds);
+            PlayerGenerator playerGenerator = new PlayerGenerator(DxGame, mapModel.PlayerPosition, mapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;
             var player = playerGenerator.Generate().First();
             var physicsComponents = player.ComponentsOfType<PhysicsComponent>();
@@ -45,26 +38,9 @@ namespace DXGame.Core.Models
 
             // TODO: Split these out into some kind of unified loading... thing
             DxGame.AddAndInitializeGameObjects(playerGenerator.Generate());
-            DxGame.AddAndInitializeComponent(worldGravity);
-            DxGame.AttachModel(this);
-            DxGame.AttachModel(MapModel);
+            DxGame.AttachModel(mapModel);
             DxGame.AttachModel(worldGravity);
             base.Initialize();
-        }
-
-        public bool AddComponent(GameComponent component)
-        {
-            bool alreadyExists = Components.Contains(component);
-            if (!alreadyExists)
-            {
-                Components.Add(component);
-            }
-            return alreadyExists;
-        }
-
-        public bool RemoveComponent(GameComponent component)
-        {
-            return Components.Remove(component);
         }
     }
 }

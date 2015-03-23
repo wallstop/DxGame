@@ -77,6 +77,7 @@ namespace DXGame.Main
             if (!alreadyExists)
             {
                 models_.Add(model);
+                AddAndInitializeComponent(model);
             }
             else
             {
@@ -112,7 +113,8 @@ namespace DXGame.Main
 
         public void AddAndInitializeComponent(Component component)
         {
-            Components.Add(component);
+            component.Initialize();
+            DxComponents.Add(component);
         }
 
         public void AddAndInitializeComponents(params Component[] components)
@@ -143,16 +145,16 @@ namespace DXGame.Main
 
         public void RemoveGameObject(GameObject gameObject)
         {
-            List<GameComponent> components = gameObject.Components;
+            List<Component> components = gameObject.Components;
             foreach (var component in components)
             {
-                Components.Remove(component);
+                DxComponents.Remove(component);
             }
         }
 
         public void RemoveComponent(Component component)
         {
-            Components.Remove(component);
+            DxComponents.Remove(component);
         }
 
         public void RemoveComponents(params Component[] components)
@@ -176,10 +178,10 @@ namespace DXGame.Main
         protected override void Initialize()
         {
             SpriteBatch = new SpriteBatch(GraphicsDevice);
-            Components.Add(new SpriteBatchInitializer(this));
-            Components.Add(new SpriteBatchEnder(this));
+            AddAndInitializeComponent(new SpriteBatchInitializer(this));
+            AddAndInitializeComponent(new SpriteBatchEnder(this));
             var playMenu = new MainMenu(this);
-            Components.Add(playMenu);
+            AddAndInitializeComponent(playMenu);
 
             var frameModel = new FrameModel(this);
             AttachModel(frameModel);
@@ -207,6 +209,8 @@ namespace DXGame.Main
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            var dxGameTime = new DxGameTime(gameTime);
+
             // Querying Gamepad.GetState(...) requires xinput1_3.dll (The xbox 360 controller driver). Interesting fact...
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
@@ -224,9 +228,14 @@ namespace DXGame.Main
             var networkModel = Model<NetworkModel>();
 
             // Should probably thread this... but wait until we have perf testing :)
-            networkModel.ReceiveData(gameTime);
+            networkModel.ReceiveData(dxGameTime);
+            List<Component> currentComponents = new List<Component>(DxComponents.Components());
+            foreach (Component component in currentComponents)
+            {
+                component.Update(dxGameTime);
+            }
+            networkModel.SendData(dxGameTime);
             base.Update(gameTime);
-            networkModel.SendData(gameTime);
         }
 
         /// <summary>
@@ -235,6 +244,11 @@ namespace DXGame.Main
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            var dxGameTime = new DxGameTime(gameTime);
+            foreach (DrawableComponent drawable in DxComponents.Drawables())
+            {
+                drawable.Draw(dxGameTime);
+            }
             base.Draw(gameTime);
         }
     }

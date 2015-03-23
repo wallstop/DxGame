@@ -54,6 +54,8 @@ namespace DXGame.Core.Components.Advanced
 
         public override void Update(DxGameTime gameTime)
         {
+            // TODO: Do a pass to find the collision areas and resolve in order of largest-first
+
             /*
                 Perform the normal PhysicsComponent's update first. We assume that at the end of our last update cycle,
                 we are collision free. The PhysicsComponent's update cycle may place us into some kind of state where
@@ -120,7 +122,7 @@ namespace DXGame.Core.Components.Advanced
                 else
                 // if (intersection.Height > intersection.Width || MathUtils.FuzzyCompare(Velocity.Y, 0.0, MathUtils.DoubleTolerance) == 0)
                 {
-                    // left collision
+                    // left collision // TODO: Fix this. This left-first case causes a bug of "never being able to move left" while jumping
                     if (Position.X < mapBlockPosition.X + mapBlockDimensions.X && mapBlockPosition.X < Position.X)
                     {
                         Position = new Vector2(mapBlockPosition.X + mapBlockDimensions.X, Position.Y);

@@ -25,7 +25,6 @@ namespace DXGame.Core.Models
         {
             var mapGenerator = new MapGenerator(DxGame, "Content/Map/SimpleMap.txt");
             var mapModel = MapModel.InitializeFromGenerator(DxGame, mapGenerator);
-            DxGame.AddAndInitializeComponent(mapModel);
             var worldGravity = new WorldGravityModel(DxGame);
             PlayerGenerator playerGenerator = new PlayerGenerator(DxGame, mapModel.PlayerPosition, mapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;

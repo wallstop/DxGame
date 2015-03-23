@@ -5,7 +5,6 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
-using log4net.Repository.Hierarchy;
 
 namespace DXGame.Core.Components.Basic
 {
@@ -72,17 +71,15 @@ namespace DXGame.Core.Components.Basic
     [DataContract]
     public abstract class Component
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof(Component));
+        private static readonly ILog LOG = LogManager.GetLogger(typeof (Component));
 
         /**
             Note: This id_ field is the UniqueId of the Component, *NOT* of the GameObject. 
             This is a very important distinction.
         */
-        [DataMember]
-        protected readonly UniqueId id_ = new UniqueId();
+        [DataMember] protected readonly UniqueId id_ = new UniqueId();
 
-        [DataMember]
-        private readonly Dictionary<Type, List<MessageHandler>> typesToMessageHandlers_ =
+        [DataMember] private readonly Dictionary<Type, List<MessageHandler>> typesToMessageHandlers_ =
             new Dictionary<Type, List<MessageHandler>>();
 
         [DataMember]
@@ -153,7 +150,7 @@ namespace DXGame.Core.Components.Basic
                 // TODO: Log metrics
                 var logMessage = String.Format("Initialize called on already Initialized component {0}", this);
                 LOG.Error(logMessage);
-                //throw new ArgumentException(logMessage);
+                throw new ArgumentException(logMessage);
             }
         }
 

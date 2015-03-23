@@ -98,7 +98,7 @@ namespace DXGame.Core.Components.Advanced
                     Since the acceleration from gravity is always going to throw us downward, we check this first.
                 */
                 if (intersection.Width >= intersection.Height ||
-                    MathUtils.FuzzyCompare(Velocity.X, 0.0f, MathUtils.FloatTolerance) == 0)
+                    MathUtils.FuzzyCompare(Velocity.X, 0.0f) == 0)
                 {
                     // below collision
                     if (Position.Y + Dimensions.Y > mapBlockPosition.Y && mapBlockPosition.Y > Position.Y)

@@ -17,9 +17,13 @@ namespace DXGame.Core.Components.Advanced
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (SimpleSpriteComponent));
 
+        [DataMember]
         protected string assetName_;
+        //[DataMember] TODO
         protected Rectangle boundingBox_;
+        [DataMember]
         protected PositionalComponent position_;
+        [DataMember]
         protected Texture2D texture_;
 
         public Rectangle BoundingBox

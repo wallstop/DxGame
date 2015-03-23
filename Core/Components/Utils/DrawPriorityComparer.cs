@@ -3,7 +3,7 @@ using DXGame.Core.Components.Basic;
 
 namespace DXGame.Core.Components.Utils
 {
-    internal class DrawPriorityComparer : IComparer<DrawableComponent>
+    public class DrawPriorityComparer : IComparer<DrawableComponent>
     {
         public int Compare(DrawableComponent lhs, DrawableComponent rhs)
         {

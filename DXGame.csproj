@@ -117,6 +117,7 @@
     <Compile Include="Core\Components\Network\NetworkClient.cs" />
     <Compile Include="Core\Components\Network\NetworkServer.cs" />
     <Compile Include="Core\Components\Utils\DrawPriorityComparer.cs" />
+    <Compile Include="Core\Components\Utils\RectangleAreaComparer.cs" />
     <Compile Include="Core\Components\Utils\UpdatePriorityComparer.cs" />
     <Compile Include="Core\Frames\AbstractFrame.cs" />
     <Compile Include="Core\Frames\GameTimeFrame.cs" />

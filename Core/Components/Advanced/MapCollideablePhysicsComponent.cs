@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Windows.Forms;
+using DXGame.Core.Components.Utils;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
@@ -18,6 +20,8 @@ namespace DXGame.Core.Components.Advanced
     public class MapCollideablePhysicsComponent : PhysicsComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapCollideablePhysicsComponent));
+
+        private static readonly RectangleAreaComparer RECTANGLE_AREA_COMPARER = new RectangleAreaComparer();
 
         public MapCollideablePhysicsComponent(DxGame game)
             : base(game)
@@ -67,39 +71,31 @@ namespace DXGame.Core.Components.Advanced
             IEnumerable<SpatialComponent> mapTiles = map.SpatialsInRange(MapQueryRegion);
 
             CollisionMessage collision = new CollisionMessage();
+            SortedDictionary<Rectangle, SpatialComponent> intersections;
 
-            /*
-                Additionally, we should really re-query the map after we find a collision and update our position / velocity. 
-                Typically, our previous update cycle will take care of any major collision, so we should only be colliding with
-                blocks on some small order of magnitude (less than a block). However, in cases of extreme velocity, like
-                being shot from a cannon, it's possible that we've moved several blocks since our last update cycle. 
-                TODO: THIS NEEDS TO BE ADDRESSED AT SOME POINT. 
-                The below collision handling routine assumes that resolving collisions with
-                our immediate neighbors will put us in the clear, which may NOT be the case.
-
-                In a method that re-quries the map, we're going to need to throw in calculations based off of velocity as well,
-                so as to not "warp" us through walls and obstacles.
-            */
-            foreach (SpatialComponent spatial in mapTiles)
+            do
             {
-                if (!Space.Intersects(spatial.Space))
+                intersections = FindIntersections(mapTiles, Space);
+                if (!intersections.Any())
                 {
                     continue;
                 }
+                Rectangle largestIntersection = intersections.Keys.Last();
+                SpatialComponent mapSpatial = intersections.Values.Last();
+                var mapBlockPosition = mapSpatial.Position;
+                var mapBlockDimensions = mapSpatial.Dimensions;
 
-                Vector2 mapBlockPosition = spatial.Position;
-                Vector2 mapBlockDimensions = spatial.Dimensions;
-                Rectangle intersection = Rectangle.Intersect(spatial.Space, Space);
+
                 /*
-                    Wrap to the Y axis if the collision area was greater along the X axis (implies the collision occured either up or down,
-                    as a left/right collision *should* have very little overlap on the X axis.
+                        Wrap to the Y axis if the collision area was greater along the X axis (implies the collision occured either up or down,
+                        as a left/right collision *should* have very little overlap on the X axis.
 
-                    OR wrap to the Y axis if we weren't moving in the X direction. This prevents "warps", where the player is jumping
-                    something like a few pixels off of a block boundary and gets warped back.
+                        OR wrap to the Y axis if we weren't moving in the X direction. This prevents "warps", where the player is jumping
+                        something like a few pixels off of a block boundary and gets warped back.
 
-                    Since the acceleration from gravity is always going to throw us downward, we check this first.
-                */
-                if (intersection.Width >= intersection.Height ||
+                        Since the acceleration from gravity is always going to throw us downward, we check this first.
+                    */
+                if (largestIntersection.Width >= largestIntersection.Height ||
                     MathUtils.FuzzyCompare(Velocity.X, 0.0f) == 0)
                 {
                     // below collision
@@ -115,9 +111,9 @@ namespace DXGame.Core.Components.Advanced
                     }
                     Velocity = new Vector2(Velocity.X, 0);
                     Acceleration = new Vector2(Acceleration.X, 0);
-                } 
+                }
                 /*
-                    Wrap to the X axis otherwise. 
+                        Wrap to the X axis otherwise. 
                 */
                 else
                 // if (intersection.Height > intersection.Width || MathUtils.FuzzyCompare(Velocity.Y, 0.0, MathUtils.DoubleTolerance) == 0)
@@ -136,13 +132,30 @@ namespace DXGame.Core.Components.Advanced
                     Velocity = new Vector2(0, Velocity.Y);
                     Acceleration = new Vector2(0, Acceleration.Y);
                 }
-            }
+            } while (intersections.Any());
 
             // Let everyone else know we collided (only if we collided with anything)
             if (collision.CollisionDirections.Any())
             {
                 Parent.BroadcastMessage(collision);
             }
+        }
+
+        private static SortedDictionary<Rectangle, SpatialComponent> FindIntersections(IEnumerable<SpatialComponent> mapTiles, Rectangle currentSpace)
+        {
+            SortedDictionary<Rectangle, SpatialComponent> intersections = new SortedDictionary<Rectangle, SpatialComponent>(RECTANGLE_AREA_COMPARER);
+            foreach (SpatialComponent spatial in mapTiles)
+            {
+                if (currentSpace.Intersects(spatial.Space))
+                {
+                    var intersection = Rectangle.Intersect(spatial.Space, currentSpace);
+                    if (!intersections.ContainsKey(intersection))
+                    {
+                        intersections.Add(intersection, spatial);
+                    }
+                }
+            }
+            return intersections;
         }
     }
 }

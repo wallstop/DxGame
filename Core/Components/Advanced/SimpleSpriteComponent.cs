@@ -19,14 +19,14 @@ namespace DXGame.Core.Components.Advanced
 
         [DataMember]
         protected string assetName_;
-        //[DataMember] TODO
-        protected Rectangle boundingBox_;
+        [DataMember]
+        protected DxRectangle boundingBox_;
         [DataMember]
         protected PositionalComponent position_;
-        [DataMember]
+        //[DataMember] // TODO
         protected Texture2D texture_;
 
-        public Rectangle BoundingBox
+        public DxRectangle BoundingBox
         {
             get { return boundingBox_; }
             set { boundingBox_ = value; }
@@ -57,7 +57,7 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public SimpleSpriteComponent WithBoundingBox(Rectangle boundingBox)
+        public SimpleSpriteComponent WithBoundingBox(DxRectangle boundingBox)
         {
             Debug.Assert(boundingBox != null, "Bounding box cannot be null on assignment");
             boundingBox_ = boundingBox;
@@ -66,7 +66,7 @@ namespace DXGame.Core.Components.Advanced
 
         public override void Draw(DxGameTime gameTime)
         {
-            spriteBatch_.Draw(texture_, position_.Position, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
+            spriteBatch_.Draw(texture_, position_.Position.ToVector2(), null, Color.White, 0.0f, Vector2.Zero, 1.0f,
                 SpriteEffects.None, 0);
         }
 
@@ -78,7 +78,7 @@ namespace DXGame.Core.Components.Advanced
             // TODO: Change to an isLoaded bool flag / state
             if (GenericUtils.IsNullOrDefault(boundingBox_))
             {
-                boundingBox_ = new Rectangle(0, 0, texture_.Width, texture_.Height);
+                boundingBox_ = new DxRectangle(0, 0, texture_.Width, texture_.Height);
             }
             base.Initialize();
         }

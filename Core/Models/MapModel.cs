@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Generators;
@@ -21,16 +22,20 @@ namespace DXGame.Core.Models
     </summary>
     */
 
+    [Serializable]
+    [DataContract]
     public class MapModel : Model
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapModel));
 
+        [DataMember]
         private readonly KeyValuePair<GameObject, SpatialComponent>[,] map_;
+        [DataMember]
         private readonly int blockSize_;
-
-        public Vector2 PlayerPosition { get; private set; }
-
-        public Rectangle MapBounds { get; private set; }
+        [DataMember]
+        public DxVector2 PlayerPosition { get; private set; }
+        [DataMember]
+        public DxRectangle MapBounds { get; private set; }
 
         public int BlockSize
         {
@@ -127,18 +132,19 @@ namespace DXGame.Core.Models
         </summary>
         */
 
-        public List<KeyValuePair<GameObject, SpatialComponent>> ObjectsAndSpatialsInRange(Rectangle range)
+        public List<KeyValuePair<GameObject, SpatialComponent>> ObjectsAndSpatialsInRange(DxRectangle range)
         {
+            Rectangle rectangleRange = range.ToRectangle();
             var objects = new List<KeyValuePair<GameObject, SpatialComponent>>();
             // Make sure to wrap the requested values to those servable by the map
             // TODO: Clean this up
-            int x = MathUtils.Constrain(range.X / blockSize_, MapBounds.X / blockSize_,
+            int x = MathUtils.Constrain(rectangleRange.X / blockSize_, MapBounds.X / blockSize_,
                 (MapBounds.X + MapBounds.Width) / blockSize_);
-            int width = MathUtils.Constrain((int) Math.Ceiling((float) range.Width / blockSize_ + 1), 0,
+            int width = MathUtils.Constrain((int)Math.Ceiling((float)rectangleRange.Width / blockSize_ + 1), 0,
                 (MapBounds.X + MapBounds.Width) / blockSize_ - x);
-            int y = MathUtils.Constrain(range.Y / blockSize_, MapBounds.Y / blockSize_,
+            int y = MathUtils.Constrain(rectangleRange.Y / blockSize_, MapBounds.Y / blockSize_,
                 (MapBounds.Y + MapBounds.Height) / blockSize_);
-            int height = MathUtils.Constrain((int) Math.Ceiling((float) range.Height / blockSize_), 0,
+            int height = MathUtils.Constrain((int)Math.Ceiling((float)rectangleRange.Height / blockSize_), 0,
                 (MapBounds.Y + MapBounds.Height) / blockSize_ - y);
             for (int i = 0; i < width; ++i)
             {
@@ -164,7 +170,7 @@ namespace DXGame.Core.Models
         </summary>
         */
 
-        public IEnumerable<GameObject> ObjectsInRange(Rectangle range)
+        public IEnumerable<GameObject> ObjectsInRange(DxRectangle range)
         {
             return ObjectsAndSpatialsInRange(range).Select(element => element.Key);
         }
@@ -178,14 +184,14 @@ namespace DXGame.Core.Models
         </summary>
         */
 
-        public IEnumerable<SpatialComponent> SpatialsInRange(Rectangle range)
+        public IEnumerable<SpatialComponent> SpatialsInRange(DxRectangle range)
         {
             return ObjectsAndSpatialsInRange(range).Select(element => element.Value);
         }
 
         public override void Draw(DxGameTime gameTime)
         {
-            var screenRegion = DxGame.ScreenRegion.ToRectangle();
+            var screenRegion = DxGame.ScreenRegion;
             screenRegion.X = -screenRegion.X;
             screenRegion.Y = -screenRegion.Y;
 
@@ -219,7 +225,7 @@ namespace DXGame.Core.Models
         // TODO: Consolidate these methods
         private bool CanInsertIntoMap(SpatialComponent space)
         {
-            Rectangle occupied = space.Space;
+            Rectangle occupied = space.Space.ToRectangle();
             var x = occupied.X / blockSize_;
             var y = occupied.Y / blockSize_;
             var width = occupied.Width / blockSize_;
@@ -257,7 +263,7 @@ namespace DXGame.Core.Models
 
         private void InsertIntoMap(GameObject gameObject, SpatialComponent space)
         {
-            Rectangle occupied = space.Space;
+            Rectangle occupied = space.Space.ToRectangle();
             var x = occupied.X / blockSize_;
             var y = occupied.Y / blockSize_;
             var width = occupied.Width / blockSize_;

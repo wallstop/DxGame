@@ -3,7 +3,7 @@ using DXGame.Main;
 
 namespace DXGame.Core.Components.Basic
 {
-    internal class SpriteBatchEnder : DrawableComponent
+    public class SpriteBatchEnder : DrawableComponent
     {
         public SpriteBatchEnder(DxGame game)
             : base(game)

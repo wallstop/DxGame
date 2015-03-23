@@ -6,7 +6,6 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
@@ -20,34 +19,35 @@ namespace DXGame.Core.Components.Advanced
     [DataContract]
     public class PhysicsComponent : Component
     {
-        protected Vector2 acceleration_;
-        protected Vector2 maxVelocity_;
-        protected Vector2 maxAcceleration_;
-        protected PositionalComponent position_;
-        protected Vector2 velocity_;
+        [DataMember] protected DxVector2 acceleration_;
+        [DataMember] protected DxVector2 maxVelocity_;
+        [DataMember] protected DxVector2 maxAcceleration_;
+        [DataMember] protected PositionalComponent position_;
+        [DataMember] protected DxVector2 velocity_;
 
         public PhysicsComponent(DxGame game)
             : base(game)
         {
             RegisterMessageHandler(typeof (CollisionMessage), HandleCollisionMessage);
-            maxVelocity_ = new Vector2(5.0f, 5.0f);
-            maxAcceleration_ = new Vector2(5.0f, 5.0f);
+            // TODO: Un-hardcode these
+            maxVelocity_ = new DxVector2(5.0f, 5.0f);
+            maxAcceleration_ = new DxVector2(5.0f, 5.0f);
             UpdatePriority = UpdatePriority.PHYSICS;
         }
 
-        public virtual Vector2 Velocity
+        public virtual DxVector2 Velocity
         {
             get { return velocity_; }
             set { velocity_ = VectorUtils.ConstrainVector(value, maxVelocity_); }
         }
 
-        public virtual Vector2 Acceleration
+        public virtual DxVector2 Acceleration
         {
             get { return acceleration_; }
             set { acceleration_ = VectorUtils.ConstrainVector(value, maxAcceleration_); }
         }
 
-        public virtual Vector2 Position
+        public virtual DxVector2 Position
         {
             get { return position_.Position; }
             set { position_.Position = value; }
@@ -59,14 +59,14 @@ namespace DXGame.Core.Components.Advanced
             set { WithPositionalComponent(value); }
         }
 
-        public PhysicsComponent WithVelocity(Vector2 velocity)
+        public PhysicsComponent WithVelocity(DxVector2 velocity)
         {
             Debug.Assert(velocity != null, "PhysicsComponent cannot be initialized with null velocity");
             velocity_ = velocity;
             return this;
         }
 
-        public PhysicsComponent WithAcceleration(Vector2 acceleration)
+        public PhysicsComponent WithAcceleration(DxVector2 acceleration)
         {
             Debug.Assert(acceleration != null, "PhysicsComponent cannot be initialized with null acceleration");
             acceleration_ = acceleration;
@@ -81,14 +81,14 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public PhysicsComponent WithMaxVelocity(Vector2 maxVelocity)
+        public PhysicsComponent WithMaxVelocity(DxVector2 maxVelocity)
         {
             Debug.Assert(maxVelocity != null, "PhysicsComponent cannot be initialized with a null maximum velocity ");
             maxVelocity_ = maxVelocity;
             return this;
         }
 
-        public PhysicsComponent WithMaxAcceleration(Vector2 maxAcceleration)
+        public PhysicsComponent WithMaxAcceleration(DxVector2 maxAcceleration)
         {
             Debug.Assert(maxAcceleration != null,
                 "PhysicsComponent cannot be initialized with a null maximum acceleration ");
@@ -98,8 +98,8 @@ namespace DXGame.Core.Components.Advanced
 
         public override void Update(DxGameTime gameTime)
         {
-            Vector2 acceleration = Acceleration;
-            Vector2 velocity = VectorUtils.ConstrainVector(Velocity + acceleration_, maxVelocity_);
+            DxVector2 acceleration = Acceleration;
+            DxVector2 velocity = VectorUtils.ConstrainVector(Velocity + acceleration_, maxVelocity_);
             position_.Position += velocity;
 
             Velocity = velocity;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
@@ -8,12 +9,19 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core
 {
+    [Serializable]
+    [DataContract]
     class Animation
     {
+        [DataMember]
         private String assetName_;
+        [DataMember]
         private Texture2D spriteSheet_;
+        [DataMember]
         private int currentFrame_;
+        [DataMember]
         private readonly int totalFrames_;
+        [DataMember]
         protected PositionalComponent position_;
 
         public Animation(String spriteSheet, int totalFrames = 1)
@@ -39,7 +47,7 @@ namespace DXGame.Core
         // TOOD: Pass in GameTime
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(spriteSheet_, position_.Position, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
+            spriteBatch.Draw(spriteSheet_, position_.Position.ToVector2(), null, Color.White, 0.0f, Vector2.Zero, 1.0f,
                 SpriteEffects.None, 0);
             currentFrame_ = MathUtils.WrappedAdd(currentFrame_, 1, totalFrames_);
         }

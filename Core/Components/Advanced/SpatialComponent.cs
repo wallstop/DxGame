@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
@@ -21,7 +21,7 @@ namespace DXGame.Core.Components.Advanced
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (SpatialComponent));
 
-        protected Vector2 dimensions_;
+        [DataMember] protected DxVector2 dimensions_;
 
         /**
         <summary>
@@ -29,7 +29,7 @@ namespace DXGame.Core.Components.Advanced
         </summary>
         */
 
-        public virtual Rectangle Space
+        public virtual DxRectangle Space
         {
             get { return VectorUtils.RectangleFrom(position_, dimensions_); }
         }
@@ -44,7 +44,7 @@ namespace DXGame.Core.Components.Advanced
             get { return dimensions_.Y; }
         }
 
-        public virtual Vector2 Dimensions
+        public virtual DxVector2 Dimensions
         {
             get { return dimensions_; }
         }
@@ -54,7 +54,7 @@ namespace DXGame.Core.Components.Advanced
         {
         }
 
-        public virtual SpatialComponent WithDimensions(Vector2 dimensions)
+        public virtual SpatialComponent WithDimensions(DxVector2 dimensions)
         {
             Debug.Assert(dimensions != null, "SpatialComponent cannot be constructed with null dimensions");
             dimensions_ = dimensions;
@@ -68,7 +68,7 @@ namespace DXGame.Core.Components.Advanced
         </summary>
         */
 
-        public virtual Vector2 Center
+        public virtual DxVector2 Center
         {
             get { return position_ + dimensions_ / 2.0f; }
         }

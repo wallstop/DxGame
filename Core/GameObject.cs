@@ -26,7 +26,7 @@ namespace DXGame.Core
     </summary>
     */
 
-    public class GameObject
+    public class GameObject : IIdentifiable
     {
         private readonly List<Component> dxComponents_ = new List<Component>();
         private readonly List<DrawableComponent> drawableComponents_ = new List<DrawableComponent>();

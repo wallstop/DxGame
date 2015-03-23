@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
+using DXGame.Core.Wrappers;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Utils
@@ -10,7 +8,7 @@ namespace DXGame.Core.Utils
     public static class VectorUtils
     {
         private static readonly log4net.ILog LOG =
-            log4net.LogManager.GetLogger(typeof(VectorUtils));
+            log4net.LogManager.GetLogger(typeof (VectorUtils));
 
         /**
         <summary>
@@ -24,6 +22,7 @@ namespace DXGame.Core.Utils
             </code>
         </summary>
         */
+
         public static Vector2 ConstrainVector(Vector2 vector, float constraintMin, float constraintMax)
         {
             vector.X = MathUtils.Constrain(vector.X, constraintMin, constraintMax);
@@ -45,7 +44,15 @@ namespace DXGame.Core.Utils
             </code>
         </summary>
         */
+
         public static Vector2 ConstrainVector(Vector2 vector, Vector2 constraintVector)
+        {
+            vector.X = MathUtils.Constrain(vector.X, -constraintVector.X, constraintVector.X);
+            vector.Y = MathUtils.Constrain(vector.Y, -constraintVector.Y, constraintVector.Y);
+            return vector;
+        }
+
+        public static DxVector2 ConstrainVector(DxVector2 vector, DxVector2 constraintVector)
         {
             vector.X = MathUtils.Constrain(vector.X, -constraintVector.X, constraintVector.X);
             vector.Y = MathUtils.Constrain(vector.Y, -constraintVector.Y, constraintVector.Y);
@@ -66,14 +73,19 @@ namespace DXGame.Core.Utils
             Debug.Assert(dimensions.X >= 0, "Rectangle width should be >= 0");
             Debug.Assert(dimensions.Y >= 0, "Rectangle height should be >= 0");
             return new Rectangle(
-                    /*
+                /*
                         The position may be anywhere, so if it's -.05, we actually want it to wrap to -1. Similarly, 
                         if the position is 0.5, we want it to wrap to 1.0
                     */
-                    (int)Math.Ceiling(Math.Abs(position.X)) * Math.Sign(position.X),
-                    (int)Math.Ceiling(Math.Abs(position.Y)) * Math.Sign(position.Y),
-                    (int)Math.Ceiling(dimensions.X), // Assume dimensions are always positive
-                    (int)Math.Ceiling(dimensions.Y));
+                (int) Math.Ceiling(Math.Abs(position.X)) * Math.Sign(position.X),
+                (int) Math.Ceiling(Math.Abs(position.Y)) * Math.Sign(position.Y),
+                (int) Math.Ceiling(dimensions.X), // Assume dimensions are always positive
+                (int) Math.Ceiling(dimensions.Y));
+        }
+
+        public static DxRectangle RectangleFrom(DxVector2 position, DxVector2 dimensions)
+        {
+            return new DxRectangle(RectangleFrom(position.ToVector2(), dimensions.ToVector2()));
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using DXGame.Core.Components.Basic;
 using DXGame.Core.Frames;
 using DXGame.Core.Utils;
 using DXGame.Main;

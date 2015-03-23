@@ -27,7 +27,7 @@ namespace DXGame.Core.Components.Advanced
         {
             base.Update(gameTime);
             MouseState mouseState = Mouse.GetState();
-            Position = new Vector2(mouseState.Position.X, mouseState.Position.Y);
+            Position = new DxVector2(mouseState.Position.X, mouseState.Position.Y);
             if (ClickInProgress)
             {
                 // Only check left button for now. We can enhance this later.

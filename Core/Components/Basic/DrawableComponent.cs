@@ -49,6 +49,7 @@ namespace DXGame.Core.Components.Basic
             DrawPriority = DrawPriority.NORMAL;
         }
 
+        [DataMember]
         public DrawPriority DrawPriority { get; set; }
 
         public abstract void Draw(DxGameTime gameTime);

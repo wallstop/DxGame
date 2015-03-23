@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+using DXGame.Core.Wrappers;
 
 namespace DXGame.Core.Messaging
 {
@@ -15,6 +15,7 @@ namespace DXGame.Core.Messaging
         Collision Messages may or may not contain any CollisionDirections. Users should not rely on the fact that 
         the emission of a Collision Message actually means a Collision occurs.
     */
+
     public class CollisionMessage : Message
     {
         public List<CollisionDirection> CollisionDirections { get; set; }
@@ -30,7 +31,7 @@ namespace DXGame.Core.Messaging
             return this;
         }
 
-        public CollisionMessage(Vector2 collisionVector)
+        public CollisionMessage(DxVector2 collisionVector)
             : this()
         {
             if (collisionVector.X > 0)

@@ -12,6 +12,12 @@ namespace DXGame.Core.Wrappers
 
         [DataMember] public float Y;
 
+        public DxVector2(Vector2 vector)
+        {
+            X = vector.X;
+            Y = vector.Y;
+        }
+
         public DxVector2(float x, float y)
         {
             X = x;
@@ -103,6 +109,21 @@ namespace DXGame.Core.Wrappers
         {
             return X.Equals(other.X) && Y.Equals(other.Y);
         }
+
+        public Vector2 ToVector2()
+        {
+            return new Vector2(X, Y);
+        }
+
+        //public static implicit operator Vector2(DxVector2 vector)
+        //{
+        //    return vector.ToVector2();
+        //}
+
+        //public static implicit operator DxVector2(Vector2 vector)
+        //{
+        //    return new DxVector2(vector);
+        //}
 
         public override string ToString()
         {

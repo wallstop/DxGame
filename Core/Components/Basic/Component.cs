@@ -69,7 +69,7 @@ namespace DXGame.Core.Components.Basic
 
     [Serializable]
     [DataContract]
-    public abstract class Component
+    public abstract class Component : IIdentifiable
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (Component));
 

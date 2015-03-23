@@ -7,7 +7,6 @@ using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace DXGame.Core.Components.Advanced
@@ -20,7 +19,7 @@ namespace DXGame.Core.Components.Advanced
         protected StateComponent state_;
         protected WeaponComponent weapon_;
 
-        private Vector2 lastAcceleration_;
+        private DxVector2 lastAcceleration_;
 
         public SimplePlayerInputComponent(DxGame game)
             : base(game)
@@ -60,8 +59,8 @@ namespace DXGame.Core.Components.Advanced
 
         protected virtual void HandleInput(IEnumerable<KeyboardEvent> events, DxGameTime gameTime)
         {
-            Vector2 acceleration = physics_.Acceleration;
-            Vector2 velocity = physics_.Velocity;
+            var acceleration = physics_.Acceleration;
+            var velocity = physics_.Velocity;
             string state = state_.State;
 
             bool isMovingLeft = false;

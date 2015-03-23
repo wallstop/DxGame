@@ -2,10 +2,9 @@
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
-using Lidgren.Network;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
@@ -34,7 +33,7 @@ namespace DXGame.Core.Components.Advanced
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (PositionalComponent));
 
-        protected Vector2 position_;
+        [DataMember] protected DxVector2 position_;
 
         /**
         <summary>
@@ -52,7 +51,7 @@ namespace DXGame.Core.Components.Advanced
         </summary>
         */
 
-        public virtual Vector2 Position
+        public virtual DxVector2 Position
         {
             get { return position_; }
             set { position_ = value; }
@@ -70,7 +69,7 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public virtual PositionalComponent WithPosition(Vector2 position)
+        public virtual PositionalComponent WithPosition(DxVector2 position)
         {
             Debug.Assert(position != null, "PositionalComponent cannot be initialized with a null position");
             position_ = position;

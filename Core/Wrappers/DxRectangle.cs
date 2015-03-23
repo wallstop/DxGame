@@ -7,7 +7,7 @@ namespace DXGame.Core.Wrappers
 {
     [Serializable]
     [DataContract]
-    public struct DxRectangle : IEquatable<DxRectangle>
+    public struct DxRectangle : IEquatable<DxRectangle>, IEquatable<Rectangle>
     {
         private static readonly DxRectangle EMPTY_RECTANGLE = new DxRectangle();
         private const float TOLERANCE = 0.000001f;
@@ -23,6 +23,11 @@ namespace DXGame.Core.Wrappers
 
         [DataMember]
         public float Height { get; set; }
+
+        public float Area
+        {
+            get { return Width * Height; }
+        }
 
         public DxRectangle EmptyRectangle
         {
@@ -48,6 +53,8 @@ namespace DXGame.Core.Wrappers
         {
             get { return Y + Height; }
         }
+
+        public 
 
         static DxRectangle()
         {
@@ -159,7 +166,7 @@ namespace DXGame.Core.Wrappers
             return false;
         }
 
-        private static DxRectangle Intersect(DxRectangle lhs, DxRectangle rhs)
+        public static DxRectangle Intersect(DxRectangle lhs, DxRectangle rhs)
         {
             DxRectangle intersection;
             Intersect(lhs, rhs, out intersection);
@@ -182,7 +189,7 @@ namespace DXGame.Core.Wrappers
             }
         }
 
-        private static DxRectangle Intersect(DxRectangle lhs, Rectangle rhs)
+        public static DxRectangle Intersect(DxRectangle lhs, Rectangle rhs)
         {
             DxRectangle intersection;
             Intersect(lhs, rhs, out intersection);
@@ -218,6 +225,11 @@ namespace DXGame.Core.Wrappers
             }
 
             return false;
+        }
+
+        public bool Equals(Rectangle other)
+        {
+            return X.Equals(other.X) && Y.Equals(other.Y);
         }
 
         public override string ToString()

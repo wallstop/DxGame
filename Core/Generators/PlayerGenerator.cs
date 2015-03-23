@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 
@@ -14,7 +15,7 @@ namespace DXGame.Core.Generators
         private const string PLAYER_WALKING_LEFT = "PlayerWalkingLeft";
         private const string PLAYER_JUMPING = "PlayerJumping";
         private const string PLAYER_2 = "Player2";
-        private static readonly Vector2 MAX_VELOCITY = new Vector2(5.0f, 20.0f);
+        private static readonly DxVector2 MAX_VELOCITY = new DxVector2(5.0f, 20.0f);
         private readonly SimplePlayerInputComponent input_;
         private readonly PhysicsComponent physics_;
         private readonly SpatialComponent space_;
@@ -23,14 +24,14 @@ namespace DXGame.Core.Generators
         private readonly WeaponComponent weapon_;
 
         // Addendum to prior TODO: change isLocalPlayer to something that's not a bool
-        public PlayerGenerator(DxGame game, Vector2 playerPosition, Rectangle bounds)
+        public PlayerGenerator(DxGame game, DxVector2 playerPosition, Rectangle bounds)
         {
             space_ =
                 (BoundedSpatialComponent) new BoundedSpatialComponent(game).WithXMin(bounds.X)
                     .WithXMax(bounds.Width)
                     .WithXMin(bounds.Y)
                     .WithYMax(bounds.Height)
-                    .WithDimensions(new Vector2(50, 100)) // TODO: un-hard code these
+                    .WithDimensions(new DxVector2(50, 100)) // TODO: un-hard code these
                     .WithPosition(playerPosition);
             physics_ = new MapCollideablePhysicsComponent(game).WithMaxVelocity(MAX_VELOCITY).WithPositionalComponent(space_);
             state_ = new PlayerStateComponent(game);

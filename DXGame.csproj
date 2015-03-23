@@ -114,12 +114,14 @@
     <Compile Include="Core\Components\Basic\NetworkComponent.cs" />
     <Compile Include="Core\Components\Basic\SpriteBatchEnder.cs" />
     <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
+    <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
+    <Compile Include="Core\IIdentifiable.cs" />
     <Compile Include="Core\Components\Network\NetworkClient.cs" />
     <Compile Include="Core\Components\Network\NetworkServer.cs" />
     <Compile Include="Core\Components\Utils\DrawPriorityComparer.cs" />
     <Compile Include="Core\Components\Utils\RectangleAreaComparer.cs" />
     <Compile Include="Core\Components\Utils\UpdatePriorityComparer.cs" />
-    <Compile Include="Core\Frames\AbstractFrame.cs" />
+    <Compile Include="Core\Frames\Frame.cs" />
     <Compile Include="Core\Frames\GameTimeFrame.cs" />
     <Compile Include="Core\GameComponentCollection.cs" />
     <Compile Include="Core\GameObject.cs" />

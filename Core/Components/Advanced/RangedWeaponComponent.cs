@@ -5,7 +5,6 @@ using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
@@ -15,12 +14,16 @@ namespace DXGame.Core.Components.Advanced
     {
         private const float velocity_ = 7.0f;
 
-        public Vector2 Direction { get; set; }
+        [DataMember]
+        public DxVector2 Direction { get; set; }
 
+        [DataMember]
         public TimeSpan Cooldown { get; private set; }
 
+        [DataMember]
         private TimeSpan LastAttacked { get; set; }
 
+        [DataMember]
         private PhysicsComponent Owner { get; set; }
 
         public RangedWeaponComponent(DxGame game)
@@ -29,7 +32,7 @@ namespace DXGame.Core.Components.Advanced
             Cooldown = TimeSpan.FromSeconds(0);
         }
 
-        public RangedWeaponComponent WithDirection(Vector2 direction)
+        public RangedWeaponComponent WithDirection(DxVector2 direction)
         {
             Direction = direction;
             return this;
@@ -69,6 +72,7 @@ namespace DXGame.Core.Components.Advanced
 
         private void DoAttack()
         {
+            // TODO: Remove all of this code, it's just for "live-testing"
             GameObject projectile = new GameObject();
             var mapModel = DxGame.Model<MapModel>();
             var bounds = mapModel.MapBounds;
@@ -76,10 +80,11 @@ namespace DXGame.Core.Components.Advanced
             SpatialComponent space =
                 (SpatialComponent)
                     new BoundedSpatialComponent(DxGame).WithBounds(bounds)
-                        .WithDimensions(new Vector2(30, 30))
+                        // TODO: Un-hardcode this
+                        .WithDimensions(new DxVector2(30, 30))
                         .WithPosition(Owner.Position);
             var shootLeft = Direction.X < 0;
-            Vector2 velocity = new Vector2(shootLeft ? -velocity_ : velocity_, 0);
+            DxVector2 velocity = new DxVector2(shootLeft ? -velocity_ : velocity_, 0);
             PhysicsComponent physics =
                 new MapCollideablePhysicsComponent(DxGame).WithVelocity(velocity).WithPositionalComponent(space);
             SimpleSpriteComponent sprite = new SimpleSpriteComponent(DxGame).WithPosition(space).WithAsset("Orb");

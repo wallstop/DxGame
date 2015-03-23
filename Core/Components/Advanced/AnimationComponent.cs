@@ -14,9 +14,13 @@ namespace DXGame.Core.Components.Advanced
     [DataContract]
     public class AnimationComponent : DrawableComponent
     {
+        [DataMember]
         private readonly Dictionary<string, Animation> states_ = new Dictionary<string, Animation>();
+        [DataMember]
         private string lastState_;
+        [DataMember]
         protected StateComponent state_;
+        [DataMember]
         protected PositionalComponent position_;
 
         public AnimationComponent(DxGame game)

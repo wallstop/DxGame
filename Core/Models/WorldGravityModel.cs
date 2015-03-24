@@ -46,7 +46,7 @@ namespace DXGame.Core.Models
             */
             foreach (PhysicsComponent component in physics_)
             {
-                Vector2 acceleration = component.Acceleration;
+                DxVector2 acceleration = component.Acceleration;
                 acceleration.Y += gravity_;
                 component.Acceleration = acceleration;
             }

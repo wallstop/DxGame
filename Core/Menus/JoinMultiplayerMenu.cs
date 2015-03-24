@@ -4,7 +4,6 @@ using DXGame.Core.Components.Network;
 using DXGame.Core.GraphicsWidgets;
 using DXGame.Core.Input;
 using DXGame.Core.Models;
-using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Lidgren.Network;
@@ -29,14 +28,14 @@ namespace DXGame.Core.Menus
             SpriteFont = DxGame.Content.Load<SpriteFont>("Fonts/ComicSans");
 
             var portBoxSpatial = (SpatialComponent)
-                new SpatialComponent(DxGame).WithDimensions(new Vector2
+                new SpatialComponent(DxGame).WithDimensions(new DxVector2
                 {
                     X = 200.0f,
                     Y = SpriteFont.LineSpacing + 2 /* wiggle room for cursor */ // TODO: Fix this
                 }).WithPosition(400, 300);
 
             var addressBoxSpatial = (SpatialComponent)
-                new SpatialComponent(DxGame).WithDimensions(new Vector2
+                new SpatialComponent(DxGame).WithDimensions(new DxVector2
                 {
                     X = 200.0f,
                     Y = SpriteFont.LineSpacing + 2 /* wiggle room for cursor */ // TODO: Fix this

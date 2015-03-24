@@ -54,7 +54,10 @@ namespace DXGame.Core.Wrappers
             get { return Y + Height; }
         }
 
-        public 
+        public Point Center
+        {
+            get { return new Point((int) ((X + Width) / 2), (int) ((Y + Height) / 2)); }
+        }
 
         static DxRectangle()
         {
@@ -248,11 +251,6 @@ namespace DXGame.Core.Wrappers
                 hash = hash * 23 + Height.GetHashCode();
                 return hash;
             }
-        }
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            throw new NotImplementedException();
         }
 
         public bool Equals(DxRectangle rhs)

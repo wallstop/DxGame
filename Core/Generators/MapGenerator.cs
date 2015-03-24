@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Generators
 {
@@ -26,8 +26,7 @@ namespace DXGame.Core.Generators
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapGenerator));
 
         private readonly List<GameObject> map_;
-        private Rectangle mapBounds_;
-        private Vector2 playerPosition_;
+        private DxVector2 playerPosition_;
         private readonly DxGame game_;
 
         public MapGenerator(DxGame game, string mapPath)
@@ -36,15 +35,12 @@ namespace DXGame.Core.Generators
             map_ = InitMap(mapPath);
         }
 
-        public Vector2 PlayerPosition
+        public DxVector2 PlayerPosition
         {
             get { return playerPosition_; }
         }
 
-        public Rectangle MapBounds
-        {
-            get { return mapBounds_; }
-        }
+        public DxRectangle MapBounds { get; private set; }
 
         public static int BlockSize
         {
@@ -79,7 +75,7 @@ namespace DXGame.Core.Generators
                         {
                             string asset = ResolveCharacterToAsset(currentChar);
                             PositionalComponent position =
-                                new SpatialComponent(game_).WithDimensions(new Vector2(BLOCK_WIDTH, BLOCK_WIDTH))
+                                new SpatialComponent(game_).WithDimensions(new DxVector2(BLOCK_WIDTH, BLOCK_WIDTH))
                                     .WithPosition(column * BLOCK_WIDTH,
                                         row * BLOCK_WIDTH);
                             SimpleSpriteComponent sprite =
@@ -112,7 +108,7 @@ namespace DXGame.Core.Generators
 
                 LOG.Info(String.Format("Loaded {0} map blocks.", numBlocks));
 
-                mapBounds_ = new Rectangle(0, 0, BLOCK_WIDTH * maxColumn, BLOCK_WIDTH * row);
+                MapBounds = new DxRectangle(0, 0, BLOCK_WIDTH * maxColumn, BLOCK_WIDTH * row);
             }
 
             return blocks;

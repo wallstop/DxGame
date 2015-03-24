@@ -75,8 +75,8 @@ namespace DXGame.Core.Models
         public static MapModel InitializeFromGenerator(DxGame game, MapGenerator generator)
         {
             List<GameObject> mapObjects = generator.Generate();
-            var model = new MapModel(game, generator.MapBounds.Width / MapGenerator.BlockSize,
-                generator.MapBounds.Height / MapGenerator.BlockSize, MapGenerator.BlockSize)
+            var model = new MapModel(game, (int)generator.MapBounds.Width / MapGenerator.BlockSize,
+               (int)generator.MapBounds.Height / MapGenerator.BlockSize, MapGenerator.BlockSize)
             {
                 PlayerPosition = generator.PlayerPosition,
                 MapBounds = generator.MapBounds
@@ -138,14 +138,14 @@ namespace DXGame.Core.Models
             var objects = new List<KeyValuePair<GameObject, SpatialComponent>>();
             // Make sure to wrap the requested values to those servable by the map
             // TODO: Clean this up
-            int x = MathUtils.Constrain(rectangleRange.X / blockSize_, MapBounds.X / blockSize_,
-                (MapBounds.X + MapBounds.Width) / blockSize_);
+            int x = MathUtils.Constrain(rectangleRange.X / blockSize_, (int)MapBounds.X / blockSize_,
+                (int)(MapBounds.X + MapBounds.Width) / blockSize_);
             int width = MathUtils.Constrain((int)Math.Ceiling((float)rectangleRange.Width / blockSize_ + 1), 0,
-                (MapBounds.X + MapBounds.Width) / blockSize_ - x);
-            int y = MathUtils.Constrain(rectangleRange.Y / blockSize_, MapBounds.Y / blockSize_,
-                (MapBounds.Y + MapBounds.Height) / blockSize_);
+                (int)(MapBounds.X + MapBounds.Width) / blockSize_ - x);
+            int y = MathUtils.Constrain(rectangleRange.Y / blockSize_, (int)MapBounds.Y / blockSize_,
+                (int)(MapBounds.Y + MapBounds.Height) / blockSize_);
             int height = MathUtils.Constrain((int)Math.Ceiling((float)rectangleRange.Height / blockSize_), 0,
-                (MapBounds.Y + MapBounds.Height) / blockSize_ - y);
+                (int)(MapBounds.Y + MapBounds.Height) / blockSize_ - y);
             for (int i = 0; i < width; ++i)
             {
                 for (int j = 0; j < height; ++j)

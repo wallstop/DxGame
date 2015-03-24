@@ -43,7 +43,7 @@ namespace DXGame.Core.Menus
             {
                 Point center = mouseSprite.BoundingBox.Center;
                 // We need to translate the center of the sprite's bounding box to where the mouse currently is.
-                Vector2 mouseXY = mousePosition.Position;
+                DxVector2 mouseXY = mousePosition.Position;
                 center.X += (int) mouseXY.X;
                 center.Y += (int) mouseXY.Y;
 

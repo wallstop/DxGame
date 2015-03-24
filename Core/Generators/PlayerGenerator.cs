@@ -3,7 +3,6 @@ using System.Diagnostics;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Generators
 {
@@ -24,7 +23,7 @@ namespace DXGame.Core.Generators
         private readonly WeaponComponent weapon_;
 
         // Addendum to prior TODO: change isLocalPlayer to something that's not a bool
-        public PlayerGenerator(DxGame game, DxVector2 playerPosition, Rectangle bounds)
+        public PlayerGenerator(DxGame game, DxVector2 playerPosition, DxRectangle bounds)
         {
             space_ =
                 (BoundedSpatialComponent) new BoundedSpatialComponent(game).WithXMin(bounds.X)
@@ -33,13 +32,15 @@ namespace DXGame.Core.Generators
                     .WithYMax(bounds.Height)
                     .WithDimensions(new DxVector2(50, 100)) // TODO: un-hard code these
                     .WithPosition(playerPosition);
-            physics_ = new MapCollideablePhysicsComponent(game).WithMaxVelocity(MAX_VELOCITY).WithPositionalComponent(space_);
+            physics_ =
+                new MapCollideablePhysicsComponent(game).WithMaxVelocity(MAX_VELOCITY).WithPositionalComponent(space_);
             state_ = new PlayerStateComponent(game);
             AddPlayerStates();
             animation_ = new AnimationComponent(game).WithPosition(space_).WithState(state_);
             AddPlayerAnimations();
             weapon_ = new RangedWeaponComponent(game).WithPhysicsComponent(physics_).WithDamage(50);
-            input_ = new SimplePlayerInputComponent(game).WithPhysics(physics_).WithPlayerState(state_).WithWeapon(weapon_);
+            input_ =
+                new SimplePlayerInputComponent(game).WithPhysics(physics_).WithPlayerState(state_).WithWeapon(weapon_);
         }
 
         public override List<GameObject> Generate()

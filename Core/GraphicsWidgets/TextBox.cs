@@ -132,8 +132,8 @@ namespace DXGame.Core.GraphicsWidgets
             GenericUtils.CheckNullOrDefault(SpriteFont, "Can't use a TextBox without a sprite font!");
             GenericUtils.CheckNullOrDefault(Texture, "Can't use a TextBox without a Texture!");
 
-            spriteBatch_.Draw(Texture, SpatialComponent.Position);
-            spriteBatch_.DrawString(SpriteFont, Text, SpatialComponent.Position, TextColor);
+            spriteBatch_.Draw(Texture, SpatialComponent.Position.ToVector2());
+            spriteBatch_.DrawString(SpriteFont, Text, SpatialComponent.Position.ToVector2(), TextColor);
 
             // TODO: Change this to some kind of focused-style state, possible set via the owner
             if (InFocus)

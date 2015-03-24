@@ -23,7 +23,7 @@ namespace DXGame.Core.Components.Advanced
         protected DxRectangle boundingBox_;
         [DataMember]
         protected PositionalComponent position_;
-        //[DataMember] // TODO
+
         protected Texture2D texture_;
 
         public DxRectangle BoundingBox

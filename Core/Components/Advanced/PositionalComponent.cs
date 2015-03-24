@@ -51,6 +51,7 @@ namespace DXGame.Core.Components.Advanced
         </summary>
         */
 
+        [IgnoreDataMember]
         public virtual DxVector2 Position
         {
             get { return position_; }

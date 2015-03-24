@@ -97,7 +97,7 @@ namespace DXGame.Core.Components.Advanced
             The Position property on a BoundedSpatialComponent
         </summary>
         */
-
+        [IgnoreDataMember]
         public override DxVector2 Position
         {
             get { return position_; }

@@ -23,6 +23,7 @@ namespace DXGame.Core.GraphicsWidgets
         public IEnumerable<Keys> ValidKeys
         {
             get { return validKeys_; }
+            // Make sure we can use the arrow keys to move, regardless of input
             protected set { validKeys_ = value.Concat(new[] {Keys.Back, Keys.Delete, Keys.Left, Keys.Right}).ToList(); }
         }
 

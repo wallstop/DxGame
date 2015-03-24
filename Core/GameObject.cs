@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
@@ -25,12 +27,17 @@ namespace DXGame.Core
         GameObject should generally not be inherited / derived from / held references to.
     </summary>
     */
-
+    [Serializable]
+    [DataContract]
     public class GameObject : IIdentifiable
     {
-        private readonly List<Component> dxComponents_ = new List<Component>();
-        private readonly List<DrawableComponent> drawableComponents_ = new List<DrawableComponent>();
-        private readonly UniqueId id_ = new UniqueId();
+        // DataMembers can't be readonly :(
+        [DataMember]
+        private List<Component> dxComponents_ = new List<Component>();
+        [DataMember]
+        private List<DrawableComponent> drawableComponents_ = new List<DrawableComponent>();
+        [DataMember]
+        private UniqueId id_ = new UniqueId();
 
         public UniqueId Id
         {

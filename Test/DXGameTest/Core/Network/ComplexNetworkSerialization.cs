@@ -7,16 +7,22 @@ using NUnit.Framework;
 
 namespace DXGameTest.Core.Network
 {
-    public class NetworkMarshaller
+    public class ComplexNetworkSerialization
     {
 
 
+        [SetUp]
+        public void SetUp()
+        {
+
+
+
+        }
+
         [Test]
-        public void Vector2Marshalling()
+        public void SerializationOfGameStateKeyFrame()
         {
             
-
-
         }
     }
 }

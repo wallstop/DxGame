@@ -11,6 +11,7 @@ namespace DXGame.Core.Components.Advanced
     [DataContract]
     public class WeaponComponent : Component
     {
+        [DataMember]
         public int Damage { get; private set; }
 
         public WeaponComponent(DxGame game)

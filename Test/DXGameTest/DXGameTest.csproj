@@ -66,6 +66,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <Choose>
@@ -81,8 +82,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Core\Network\NetworkMarshaller.cs" />
+    <Compile Include="Core\Network\ComplexNetworkSerialization.cs" />
     <Compile Include="Core\Network\NetworkMessageMarshalling.cs" />
+    <Compile Include="Core\Network\SimpleNetworkSerialization.cs" />
     <Compile Include="Core\UniqueIdTest.cs" />
     <Compile Include="Core\Utils\MathUtilsTest.cs" />
     <Compile Include="Core\Utils\VectorUtilsTest.cs" />

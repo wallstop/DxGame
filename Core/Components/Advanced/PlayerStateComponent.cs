@@ -13,6 +13,7 @@ namespace DXGame.Core.Components.Advanced
     public class PlayerStateComponent : StateComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapCollideablePhysicsComponent));
+        [DataMember]
         protected string stateRequest_;
 
         public PlayerStateComponent(DxGame game)

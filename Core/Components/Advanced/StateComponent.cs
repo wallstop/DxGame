@@ -6,7 +6,6 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced
 {
@@ -16,8 +15,9 @@ namespace DXGame.Core.Components.Advanced
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (StateComponent));
 
-        private readonly HashSet<string> states_ = new HashSet<string>();
+        [DataMember] private readonly HashSet<string> states_ = new HashSet<string>();
 
+        [DataMember]
         public string State { get; set; }
 
         public StateComponent(DxGame game)

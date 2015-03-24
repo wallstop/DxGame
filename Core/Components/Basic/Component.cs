@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 using DXGame.Core.Messaging;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
@@ -77,9 +78,9 @@ namespace DXGame.Core.Components.Basic
             Note: This id_ field is the UniqueId of the Component, *NOT* of the GameObject. 
             This is a very important distinction.
         */
-        [DataMember] protected readonly UniqueId id_ = new UniqueId();
+        [DataMember] protected UniqueId id_ = new UniqueId();
 
-        [DataMember] private readonly Dictionary<Type, List<MessageHandler>> typesToMessageHandlers_ =
+        [DataMember] private Dictionary<Type, List<MessageHandler>> typesToMessageHandlers_ =
             new Dictionary<Type, List<MessageHandler>>();
 
         [DataMember]
@@ -95,6 +96,7 @@ namespace DXGame.Core.Components.Basic
             get { return id_; }
         }
 
+        [IgnoreDataMember]
         public DxGame DxGame { protected set; get; }
 
         protected Component(DxGame game)

@@ -10,7 +10,7 @@ namespace DXGame.Core.Wrappers
     */
     [Serializable]
     [DataContract]
-    public class DxGameTime
+    public class DxGameTime : IEquatable<DxGameTime>
     {
         [DataMember]
         public TimeSpan TotalGameTime { get; private set; }
@@ -46,6 +46,12 @@ namespace DXGame.Core.Wrappers
             TotalGameTime = totalGameTime;
             ElapsedGameTime = elapsedGameTime;
             IsRunningSlowly = isRunningSlowly;
+        }
+
+        public bool Equals(DxGameTime other)
+        {
+            return TotalGameTime.Equals(other.TotalGameTime) && ElapsedGameTime.Equals(other.ElapsedGameTime) &&
+                   IsRunningSlowly.Equals(other.IsRunningSlowly);
         }
     }
 }

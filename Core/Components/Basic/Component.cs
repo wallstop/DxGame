@@ -96,8 +96,7 @@ namespace DXGame.Core.Components.Basic
             get { return id_; }
         }
 
-        [IgnoreDataMember]
-        public DxGame DxGame { protected set; get; }
+        [NonSerialized] public DxGame DxGame;
 
         protected Component(DxGame game)
         {

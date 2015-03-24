@@ -12,7 +12,7 @@ namespace DXGame.Core
 
     [Serializable]
     [DataContract]
-    public class UniqueId : IComparable
+    public class UniqueId : IComparable, IEquatable<UniqueId>
     {
         private const Int64 INVALID_ID = 0;
         private static Int64 staticId;
@@ -55,6 +55,11 @@ namespace DXGame.Core
         public override int GetHashCode()
         {
             return id_.GetHashCode();
+        }
+
+        public bool Equals(UniqueId other)
+        {
+            return CompareTo(other) == 0;
         }
 
         public override string ToString()

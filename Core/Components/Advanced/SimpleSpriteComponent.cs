@@ -24,14 +24,18 @@ namespace DXGame.Core.Components.Advanced
         [DataMember]
         protected PositionalComponent position_;
 
+        [NonSerialized]
+        [IgnoreDataMember]
         protected Texture2D texture_;
 
+        [IgnoreDataMember]
         public DxRectangle BoundingBox
         {
             get { return boundingBox_; }
             set { boundingBox_ = value; }
         }
 
+        [IgnoreDataMember]
         public string AssetName
         {
             get { return assetName_; }

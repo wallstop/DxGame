@@ -38,6 +38,8 @@ namespace DXGame.Core.Components.Basic
     [DataContract]
     public abstract class DrawableComponent : Component
     {
+        [NonSerialized]
+        [IgnoreDataMember]
         protected SpriteBatch spriteBatch_;
 
         protected DrawableComponent(DxGame game)

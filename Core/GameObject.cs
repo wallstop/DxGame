@@ -29,7 +29,7 @@ namespace DXGame.Core
     */
     [Serializable]
     [DataContract]
-    public class GameObject : IIdentifiable
+    public class GameObject : IIdentifiable, IEquatable<GameObject>
     {
         // DataMembers can't be readonly :(
         [DataMember]
@@ -144,6 +144,11 @@ namespace DXGame.Core
             {
                 drawableComponent.HandleMessage(message);
             }
+        }
+
+        public bool Equals(GameObject other)
+        {
+            return Id.Equals(other.Id) && new HashSet<Component>(AllComponents).SetEquals(other.AllComponents);
         }
     }
 #pragma warning restore 649

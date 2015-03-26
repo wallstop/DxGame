@@ -15,7 +15,8 @@ namespace DXGame.Core
     {
         [DataMember]
         private String assetName_;
-        [DataMember]
+        [NonSerialized]
+        [IgnoreDataMember]
         private Texture2D spriteSheet_;
         [DataMember]
         private int currentFrame_;

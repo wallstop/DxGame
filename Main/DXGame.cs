@@ -50,7 +50,16 @@ namespace DXGame.Main
 
         public ComponentCollection DxComponents { get; private set; }
 
-        public DxGame()
+        private static readonly Lazy<DxGame> singleton_ =
+            new Lazy<DxGame>(() => new DxGame());
+
+        // TODO: Thread safety? Move this to some kind of Context static class?
+        public static DxGame Instance
+        {
+            get { return singleton_.Value; }
+        }
+
+        private DxGame()
         {
             Screen = new Rectangle(0, 0, 1280, 720);
             var graphics = new GraphicsDeviceManager(this)
@@ -187,8 +196,7 @@ namespace DXGame.Main
             AttachModel(frameModel);
 
             var netModel = new NetworkModel(this);
-            AttachModel(netModel);
-
+            AttachModel(netModel); 
             base.Initialize();
         }
 

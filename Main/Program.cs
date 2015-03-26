@@ -21,7 +21,7 @@ namespace DXGame.Main
         static void Main(string [] args)
         {
             log4net.Config.XmlConfigurator.Configure();
-            using (var game = new DxGame())
+            using (var game = DxGame.Instance)
                 game.Run();
         }
     }

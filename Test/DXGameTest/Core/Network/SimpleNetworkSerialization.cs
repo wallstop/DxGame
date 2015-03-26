@@ -13,7 +13,7 @@ namespace DXGameTest.Core.Network
 {
     public class SimpleNetworkSerialization
     {
-        private BoundedSpatialComponent spatial_;
+        private PositionalComponent spatial_;
         private SimpleSpriteComponent sprite_;
         private MapCollideablePhysicsComponent physics_;
         private GameObject gameObject_;
@@ -22,7 +22,7 @@ namespace DXGameTest.Core.Network
 
         [Serializable]
         [DataContract]
-        private class TestSerializable : IEquatable<TestSerializable>
+        private class TestSerializable
         {
             [DataMember]
             public DxGameTime GameTime { get; set; }
@@ -32,48 +32,18 @@ namespace DXGameTest.Core.Network
 
             [DataMember]
             public List<GameObject> GameObjects { get; set; }
-
-
-            public bool Equals(TestSerializable other)
-            {
-                if (!GameTime.Equals(other.GameTime))
-                {
-                    return false;
-                }
-
-                if (Components.Count != other.Components.Count)
-                {
-                    return false;
-                }
-
-                if (Components.Any(component => !other.Components.Contains(component)))
-                {
-                    return false;
-                }
-
-                if (GameObjects.Count != other.GameObjects.Count)
-                {
-                    return false;
-                }
-
-                if (GameObjects.Any(gameObject => !other.GameObjects.Contains(gameObject)))
-                {
-                    return false;
-                }
-
-                return true;
-            }
         }
 
         // TODO
         [SetUp]
         public void SetUp()
         {
-            game_ = new DxGame();
+            game_ = DxGame.Instance;
+            game_.RunOneFrame();
             var bounds = new DxRectangle(0, 0, 5000, 5000);
-            spatial_ = new BoundedSpatialComponent(game_).WithBounds(bounds);
+            spatial_ = new BoundedSpatialComponent(game_).WithBounds(bounds).WithPosition(new DxVector2(200, 400));
             sprite_ = new SimpleSpriteComponent(game_).WithAsset("Orb").WithPosition(spatial_);
-            physics_ = new MapCollideablePhysicsComponent(game_).WithSpatialComponent(spatial_);
+            physics_ = new MapCollideablePhysicsComponent(game_).WithSpatialComponent((SpatialComponent)spatial_);
             gameObject_ = new GameObject() .WithComponents(spatial_, sprite_, physics_ );
         }
 
@@ -89,8 +59,28 @@ namespace DXGameTest.Core.Network
 
             var binaryOutput = Serializer<TestSerializable>.BinarySerialize(serializable);
             var convertedSerializable = Serializer<TestSerializable>.BinaryDeserialize(binaryOutput);
-            // TODO: Figure out how to inject the GameInstance into the components on serialization...
-            Assert.AreEqual(serializable, convertedSerializable);
+
+            // For now just do a shallow check - see if we have matching ids
+            foreach (Component component in convertedSerializable.Components)
+            {
+                Assert.IsTrue(serializable.Components.Any(innerComponent => component.Id.Equals(innerComponent.Id)));
+            }
+            foreach (GameObject gameObject in convertedSerializable.GameObjects)
+            {
+                Assert.IsTrue(serializable.GameObjects.Any(innerGameObject => gameObject.Id.Equals(innerGameObject.Id)));
+            }
+
+            var spatial = serializable.Components.OfType<SpatialComponent>().First();
+            Assert.NotNull(spatial);
+
+            var oldPosition = spatial.Position;
+            spatial.Position += new DxVector2(300, 3000);
+            Assert.AreNotEqual(oldPosition, spatial.Position);
+
+            var physics = serializable.Components.OfType<PhysicsComponent>().First();
+            Assert.NotNull(physics);
+            // Make sure the object references have been properly propogated
+            Assert.AreEqual(physics.Position, spatial.Position);
         }
     }
 }

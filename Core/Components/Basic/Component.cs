@@ -96,7 +96,9 @@ namespace DXGame.Core.Components.Basic
             get { return id_; }
         }
 
-        [NonSerialized] public DxGame DxGame;
+        [NonSerialized]
+        [IgnoreDataMember]
+        public DxGame DxGame;
 
         protected Component(DxGame game)
         {
@@ -157,6 +159,19 @@ namespace DXGame.Core.Components.Basic
 
         public virtual void LoadContent()
         {
+        }
+
+        [OnDeserialized]
+        public void BaseDeSerialize(StreamingContext context)
+        {
+            DxGame = DxGame.Instance;
+            DeSerialize();
+        }
+
+        protected virtual void DeSerialize()
+        {
+            Initialize(); // Left as an exercise to the reader to determine specific behavior
+            LoadContent();
         }
     }
 }

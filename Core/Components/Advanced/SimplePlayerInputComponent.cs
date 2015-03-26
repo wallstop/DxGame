@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace DXGame.Core.Components.Advanced
 {
+    // Should not be serialized
     public class SimplePlayerInputComponent : Component
     {
         private const float JUMP_SPEED = 10.0f;

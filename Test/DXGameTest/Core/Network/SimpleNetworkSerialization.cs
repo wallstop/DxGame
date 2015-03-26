@@ -61,7 +61,7 @@ namespace DXGameTest.Core.Network
             var convertedSerializable = Serializer<TestSerializable>.BinaryDeserialize(binaryOutput);
 
             // For now just do a shallow check - see if we have matching ids
-            foreach (Component component in convertedSerializable.Components)
+            foreach (var component in convertedSerializable.Components)
             {
                 Assert.IsTrue(serializable.Components.Any(innerComponent => component.Id.Equals(innerComponent.Id)));
             }

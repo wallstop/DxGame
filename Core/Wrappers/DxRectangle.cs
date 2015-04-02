@@ -237,7 +237,7 @@ namespace DXGame.Core.Wrappers
 
         public override string ToString()
         {
-            return string.Format("{{X:{0:N2} Y:{1:N2} Width:{2:N2} Height:{3:N2}}}", X, Y, Width, Height);
+            return string.Format("{{X:{0:N2} Y:{1:N2} Width:{2:N2} Height:{3:N2}", X, Y, Width, Height);
         }
 
         public override int GetHashCode()

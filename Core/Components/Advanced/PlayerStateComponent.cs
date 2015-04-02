@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
@@ -41,31 +43,31 @@ namespace DXGame.Core.Components.Advanced
             var collisionDirections = collisionMessage.CollisionDirections;
 
             // If we collide southwards, we stop jumping if we were jumping
-            if (collisionDirections.Contains(CollisionDirection.South) && State == "Jumping")
+            // Also, we consider ourselves to be jumping until we're not (collision southwards)
+            if (State == "Jumping")
             {
-                State = "None";
+                if (collisionDirections.Contains(CollisionDirection.South))
+                    State = "None";
+                else
+                    return;
             }
 
-            // If we don't know about a request, don't do anything :( 
-            if (stateRequest_ == null)
-            {
-                return;
-            }
-
-            switch (stateRequest_)
-            {
-            case "Walking_Left":
-                State = !collisionDirections.Contains(CollisionDirection.West) ? "Walking_Left" : "None";
-                break;
-            case "Walking_Right":
-                State = !collisionDirections.Contains(CollisionDirection.East) ? "Walking_Right" : "None";
-                break;
-            case "None":
-                State = "None";
-                break;
-            }
-
+            State = DetermineStateFromRequest(State, stateRequest_, collisionDirections);
             stateRequest_ = null;
+        }
+
+        private static string DetermineStateFromRequest(string currentState, string request, IEnumerable<CollisionDirection> collisionDirections)
+        {
+            switch (request)
+            {
+                case "Walking_Left":
+                    return !collisionDirections.Contains(CollisionDirection.West) ? "Walking_Left" : "None";
+                case "Walking_Right":
+                    return !collisionDirections.Contains(CollisionDirection.East) ? "Walking_Right" : "None";
+                case "None":
+                    return "None";
+            }
+            return currentState;
         }
     }
 }

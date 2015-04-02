@@ -14,7 +14,7 @@ namespace DXGame.Core.Components.Advanced
     // Should not be serialized
     public class SimplePlayerInputComponent : Component
     {
-        private const float JUMP_SPEED = 10.0f;
+        private const float JUMP_SPEED = 5.0f;
         private const float MOVE_SPEED = 10.0f;
         protected PhysicsComponent physics_;
         protected StateComponent state_;

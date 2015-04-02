@@ -48,7 +48,7 @@ namespace DXGame.Core.Components.Advanced
 
         public MapCollideablePhysicsComponent WithSpatialComponent(SpatialComponent space)
         {
-            Debug.Assert(space != null,
+            GenericUtils.CheckNull(space,
                 "MapCollideablePhysicsComponent cannot be initialized with a null SpatialComponent.");
             position_ = space;
             return this;
@@ -80,8 +80,6 @@ namespace DXGame.Core.Components.Advanced
                 var mapSpatial = intersections.Values.Last();
                 var mapBlockPosition = mapSpatial.Position;
                 var mapBlockDimensions = mapSpatial.Dimensions;
-
-
                 /*
                     Wrap to the Y axis if the collision area was greater along the X axis (implies the collision occured either up or down,
                     as a left/right collision *should* have very little overlap on the X axis.

@@ -28,7 +28,7 @@ namespace DXGame.Core.Components.Advanced
 
         public StateComponent WithState(string state)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(state), "StateComponent cannot have its state to an empty state");
+            GenericUtils.CheckNullOrDefault(state, "StateComponent cannot have its state to an empty state");
             Debug.Assert(states_.Contains(state),
                 String.Format("StateComponent cannot have its state set to one it doesn't know about: {0}, {1}", state,
                     states_));

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.Serialization;
-using System.Xml.Serialization;
 using DXGame.Core.Messaging;
+using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
@@ -16,8 +17,7 @@ namespace DXGame.Core.Components.Basic
         STATE = 0,
         HIGH = 1,
         NORMAL = 5,
-        LOW = 10,
-        WORLD_GRAVITY = 100
+        LOW = 10
     }
 
     /**
@@ -66,19 +66,25 @@ namespace DXGame.Core.Components.Basic
     </summary>            
     */
 
+
     public delegate void MessageHandler(Message message);
+
+    public delegate void Updater(DxGameTime gameTime);
 
     [Serializable]
     [DataContract]
     public abstract class Component : IIdentifiable
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (Component));
-
+        [DataMember] private readonly List<Updater> postProcessors_ = new List<Updater>();
+        [DataMember] private readonly List<Updater> preProcessors_ = new List<Updater>();
+        [NonSerialized] [IgnoreDataMember] public DxGame DxGame;
         /**
             Note: This id_ field is the UniqueId of the Component, *NOT* of the GameObject. 
             This is a very important distinction.
         */
         [DataMember] protected UniqueId id_ = new UniqueId();
+        [DataMember] private bool initialized_;
 
         [DataMember] private Dictionary<Type, List<MessageHandler>> typesToMessageHandlers_ =
             new Dictionary<Type, List<MessageHandler>>();
@@ -89,22 +95,16 @@ namespace DXGame.Core.Components.Basic
         [DataMember]
         public UpdatePriority UpdatePriority { protected set; get; }
 
-        [DataMember] private bool initialized_;
-
-        public UniqueId Id
-        {
-            get { return id_; }
-        }
-
-        [NonSerialized]
-        [IgnoreDataMember]
-        public DxGame DxGame;
-
         protected Component(DxGame game)
         {
             DxGame = game;
             UpdatePriority = UpdatePriority.NORMAL;
             initialized_ = false;
+        }
+
+        public UniqueId Id
+        {
+            get { return id_; }
         }
 
         public void HandleMessage(Message message)
@@ -123,6 +123,21 @@ namespace DXGame.Core.Components.Basic
             }
         }
 
+        public void AddPreUpdater(Updater updater)
+        {
+            GenericUtils.CheckNull(updater, "Cannot add a null pre-updater to a component!");
+            Debug.Assert(!preProcessors_.Contains(updater), "Cannot add an already existing pre-updater to a component!");
+            preProcessors_.Add(updater);
+        }
+
+        public void AddPostUpdater(Updater updater)
+        {
+            GenericUtils.CheckNull(updater, "Cannot add a null pre-updater to a component!");
+            Debug.Assert(!postProcessors_.Contains(updater),
+                "Cannot add an already existing pre-updater to a component!");
+            postProcessors_.Add(updater);
+        }
+
         protected void RegisterMessageHandler(Type type, MessageHandler handler)
         {
             List<MessageHandler> messageHandlers = (typesToMessageHandlers_.ContainsKey(type)
@@ -138,7 +153,22 @@ namespace DXGame.Core.Components.Basic
             DxGame.RemoveComponent(this);
         }
 
-        public virtual void Update(DxGameTime gameTime)
+        public void Process(DxGameTime gameTime)
+        {
+            foreach (var updater in preProcessors_)
+            {
+                updater(gameTime);
+            }
+
+            Update(gameTime);
+
+            foreach (var updater in postProcessors_)
+            {
+                updater(gameTime);
+            }
+        }
+
+        protected virtual void Update(DxGameTime gameTime)
         {
         }
 

@@ -11,7 +11,6 @@ namespace DXGame.Core.Menus
     public abstract class Menu : DrawableComponent
     {
         private readonly List<MenuItem> menuItems_ = new List<MenuItem>();
-
         private readonly GameObject mousePointer_;
 
         protected List<MenuItem> MenuItems
@@ -35,7 +34,7 @@ namespace DXGame.Core.Menus
             }
         }
 
-        public override void Update(DxGameTime gameTime)
+        protected override void Update(DxGameTime gameTime)
         {
             var mousePosition = mousePointer_.ComponentOfType<MouseTrackingComponent>();
             var mouseSprite = mousePointer_.ComponentOfType<SimpleSpriteComponent>();

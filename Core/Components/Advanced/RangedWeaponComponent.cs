@@ -46,7 +46,7 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override void Update(DxGameTime gameTime)
+        protected override void Update(DxGameTime gameTime)
         {
             var velocity = Owner.Velocity;
             // If we're moving in the +/- X direction, update our Direction

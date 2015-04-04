@@ -14,13 +14,12 @@ namespace DXGame.Core.Components.Advanced
     // Should not be serialized
     public class SimplePlayerInputComponent : Component
     {
-        private const float JUMP_SPEED = 5.0f;
+        private const float JUMP_SPEED = 10.0f;
         private const float MOVE_SPEED = 10.0f;
+        private DxVector2 lastAcceleration_;
         protected PhysicsComponent physics_;
         protected StateComponent state_;
         protected WeaponComponent weapon_;
-
-        private DxVector2 lastAcceleration_;
 
         public SimplePlayerInputComponent(DxGame game)
             : base(game)
@@ -52,7 +51,7 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override void Update(DxGameTime gameTime)
+        protected override void Update(DxGameTime gameTime)
         {
             IEnumerable<KeyboardEvent> events = DxGame.Model<InputModel>().Events;
             HandleInput(events, gameTime);

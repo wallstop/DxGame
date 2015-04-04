@@ -17,6 +17,9 @@ namespace DXGame.Core.GraphicsWidgets
 {
     public class TextBox : DrawableComponent
     {
+        private readonly BlinkingCursor blinkingCursor_;
+        private int cursorPosition_;
+        private List<Keys> validKeys_;
         public string Text { get; protected set; }
         public SpatialComponent SpatialComponent { get; protected set; }
 
@@ -26,10 +29,6 @@ namespace DXGame.Core.GraphicsWidgets
             // Make sure we can use the arrow keys to move, regardless of input
             protected set { validKeys_ = value.Concat(new[] {Keys.Back, Keys.Delete, Keys.Left, Keys.Right}).ToList(); }
         }
-
-        private int cursorPosition_;
-        private readonly BlinkingCursor blinkingCursor_;
-        private List<Keys> validKeys_;
 
         protected int CursorPosition
         {
@@ -143,7 +142,7 @@ namespace DXGame.Core.GraphicsWidgets
             }
         }
 
-        public override void Update(DxGameTime gameTime)
+        protected override void Update(DxGameTime gameTime)
         {
             // TODO: Have this linked to some cursor object instead of directly reading the mouse state
 
@@ -165,7 +164,7 @@ namespace DXGame.Core.GraphicsWidgets
                 SpatialComponent.Position.Y +
                 // TODO: Find some better way of determining string height when the string is empty than hard-coded "a"
                 SpriteFont.MeasureString(textSubstring.Length == 0 ? "a" : textSubstring).Y));
-            blinkingCursor_.Update(gameTime);
+            blinkingCursor_.Process(gameTime);
 
             base.Update(gameTime);
         }
@@ -224,7 +223,6 @@ namespace DXGame.Core.GraphicsWidgets
                 Text = Text.Substring(0, MaxLength);
             }
         }
-
 
         protected bool IsMaxLengthSet()
         {

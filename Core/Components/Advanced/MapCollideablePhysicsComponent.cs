@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Utils;
@@ -18,13 +17,7 @@ namespace DXGame.Core.Components.Advanced
     public class MapCollideablePhysicsComponent : PhysicsComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapCollideablePhysicsComponent));
-
         private static readonly DxRectangleAreaComparer DXRECTANGLE_AREA_COMPARER = new DxRectangleAreaComparer();
-
-        public MapCollideablePhysicsComponent(DxGame game)
-            : base(game)
-        {
-        }
 
         private DxRectangle Space
         {
@@ -46,6 +39,11 @@ namespace DXGame.Core.Components.Advanced
             }
         }
 
+        public MapCollideablePhysicsComponent(DxGame game)
+            : base(game)
+        {
+        }
+
         public MapCollideablePhysicsComponent WithSpatialComponent(SpatialComponent space)
         {
             GenericUtils.CheckNull(space,
@@ -54,7 +52,7 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override void Update(DxGameTime gameTime)
+        protected override void Update(DxGameTime gameTime)
         {
             /*
                 Perform the normal PhysicsComponent's update first. We assume that at the end of our last update cycle,
@@ -103,8 +101,8 @@ namespace DXGame.Core.Components.Advanced
                         Position = new DxVector2(Position.X, mapBlockPosition.Y + mapBlockDimensions.Y);
                         collision.CollisionDirections.Add(CollisionDirection.North);
                     }
-                    Velocity = new DxVector2(Velocity.X, 0);
-                    Acceleration = new DxVector2(Acceleration.X, 0);
+                    //Velocity = new DxVector2(Velocity.X, 0);
+                    //Acceleration = new DxVector2(Acceleration.X, 0);
                 }
                 /*
                         Wrap to the X axis otherwise. 
@@ -123,8 +121,8 @@ namespace DXGame.Core.Components.Advanced
                         Position = new DxVector2(mapBlockPosition.X - Dimensions.X, Position.Y);
                         collision.CollisionDirections.Add(CollisionDirection.East);
                     }
-                    Velocity = new DxVector2(0, Velocity.Y);
-                    Acceleration = new DxVector2(0, Acceleration.Y);
+                    //Velocity = new DxVector2(0, Velocity.Y);
+                    //Acceleration = new DxVector2(0, Acceleration.Y);
                 }
             } while (intersections.Any());
 

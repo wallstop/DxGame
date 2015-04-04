@@ -22,7 +22,7 @@ namespace DXGame.Core.Components.Advanced
             ClickInProgress = false;
         }
 
-        public override void Update(DxGameTime gameTime)
+        protected override void Update(DxGameTime gameTime)
         {
             base.Update(gameTime);
             MouseState mouseState = Mouse.GetState();

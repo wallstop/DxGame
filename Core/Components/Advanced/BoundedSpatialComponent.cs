@@ -19,7 +19,6 @@ namespace DXGame.Core.Components.Advanced
     public class BoundedSpatialComponent : SpatialComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (BoundedSpatialComponent));
-
         [DataMember] protected DxVector2 xBounds_;
         [DataMember] protected DxVector2 yBounds_;
 
@@ -36,6 +35,31 @@ namespace DXGame.Core.Components.Advanced
         public DxRectangle Bounds
         {
             get { return new DxRectangle(XBounds, YBounds); }
+        }
+
+        /**
+        <summary>
+            The Position property on a BoundedSpatialComponent
+        </summary>
+        */
+
+        [IgnoreDataMember]
+        public override DxVector2 Position
+        {
+            get { return position_; }
+            set
+            {
+                float width = dimensions_.X;
+                float height = dimensions_.Y;
+                float x = MathUtils.Constrain(value.X, xBounds_.X, xBounds_.Y - width);
+                float y = MathUtils.Constrain(value.Y, yBounds_.X, yBounds_.Y - height);
+                var newPosition = new DxVector2(x, y);
+                position_ = newPosition;
+                if (newPosition != value)
+                {
+                    Parent.BroadcastMessage(new CollisionMessage(value - newPosition));
+                }
+            }
         }
 
         public BoundedSpatialComponent(DxGame game)
@@ -90,30 +114,6 @@ namespace DXGame.Core.Components.Advanced
             xBounds_ = new
                 DxVector2(Math.Min(bounds.X, bounds.X + bounds.Width), Math.Max(bounds.X, bounds.X + bounds.Width));
             return this;
-        }
-
-        /**
-        <summary>
-            The Position property on a BoundedSpatialComponent
-        </summary>
-        */
-        [IgnoreDataMember]
-        public override DxVector2 Position
-        {
-            get { return position_; }
-            set
-            {
-                float width = dimensions_.X;
-                float height = dimensions_.Y;
-                float x = MathUtils.Constrain(value.X, xBounds_.X, xBounds_.Y - width);
-                float y = MathUtils.Constrain(value.Y, yBounds_.X, yBounds_.Y - height);
-                var newPosition = new DxVector2(x, y);
-                position_ = newPosition;
-                if (newPosition != value)
-                {
-                    Parent.BroadcastMessage(new CollisionMessage(value - newPosition));
-                }
-            }
         }
     }
 }

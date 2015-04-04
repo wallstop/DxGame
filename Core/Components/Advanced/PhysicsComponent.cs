@@ -20,20 +20,10 @@ namespace DXGame.Core.Components.Advanced
     public class PhysicsComponent : Component
     {
         [DataMember] protected DxVector2 acceleration_;
-        [DataMember] protected DxVector2 maxVelocity_;
         [DataMember] protected DxVector2 maxAcceleration_;
+        [DataMember] protected DxVector2 maxVelocity_;
         [DataMember] protected PositionalComponent position_;
         [DataMember] protected DxVector2 velocity_;
-
-        public PhysicsComponent(DxGame game)
-            : base(game)
-        {
-            RegisterMessageHandler(typeof (CollisionMessage), HandleCollisionMessage);
-            // TODO: Un-hardcode these
-            maxVelocity_ = new DxVector2(5.0f, 5.0f);
-            maxAcceleration_ = new DxVector2(5.0f, 5.0f);
-            UpdatePriority = UpdatePriority.PHYSICS;
-        }
 
         public virtual DxVector2 Velocity
         {
@@ -57,6 +47,16 @@ namespace DXGame.Core.Components.Advanced
         {
             get { return position_; }
             set { WithPositionalComponent(value); }
+        }
+
+        public PhysicsComponent(DxGame game)
+            : base(game)
+        {
+            RegisterMessageHandler(typeof (CollisionMessage), HandleCollisionMessage);
+            // TODO: Un-hardcode these
+            maxVelocity_ = new DxVector2(7.5f, 7.5f);
+            maxAcceleration_ = new DxVector2(7.5f, 7.5f);
+            UpdatePriority = UpdatePriority.PHYSICS;
         }
 
         public PhysicsComponent WithVelocity(DxVector2 velocity)
@@ -96,14 +96,13 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override void Update(DxGameTime gameTime)
+        protected override void Update(DxGameTime gameTime)
         {
-            DxVector2 acceleration = Acceleration;
             DxVector2 velocity = VectorUtils.ConstrainVector(Velocity + acceleration_, maxVelocity_);
             position_.Position += velocity;
 
-            Velocity = velocity;
-            Acceleration = acceleration;
+            // The velocity may have been changed (by bumping into the map, for example), so just recompute what it should be
+            Velocity = VectorUtils.ConstrainVector(Velocity + Acceleration, maxVelocity_);
         }
 
         protected void HandleCollisionMessage(Message message)

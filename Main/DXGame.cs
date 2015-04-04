@@ -1,6 +1,4 @@
-﻿#region Using Statements
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using DXGame.Core;
@@ -14,8 +12,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Model = DXGame.Core.Models.Model;
-
-#endregion
 
 namespace DXGame.Main
 {
@@ -42,21 +38,42 @@ namespace DXGame.Main
     public class DxGame : Game
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (DxGame));
-        private readonly List<Model> models_ = new List<Model>();
-
-        public Rectangle Screen { get; protected set; }
-
-        public SpriteBatch SpriteBatch { get; private set; }
-
-        public ComponentCollection DxComponents { get; private set; }
 
         private static readonly Lazy<DxGame> singleton_ =
             new Lazy<DxGame>(() => new DxGame());
 
+        private readonly List<Model> models_ = new List<Model>();
+        public Rectangle Screen { get; protected set; }
+        public SpriteBatch SpriteBatch { get; private set; }
+        public ComponentCollection DxComponents { get; private set; }
         // TODO: Thread safety? Move this to some kind of Context static class?
         public static DxGame Instance
         {
             get { return singleton_.Value; }
+        }
+
+        public DxRectangle ScreenRegion
+        {
+            get
+            {
+                GameModel gameModel = Model<GameModel>();
+                if (GenericUtils.IsNullOrDefault(gameModel))
+                {
+                    return new DxRectangle(Screen);
+                }
+                MapModel mapModel = Model<MapModel>();
+                float x = Screen.Width / 2.0f - gameModel.FocalPoint.Position.X;
+                x = MathUtils.Constrain(x,
+                    Math.Max(float.MinValue, -(mapModel.MapBounds.X + mapModel.MapBounds.Width - Screen.Width)),
+                    mapModel.MapBounds.X);
+
+                float y = Screen.Height / 2.0f - gameModel.FocalPoint.Position.Y;
+                y = MathUtils.Constrain(y,
+                    Math.Max(0, mapModel.MapBounds.Y + mapModel.MapBounds.Height - Screen.Height),
+                    mapModel.MapBounds.Y);
+
+                return new DxRectangle(x, y, Screen.Width, Screen.Height);
+            }
         }
 
         private DxGame()
@@ -94,30 +111,6 @@ namespace DXGame.Main
             }
 
             return !alreadyExists;
-        }
-
-        public DxRectangle ScreenRegion
-        {
-            get
-            {
-                GameModel gameModel = Model<GameModel>();
-                if (GenericUtils.IsNullOrDefault(gameModel))
-                {
-                    return new DxRectangle(Screen);
-                }
-                MapModel mapModel = Model<MapModel>();
-                float x = Screen.Width / 2.0f - gameModel.FocalPoint.Position.X;
-                x = MathUtils.Constrain(x,
-                    Math.Max(float.MinValue, -(mapModel.MapBounds.X + mapModel.MapBounds.Width - Screen.Width)),
-                    mapModel.MapBounds.X);
-
-                float y = Screen.Height / 2.0f - gameModel.FocalPoint.Position.Y;
-                y = MathUtils.Constrain(y,
-                    Math.Max(0, mapModel.MapBounds.Y + mapModel.MapBounds.Height - Screen.Height),
-                    mapModel.MapBounds.Y);
-
-                return new DxRectangle(x, y, Screen.Width, Screen.Height);
-            }
         }
 
         public void AddAndInitializeComponent(Component component)
@@ -196,7 +189,7 @@ namespace DXGame.Main
             AttachModel(frameModel);
 
             var netModel = new NetworkModel(this);
-            AttachModel(netModel); 
+            AttachModel(netModel);
             base.Initialize();
         }
 
@@ -240,7 +233,7 @@ namespace DXGame.Main
             List<Component> currentComponents = new List<Component>(DxComponents.Components());
             foreach (Component component in currentComponents)
             {
-                component.Update(dxGameTime);
+                component.Process(dxGameTime);
             }
             networkModel.SendData(dxGameTime);
             base.Update(gameTime);

@@ -56,7 +56,7 @@ namespace DXGame.Core.Components.Basic
 
         public abstract void Draw(DxGameTime gameTime);
 
-        public override void Update(DxGameTime gameTime)
+        protected override void Update(DxGameTime gameTime)
         {
         }
     }

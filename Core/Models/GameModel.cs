@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Generators;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 
 namespace DXGame.Core.Models
@@ -14,7 +15,6 @@ namespace DXGame.Core.Models
     public class GameModel : Model
     {
         public float GameSpeed { get; set; }
-
         public SpatialComponent FocalPoint { get; protected set; }
 
         public GameModel(DxGame game) : base(game)
@@ -25,20 +25,22 @@ namespace DXGame.Core.Models
         {
             var mapGenerator = new MapGenerator(DxGame, "Content/Map/SimpleMap.txt");
             var mapModel = MapModel.InitializeFromGenerator(DxGame, mapGenerator);
-            var worldGravity = new WorldGravityModel(DxGame);
             PlayerGenerator playerGenerator = new PlayerGenerator(DxGame, mapModel.PlayerPosition, mapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;
             var player = playerGenerator.Generate().First();
             var physicsComponents = player.ComponentsOfType<PhysicsComponent>();
+
+
             foreach (var physicsComponent in physicsComponents)
             {
-                worldGravity.AttachPhysicsComponent(physicsComponent);
+                var component = physicsComponent;
+                physicsComponent.AddPostUpdater(
+                    (DxGameTime gameTime) => { WorldGravity.ApplyGravityToPhysics(component); });
             }
 
             // TODO: Split these out into some kind of unified loading... thing
             DxGame.AddAndInitializeGameObjects(playerGenerator.Generate());
             DxGame.AttachModel(mapModel);
-            DxGame.AttachModel(worldGravity);
             base.Initialize();
         }
     }

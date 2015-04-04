@@ -14,14 +14,12 @@ namespace DXGame.Core.GraphicsWidgets
     public class BlinkingCursor : DrawableComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (BlinkingCursor));
-
         public Vector2 Origin { get; set; }
         public float Width { get; protected set; }
         public float Height { get; protected set; }
         public TimeSpan BlinkRate { get; protected set; }
         public bool Drawn { get; protected set; }
         public Color Color { get; protected set; }
-
         protected TimeSpan LastToggled { get; set; }
         protected Texture2D Texture { get; set; }
 
@@ -73,7 +71,7 @@ namespace DXGame.Core.GraphicsWidgets
             return this;
         }
 
-        public override void Update(DxGameTime gameTime)
+        protected override void Update(DxGameTime gameTime)
         {
             var totalTime = gameTime.TotalGameTime;
             if (totalTime > LastToggled + BlinkRate)

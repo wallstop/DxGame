@@ -15,9 +15,6 @@ namespace DXGame.Core.Input
 
     public class InputHandler : Component
     {
-        public List<KeyboardEvent> CurrentEvents { get; private set; }
-        public List<KeyboardEvent> FinishedEvents { get; private set; }
-
         public InputHandler(DxGame game)
             : base(game)
         {
@@ -26,7 +23,10 @@ namespace DXGame.Core.Input
             UpdatePriority = UpdatePriority.HIGHEST;
         }
 
-        public override void Update(DxGameTime gameTime)
+        public List<KeyboardEvent> CurrentEvents { get; private set; }
+        public List<KeyboardEvent> FinishedEvents { get; private set; }
+
+        protected override void Update(DxGameTime gameTime)
         {
             KeyboardState keyboardState = Keyboard.GetState();
             List<Keys> currentKeys = keyboardState.GetPressedKeys().ToList();

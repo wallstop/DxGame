@@ -96,7 +96,6 @@
     <Compile Include="Core\Components\Advanced\AnimationComponent.cs" />
     <Compile Include="Core\Components\Advanced\CollisionDestructibleComponent.cs" />
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
-    <Compile Include="Core\Components\Advanced\PlayerProperties.cs" />
     <Compile Include="Core\Components\Advanced\PlayerStateComponent.cs" />
     <Compile Include="Core\Components\Advanced\PropertiesComponent.cs" />
     <Compile Include="Core\Components\Advanced\RangedWeaponComponent.cs" />
@@ -150,7 +149,7 @@
     <Compile Include="Core\Models\MapModel.cs" />
     <Compile Include="Core\Models\Model.cs" />
     <Compile Include="Core\Models\NetworkModel.cs" />
-    <Compile Include="Core\Models\WorldGravityModel.cs" />
+    <Compile Include="Core\Models\WorldGravity.cs" />
     <Compile Include="Core\Network\ClientConnectionRequest.cs" />
     <Compile Include="Core\Network\GameStateDiff.cs" />
     <Compile Include="Core\Network\GameStateKeyFrame.cs" />

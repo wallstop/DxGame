@@ -9,7 +9,6 @@ namespace DXGame.Core.Models
     {
         public IEnumerable<KeyboardEvent> Events { get; private set; }
         public IEnumerable<KeyboardEvent> FinishedEvents { get; private set; }
-
         private InputHandler InputHandler { get; set; }
 
         public InputModel(DxGame game)
@@ -22,9 +21,9 @@ namespace DXGame.Core.Models
             InputHandler = new InputHandler(DxGame);
         }
 
-        public override void Update(DxGameTime gameTime)
+        protected override void Update(DxGameTime gameTime)
         {
-            InputHandler.Update(gameTime);
+            InputHandler.Process(gameTime);
             Events = InputHandler.CurrentEvents;
             FinishedEvents = InputHandler.FinishedEvents;
         }

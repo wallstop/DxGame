@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Advanced.Player;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Models;
 using DXGame.Core.Network;

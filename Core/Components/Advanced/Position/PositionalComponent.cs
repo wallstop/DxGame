@@ -6,7 +6,7 @@ using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
 
-namespace DXGame.Core.Components.Advanced
+namespace DXGame.Core.Components.Advanced.Position
 {
     /**
     <summary>
@@ -32,9 +32,7 @@ namespace DXGame.Core.Components.Advanced
     public class PositionalComponent : Component
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (PositionalComponent));
-
         [DataMember] protected DxVector2 position_;
-
         /**
         <summary>
             The Position property of a PositionalComponent is likely to be overriden by derived classes.

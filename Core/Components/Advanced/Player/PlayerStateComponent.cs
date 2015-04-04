@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
 
-namespace DXGame.Core.Components.Advanced
+namespace DXGame.Core.Components.Advanced.Player
 {
     [Serializable]
     [DataContract]
     public class PlayerStateComponent : StateComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapCollideablePhysicsComponent));
-        [DataMember]
-        protected string stateRequest_;
+        [DataMember] protected string stateRequest_;
 
         public PlayerStateComponent(DxGame game)
             : base(game)
@@ -56,16 +56,17 @@ namespace DXGame.Core.Components.Advanced
             stateRequest_ = null;
         }
 
-        private static string DetermineStateFromRequest(string currentState, string request, IEnumerable<CollisionDirection> collisionDirections)
+        private static string DetermineStateFromRequest(string currentState, string request,
+            IEnumerable<CollisionDirection> collisionDirections)
         {
             switch (request)
             {
-                case "Walking_Left":
-                    return !collisionDirections.Contains(CollisionDirection.West) ? "Walking_Left" : "None";
-                case "Walking_Right":
-                    return !collisionDirections.Contains(CollisionDirection.East) ? "Walking_Right" : "None";
-                case "None":
-                    return "None";
+            case "Walking_Left":
+                return !collisionDirections.Contains(CollisionDirection.West) ? "Walking_Left" : "None";
+            case "Walking_Right":
+                return !collisionDirections.Contains(CollisionDirection.East) ? "Walking_Right" : "None";
+            case "None":
+                return "None";
             }
             return currentState;
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Utils;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
@@ -10,7 +11,7 @@ using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
 
-namespace DXGame.Core.Components.Advanced
+namespace DXGame.Core.Components.Advanced.Physics
 {
     [Serializable]
     [DataContract]

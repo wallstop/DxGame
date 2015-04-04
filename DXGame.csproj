@@ -78,6 +78,7 @@
     <DocumentationFile>
     </DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>5</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -96,17 +97,18 @@
     <Compile Include="Core\Components\Advanced\AnimationComponent.cs" />
     <Compile Include="Core\Components\Advanced\CollisionDestructibleComponent.cs" />
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
-    <Compile Include="Core\Components\Advanced\PlayerStateComponent.cs" />
-    <Compile Include="Core\Components\Advanced\PropertiesComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Player\PlayerStateComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Properties\PlayerPropertiesComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Properties\PropertiesComponent.cs" />
     <Compile Include="Core\Components\Advanced\RangedWeaponComponent.cs" />
     <Compile Include="Core\Components\Advanced\WeaponComponent.cs" />
     <Compile Include="Core\Components\Basic\Component.cs" />
-    <Compile Include="Core\Components\Advanced\BoundedSpatialComponent.cs" />
-    <Compile Include="Core\Components\Advanced\MapCollideablePhysicsComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Position\BoundedSpatialComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Physics\MapCollideablePhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\StateComponent.cs" />
-    <Compile Include="Core\Components\Advanced\SpatialComponent.cs" />
-    <Compile Include="Core\Components\Advanced\SimplePlayerInputComponent.cs" />
-    <Compile Include="Core\Components\Advanced\PositionalComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Position\SpatialComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Player\SimplePlayerInputComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Position\PositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
     <Compile Include="Core\Components\Basic\ComponentCollection.cs" />
     <Compile Include="Core\Components\Basic\DrawableComponent.cs" />
@@ -129,6 +131,7 @@
     <Compile Include="Core\Input\InputHandler.cs" />
     <Compile Include="Core\Input\KeyboardEvent.cs" />
     <Compile Include="Core\Input\MouseEvent.cs" />
+    <Compile Include="Core\IPersistable.cs" />
     <Compile Include="Core\Menus\HostMultiplayerMenu.cs" />
     <Compile Include="Core\Menus\JoinMultiplayerMenu.cs" />
     <Compile Include="Core\GraphicsWidgets\TextBox.cs" />
@@ -140,7 +143,7 @@
     <Compile Include="Core\Generators\MapGenerator.cs" />
     <Compile Include="Core\Generators\PlayerGenerator.cs" />
     <Compile Include="Core\Generator.cs" />
-    <Compile Include="Core\Components\Advanced\PhysicsComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Physics\PhysicsComponent.cs" />
     <Compile Include="Core\Menus\MainMenu.cs" />
     <Compile Include="Core\Menus\Menu.cs" />
     <Compile Include="Core\Menus\MenuItem.cs" />
@@ -156,11 +159,13 @@
     <Compile Include="Core\Network\NetworkMessage.cs" />
     <Compile Include="Core\Network\MessageType.cs" />
     <Compile Include="Core\Serializer.cs" />
+    <Compile Include="Core\Settings\GameSettings.cs" />
     <Compile Include="Core\UniqueId.cs" />
     <Compile Include="Core\Utils\CollectionUtils.cs" />
     <Compile Include="Core\Utils\GameObjectUtils.cs" />
     <Compile Include="Core\Utils\GenericUtils.cs" />
     <Compile Include="Core\Utils\MathUtils.cs" />
+    <Compile Include="Core\Utils\StringUtils.cs" />
     <Compile Include="Core\Wrappers\DxGameTime.cs" />
     <Compile Include="Core\Wrappers\DxRectangle.cs" />
     <Compile Include="Core\Utils\VectorUtils.cs" />

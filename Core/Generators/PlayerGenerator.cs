@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Advanced.Physics;
+using DXGame.Core.Components.Advanced.Player;
+using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 

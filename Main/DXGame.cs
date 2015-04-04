@@ -5,6 +5,7 @@ using DXGame.Core;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Menus;
 using DXGame.Core.Models;
+using DXGame.Core.Settings;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using log4net;
@@ -45,6 +46,7 @@ namespace DXGame.Main
         private readonly List<Model> models_ = new List<Model>();
         public Rectangle Screen { get; protected set; }
         public SpriteBatch SpriteBatch { get; private set; }
+        // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
         public ComponentCollection DxComponents { get; private set; }
         // TODO: Thread safety? Move this to some kind of Context static class?
         public static DxGame Instance
@@ -64,7 +66,8 @@ namespace DXGame.Main
                 MapModel mapModel = Model<MapModel>();
                 float x = Screen.Width / 2.0f - gameModel.FocalPoint.Position.X;
                 x = MathUtils.Constrain(x,
-                    Math.Max(float.MinValue, -(mapModel.MapBounds.X + mapModel.MapBounds.Width - Screen.Width)),
+                    Math.Max(float.MinValue,
+                        -(mapModel.MapBounds.X + mapModel.MapBounds.Width - Screen.Width)),
                     mapModel.MapBounds.X);
 
                 float y = Screen.Height / 2.0f - gameModel.FocalPoint.Position.Y;
@@ -76,9 +79,15 @@ namespace DXGame.Main
             }
         }
 
+        public GameSettings GameSettings { get; set; }
+
         private DxGame()
         {
-            Screen = new Rectangle(0, 0, 1280, 720);
+            // TODO: See what parts of this can be offloaded to initialize
+            GameSettings = new GameSettings();
+            GameSettings.Load();
+
+            Screen = new Rectangle(0, 0, GameSettings.ScreenWidth, GameSettings.ScreenHeight);
             var graphics = new GraphicsDeviceManager(this)
             {
                 PreferredBackBufferHeight = Screen.Height,
@@ -92,10 +101,7 @@ namespace DXGame.Main
             Content.RootDirectory = "Content";
         }
 
-        public T Model<T>() where T : Model
-        {
-            return models_.OfType<T>().FirstOrDefault();
-        }
+        public T Model<T>() where T : Model { return models_.OfType<T>().FirstOrDefault(); }
 
         public bool AttachModel(Model model)
         {
@@ -107,7 +113,8 @@ namespace DXGame.Main
             }
             else
             {
-                LOG.Error(String.Format("AttachModel failed. Model {0} already exists in {1}", model, models_));
+                LOG.Error(String.Format("AttachModel failed. Model {0} already exists in {1}", model,
+                    models_));
             }
 
             return !alreadyExists;
@@ -131,7 +138,8 @@ namespace DXGame.Main
         {
             foreach (
                 var component in
-                    gameObjects.Select(gameObject => gameObject.Components).SelectMany(components => components))
+                    gameObjects.Select(gameObject => gameObject.Components)
+                        .SelectMany(components => components))
             {
                 AddAndInitializeComponent(component);
             }
@@ -154,10 +162,7 @@ namespace DXGame.Main
             }
         }
 
-        public void RemoveComponent(Component component)
-        {
-            DxComponents.Remove(component);
-        }
+        public void RemoveComponent(Component component) { DxComponents.Remove(component); }
 
         public void RemoveComponents(params Component[] components)
         {
@@ -193,15 +198,8 @@ namespace DXGame.Main
             base.Initialize();
         }
 
-        protected override void LoadContent()
-        {
-            base.LoadContent();
-        }
-
-        protected override void UnloadContent()
-        {
-            base.UnloadContent();
-        }
+        protected override void LoadContent() { base.LoadContent(); }
+        protected override void UnloadContent() { base.UnloadContent(); }
 
         /// <summary>
         ///     Allows the game to run logic such as updating the world,

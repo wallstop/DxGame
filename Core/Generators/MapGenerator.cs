@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;

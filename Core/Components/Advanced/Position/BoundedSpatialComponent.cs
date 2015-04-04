@@ -6,7 +6,7 @@ using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
 
-namespace DXGame.Core.Components.Advanced
+namespace DXGame.Core.Components.Advanced.Position
 {
     /**
     <summary>

@@ -6,7 +6,7 @@ using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
 
-namespace DXGame.Core.Components.Advanced
+namespace DXGame.Core.Components.Advanced.Position
 {
     /**
     <summary>
@@ -20,9 +20,7 @@ namespace DXGame.Core.Components.Advanced
     public class SpatialComponent : PositionalComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (SpatialComponent));
-
         [DataMember] protected DxVector2 dimensions_;
-
         /**
         <summary>
             The bounding box
@@ -49,18 +47,6 @@ namespace DXGame.Core.Components.Advanced
             get { return dimensions_; }
         }
 
-        public SpatialComponent(DxGame game)
-            : base(game)
-        {
-        }
-
-        public virtual SpatialComponent WithDimensions(DxVector2 dimensions)
-        {
-            Debug.Assert(dimensions != null, "SpatialComponent cannot be constructed with null dimensions");
-            dimensions_ = dimensions;
-            return this;
-        }
-
         /**
         <summary>
             The center position that the SpatialComponent occupies. This is equivalane to 
@@ -71,6 +57,18 @@ namespace DXGame.Core.Components.Advanced
         public virtual DxVector2 Center
         {
             get { return position_ + dimensions_ / 2.0f; }
+        }
+
+        public SpatialComponent(DxGame game)
+            : base(game)
+        {
+        }
+
+        public virtual SpatialComponent WithDimensions(DxVector2 dimensions)
+        {
+            Debug.Assert(dimensions != null, "SpatialComponent cannot be constructed with null dimensions");
+            dimensions_ = dimensions;
+            return this;
         }
     }
 }

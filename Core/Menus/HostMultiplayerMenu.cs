@@ -1,5 +1,6 @@
 ﻿using System;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Network;
 using DXGame.Core.GraphicsWidgets;
 using DXGame.Core.Input;

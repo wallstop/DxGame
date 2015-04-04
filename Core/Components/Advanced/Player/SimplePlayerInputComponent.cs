@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Input;
 using DXGame.Core.Messaging;
@@ -9,7 +10,7 @@ using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Input;
 
-namespace DXGame.Core.Components.Advanced
+namespace DXGame.Core.Components.Advanced.Player
 {
     // Should not be serialized
     public class SimplePlayerInputComponent : Component

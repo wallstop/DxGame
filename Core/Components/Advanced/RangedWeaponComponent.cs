@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
+using DXGame.Core.Components.Advanced.Physics;
+using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;

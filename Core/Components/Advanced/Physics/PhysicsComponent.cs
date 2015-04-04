@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
+using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 
-namespace DXGame.Core.Components.Advanced
+namespace DXGame.Core.Components.Advanced.Physics
 {
     /**
     <summary>

@@ -3,13 +3,13 @@ using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Main;
 
-namespace DXGame.Core.Components.Advanced
+namespace DXGame.Core.Components.Advanced.Properties
 {
     [Serializable]
     [DataContract]
-    public class PropertiesComponent : Component
+    public abstract class PropertiesComponent : Component
     {
-        public PropertiesComponent(DxGame game)
+        protected PropertiesComponent(DxGame game)
             : base(game)
         {
         }

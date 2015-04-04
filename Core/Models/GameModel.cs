@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Advanced.Physics;
+using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Generators;
 using DXGame.Core.Wrappers;
 using DXGame.Main;

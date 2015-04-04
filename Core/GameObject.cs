@@ -27,17 +27,33 @@ namespace DXGame.Core
         GameObject should generally not be inherited / derived from / held references to.
     </summary>
     */
+
     [Serializable]
     [DataContract]
     public class GameObject : IIdentifiable, IEquatable<GameObject>
     {
+        [DataMember] private List<DrawableComponent> drawableComponents_ =
+            new List<DrawableComponent>();
+
         // DataMembers can't be readonly :(
-        [DataMember]
-        private List<Component> dxComponents_ = new List<Component>();
-        [DataMember]
-        private List<DrawableComponent> drawableComponents_ = new List<DrawableComponent>();
-        [DataMember]
-        private UniqueId id_ = new UniqueId();
+        [DataMember] private List<Component> dxComponents_ = new List<Component>();
+        [DataMember] private UniqueId id_ = new UniqueId();
+
+        public List<Component> Components
+        {
+            get { return AllComponents.ToList(); }
+        }
+
+        private IEnumerable<Component> AllComponents
+        {
+            get { return dxComponents_.Union(dxComponents_).Union(drawableComponents_); }
+        }
+
+        public bool Equals(GameObject other)
+        {
+            return Id.Equals(other.Id)
+                   && new HashSet<Component>(AllComponents).SetEquals(other.AllComponents);
+        }
 
         public UniqueId Id
         {
@@ -61,21 +77,7 @@ namespace DXGame.Core
             return AllComponents.OfType<T>();
         }
 
-        public T ComponentOfType<T>() where T : Component
-        {
-            return ComponentsOfType<T>().First();
-        }
-
-        public List<Component> Components
-        {
-            get { return AllComponents.ToList(); }
-        }
-
-        private IEnumerable<Component> AllComponents
-        {
-            get { return dxComponents_.Union(dxComponents_).Union(drawableComponents_); }
-        }
-
+        public T ComponentOfType<T>() where T : Component { return ComponentsOfType<T>().First(); }
         /**
         <summary>
             Given a component, properly determines if it is a Drawable / Initializable / Updateable, adds it
@@ -90,7 +92,8 @@ namespace DXGame.Core
 
         public GameObject WithComponent(Component component)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(component), "Cannot assign a null component to a GameObject");
+            Debug.Assert(!GenericUtils.IsNullOrDefault(component),
+                "Cannot assign a null component to a GameObject");
             AddComponent(component);
             return this;
         }
@@ -111,7 +114,8 @@ namespace DXGame.Core
 
         public GameObject WithComponents(params Component[] components)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(components), "Cannot assign a null components to a GameObject");
+            Debug.Assert(!GenericUtils.IsNullOrDefault(components),
+                "Cannot assign a null components to a GameObject");
             foreach (var component in components)
             {
                 WithComponent(component);
@@ -144,11 +148,6 @@ namespace DXGame.Core
             {
                 drawableComponent.HandleMessage(message);
             }
-        }
-
-        public bool Equals(GameObject other)
-        {
-            return Id.Equals(other.Id) && new HashSet<Component>(AllComponents).SetEquals(other.AllComponents);
         }
     }
 #pragma warning restore 649

@@ -19,8 +19,9 @@ namespace DXGame.Core
         {
             if (data.Length < 0)
             {
-                throw new ArgumentOutOfRangeException(String.Format("Can not deserialize a byte array of length {0}",
-                    data.Length));
+                throw new ArgumentOutOfRangeException(
+                    String.Format("Can not deserialize a byte array of length {0}",
+                        data.Length));
             }
 
             MemoryStream memoryStream = new MemoryStream(data);

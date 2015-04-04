@@ -23,10 +23,7 @@ namespace DXGame.Core.Components.Advanced.Player
         protected WeaponComponent weapon_;
 
         public SimplePlayerInputComponent(DxGame game)
-            : base(game)
-        {
-            UpdatePriority = UpdatePriority.HIGH;
-        }
+            : base(game) { UpdatePriority = UpdatePriority.HIGH; }
 
         public SimplePlayerInputComponent WithPhysics(PhysicsComponent physics)
         {
@@ -64,15 +61,14 @@ namespace DXGame.Core.Components.Advanced.Player
             var velocity = physics_.Velocity;
             string state = state_.State;
 
-            bool isMovingLeft = false;
-            bool isMovingRight = false;
-
-            StateChangeRequestMessage request = new StateChangeRequestMessage();
+            StateChangeRequestMessage request = new StateChangeRequestMessage {State = "None"};
 
             foreach (KeyboardEvent keyEvent in events)
             {
                 switch (keyEvent.Key)
                 {
+                // TODO: Un-hardcode these values
+                // TODO: Move these to some functors or some shit
                 case Keys.Left:
                     if (velocity.X < 0)
                     {
@@ -82,8 +78,10 @@ namespace DXGame.Core.Components.Advanced.Player
                     {
                         velocity.X = -MOVE_SPEED;
                     }
-                    isMovingLeft = true;
-                    isMovingRight = false;
+                    if (request.State != "Jumping")
+                    {
+                        request.State = "Walking_Left";
+                    }
                     break;
                 case Keys.Right:
                     if (velocity.X > 0)
@@ -94,8 +92,10 @@ namespace DXGame.Core.Components.Advanced.Player
                     {
                         velocity.X = MOVE_SPEED;
                     }
-                    isMovingRight = true;
-                    isMovingLeft = false;
+                    if (request.State != "Jumping")
+                    {
+                        request.State = "Walking_Right";
+                    }
                     break;
                 case Keys.Up:
                     if (state_.State != "Jumping")
@@ -113,24 +113,7 @@ namespace DXGame.Core.Components.Advanced.Player
                 }
             }
 
-            // TODO: Change this garbage
-            if (MathUtils.FuzzyCompare(lastAcceleration_.Y, 0) == 0 && MathUtils.FuzzyCompare(acceleration.Y, 0) == 0 &&
-                MathUtils.FuzzyCompare(velocity.Y, 0) == 0)
-            {
-                request.State = "None";
-            }
-            if ((request.State != "Jumping"))
-            {
-                if (isMovingLeft)
-                {
-                    request.State = "Walking_Left";
-                }
-                else if (isMovingRight)
-                {
-                    request.State = "Walking_Right";
-                }
-            }
-            if (!(isMovingLeft || isMovingRight))
+            if (state != "Jumping" && request.State == "None")
             {
                 velocity.X = 0;
             }

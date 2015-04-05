@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using DXGame.Core.Components.Advanced.Physics;
+using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Input;
 using DXGame.Core.Messaging;
@@ -15,10 +15,10 @@ namespace DXGame.Core.Components.Advanced.Player
     // Should not be serialized
     public class SimplePlayerInputComponent : Component
     {
-        private const float JUMP_SPEED = 10.0f;
-        private const float MOVE_SPEED = 10.0f;
+        // TODO: Move these out
         private DxVector2 lastAcceleration_;
         protected PhysicsComponent physics_;
+        protected PlayerPropertiesComponent playerProperties_;
         protected StateComponent state_;
         protected WeaponComponent weapon_;
 
@@ -27,7 +27,7 @@ namespace DXGame.Core.Components.Advanced.Player
 
         public SimplePlayerInputComponent WithPhysics(PhysicsComponent physics)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(physics),
+            GenericUtils.CheckNullOrDefault(physics,
                 "SimplePlayerInput cannot be assigned a null PhysicsComponent");
             physics_ = physics;
             return this;
@@ -35,7 +35,7 @@ namespace DXGame.Core.Components.Advanced.Player
 
         public SimplePlayerInputComponent WithPlayerState(StateComponent state)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(state),
+            GenericUtils.CheckNullOrDefault(state,
                 "SimplePlayerInput cannot be initialized with a null PlayerState");
             state_ = state;
             return this;
@@ -43,9 +43,17 @@ namespace DXGame.Core.Components.Advanced.Player
 
         public SimplePlayerInputComponent WithWeapon(WeaponComponent weapon)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(weapon),
+            GenericUtils.CheckNullOrDefault(weapon,
                 "SimplePlayerInput cannot be initialized with a null weapon");
             weapon_ = weapon;
+            return this;
+        }
+
+        public SimplePlayerInputComponent WithPlayerProperties(PlayerPropertiesComponent properties)
+        {
+            GenericUtils.CheckNull(properties,
+                "SimplePlayerInput cannot be initialized with a null PlayerPropertiesComponent");
+            playerProperties_ = properties;
             return this;
         }
 
@@ -55,10 +63,57 @@ namespace DXGame.Core.Components.Advanced.Player
             HandleInput(events, gameTime);
         }
 
+        // TODO: Un-hardcode these values
+        // TODO: Move these to some functors or some shit
+        private void MoveLeft(StateChangeRequestMessage request)
+        {
+            if (physics_.Velocity.X < 0)
+            {
+                // TODO: Un-hard code this
+                physics_.Velocity = new DxVector2(1.5f * -playerProperties_.MoveSpeed,
+                    physics_.Velocity.Y);
+            }
+            else
+            {
+                physics_.Velocity = new DxVector2(-playerProperties_.MoveSpeed, physics_.Velocity.Y);
+            }
+            if (request.State != "Jumping")
+            {
+                request.State = "Walking_Left";
+            }
+        }
+
+        private void MoveRight(StateChangeRequestMessage request)
+        {
+            if (physics_.Velocity.X < 0)
+            {
+                physics_.Velocity = new DxVector2(1.5f * playerProperties_.MoveSpeed,
+                    physics_.Velocity.Y);
+            }
+            else
+            {
+                physics_.Velocity = new DxVector2(playerProperties_.MoveSpeed, physics_.Velocity.Y);
+            }
+            if (request.State != "Jumping")
+            {
+                request.State = "Walking_Right";
+            }
+        }
+
+        private void Jump(StateChangeRequestMessage request)
+        {
+            if (state_.State != "Jumping")
+            {
+                request.State = "Jumping";
+                // In case we're falling, set our y-wards velocity to nothing so we get the full jump
+                physics_.Velocity = new DxVector2(physics_.Velocity.X, 0);
+                physics_.Acceleration = new DxVector2(physics_.Acceleration.X,
+                    -playerProperties_.JumpSpeed);
+            }
+        }
+
         protected virtual void HandleInput(IEnumerable<KeyboardEvent> events, DxGameTime gameTime)
         {
-            var acceleration = physics_.Acceleration;
-            var velocity = physics_.Velocity;
             string state = state_.State;
 
             StateChangeRequestMessage request = new StateChangeRequestMessage {State = "None"};
@@ -67,43 +122,14 @@ namespace DXGame.Core.Components.Advanced.Player
             {
                 switch (keyEvent.Key)
                 {
-                // TODO: Un-hardcode these values
-                // TODO: Move these to some functors or some shit
                 case Keys.Left:
-                    if (velocity.X < 0)
-                    {
-                        velocity.X = 1.5f * -MOVE_SPEED;
-                    }
-                    else
-                    {
-                        velocity.X = -MOVE_SPEED;
-                    }
-                    if (request.State != "Jumping")
-                    {
-                        request.State = "Walking_Left";
-                    }
+                    MoveLeft(request);
                     break;
                 case Keys.Right:
-                    if (velocity.X > 0)
-                    {
-                        velocity.X = 1.5f * MOVE_SPEED;
-                    }
-                    else
-                    {
-                        velocity.X = MOVE_SPEED;
-                    }
-                    if (request.State != "Jumping")
-                    {
-                        request.State = "Walking_Right";
-                    }
+                    MoveRight(request);
                     break;
                 case Keys.Up:
-                    if (state_.State != "Jumping")
-                    {
-                        request.State = "Jumping";
-                        velocity.Y = -JUMP_SPEED;
-                        acceleration.Y = -JUMP_SPEED;
-                    }
+                    Jump(request);
                     break;
                 case Keys.Down:
                     break;
@@ -113,13 +139,11 @@ namespace DXGame.Core.Components.Advanced.Player
                 }
             }
 
-            if (state != "Jumping" && request.State == "None")
+            if (request.State == "None")
             {
-                velocity.X = 0;
+                physics_.Velocity = new DxVector2(0, physics_.Velocity.Y);
             }
 
-            physics_.Acceleration = acceleration;
-            physics_.Velocity = velocity;
             state_.State = state;
 
             lastAcceleration_ = physics_.Acceleration;

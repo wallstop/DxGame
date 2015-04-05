@@ -4,6 +4,7 @@ using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Player;
 using DXGame.Core.Components.Advanced.Position;
+using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 
@@ -18,17 +19,18 @@ namespace DXGame.Core.Generators
         private const string PLAYER_JUMPING = "PlayerJumping";
         private const string PLAYER_2 = "Player2";
         private static readonly DxVector2 MAX_VELOCITY = new DxVector2(5.0f, 20.0f);
+        private readonly AnimationComponent animation_;
         private readonly SimplePlayerInputComponent input_;
         private readonly PhysicsComponent physics_;
-        private readonly SpatialComponent space_;
+        private readonly PlayerPropertiesComponent playerProperties_;
         private readonly PlayerStateComponent state_;
-        private readonly AnimationComponent animation_;
         private readonly WeaponComponent weapon_;
+        // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
+        public SpatialComponent PlayerSpace { get; private set; }
 
-        // Addendum to prior TODO: change isLocalPlayer to something that's not a bool
         public PlayerGenerator(DxGame game, DxVector2 playerPosition, DxRectangle bounds)
         {
-            space_ =
+            PlayerSpace =
                 (BoundedSpatialComponent) new BoundedSpatialComponent(game).WithXMin(bounds.X)
                     .WithXMax(bounds.Width)
                     .WithXMin(bounds.Y)
@@ -36,28 +38,30 @@ namespace DXGame.Core.Generators
                     .WithDimensions(new DxVector2(50, 100)) // TODO: un-hard code these
                     .WithPosition(playerPosition);
             physics_ =
-                new MapCollideablePhysicsComponent(game).WithMaxVelocity(MAX_VELOCITY).WithPositionalComponent(space_);
+                new MapCollideablePhysicsComponent(game).WithMaxVelocity(MAX_VELOCITY)
+                    .WithPositionalComponent(PlayerSpace);
+
+            playerProperties_ = PlayerPropertiesComponent.DefaultPlayerProperties;
             state_ = new PlayerStateComponent(game);
             AddPlayerStates();
-            animation_ = new AnimationComponent(game).WithPosition(space_).WithState(state_);
+            animation_ = new AnimationComponent(game).WithPosition(PlayerSpace).WithState(state_);
             AddPlayerAnimations();
             weapon_ = new RangedWeaponComponent(game).WithPhysicsComponent(physics_).WithDamage(50);
             input_ =
-                new SimplePlayerInputComponent(game).WithPhysics(physics_).WithPlayerState(state_).WithWeapon(weapon_);
+                new SimplePlayerInputComponent(game).WithPhysics(physics_)
+                    .WithPlayerState(state_)
+                    .WithWeapon(weapon_)
+                    .WithPlayerProperties(playerProperties_);
         }
 
         public override List<GameObject> Generate()
         {
             var objects = new List<GameObject>();
             var player = new GameObject();
-            player.WithComponents(space_, physics_, animation_, input_, state_, weapon_);
+            player.WithComponents(PlayerSpace, physics_, animation_, input_, state_, weapon_,
+                playerProperties_);
             objects.Add(player);
             return objects;
-        }
-
-        public SpatialComponent PlayerSpace
-        {
-            get { return space_; }
         }
 
         private void AddPlayerStates()
@@ -68,7 +72,8 @@ namespace DXGame.Core.Generators
 
         private void AddPlayerAnimations()
         {
-            Debug.Assert(animation_ != null, "AnimationComponent cannot be null during AddPlayerAnimations");
+            Debug.Assert(animation_ != null,
+                "AnimationComponent cannot be null during AddPlayerAnimations");
             animation_.AddAnimation("None", PLAYER_NONE);
             animation_.AddAnimation("Walking_Left", PLAYER_WALKING_LEFT);
             animation_.AddAnimation("Walking_Right", PLAYER_WALKING_RIGHT);

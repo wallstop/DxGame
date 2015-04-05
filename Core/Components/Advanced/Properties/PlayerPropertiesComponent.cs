@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DXGame.Core.Wrappers;
 using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Properties
@@ -18,13 +17,35 @@ namespace DXGame.Core.Components.Advanced.Properties
         public int Health { get; set; }
 
         [DataMember]
-        public DxVector2 MoveSpeed { get; set; }
+        public int MaxHealth { get; set; }
+
+        [DataMember]
+        public int Defense { get; set; }
+
+        [DataMember]
+        public float MoveSpeed { get; set; }
 
         [DataMember]
         public float JumpSpeed { get; set; }
 
         [DataMember]
-        public float AttackSpeed { get; set; }
+        public TimeSpan AttackSpeed { get; set; }
+
+        public static PlayerPropertiesComponent DefaultPlayerProperties
+        {
+            get
+            {
+                return new PlayerPropertiesComponent(DxGame.Instance)
+                {
+                    Health = 10,
+                    MaxHealth = 10,
+                    Defense = 1,
+                    MoveSpeed = 10.0f,
+                    JumpSpeed = 8.0f,
+                    AttackSpeed = TimeSpan.FromMilliseconds(300)
+                };
+            }
+        }
 
         public PlayerPropertiesComponent(DxGame game)
             : base(game) { }

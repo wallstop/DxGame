@@ -7,7 +7,9 @@
         Low
     }
 
-    public sealed class PropertyMutator
+    public abstract class PropertyMutator<T>
     {
+        public virtual string Name { get; protected set; }
+        public abstract T Mutate(T input);
     }
 }

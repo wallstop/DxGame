@@ -16,7 +16,6 @@ namespace DXGame.Core.Components.Advanced.Player
     public class SimplePlayerInputComponent : Component
     {
         // TODO: Move these out
-        private DxVector2 lastAcceleration_;
         protected PhysicsComponent physics_;
         protected PlayerPropertiesComponent playerProperties_;
         protected StateComponent state_;
@@ -112,10 +111,16 @@ namespace DXGame.Core.Components.Advanced.Player
             }
         }
 
+        private void CheckForLackOfMovement(StateChangeRequestMessage request)
+        {
+            if (request.State == "None")
+            {
+                physics_.Velocity = new DxVector2(0, physics_.Velocity.Y);
+            }
+        }
+
         protected virtual void HandleInput(IEnumerable<KeyboardEvent> events, DxGameTime gameTime)
         {
-            string state = state_.State;
-
             StateChangeRequestMessage request = new StateChangeRequestMessage {State = "None"};
 
             foreach (KeyboardEvent keyEvent in events)
@@ -139,15 +144,7 @@ namespace DXGame.Core.Components.Advanced.Player
                 }
             }
 
-            if (request.State == "None")
-            {
-                physics_.Velocity = new DxVector2(0, physics_.Velocity.Y);
-            }
-
-            state_.State = state;
-
-            lastAcceleration_ = physics_.Acceleration;
-
+            CheckForLackOfMovement(request);
             Parent.BroadcastMessage(request);
         }
     }

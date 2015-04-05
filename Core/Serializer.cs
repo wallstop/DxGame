@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization.Json;
+using DXGame.Core.Utils;
 
 namespace DXGame.Core
 {
@@ -50,6 +51,11 @@ namespace DXGame.Core
             DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof (T));
             memoryStream.Position = 0;
             return (T) deserializer.ReadObject(memoryStream);
+        }
+
+        public static T JsonDeserialize(string data)
+        {
+            return JsonDeserialize(StringUtils.GetBytes(data));
         }
     }
 }

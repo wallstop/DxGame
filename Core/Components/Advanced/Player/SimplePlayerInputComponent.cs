@@ -115,6 +115,7 @@ namespace DXGame.Core.Components.Advanced.Player
         {
             if (request.State == "None")
             {
+                // If we aren't moving left or right (or requested a jump this frame), stop moving horizontally
                 physics_.Velocity = new DxVector2(0, physics_.Velocity.Y);
             }
         }

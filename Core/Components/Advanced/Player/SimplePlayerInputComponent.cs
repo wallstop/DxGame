@@ -22,7 +22,10 @@ namespace DXGame.Core.Components.Advanced.Player
         protected WeaponComponent weapon_;
 
         public SimplePlayerInputComponent(DxGame game)
-            : base(game) { UpdatePriority = UpdatePriority.HIGH; }
+            : base(game)
+        {
+            UpdatePriority = UpdatePriority.HIGH;
+        }
 
         public SimplePlayerInputComponent WithPhysics(PhysicsComponent physics)
         {
@@ -69,12 +72,13 @@ namespace DXGame.Core.Components.Advanced.Player
             if (physics_.Velocity.X < 0)
             {
                 // TODO: Un-hard code this
-                physics_.Velocity = new DxVector2(1.5f * -playerProperties_.MoveSpeed,
+                physics_.Velocity = new DxVector2(1.5f * -playerProperties_.MoveSpeed.CurrentValue,
                     physics_.Velocity.Y);
             }
             else
             {
-                physics_.Velocity = new DxVector2(-playerProperties_.MoveSpeed, physics_.Velocity.Y);
+                physics_.Velocity = new DxVector2(-playerProperties_.MoveSpeed.CurrentValue,
+                    physics_.Velocity.Y);
             }
             if (request.State != "Jumping")
             {
@@ -86,12 +90,13 @@ namespace DXGame.Core.Components.Advanced.Player
         {
             if (physics_.Velocity.X < 0)
             {
-                physics_.Velocity = new DxVector2(1.5f * playerProperties_.MoveSpeed,
+                physics_.Velocity = new DxVector2(1.5f * playerProperties_.MoveSpeed.CurrentValue,
                     physics_.Velocity.Y);
             }
             else
             {
-                physics_.Velocity = new DxVector2(playerProperties_.MoveSpeed, physics_.Velocity.Y);
+                physics_.Velocity = new DxVector2(playerProperties_.MoveSpeed.CurrentValue,
+                    physics_.Velocity.Y);
             }
             if (request.State != "Jumping")
             {
@@ -107,7 +112,7 @@ namespace DXGame.Core.Components.Advanced.Player
                 // In case we're falling, set our y-wards velocity to nothing so we get the full jump
                 physics_.Velocity = new DxVector2(physics_.Velocity.X, 0);
                 physics_.Acceleration = new DxVector2(physics_.Acceleration.X,
-                    -playerProperties_.JumpSpeed);
+                    -playerProperties_.JumpSpeed.CurrentValue);
             }
         }
 

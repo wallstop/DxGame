@@ -29,10 +29,7 @@ namespace DXGame.Core.Components.Advanced
         private PhysicsComponent Owner { get; set; }
 
         public RangedWeaponComponent(DxGame game)
-            : base(game)
-        {
-            Cooldown = TimeSpan.FromSeconds(0);
-        }
+            : base(game) { Cooldown = TimeSpan.FromSeconds(0); }
 
         public RangedWeaponComponent WithDirection(DxVector2 direction)
         {
@@ -88,8 +85,10 @@ namespace DXGame.Core.Components.Advanced
             var shootLeft = Direction.X < 0;
             DxVector2 velocity = new DxVector2(shootLeft ? -velocity_ : velocity_, 0);
             PhysicsComponent physics =
-                new MapCollideablePhysicsComponent(DxGame).WithVelocity(velocity).WithPositionalComponent(space);
-            SimpleSpriteComponent sprite = new SimpleSpriteComponent(DxGame).WithPosition(space).WithAsset("Orb");
+                new MapCollideablePhysicsComponent(DxGame).WithVelocity(velocity)
+                    .WithPositionalComponent(space);
+            SimpleSpriteComponent sprite =
+                new SimpleSpriteComponent(DxGame).WithPosition(space).WithAsset("Orb");
             CollisionDestructibleComponent destructible = new CollisionDestructibleComponent(DxGame);
             projectile.WithComponents(space, physics, sprite, destructible);
 

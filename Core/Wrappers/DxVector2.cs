@@ -9,7 +9,6 @@ namespace DXGame.Core.Wrappers
     public struct DxVector2 : IEquatable<DxVector2>, IEquatable<Vector2>
     {
         [DataMember] public float X;
-
         [DataMember] public float Y;
 
         public DxVector2(Vector2 vector)
@@ -29,6 +28,9 @@ namespace DXGame.Core.Wrappers
             X = value;
             Y = value;
         }
+
+        public bool Equals(DxVector2 other) { return this == other; }
+        public bool Equals(Vector2 other) { return X.Equals(other.X) && Y.Equals(other.Y); }
 
         public static DxVector2 operator +(DxVector2 lhs, DxVector2 rhs)
         {
@@ -95,26 +97,8 @@ namespace DXGame.Core.Wrappers
             return false;
         }
 
-        public override int GetHashCode()
-        {
-            return X.GetHashCode() + Y.GetHashCode();
-        }
-
-        public bool Equals(DxVector2 other)
-        {
-            return this == other;
-        }
-
-        public bool Equals(Vector2 other)
-        {
-            return X.Equals(other.X) && Y.Equals(other.Y);
-        }
-
-        public Vector2 ToVector2()
-        {
-            return new Vector2(X, Y);
-        }
-
+        public override int GetHashCode() { return X.GetHashCode() + Y.GetHashCode(); }
+        public Vector2 ToVector2() { return new Vector2(X, Y); }
         //public static implicit operator Vector2(DxVector2 vector)
         //{
         //    return vector.ToVector2();
@@ -125,9 +109,6 @@ namespace DXGame.Core.Wrappers
         //    return new DxVector2(vector);
         //}
 
-        public override string ToString()
-        {
-            return "{X:" + X + " Y: " + Y + "}";
-        }
+        public override string ToString() { return "{X:" + X + " Y: " + Y + "}"; }
     }
 }

@@ -166,6 +166,7 @@
     <Compile Include="Core\Utils\CollectionUtils.cs" />
     <Compile Include="Core\Utils\GameObjectUtils.cs" />
     <Compile Include="Core\Utils\GenericUtils.cs" />
+    <Compile Include="Core\Utils\LambdaUtils.cs" />
     <Compile Include="Core\Utils\MathUtils.cs" />
     <Compile Include="Core\Utils\StringUtils.cs" />
     <Compile Include="Core\Wrappers\DxGameTime.cs" />

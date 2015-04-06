@@ -50,11 +50,14 @@ namespace DXGame.Core.Properties
         The DeMutator function on a PropertyMutator reflects the effect bein un-applied (de-mutates the mutated value to derive the original value). 
         This is necessary because everything interacts with the mutated value of a Property (the current value). However, PropertyMutators interact
         with the base value to derive the current value, so we need to work backwards as well.
+
+        NOTE: PropertyMutators currently cannot properly cope with lambda mutators & demutators. Te equality comparisons will fail.
     </summary>
     */
 
     public class PropertyMutator<T> : IEquatable<PropertyMutator<T>>
     {
+        // TODO: Come up with a way to handle equality comparisons for lambda expressions
         public delegate T DeMutator(T input);
 
         public delegate T Mutator(T input);
@@ -65,7 +68,7 @@ namespace DXGame.Core.Properties
         public readonly MutatePriority Priority;
         public int Count;
 
-        public PropertyMutator(Mutator mutator, DeMutator demutator, string name)
+        public PropertyMutator(Mutator mutator, DeMutator demutator, string name, MutatePriority priority = MutatePriority.Medium)
         {
             // TODO: Remove these or do property validation checks
             GenericUtils.CheckNull(mutator);
@@ -75,16 +78,16 @@ namespace DXGame.Core.Properties
             mutator_ = mutator;
             deMutator_ = demutator;
             Name = name;
-            Priority = MutatePriority.Medium;
+            Priority = priority;
         }
 
         public bool Equals(PropertyMutator<T> other)
         {
-            bool temp = !ReferenceEquals(other, null);
-            temp = temp && deMutator_ == other.deMutator_;
-            temp = temp && mutator_ == other.mutator_;
-            temp = temp && Name == other.Name;
-            return temp;
+            return !ReferenceEquals(other, null) &&
+                   deMutator_ == other.deMutator_ &&
+                   mutator_ == other.mutator_ &&
+                   Name == other.Name &&
+                   Priority == other.Priority;
         }
 
         /*
@@ -132,7 +135,8 @@ namespace DXGame.Core.Properties
 
         public override int GetHashCode()
         {
-            return deMutator_.GetHashCode() ^ mutator_.GetHashCode() ^ Name.GetHashCode();
+            return LambdaUtils.DelegateHashCode(deMutator_) ^ LambdaUtils.DelegateHashCode(mutator_) ^
+                   Name.GetHashCode() ^ Priority.GetHashCode();
         }
 
         public override string ToString() { return Name; }

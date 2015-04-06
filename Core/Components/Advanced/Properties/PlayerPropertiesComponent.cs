@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Properties;
 using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Properties

@@ -1,5 +1,4 @@
 ﻿using System;
-using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Network;
 using DXGame.Core.GraphicsWidgets;
@@ -50,7 +49,9 @@ namespace DXGame.Core.Menus
                     .WithText("Port:")
                     .WithSpace(new DxRectangle
                     {
-                        X = portBoxSpatial.Space.X - /* Pixel Width of "Port:" */ spriteFont.MeasureString("Port:").X,
+                        X =
+                            portBoxSpatial.Space.X
+                            - /* Pixel Width of "Port:" */ spriteFont.MeasureString("Port:").X,
                         Y = portBoxSpatial.Space.Y,
                         Width = portBoxSpatial.Width,
                         Height = portBoxSpatial.Height
@@ -99,7 +100,8 @@ namespace DXGame.Core.Menus
             // TODO: Change this to 4 / whatever our max player limit is
             config.MaximumConnections = 1;
 
-            NetworkServer server = (NetworkServer) new NetworkServer(DxGame).WithConfiguration(config);
+            NetworkServer server =
+                (NetworkServer) new NetworkServer(DxGame).WithConfiguration(config);
             var networkModel = DxGame.Model<NetworkModel>();
             networkModel.AttachServer(server);
             server.EstablishConnection();

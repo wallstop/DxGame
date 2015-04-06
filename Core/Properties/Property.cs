@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using log4net;
 
-namespace DXGame.Core
+namespace DXGame.Core.Properties
 {
     public sealed class Property<T>
     {

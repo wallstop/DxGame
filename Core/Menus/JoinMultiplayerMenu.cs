@@ -1,5 +1,4 @@
 ﻿using System;
-using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Network;
 using DXGame.Core.GraphicsWidgets;
@@ -58,7 +57,9 @@ namespace DXGame.Core.Menus
                     .WithText(portString)
                     .WithSpace(new DxRectangle
                     {
-                        X = portBoxSpatial.Space.X - /* Pixel Width of "Port:" */ SpriteFont.MeasureString(portString).X,
+                        X =
+                            portBoxSpatial.Space.X
+                            - /* Pixel Width of "Port:" */ SpriteFont.MeasureString(portString).X,
                         Y = portBoxSpatial.Space.Y,
                         Width = SpriteFont.MeasureString(portString).X,
                         Height = SpriteFont.MeasureString(portString).Y
@@ -121,8 +122,9 @@ namespace DXGame.Core.Menus
             };
 
             var client =
-                ((NetworkClient) new NetworkClient(DxGame).WithConfiguration(config)).WithNetworkClientConfig(
-                    networkClientConfig);
+                ((NetworkClient) new NetworkClient(DxGame).WithConfiguration(config))
+                    .WithNetworkClientConfig(
+                        networkClientConfig);
             var networkModel = DxGame.Model<NetworkModel>();
             networkModel.AttachClient(client);
             client.EstablishConnection();

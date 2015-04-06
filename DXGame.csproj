@@ -159,7 +159,7 @@
     <Compile Include="Core\Network\GameStateKeyFrame.cs" />
     <Compile Include="Core\Network\NetworkMessage.cs" />
     <Compile Include="Core\Network\MessageType.cs" />
-    <Compile Include="Core\Property.cs" />
+    <Compile Include="Core\Properties\Property.cs" />
     <Compile Include="Core\Serializer.cs" />
     <Compile Include="Core\Settings\GameSettings.cs" />
     <Compile Include="Core\UniqueId.cs" />
@@ -175,7 +175,7 @@
     <Compile Include="Main\DxGame.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Core\PropertyMutator.cs" />
+    <Compile Include="Core\Properties\PropertyMutator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Lidgren.Network, Version=2011.3.12.0, Culture=neutral, processorArchitecture=MSIL" />

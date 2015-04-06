@@ -1,7 +1,7 @@
 ﻿using System;
 using DXGame.Core.Utils;
 
-namespace DXGame.Core
+namespace DXGame.Core.Properties
 {
     /*
         The order in which PropertyMutators are applied, Highest first.
@@ -45,11 +45,15 @@ namespace DXGame.Core
         }
         </code>
 
-        The Mutator function on a PropertyMutator
+        The Mutator function on a PropertyMutator reflects the effect being applied (mutates the original value into some new value).
+
+        The DeMutator function on a PropertyMutator reflects the effect bein un-applied (de-mutates the mutated value to derive the original value). 
+        This is necessary because everything interacts with the mutated value of a Property (the current value). However, PropertyMutators interact
+        with the base value to derive the current value, so we need to work backwards as well.
     </summary>
     */
 
-    public abstract class PropertyMutator<T> : IEquatable<PropertyMutator<T>>
+    public class PropertyMutator<T> : IEquatable<PropertyMutator<T>>
     {
         public delegate T DeMutator(T input);
 
@@ -61,7 +65,7 @@ namespace DXGame.Core
         public readonly MutatePriority Priority;
         public int Count;
 
-        protected PropertyMutator(Mutator mutator, DeMutator demutator, string name)
+        public PropertyMutator(Mutator mutator, DeMutator demutator, string name)
         {
             // TODO: Remove these or do property validation checks
             GenericUtils.CheckNull(mutator);
@@ -74,7 +78,18 @@ namespace DXGame.Core
             Priority = MutatePriority.Medium;
         }
 
-        public bool Equals(PropertyMutator<T> other) { return this == other; }
+        public bool Equals(PropertyMutator<T> other)
+        {
+            bool temp = !ReferenceEquals(other, null);
+            temp = temp && deMutator_ == other.deMutator_;
+            temp = temp && mutator_ == other.mutator_;
+            temp = temp && Name == other.Name;
+            return temp;
+        }
+
+        /*
+            Default behavior is to Apply the Mutate & DeMutate functions $Count times
+        */
 
         public virtual T DeMutate(T input)
         {
@@ -96,10 +111,12 @@ namespace DXGame.Core
 
         public static bool operator ==(PropertyMutator<T> lhs, PropertyMutator<T> rhs)
         {
-            return lhs != null && rhs != null
-                   && lhs.deMutator_ == rhs.deMutator_
-                   && lhs.mutator_ == rhs.mutator_
-                   && lhs.Name == rhs.Name;
+            if (ReferenceEquals(lhs, null))
+            {
+                return ReferenceEquals(rhs, null);
+            }
+
+            return lhs.Equals(rhs);
         }
 
         public static bool operator !=(PropertyMutator<T> lhs, PropertyMutator<T> rhs)

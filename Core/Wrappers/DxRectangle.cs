@@ -9,7 +9,6 @@ namespace DXGame.Core.Wrappers
     [DataContract]
     public struct DxRectangle : IEquatable<DxRectangle>, IEquatable<Rectangle>
     {
-        private static readonly DxRectangle EMPTY_RECTANGLE = new DxRectangle();
         private const float TOLERANCE = 0.000001f;
 
         [DataMember]
@@ -31,7 +30,7 @@ namespace DXGame.Core.Wrappers
 
         public DxRectangle EmptyRectangle
         {
-            get { return EMPTY_RECTANGLE; }
+            get { return new DxRectangle(); }
         }
 
         public float Left
@@ -57,10 +56,6 @@ namespace DXGame.Core.Wrappers
         public Point Center
         {
             get { return new Point((int) ((X + Width) / 2), (int) ((Y + Height) / 2)); }
-        }
-
-        static DxRectangle()
-        {
         }
 
         public DxRectangle(Vector2 x, Vector2 y) : this()
@@ -95,6 +90,9 @@ namespace DXGame.Core.Wrappers
             Height = height;
         }
 
+        public bool Equals(DxRectangle rhs) { return this == rhs; }
+        public bool Equals(Rectangle other) { return X.Equals(other.X) && Y.Equals(other.Y); }
+
         public Rectangle ToRectangle()
         {
             return new Rectangle((int) X, (int) Y, (int) Width, (int) Height);
@@ -105,10 +103,7 @@ namespace DXGame.Core.Wrappers
             return new DxRectangle(rectangle);
         }
 
-        public Vector2 XY()
-        {
-            return new Vector2(X, Y);
-        }
+        public Vector2 XY() { return new Vector2(X, Y); }
 
         public static bool operator ==(DxRectangle lhs, DxRectangle rhs)
         {
@@ -135,15 +130,8 @@ namespace DXGame.Core.Wrappers
             return false;
         }
 
-        public bool Contains(Vector2 point)
-        {
-            return Contains(point.X, point.Y);
-        }
-
-        public bool Contains(Point point)
-        {
-            return Contains(point.X, point.Y);
-        }
+        public bool Contains(Vector2 point) { return Contains(point.X, point.Y); }
+        public bool Contains(Point point) { return Contains(point.X, point.Y); }
 
         public bool Intersects(Rectangle rectangle)
         {
@@ -230,14 +218,10 @@ namespace DXGame.Core.Wrappers
             return false;
         }
 
-        public bool Equals(Rectangle other)
-        {
-            return X.Equals(other.X) && Y.Equals(other.Y);
-        }
-
         public override string ToString()
         {
-            return string.Format("{{X:{0:N2} Y:{1:N2} Width:{2:N2} Height:{3:N2}", X, Y, Width, Height);
+            return string.Format("{{X:{0:N2} Y:{1:N2} Width:{2:N2} Height:{3:N2}", X, Y, Width,
+                Height);
         }
 
         public override int GetHashCode()
@@ -251,11 +235,6 @@ namespace DXGame.Core.Wrappers
                 hash = hash * 23 + Height.GetHashCode();
                 return hash;
             }
-        }
-
-        public bool Equals(DxRectangle rhs)
-        {
-            return this == rhs;
         }
     }
 }

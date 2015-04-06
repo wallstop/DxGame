@@ -45,6 +45,21 @@ namespace DXGame.Core.Properties
         }
         </code>
 
+        Alternatively, the same could be accomplished without instantiating a new class via:
+        <code>
+            private static float WereWolfBuff(float input)
+            {
+                return input * BUFF_INCREASE;
+            }
+
+            private static float WereWolfDebuff(float input)
+            {
+                return input / BUFF_INCREASE;
+            }
+
+            PropertyMutator<float> wereWolfBuff = new PropertyMutator<Float>(WereWolfBuff, WereWolfDebuff, "WereWolfBuff");
+        </code>
+
         The Mutator function on a PropertyMutator reflects the effect being applied (mutates the original value into some new value).
 
         The DeMutator function on a PropertyMutator reflects the effect bein un-applied (de-mutates the mutated value to derive the original value). 
@@ -53,6 +68,12 @@ namespace DXGame.Core.Properties
 
         NOTE: PropertyMutators currently cannot properly cope with lambda mutators & demutators. Te equality comparisons will fail.
     </summary>
+    */
+
+    /*
+        TODO: Revisit how we deal with ref-counting. Should we initialize to 0 Count and only increment to 1 when it's attached to a property?
+        Also, counts should really be tied to the Property, not the Mutator. We need to move the Count Data into the Property somehow. Otherwise,
+        a PropertyMutator shared by two different objects will count incorrectly.
     */
 
     public class PropertyMutator<T> : IEquatable<PropertyMutator<T>>
@@ -66,15 +87,17 @@ namespace DXGame.Core.Properties
         protected readonly Mutator mutator_;
         public readonly string Name;
         public readonly MutatePriority Priority;
+        // TODO: Remove this, bad bad design
         public int Count;
 
-        public PropertyMutator(Mutator mutator, DeMutator demutator, string name, MutatePriority priority = MutatePriority.Medium)
+        public PropertyMutator(Mutator mutator, DeMutator demutator, string name,
+            MutatePriority priority = MutatePriority.Medium)
         {
             // TODO: Remove these or do property validation checks
             GenericUtils.CheckNull(mutator);
             GenericUtils.CheckNull(demutator);
             GenericUtils.CheckNullOrDefault(name);
-            Count = 1;
+            Count = 0;
             mutator_ = mutator;
             deMutator_ = demutator;
             Name = name;
@@ -135,7 +158,8 @@ namespace DXGame.Core.Properties
 
         public override int GetHashCode()
         {
-            return LambdaUtils.DelegateHashCode(deMutator_) ^ LambdaUtils.DelegateHashCode(mutator_) ^
+            return LambdaUtils.DelegateHashCode(deMutator_) ^ LambdaUtils.DelegateHashCode(mutator_)
+                   ^
                    Name.GetHashCode() ^ Priority.GetHashCode();
         }
 
@@ -143,6 +167,14 @@ namespace DXGame.Core.Properties
 
         public static int PriorityComparison(PropertyMutator<T> lhs, PropertyMutator<T> rhs)
         {
+            if (ReferenceEquals(rhs, null))
+            {
+                return 1;
+            }
+            if (ReferenceEquals(lhs, null))
+            {
+                return -1;
+            }
             return lhs.Priority.CompareTo(rhs.Priority);
         }
     }

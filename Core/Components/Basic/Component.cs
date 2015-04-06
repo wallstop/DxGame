@@ -192,7 +192,7 @@ namespace DXGame.Core.Components.Basic
         }
 
         [OnDeserialized]
-        public void BaseDeSerialize(StreamingContext context)
+        private void BaseDeSerialize(StreamingContext context)
         {
             DxGame = DxGame.Instance;
             DeSerialize();

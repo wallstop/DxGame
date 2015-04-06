@@ -11,7 +11,7 @@ namespace DXGame.Core.Properties
         private readonly List<PropertyMutator<T>> mutators_ = new List<PropertyMutator<T>>();
         public readonly string Name;
         public T BaseValue { get; private set; }
-        public T CurrentValue { get; private set; }
+        public T CurrentValue { get; set; }
 
         public Property(T value, string name)
         {
@@ -19,6 +19,10 @@ namespace DXGame.Core.Properties
             CurrentValue = value;
             Name = name;
         }
+
+        /*
+            Note: Ignores mutator count. Only adds the mutator ONCE
+        */
 
         public void AddMutator(PropertyMutator<T> mutator)
         {
@@ -38,8 +42,8 @@ namespace DXGame.Core.Properties
             LOG.Debug(String.Format(
                 "Added {0} counts for a total of {1} of PropertyMutator {2} to {3}",
                 mutator.Count,
-                existingMutator.Count, mutator.Name, Name));
-            InternalUpdateMutator(existingMutator, mutator.Count);
+                1, mutator.Name, Name));
+            InternalUpdateMutator(existingMutator, 1);
         }
 
         public void RemoveMutator(PropertyMutator<T> mutator)

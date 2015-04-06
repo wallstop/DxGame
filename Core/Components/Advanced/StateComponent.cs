@@ -41,12 +41,12 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public void AddState(String state)
+        public void AddState(string state)
         {
             states_.Add(state);
         }
 
-        public void AddStates(params String[] states)
+        public void AddStates(params string[] states)
         {
             foreach (var state in states)
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DXGame.Core.Utils;
 
 namespace DXGame.Core.Properties
@@ -70,12 +71,6 @@ namespace DXGame.Core.Properties
     </summary>
     */
 
-    /*
-        TODO: Revisit how we deal with ref-counting. Should we initialize to 0 Count and only increment to 1 when it's attached to a property?
-        Also, counts should really be tied to the Property, not the Mutator. We need to move the Count Data into the Property somehow. Otherwise,
-        a PropertyMutator shared by two different objects will count incorrectly.
-    */
-
     public class PropertyMutator<T> : IEquatable<PropertyMutator<T>>
     {
         // TODO: Come up with a way to handle equality comparisons for lambda expressions
@@ -87,8 +82,6 @@ namespace DXGame.Core.Properties
         protected readonly Mutator mutator_;
         public readonly string Name;
         public readonly MutatePriority Priority;
-        // TODO: Remove this, bad bad design
-        public int Count;
 
         public PropertyMutator(Mutator mutator, DeMutator demutator, string name,
             MutatePriority priority = MutatePriority.Medium)
@@ -97,7 +90,6 @@ namespace DXGame.Core.Properties
             GenericUtils.CheckNull(mutator);
             GenericUtils.CheckNull(demutator);
             GenericUtils.CheckNullOrDefault(name);
-            Count = 0;
             mutator_ = mutator;
             deMutator_ = demutator;
             Name = name;
@@ -117,18 +109,18 @@ namespace DXGame.Core.Properties
             Default behavior is to Apply the Mutate & DeMutate functions $Count times
         */
 
-        public virtual T DeMutate(T input)
+        public virtual T DeMutate(T input, int count)
         {
-            for (int i = 0; i < Count; ++i)
+            for (int i = 0; i < count; ++i)
             {
                 input = deMutator_(input);
             }
             return input;
         }
 
-        public virtual T Mutate(T input)
+        public virtual T Mutate(T input, int count)
         {
-            for (int i = 0; i < Count; ++i)
+            for (int i = 0; i < count; ++i)
             {
                 input = mutator_(input);
             }
@@ -164,8 +156,11 @@ namespace DXGame.Core.Properties
         }
 
         public override string ToString() { return Name; }
+    }
 
-        public static int PriorityComparison(PropertyMutator<T> lhs, PropertyMutator<T> rhs)
+    public sealed class PropertyMutatorPriorityComparer<T> : IComparer<PropertyMutator<T>>
+    {
+        public int Compare(PropertyMutator<T> lhs, PropertyMutator<T> rhs)
         {
             if (ReferenceEquals(rhs, null))
             {

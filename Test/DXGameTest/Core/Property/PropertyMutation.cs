@@ -14,9 +14,9 @@ namespace DXGameTest.Core.Property
 
             const int original = 200;
             const int expected = 400;
-            int mutateOutcome = intMutator.Mutate(original);
+            int mutateOutcome = intMutator.Mutate(original, 1);
             Assert.AreEqual(expected, mutateOutcome);
-            int demutateOutcome = intMutator.DeMutate(mutateOutcome);
+            int demutateOutcome = intMutator.DeMutate(mutateOutcome, 1);
             Assert.AreEqual(original, demutateOutcome);
         }
 
@@ -25,14 +25,13 @@ namespace DXGameTest.Core.Property
         {
             PropertyMutator<int> intMutator = new PropertyMutator<int>(input => input * 2,
                 input => input / 2, "SimplePropertyMutator");
-            intMutator.Count = 5;
 
             const int original = 200;
             // Since we've increased the count, we should be expecting a much larger number than the original (5x larger, in fact!)
-            const int expected = 200 * 2 * 2 * 2 * 2 * 2;
-            int mutateOutcome = intMutator.Mutate(original);
+            int expected = 200 * (int) (Math.Pow(2, 5));
+            int mutateOutcome = intMutator.Mutate(original, 5);
             Assert.AreEqual(expected, mutateOutcome);
-            int demutateOutcome = intMutator.DeMutate(mutateOutcome);
+            int demutateOutcome = intMutator.DeMutate(mutateOutcome, 5);
             Assert.AreEqual(original, demutateOutcome);
         }
 
@@ -150,11 +149,6 @@ namespace DXGameTest.Core.Property
 
             Assert.AreEqual(intMutator, otherIntMutator);
             Assert.AreEqual(otherIntMutator, intMutator);
-
-            // Make sure counts don't interfere with equality
-            otherIntMutator.Count = 500;
-            Assert.AreEqual(intMutator, otherIntMutator);
-            Assert.AreEqual(otherIntMutator, intMutator);
         }
 
         [Test]
@@ -166,11 +160,6 @@ namespace DXGameTest.Core.Property
             PropertyMutator<int> otherIntMutator = new PropertyMutator<int>(SimpleMutatorVersion1,
                 SimpleDeMutatorVersion1, "SimplePropertyMutator");
 
-            Assert.AreEqual(intMutator.GetHashCode(), otherIntMutator.GetHashCode());
-            Assert.AreEqual(otherIntMutator.GetHashCode(), intMutator.GetHashCode());
-
-            // Make sure counts don't interfere with equality
-            otherIntMutator.Count = 500;
             Assert.AreEqual(intMutator.GetHashCode(), otherIntMutator.GetHashCode());
             Assert.AreEqual(otherIntMutator.GetHashCode(), intMutator.GetHashCode());
 
@@ -217,31 +206,33 @@ namespace DXGameTest.Core.Property
                 SimpleMutatorVersion1, SimpleDeMutatorVersion1, "SimplePropertyMutator",
                 MutatePriority.Low);
 
+            var priorityComparer = new PropertyMutatorPriorityComparer<int>();
+
             // All mutators at the same priority should compare equal (0)
             Assert.AreEqual(0,
-                PropertyMutator<int>.PriorityComparison(highPriorityMutator, highPriorityMutator));
+                priorityComparer.Compare(highPriorityMutator, highPriorityMutator));
             Assert.AreEqual(0,
-                PropertyMutator<int>.PriorityComparison(mediumPriorityMutator, mediumPriorityMutator));
+                priorityComparer.Compare(mediumPriorityMutator, mediumPriorityMutator));
             Assert.AreEqual(0,
-                PropertyMutator<int>.PriorityComparison(lowPriorityMutator, lowPriorityMutator));
+                priorityComparer.Compare(lowPriorityMutator, lowPriorityMutator));
 
             // All less-than comparisons should result in a value greater than 0 (hence, 0 is less than the value)
             // Due to construction, "High Priority" should compare to be smaller than all other priorities, thus resulting in being sorted first
             Assert.Less(0,
-                PropertyMutator<int>.PriorityComparison(mediumPriorityMutator, highPriorityMutator));
+                priorityComparer.Compare(mediumPriorityMutator, highPriorityMutator));
             Assert.Less(0,
-                PropertyMutator<int>.PriorityComparison(lowPriorityMutator, mediumPriorityMutator));
+                priorityComparer.Compare(lowPriorityMutator, mediumPriorityMutator));
             Assert.Less(0,
-                PropertyMutator<int>.PriorityComparison(lowPriorityMutator, highPriorityMutator));
+                priorityComparer.Compare(lowPriorityMutator, highPriorityMutator));
 
             // All greater-than comparisons should result in a value less than 0 (hence, 0 is greater than the value)
             // Due to construction "Low Priority" should compare to be larger than all other priority, thus resulting in being sorted last
             Assert.Greater(0,
-                PropertyMutator<int>.PriorityComparison(highPriorityMutator, mediumPriorityMutator));
+                priorityComparer.Compare(highPriorityMutator, mediumPriorityMutator));
             Assert.Greater(0,
-                PropertyMutator<int>.PriorityComparison(highPriorityMutator, lowPriorityMutator));
+                priorityComparer.Compare(highPriorityMutator, lowPriorityMutator));
             Assert.Greater(0,
-                PropertyMutator<int>.PriorityComparison(mediumPriorityMutator, lowPriorityMutator));
+                priorityComparer.Compare(mediumPriorityMutator, lowPriorityMutator));
         }
 
         private static int SimpleMutatorVersion1(int input) { return input * 2; }

@@ -81,7 +81,6 @@ namespace DXGameTest.Core.Utils
             Vector2 constrained = VectorUtils.ConstrainVector(new Vector2(3, -14), constraint);
             Assert.AreNotEqual(constraint, constrained);
             Assert.AreEqual(new Vector2(2, -14), constrained);
-
         }
     }
 }

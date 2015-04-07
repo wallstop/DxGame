@@ -72,7 +72,7 @@ namespace DXGameTest.Core.Property
 
             // We expect that if we modify the CurrentValue, only the currentValue will change
             Assert.AreEqual(baseValue, property.BaseValue);
-            Assert.AreEqual(baseValue + 1 - 2, property.CurrentValue);
+            Assert.AreEqual(baseValue + 1 - removedAmount, property.CurrentValue);
             Assert.AreEqual(propertyName, property.Name);
 
             // However, we also expect that this change will carry backwards once the mutator is removed and effect both the base & current values
@@ -99,9 +99,6 @@ namespace DXGameTest.Core.Property
                 property.AddMutator(mutator);
             }
 
-            // Make sure we've added the correct number of mutators
-            Assert.AreEqual(numMutators, mutator.Count);
-
             // Make sure the mutators haven't foobard the property's state
             Assert.AreEqual(baseValue, property.BaseValue);
             Assert.AreEqual(baseValue + numMutators, property.CurrentValue);
@@ -113,9 +110,6 @@ namespace DXGameTest.Core.Property
                 property.RemoveMutator(mutator);
             }
 
-            // Make sure we've added the correct number of mutators
-            Assert.AreEqual(numMutators - partialRemove, mutator.Count);
-
             // Make sure the mutators haven't foobard the property's state
             Assert.AreEqual(baseValue, property.BaseValue);
             Assert.AreEqual(baseValue + numMutators - partialRemove, property.CurrentValue);
@@ -125,28 +119,25 @@ namespace DXGameTest.Core.Property
             property.CurrentValue -= modificationAmount;
 
             Assert.AreEqual(baseValue, property.BaseValue);
-            Assert.AreEqual(baseValue + numMutators - partialRemove - modificationAmount, property.CurrentValue);
+            Assert.AreEqual(baseValue + numMutators - partialRemove - modificationAmount,
+                property.CurrentValue);
             Assert.AreEqual(propertyName, property.Name);
 
             for (int i = 0; i < numMutators - partialRemove; ++i)
             {
                 property.RemoveMutator(mutator);
             }
-            
-            // We shouldn't have a single instance of our mutator count.
-            Assert.AreEqual(0, mutator.Count);
-            Assert.AreEqual(baseValue, property.BaseValue);
-            Assert.AreEqual(baseValue + numMutators - partialRemove, property.CurrentValue);
+            Assert.AreEqual(baseValue - modificationAmount, property.BaseValue);
+            Assert.AreEqual(
+                baseValue + numMutators - partialRemove - (numMutators - partialRemove)
+                - modificationAmount,
+                property.CurrentValue);
             Assert.AreEqual(propertyName, property.Name);
-
-
-
-
         }
 
         [Test]
         public void AddNullMutatorNoOp()
-        {            
+        {
             const int baseValue = 300;
             const string propertyName = "TestIntegerProperty";
             Property<int> property = new Property<int>(baseValue, propertyName);

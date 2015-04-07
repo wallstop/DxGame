@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 
 namespace DXGame.Core.Properties
@@ -71,6 +72,8 @@ namespace DXGame.Core.Properties
     </summary>
     */
 
+    [Serializable]
+    [DataContract]
     public class PropertyMutator<T> : IEquatable<PropertyMutator<T>>
     {
         // TODO: Come up with a way to handle equality comparisons for lambda expressions
@@ -78,10 +81,11 @@ namespace DXGame.Core.Properties
 
         public delegate T Mutator(T input);
 
-        protected readonly DeMutator deMutator_;
-        protected readonly Mutator mutator_;
-        public readonly string Name;
-        public readonly MutatePriority Priority;
+        // TODO: Figure out how to properly deserialize these. Deserializing readonly properties is hard :(
+        [DataMember] protected readonly DeMutator deMutator_;
+        [DataMember] protected readonly Mutator mutator_;
+        [DataMember] public readonly string Name;
+        [DataMember] public readonly MutatePriority Priority;
 
         public PropertyMutator(Mutator mutator, DeMutator demutator, string name,
             MutatePriority priority = MutatePriority.Medium)

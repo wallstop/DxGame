@@ -14,6 +14,7 @@ namespace DXGame.Core.Components.Basic
         HIGHEST = -99,
         HIGH = 1,
         NORMAL = 5,
+        HUD_LAYER = 8,
         LOW = 10,
         END_SPRITEBATCH = 1000
     }
@@ -38,26 +39,22 @@ namespace DXGame.Core.Components.Basic
     [DataContract]
     public abstract class DrawableComponent : Component
     {
-        [NonSerialized]
-        [IgnoreDataMember]
-        protected SpriteBatch spriteBatch_;
+        [NonSerialized] [IgnoreDataMember] protected SpriteBatch spriteBatch_;
+
+        [DataMember]
+        public DrawPriority DrawPriority { get; set; }
 
         protected DrawableComponent(DxGame game)
             : base(game)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(game), "DrawableComponent cannot be initialized with a null game");
+            Debug.Assert(!GenericUtils.IsNullOrDefault(game),
+                "DrawableComponent cannot be initialized with a null game");
             spriteBatch_ = game.SpriteBatch;
             UpdatePriority = UpdatePriority.NORMAL;
             DrawPriority = DrawPriority.NORMAL;
         }
 
-        [DataMember]
-        public DrawPriority DrawPriority { get; set; }
-
         public abstract void Draw(DxGameTime gameTime);
-
-        protected override void Update(DxGameTime gameTime)
-        {
-        }
+        protected override void Update(DxGameTime gameTime) { }
     }
 }

@@ -98,8 +98,10 @@
     <Compile Include="Core\Animation.cs" />
     <Compile Include="Core\Components\Advanced\AnimationComponent.cs" />
     <Compile Include="Core\Components\Advanced\CollisionDestructibleComponent.cs" />
+    <Compile Include="Core\Components\Advanced\FloatingHealthIndicator.cs" />
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Player\PlayerStateComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Properties\EntityPropertiesComponent.cs" />
     <Compile Include="Core\Components\Advanced\Properties\PlayerPropertiesComponent.cs" />
     <Compile Include="Core\Components\Advanced\RangedWeaponComponent.cs" />
     <Compile Include="Core\Components\Advanced\WeaponComponent.cs" />
@@ -279,6 +281,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Core\GraphicsWidgets\HUD\" />
     <Folder Include="Network\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

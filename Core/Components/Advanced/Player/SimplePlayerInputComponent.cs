@@ -17,7 +17,7 @@ namespace DXGame.Core.Components.Advanced.Player
     {
         // TODO: Move these out
         protected PhysicsComponent physics_;
-        protected PlayerPropertiesComponent playerProperties_;
+        protected EntityPropertiesComponent EntityProperties;
         protected StateComponent state_;
         protected WeaponComponent weapon_;
 
@@ -51,11 +51,11 @@ namespace DXGame.Core.Components.Advanced.Player
             return this;
         }
 
-        public SimplePlayerInputComponent WithPlayerProperties(PlayerPropertiesComponent properties)
+        public SimplePlayerInputComponent WithPlayerProperties(EntityPropertiesComponent properties)
         {
             GenericUtils.CheckNull(properties,
-                "SimplePlayerInput cannot be initialized with a null PlayerPropertiesComponent");
-            playerProperties_ = properties;
+                "SimplePlayerInput cannot be initialized with a null EntityPropertiesComponent");
+            EntityProperties = properties;
             return this;
         }
 
@@ -72,12 +72,12 @@ namespace DXGame.Core.Components.Advanced.Player
             if (physics_.Velocity.X < 0)
             {
                 // TODO: Un-hard code this
-                physics_.Velocity = new DxVector2(1.5f * -playerProperties_.MoveSpeed.CurrentValue,
+                physics_.Velocity = new DxVector2(1.5f * -EntityProperties.MoveSpeed.CurrentValue,
                     physics_.Velocity.Y);
             }
             else
             {
-                physics_.Velocity = new DxVector2(-playerProperties_.MoveSpeed.CurrentValue,
+                physics_.Velocity = new DxVector2(-EntityProperties.MoveSpeed.CurrentValue,
                     physics_.Velocity.Y);
             }
             if (request.State != "Jumping")
@@ -90,12 +90,12 @@ namespace DXGame.Core.Components.Advanced.Player
         {
             if (physics_.Velocity.X < 0)
             {
-                physics_.Velocity = new DxVector2(1.5f * playerProperties_.MoveSpeed.CurrentValue,
+                physics_.Velocity = new DxVector2(1.5f * EntityProperties.MoveSpeed.CurrentValue,
                     physics_.Velocity.Y);
             }
             else
             {
-                physics_.Velocity = new DxVector2(playerProperties_.MoveSpeed.CurrentValue,
+                physics_.Velocity = new DxVector2(EntityProperties.MoveSpeed.CurrentValue,
                     physics_.Velocity.Y);
             }
             if (request.State != "Jumping")
@@ -112,7 +112,7 @@ namespace DXGame.Core.Components.Advanced.Player
                 // In case we're falling, set our y-wards velocity to nothing so we get the full jump
                 physics_.Velocity = new DxVector2(physics_.Velocity.X, 0);
                 physics_.Acceleration = new DxVector2(physics_.Acceleration.X,
-                    -playerProperties_.JumpSpeed.CurrentValue);
+                    -EntityProperties.JumpSpeed.CurrentValue);
             }
         }
 

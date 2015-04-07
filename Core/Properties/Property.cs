@@ -1,20 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using log4net;
 
 namespace DXGame.Core.Properties
 {
+    [Serializable]
+    [DataContract]
     public sealed class Property<T>
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (Property<T>));
+        // TODO: Figure out how to properly serialize / hide name
+        [DataMember] public readonly string Name;
 
-        private readonly SortedDictionary<PropertyMutator<T>, int> mutatorCounts_ =
+        [DataMember] private SortedDictionary<PropertyMutator<T>, int> mutatorCounts_ =
             new SortedDictionary<PropertyMutator<T>, int>(new PropertyMutatorPriorityComparer<T>());
 
-        public readonly string Name;
+        [DataMember]
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
         public T BaseValue { get; private set; }
+
+        [DataMember]
         public T CurrentValue { get; set; }
 
         public Property(T value, string name)

@@ -153,5 +153,30 @@ namespace DXGameTest.Core.Property
             Assert.AreEqual(baseValue, property.CurrentValue);
             Assert.AreEqual(propertyName, property.Name);
         }
+
+        [Test]
+        public void RemoevNonExistantMutator()
+        {
+            const int baseValue = 300;
+            const string propertyName = "TestIntegerProperty";
+            Property<int> property = new Property<int>(baseValue, propertyName);
+
+            // Just check to see if no exception is thrown
+            property.RemoveMutator(null);
+
+            Assert.AreEqual(baseValue, property.BaseValue);
+            Assert.AreEqual(baseValue, property.CurrentValue);
+            Assert.AreEqual(propertyName, property.Name);
+
+            var mutator = new PropertyMutator<int>(input => input + 1, input => input - 1,
+                "NoOpMutator");
+
+            // Just check to see if no exception is thrown
+            property.RemoveMutator(mutator);
+
+            Assert.AreEqual(baseValue, property.BaseValue);
+            Assert.AreEqual(baseValue, property.CurrentValue);
+            Assert.AreEqual(propertyName, property.Name);
+        }
     }
 }

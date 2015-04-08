@@ -7,6 +7,7 @@ using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
+using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Generators
 {
@@ -20,10 +21,10 @@ namespace DXGame.Core.Generators
         private const string PLAYER_2 = "Player2";
         private static readonly DxVector2 MAX_VELOCITY = new DxVector2(5.0f, 20.0f);
         private readonly AnimationComponent animation_;
-        private readonly EntityPropertiesComponent EntityProperties;
-        // TODO //private readonly FloatingHealthIndicator healthBar_;
+        private readonly FloatingHealthIndicator healthBar_;
         private readonly SimplePlayerInputComponent input_;
         private readonly PhysicsComponent physics_;
+        private readonly EntityPropertiesComponent playerProperties_;
         private readonly PlayerStateComponent state_;
         private readonly WeaponComponent weapon_;
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
@@ -42,7 +43,8 @@ namespace DXGame.Core.Generators
                 new MapCollideablePhysicsComponent(game).WithMaxVelocity(MAX_VELOCITY)
                     .WithPositionalComponent(PlayerSpace);
 
-            EntityProperties = PlayerPropertiesComponent.DefaultPlayerProperties;
+            playerProperties_ = PlayerPropertiesComponent.DefaultPlayerProperties;
+            playerProperties_.Health.CurrentValue -= 5;
             state_ = new PlayerStateComponent(game);
             AddPlayerStates();
             animation_ = new AnimationComponent(game).WithPosition(PlayerSpace).WithState(state_);
@@ -52,9 +54,11 @@ namespace DXGame.Core.Generators
                 new SimplePlayerInputComponent(game).WithPhysics(physics_)
                     .WithPlayerState(state_)
                     .WithWeapon(weapon_)
-                    .WithPlayerProperties(EntityProperties);
+                    .WithPlayerProperties(playerProperties_);
             // TODO
-            //healthBar_ = new FloatingHealthIndicator(game, )
+            healthBar_ = new FloatingHealthIndicator(game, new DxVector2(-10, -10), Color.Green,
+                Color.Aquamarine, playerProperties_, PlayerSpace);
+            healthBar_.LoadContent();
         }
 
         public override List<GameObject> Generate()
@@ -62,7 +66,7 @@ namespace DXGame.Core.Generators
             var objects = new List<GameObject>();
             var player = new GameObject();
             player.WithComponents(PlayerSpace, physics_, animation_, input_, state_, weapon_,
-                EntityProperties);
+                playerProperties_, healthBar_);
             objects.Add(player);
             return objects;
         }

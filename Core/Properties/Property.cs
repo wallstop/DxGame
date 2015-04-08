@@ -18,7 +18,6 @@ namespace DXGame.Core.Properties
             new SortedDictionary<PropertyMutator<T>, int>(new PropertyMutatorPriorityComparer<T>());
 
         [DataMember]
-        // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
         public T BaseValue { get; private set; }
 
         [DataMember]

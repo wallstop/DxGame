@@ -12,10 +12,11 @@ using Microsoft.Xna.Framework.Graphics;
 namespace DXGame.Core.Components.Advanced
 {
     // TODO: Still have to test & attach this to the player component
+    // TODO: Have this be automagically centered
     public class FloatingHealthIndicator : DrawableComponent
     {
         private const int HEALTH_BAR_PIXEL_HEIGHT = 5;
-        private const int HEALTH_BAR_PIXEL_WIDTH = 15;
+        private const int HEALTH_BAR_PIXEL_WIDTH = 75;
         private static readonly ILog LOG = LogManager.GetLogger(typeof (FloatingHealthIndicator));
         protected Color backgroundColor_;
         protected Texture2D backgroundTexture_;
@@ -35,6 +36,11 @@ namespace DXGame.Core.Components.Advanced
             get { return entityProperties_.MaxHealth.CurrentValue; }
         }
 
+        public virtual double PercentHealthRemaining
+        {
+            get { return (double) Health / MaxHealth; }
+        }
+
         public FloatingHealthIndicator(DxGame game, DxVector2 floatDistance, Color foregroundColor,
             Color backgroundColor, EntityPropertiesComponent properties,
             PositionalComponent position)
@@ -48,13 +54,15 @@ namespace DXGame.Core.Components.Advanced
             foregroundColor_ = foregroundColor;
             backgroundColor_ = backgroundColor;
             entityProperties_ = properties;
+            position_ = position;
+            DrawPriority = DrawPriority.HUD_LAYER;
         }
 
         private static void ValidateFloatDistance(DxVector2 floatDistance)
         {
             GenericUtils.CheckNullOrDefault(floatDistance,
                 "Floating Health Indicator cannot be initialized with a null/default floatDistance");
-            if (floatDistance.X <= 0)
+            if (floatDistance.X >= 0)
             {
                 var logMessage =
                     String.Format("Cannot create a FloatingHealthIndicator with DxVector2 {0}",
@@ -73,11 +81,14 @@ namespace DXGame.Core.Components.Advanced
             base.LoadContent();
         }
 
+        protected static Vector2 DetermineHealthBarOrigin(DxVector2 position,
+            DxVector2 floatDistance) { return (position + floatDistance).ToVector2(); }
+
         public override void Draw(DxGameTime gameTime)
         {
-            var origin = (position_.Position + floatDistance_).ToVector2();
+            var origin = DetermineHealthBarOrigin(position_.Position, floatDistance_);
             var foregroundWidth =
-                (int) Math.Ceiling((double) Health / MaxHealth * HEALTH_BAR_PIXEL_WIDTH);
+                (int) Math.Ceiling(PercentHealthRemaining * HEALTH_BAR_PIXEL_WIDTH);
             spriteBatch_.Draw(foregroundTexture_,
                 new Rectangle((int) origin.X, (int) origin.Y, foregroundWidth,
                     HEALTH_BAR_PIXEL_HEIGHT), foregroundColor_);

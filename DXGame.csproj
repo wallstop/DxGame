@@ -104,6 +104,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Core\Animation.cs" />
+    <Compile Include="Core\Behavior\Response.cs" />
+    <Compile Include="Core\Behavior\Trigger.cs" />
     <Compile Include="Core\Components\Advanced\AnimationComponent.cs" />
     <Compile Include="Core\Components\Advanced\CollisionDestructibleComponent.cs" />
     <Compile Include="Core\Components\Advanced\FloatingHealthIndicator.cs" />
@@ -172,6 +174,7 @@
     <Compile Include="Core\Properties\Property.cs" />
     <Compile Include="Core\Serializer.cs" />
     <Compile Include="Core\Settings\GameSettings.cs" />
+    <Compile Include="Core\SortedList.cs" />
     <Compile Include="Core\UniqueId.cs" />
     <Compile Include="Core\Utils\CollectionUtils.cs" />
     <Compile Include="Core\Utils\GameObjectUtils.cs" />
@@ -189,7 +192,9 @@
     <Compile Include="Core\Properties\PropertyMutator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Lidgren.Network, Version=2011.3.12.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="Lidgren.Network">
+      <HintPath>packages\Lidgren.Network.2012.2.15.2\lib\net45\Lidgren.Network.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>

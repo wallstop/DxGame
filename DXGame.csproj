@@ -28,7 +28,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -86,7 +86,7 @@
     <DocumentationFile>
     </DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <LangVersion>5</LangVersion>
+    <LangVersion>6</LangVersion>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
@@ -129,6 +129,8 @@
     <Compile Include="Core\Components\Basic\SpriteBatchEnder.cs" />
     <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
+    <Compile Include="Core\GraphicsWidgets\HUD\AbilityBar.cs" />
+    <Compile Include="Core\GraphicsWidgets\HUD\BuffBar.cs" />
     <Compile Include="Core\IIdentifiable.cs" />
     <Compile Include="Core\Components\Network\NetworkClient.cs" />
     <Compile Include="Core\Components\Network\NetworkServer.cs" />
@@ -174,6 +176,8 @@
     <Compile Include="Core\Properties\Property.cs" />
     <Compile Include="Core\Serializer.cs" />
     <Compile Include="Core\Settings\GameSettings.cs" />
+    <Compile Include="Core\Settings\Scale.cs" />
+    <Compile Include="Core\Skills\Skill.cs" />
     <Compile Include="Core\SortedList.cs" />
     <Compile Include="Core\UniqueId.cs" />
     <Compile Include="Core\Utils\CollectionUtils.cs" />
@@ -291,7 +295,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Core\GraphicsWidgets\HUD\" />
     <Folder Include="Network\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

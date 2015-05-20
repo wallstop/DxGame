@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
-using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
@@ -12,21 +11,21 @@ namespace DXGame.Core
 {
     [Serializable]
     [DataContract]
-    class Animation
+    public class Animation
     {
-        [DataMember]
-        private String assetName_;
-        [NonSerialized]
-        [IgnoreDataMember]
-        private Texture2D spriteSheet_;
-        [DataMember]
-        private int currentFrame_;
-        [DataMember]
-        private readonly int totalFrames_;
-        [DataMember]
-        protected PositionalComponent position_;
+        [DataMember] private readonly int totalFrames_;
+        [DataMember] private string assetName_;
+        [DataMember] private int currentFrame_;
+        [DataMember] protected PositionalComponent position_;
+        [NonSerialized] [IgnoreDataMember] private Texture2D spriteSheet_;
 
-        public Animation(String spriteSheet, int totalFrames = 1)
+        public string AssetName
+        {
+            get { return assetName_; }
+            set { assetName_ = value; }
+        }
+
+        public Animation(string spriteSheet, int totalFrames = 1)
         {
             assetName_ = spriteSheet;
             totalFrames_ = totalFrames;
@@ -37,12 +36,6 @@ namespace DXGame.Core
             Debug.Assert(position != null, "Sprite position cannot be null on assignment");
             position_ = position;
             return this;
-        }
-
-        public string AssetName
-        {
-            get { return assetName_; }
-            set { assetName_ = value; }
         }
 
         //TODO: make this actually handle spritesheets and animations

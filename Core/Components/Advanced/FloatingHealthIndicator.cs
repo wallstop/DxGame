@@ -13,7 +13,7 @@ namespace DXGame.Core.Components.Advanced
 {
     // TODO: Still have to test & attach this to the player component
     // TODO: Have this be automagically centered
-    public class FloatingHealthIndicator : DrawableComponent
+    public class FloatingHealthIndicator : DrawableComponent, IDisposable
     {
         private const int HEALTH_BAR_PIXEL_HEIGHT = 5;
         private const int HEALTH_BAR_PIXEL_WIDTH = 75;
@@ -58,6 +58,11 @@ namespace DXGame.Core.Components.Advanced
             DrawPriority = DrawPriority.HUD_LAYER;
         }
 
+        public void Dispose()
+        {
+            backgroundTexture_?.Dispose();
+        }
+
         private static void ValidateFloatDistance(DxVector2 floatDistance)
         {
             GenericUtils.CheckNullOrDefault(floatDistance,
@@ -65,8 +70,7 @@ namespace DXGame.Core.Components.Advanced
             if (floatDistance.X >= 0)
             {
                 var logMessage =
-                    String.Format("Cannot create a FloatingHealthIndicator with DxVector2 {0}",
-                        floatDistance);
+                    $"Cannot create a FloatingHealthIndicator with DxVector2 {floatDistance}";
                 LOG.Error(logMessage);
                 GenericUtils.HardFail(logMessage);
             }
@@ -82,7 +86,10 @@ namespace DXGame.Core.Components.Advanced
         }
 
         protected static Vector2 DetermineHealthBarOrigin(DxVector2 position,
-            DxVector2 floatDistance) { return (position + floatDistance).ToVector2(); }
+            DxVector2 floatDistance)
+        {
+            return (position + floatDistance).ToVector2();
+        }
 
         public override void Draw(DxGameTime gameTime)
         {

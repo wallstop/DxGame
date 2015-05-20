@@ -68,7 +68,7 @@ namespace DXGame.Core.Properties
         This is necessary because everything interacts with the mutated value of a Property (the current value). However, PropertyMutators interact
         with the base value to derive the current value, so we need to work backwards as well.
 
-        NOTE: PropertyMutators currently cannot properly cope with lambda mutators & demutators. Te equality comparisons will fail.
+        NOTE: PropertyMutators currently cannot properly cope with lambda mutators & demutators; the equality comparisons will fail.
     </summary>
     */
 
@@ -146,7 +146,7 @@ namespace DXGame.Core.Properties
             return !(lhs == rhs);
         }
 
-        public override bool Equals(Object other)
+        public override bool Equals(object other)
         {
             var lhs = other as PropertyMutator<T>;
             return lhs != null && Equals(lhs);
@@ -159,7 +159,10 @@ namespace DXGame.Core.Properties
                    Name.GetHashCode() ^ Priority.GetHashCode();
         }
 
-        public override string ToString() { return Name; }
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     public sealed class PropertyMutatorPriorityComparer<T> : IComparer<PropertyMutator<T>>

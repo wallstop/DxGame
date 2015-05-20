@@ -181,7 +181,7 @@ namespace DXGame.Core.Components.Basic
             else
             {
                 // TODO: Log metrics
-                var logMessage = String.Format("Initialize called on already Initialized component {0}", this);
+                var logMessage = string.Format("Initialize called on already Initialized component {0}", this);
                 LOG.Error(logMessage);
                 throw new ArgumentException(logMessage);
             }

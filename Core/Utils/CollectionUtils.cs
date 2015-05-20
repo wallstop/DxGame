@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace DXGame.Core.Utils
 {
@@ -21,9 +20,10 @@ namespace DXGame.Core.Utils
             </code>
         </summary>
         */
+
         public static IEnumerable<T> ToEnumerable<T>(this Array target)
         {
-            return from object item in target select (T)item;
+            return from object item in target select (T) item;
         }
     }
 }

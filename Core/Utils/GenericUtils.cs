@@ -64,7 +64,7 @@ namespace DXGame.Core.Utils
             var casted = typedObject as T;
             if (casted == null)
             {
-                HardFail(String.Format("Could not cast {0} to {1}", typedObject, typeof (T)));
+                HardFail(string.Format("Could not cast {0} to {1}", typedObject, typeof (T)));
             }
             return casted;
         }

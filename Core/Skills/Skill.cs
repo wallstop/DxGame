@@ -8,7 +8,7 @@ namespace DXGame.Core.Skills
 
         public Skill(string name)
         {
-            GenericUtils.CheckNullOrDefault(name, "Cannot create a Skill without a name");
+            Validate.IsNotNullOrDefault(name, $"Cannot initialize {GetType()} with a null/default name");
             Name = name;
         }
 

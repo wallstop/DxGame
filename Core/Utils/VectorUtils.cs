@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using DXGame.Core.Wrappers;
 using Microsoft.Xna.Framework;
 
@@ -70,8 +69,8 @@ namespace DXGame.Core.Utils
         // TODO: Create a floating point based Rectangle
         public static Rectangle RectangleFrom(Vector2 position, Vector2 dimensions)
         {
-            Debug.Assert(dimensions.X >= 0, "Rectangle width should be >= 0");
-            Debug.Assert(dimensions.Y >= 0, "Rectangle height should be >= 0");
+            Validate.IsTrue(dimensions.X >= 0, $"Rectangle width should be >=0 (but was {dimensions.X})");
+            Validate.IsTrue(dimensions.Y >= 0, $"Rectangle height should be >= (but was {dimensions.Y})");
             return new Rectangle(
                 /*
                         The position may be anywhere, so if it's -.05, we actually want it to wrap to -1. Similarly, 

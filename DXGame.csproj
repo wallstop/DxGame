@@ -131,6 +131,7 @@
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\AbilityBar.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\BuffBar.cs" />
+    <Compile Include="Core\GraphicsWidgets\HUD\HudRegion.cs" />
     <Compile Include="Core\IIdentifiable.cs" />
     <Compile Include="Core\Components\Network\NetworkClient.cs" />
     <Compile Include="Core\Components\Network\NetworkServer.cs" />
@@ -185,7 +186,9 @@
     <Compile Include="Core\Utils\GenericUtils.cs" />
     <Compile Include="Core\Utils\LambdaUtils.cs" />
     <Compile Include="Core\Utils\MathUtils.cs" />
+    <Compile Include="Core\Utils\SpriteBatchUtils.cs" />
     <Compile Include="Core\Utils\StringUtils.cs" />
+    <Compile Include="Core\Utils\Validate.cs" />
     <Compile Include="Core\Wrappers\DxGameTime.cs" />
     <Compile Include="Core\Wrappers\DxRectangle.cs" />
     <Compile Include="Core\Utils\VectorUtils.cs" />

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
@@ -29,7 +28,10 @@ namespace DXGame.Core.Components.Advanced
         private PhysicsComponent Owner { get; set; }
 
         public RangedWeaponComponent(DxGame game)
-            : base(game) { Cooldown = TimeSpan.FromSeconds(0); }
+            : base(game)
+        {
+            Cooldown = TimeSpan.FromSeconds(0);
+        }
 
         public RangedWeaponComponent WithDirection(DxVector2 direction)
         {
@@ -39,8 +41,7 @@ namespace DXGame.Core.Components.Advanced
 
         public RangedWeaponComponent WithPhysicsComponent(PhysicsComponent physics)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(physics),
-                "Ranged Weapons cannot be initialized with a null physics owner");
+            Validate.IsNotNullOrDefault(physics, $"Cannot initialize {GetType()} with a null PhysicsComponent");
             Owner = physics;
             return this;
         }

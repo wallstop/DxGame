@@ -20,7 +20,6 @@ namespace DXGame.Core.Components.Network
     public class NetworkClient : NetworkComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (NetworkClient));
-
         protected NetworkClientConfig ClientConfig { get; set; }
 
         public NetClient ClientConnection
@@ -33,17 +32,17 @@ namespace DXGame.Core.Components.Network
         {
         }
 
-        public NetworkClient WithNetworkClientConfig(NetworkClientConfig config)
+        public NetworkClient WithNetworkClientConfig(NetworkClientConfig configuration)
         {
-            GenericUtils.CheckNullOrDefault(config,
+            Validate.IsNotNullOrDefault(configuration,
                 "Cannot create a NetworkClient with a null/default NetworkClientConfig");
-            ClientConfig = config;
+            ClientConfig = configuration;
             return this;
         }
 
         public override NetworkComponent WithConfiguration(NetPeerConfiguration configuration)
         {
-            GenericUtils.CheckNullOrDefault(configuration,
+            Validate.IsNotNullOrDefault(configuration,
                 "Cannot create a NetworkClient with a null/default NetPeerConfiguration");
             Connection = new NetClient(configuration);
             return this;
@@ -64,32 +63,33 @@ namespace DXGame.Core.Components.Network
             // TODO: Deal with gameTime
             switch (message.MessageType)
             {
-            case NetIncomingMessageType.Data:
-                ProcessData(message);
-                break;
-            case NetIncomingMessageType.StatusChanged:
-                // TODO: Handle lol
-                break;
-            default:
-                throw new NotImplementedException(String.Format("Currently not dealing with on MessageType {0} (TODO)",
-                    message.MessageType));
+                case NetIncomingMessageType.Data:
+                    ProcessData(message);
+                    break;
+                case NetIncomingMessageType.StatusChanged:
+                    // TODO: Handle lol
+                    break;
+                default:
+                    throw new NotImplementedException(
+                        string.Format("Currently not dealing with on MessageType {0} (TODO)",
+                            message.MessageType));
             }
         }
 
         protected void ProcessData(NetIncomingMessage message)
         {
-            GenericUtils.CheckNull(message, "Cannot process server data on a null message!");
+            Validate.IsNotNull(message, "Cannot process server data on a null message!");
             var networkMessage = NetworkMessage.FromNetIncomingMessage(message);
-            GenericUtils.CheckNull(networkMessage,
-                "Could not properly format a NetworkMessage from the NetIncomingMessage");
+            Validate.IsNotNull(networkMessage,
+                $"Could not properly format a NetworkMessage from NetIncomingMessage {networkMessage}");
             switch (networkMessage.MessageType)
             {
-            case MessageType.SERVER_DATA_KEYFRAME:
-                HandleServerDataKeyFrame(networkMessage);
-                break;
-            default:
-                throw new NotImplementedException(String.Format("Currently not dealing with on MessageType {0} (TODO)",
-                    message.MessageType));
+                case MessageType.SERVER_DATA_KEYFRAME:
+                    HandleServerDataKeyFrame(networkMessage);
+                    break;
+                default:
+                    throw new NotImplementedException(
+                        $"Currently not dealing with on MessageType {message.MessageType} (TODO)");
             }
         }
 

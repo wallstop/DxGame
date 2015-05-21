@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
@@ -70,7 +70,7 @@ namespace DXGame.Core.Components.Advanced.Position
 
         public virtual PositionalComponent WithPosition(DxVector2 position)
         {
-            Debug.Assert(position != null, "PositionalComponent cannot be initialized with a null position");
+            Validate.IsNotNullOrDefault(position, $"Cannot initialize {GetType()} with a null/default position");
             position_ = position;
             return this;
         }

@@ -12,16 +12,6 @@ namespace DXGame.Core.Utils
             return EqualityComparer<T>.Default.Equals(instance, default(T));
         }
 
-        public static void CheckNullOrDefault<T>(T instance, string message = "")
-        {
-            Debug.Assert(!IsNullOrDefault(instance), message);
-        }
-
-        public static void CheckNull<T>(T instance, string message = "")
-        {
-            Debug.Assert(null != instance, message);
-        }
-
         /*
             Like soft fail, but throws ArgumentException. This allows for 
             both Debug and Release code to fail

@@ -91,7 +91,7 @@ namespace DXGame.Core.Utils
         public static T Constrain<T>(T value, T min, T max)
         {
             Debug.Assert(Compare(min, max) <= 0,
-                string.Format("Could not constrain {0} with min {1}, max {2}", value, min, max));
+                $"Could not constrain {value} with min {min}, max {max}");
             value = Max(value, min);
             value = Min(value, max);
             return value;
@@ -148,7 +148,7 @@ namespace DXGame.Core.Utils
 
         public static int WrappedAdd(int value, int increment, int max)
         {
-            return (value + increment)%max;
+            return (value + increment) % max;
         }
     }
 }

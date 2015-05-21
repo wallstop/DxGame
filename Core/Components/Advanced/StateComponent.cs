@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
@@ -14,11 +13,15 @@ namespace DXGame.Core.Components.Advanced
     public class StateComponent : Component
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (StateComponent));
-
         [DataMember] private readonly HashSet<string> states_ = new HashSet<string>();
 
         [DataMember]
         public string State { get; set; }
+
+        public IEnumerable<string> States
+        {
+            get { return states_; }
+        }
 
         public StateComponent(DxGame game)
             : base(game)
@@ -28,15 +31,11 @@ namespace DXGame.Core.Components.Advanced
 
         public StateComponent WithState(string state)
         {
-            GenericUtils.CheckNullOrDefault(state, "StateComponent cannot have its state to an empty state");
-            Debug.Assert(states_.Contains(state),
-                String.Format("StateComponent cannot have its state set to one it doesn't know about: {0}, {1}", state,
-                    states_));
+            Validate.IsNotNull(state, "StateComponent cannot have its state set to a null state");
+            Validate.IsTrue(states_.Contains(state),
+                $"StateComponent was assigned an invalid state {state}. Valid states: {states_}");
 
-            if (!states_.Contains(state))
-            {
-                State = state;
-            }
+            State = state;
 
             return this;
         }
@@ -52,11 +51,6 @@ namespace DXGame.Core.Components.Advanced
             {
                 AddState(state);
             }
-        }
-
-        public IEnumerable<string> States
-        {
-            get { return states_; }
         }
     }
 }

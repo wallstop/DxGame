@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
@@ -62,37 +61,37 @@ namespace DXGame.Core.Components.Advanced.Physics
 
         public PhysicsComponent WithVelocity(DxVector2 velocity)
         {
-            Debug.Assert(velocity != null, "PhysicsComponent cannot be initialized with null velocity");
+            Validate.IsNotNullOrDefault(velocity, $"Cannot initialize {GetType()} with a null/default velocity");
             velocity_ = velocity;
             return this;
         }
 
         public PhysicsComponent WithAcceleration(DxVector2 acceleration)
         {
-            Debug.Assert(acceleration != null, "PhysicsComponent cannot be initialized with null acceleration");
+            Validate.IsNotNullOrDefault(acceleration, $"Cannot initialize {GetType()} with a null/default acceleration");
             acceleration_ = acceleration;
             return this;
         }
 
         public PhysicsComponent WithPositionalComponent(PositionalComponent position)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(position),
-                "PhysicsComponent cannot be initialized with null position");
+            Validate.IsNotNullOrDefault(position, $"Cannot initialize {GetType()} with a null/default PositionComponent");
             position_ = position;
             return this;
         }
 
         public PhysicsComponent WithMaxVelocity(DxVector2 maxVelocity)
         {
-            Debug.Assert(maxVelocity != null, "PhysicsComponent cannot be initialized with a null maximum velocity ");
+            Validate.IsNotNullOrDefault(maxVelocity,
+                $"Cannot initialize {GetType()} with a null/default maximum velocity");
             maxVelocity_ = maxVelocity;
             return this;
         }
 
         public PhysicsComponent WithMaxAcceleration(DxVector2 maxAcceleration)
         {
-            Debug.Assert(maxAcceleration != null,
-                "PhysicsComponent cannot be initialized with a null maximum acceleration ");
+            Validate.IsNotNullOrDefault(maxAcceleration,
+                $"Cannot initialize {GetType()} with a null/default maximum acceleration");
             maxAcceleration_ = maxAcceleration;
             return this;
         }

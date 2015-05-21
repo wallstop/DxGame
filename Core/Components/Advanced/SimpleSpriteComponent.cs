@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
@@ -17,17 +16,10 @@ namespace DXGame.Core.Components.Advanced
     public class SimpleSpriteComponent : DrawableComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (SimpleSpriteComponent));
-
-        [DataMember]
-        protected string assetName_;
-        [DataMember]
-        protected DxRectangle boundingBox_;
-        [DataMember]
-        protected PositionalComponent position_;
-
-        [NonSerialized]
-        [IgnoreDataMember]
-        protected Texture2D texture_;
+        [DataMember] protected string assetName_;
+        [DataMember] protected DxRectangle boundingBox_;
+        [DataMember] protected PositionalComponent position_;
+        [NonSerialized] [IgnoreDataMember] protected Texture2D texture_;
 
         [IgnoreDataMember]
         public DxRectangle BoundingBox
@@ -50,21 +42,21 @@ namespace DXGame.Core.Components.Advanced
 
         public SimpleSpriteComponent WithAsset(string assetName)
         {
-            Debug.Assert(assetName != null, "AssetName cannot be null on assignment");
+            Validate.IsNotNullOrDefault(assetName, $"Cannot initialize {GetType()} with a null/default asset name");
             assetName_ = assetName;
             return this;
         }
 
         public SimpleSpriteComponent WithPosition(PositionalComponent position)
         {
-            Debug.Assert(position != null, "Sprite position cannot be null on assignment");
+            Validate.IsNotNullOrDefault(position, $"Cannot initialize {GetType()} with a null/default position");
             position_ = position;
             return this;
         }
 
         public SimpleSpriteComponent WithBoundingBox(DxRectangle boundingBox)
         {
-            Debug.Assert(boundingBox != null, "Bounding box cannot be null on assignment");
+            Validate.IsNotNullOrDefault(boundingBox, $"Cannot initialize {GetType()} with a null/default bounding box");
             boundingBox_ = boundingBox;
             return this;
         }
@@ -77,7 +69,8 @@ namespace DXGame.Core.Components.Advanced
 
         public override void Initialize()
         {
-            Debug.Assert(DxGame.Content != null, "ContentManager cannot be null during Initialize");
+            Validate.IsNotNull(DxGame.Content,
+                $"Cannot initialize {GetType()} with a null/default ContentManager");
             texture_ = DxGame.Content.Load<Texture2D>(assetName_);
             // Assign boundingBox to be the shape of the texture only if it hasn't been custom-set
             // TODO: Change to an isLoaded bool flag / state

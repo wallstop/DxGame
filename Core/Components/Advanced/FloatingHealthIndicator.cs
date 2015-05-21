@@ -47,8 +47,8 @@ namespace DXGame.Core.Components.Advanced
             : base(game)
         {
             ValidateFloatDistance(floatDistance);
-            GenericUtils.CheckNullOrDefault(properties);
-            GenericUtils.CheckNullOrDefault(position);
+            Validate.IsNotNullOrDefault(properties, $"Cannot initialize {GetType()} with null/default EntityProperties");
+            Validate.IsNotNullOrDefault(position, $"Cannot initialize {GetType()} with a null/default PositionalComponet");
 
             floatDistance_ = floatDistance;
             foregroundColor_ = foregroundColor;
@@ -65,15 +65,10 @@ namespace DXGame.Core.Components.Advanced
 
         private static void ValidateFloatDistance(DxVector2 floatDistance)
         {
-            GenericUtils.CheckNullOrDefault(floatDistance,
-                "Floating Health Indicator cannot be initialized with a null/default floatDistance");
-            if (floatDistance.X >= 0)
-            {
-                var logMessage =
-                    $"Cannot create a FloatingHealthIndicator with DxVector2 {floatDistance}";
-                LOG.Error(logMessage);
-                GenericUtils.HardFail(logMessage);
-            }
+            Validate.IsNotNull(floatDistance,
+                $"Cannot intialize {typeof (FloatingHealthIndicator)} with a null floatDistance");
+            Validate.IsTrue(floatDistance.Y <= 0,
+                $"Cannot use {floatDistance} as a valid FloatDistance for {typeof (FloatingHealthIndicator)} ");
         }
 
         public override void LoadContent()

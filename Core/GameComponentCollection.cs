@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
@@ -24,8 +23,7 @@ namespace DXGame.Core
             Game.Components.Add(this);
             foreach (GameComponent component in Components)
             {
-                Debug.Assert(!GenericUtils.IsNullOrDefault(component),
-                    "Cannot add a null component to a GameComponentCollection");
+                Validate.IsNotNullOrDefault(component, $"Cannot add a null/default component to {GetType()}");
                 Game.Components.Add(component);
             }
         }
@@ -35,8 +33,7 @@ namespace DXGame.Core
             Game.Components.Remove(this);
             foreach (GameComponent component in Components)
             {
-                Debug.Assert(!GenericUtils.IsNullOrDefault(component),
-                    "Cannot remove a null component to a GameComponentCollection");
+                Validate.IsNotNullOrDefault(component, $"Cannot remove a null/default component from {GetType()}");
                 Game.Components.Remove(component);
             }
         }

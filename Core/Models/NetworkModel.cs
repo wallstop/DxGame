@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Network;
@@ -12,7 +11,6 @@ namespace DXGame.Core.Models
     public class NetworkModel : Model
     {
         protected List<NetworkComponent> connections_ = new List<NetworkComponent>();
-
         // TODO: Empty checks
         public IEnumerable<NetworkClient> Clients
         {
@@ -37,7 +35,8 @@ namespace DXGame.Core.Models
 
         public NetworkModel WithServer(NetworkServer server)
         {
-            Debug.Assert(!Servers.Any(), "Can only add one server to a NetworkModel!"); // Really? Why not more?
+            // Really? Why not more?
+            Validate.IsEmpty(Servers, $"Cannot add {server}. Can only add one server to a NetworkModel");
             AddNetworkComponent(server);
             return this;
         }
@@ -54,9 +53,9 @@ namespace DXGame.Core.Models
 
         protected void AddNetworkComponent(NetworkComponent netComponent)
         {
-            GenericUtils.CheckNullOrDefault(netComponent, "Cannot add a null/default NetworkComponent to NetworkModel");
-            Debug.Assert(!connections_.Contains(netComponent),
-                "Cannot add a NetworkComponent that already exists in the NetworkModel");
+            Validate.IsNotNullOrDefault(netComponent, $"Cannot add a null/default NetworkComponent to {GetType()}");
+            Validate.IsTrue(!connections_.Contains(netComponent),
+                $"Cannot add NetworkComponent {netComponent}. This component already exists in {connections_}");
             connections_.Add(netComponent);
         }
 

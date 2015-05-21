@@ -93,13 +93,13 @@ namespace DXGame.Core.Components.Basic
             }
             catch (ThreadInterruptedException e)
             {
-                LOG.Info(string.Format("Shutting down reader for Connection {0}", Connection), e);
+                LOG.Info($"Shutting down reader for Connection {Connection}", e);
             }
         }
 
         public virtual NetworkComponent WithConnection(NetPeer connection)
         {
-            GenericUtils.CheckNullOrDefault(connection, "Cannot create a NetworkComponent with a null/default NetPeer");
+            Validate.IsNotNullOrDefault(connection, "Cannot create a NetworkComponent with a null/default NetPeer");
             Connection = connection;
             return this;
         }
@@ -109,7 +109,7 @@ namespace DXGame.Core.Components.Basic
         protected static T ConvertMessageType<T>(NetworkMessage message) where T : class
         {
             return GenericUtils.CheckedCast<T>(message, LOG,
-                string.Format("Received message expecting type {0}, but was unable to dynamic cast", typeof (T)));
+                $"Received message expecting type {typeof (T)}, but was unable to dynamic cast");
         }
 
         // We need to know the GameTime in order to Receive Data
@@ -124,8 +124,7 @@ namespace DXGame.Core.Components.Basic
                 {
                     // If we couldn't dequeue anything, hard-bail
                     LOG.Info(
-                        string.Format("Expected {0} messages, but only received {1} before we could not dequeue any.",
-                            maxMessages, i));
+                        $"Expected {maxMessages} messages, but only received {i} before we could not dequeue any.");
                     return;
                 }
 

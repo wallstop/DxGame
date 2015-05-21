@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
@@ -77,7 +76,11 @@ namespace DXGame.Core
             return AllComponents.OfType<T>();
         }
 
-        public T ComponentOfType<T>() where T : Component { return ComponentsOfType<T>().First(); }
+        public T ComponentOfType<T>() where T : Component
+        {
+            return ComponentsOfType<T>().First();
+        }
+
         /**
         <summary>
             Given a component, properly determines if it is a Drawable / Initializable / Updateable, adds it
@@ -92,8 +95,7 @@ namespace DXGame.Core
 
         public GameObject WithComponent(Component component)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(component),
-                "Cannot assign a null component to a GameObject");
+            Validate.IsNotNullOrDefault(component, $"Cannot add a null component to {GetType()}");
             AddComponent(component);
             return this;
         }
@@ -114,8 +116,7 @@ namespace DXGame.Core
 
         public GameObject WithComponents(params Component[] components)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(components),
-                "Cannot assign a null components to a GameObject");
+            Validate.IsNotNullOrDefault(components, $"Cannot add a null/empty component collection to {GetType()}");
             foreach (var component in components)
             {
                 WithComponent(component);

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Utils;
@@ -33,7 +32,7 @@ namespace DXGame.Core
 
         public Animation WithPosition(PositionalComponent position)
         {
-            Debug.Assert(position != null, "Sprite position cannot be null on assignment");
+            Validate.IsNotNullOrDefault(position, $"Cannot initialize {GetType()} with a null/default PositionComponent");
             position_ = position;
             return this;
         }

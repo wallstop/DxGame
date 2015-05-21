@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Input;
@@ -72,7 +70,7 @@ namespace DXGame.Core.GraphicsWidgets
 
         public TextBox WithSpriteFont(SpriteFont spriteFont)
         {
-            GenericUtils.CheckNullOrDefault(spriteFont, "Cannot instantiate a TextBox with a null SpriteFont!");
+            Validate.IsNotNullOrDefault(spriteFont, "Cannot instantiate a TextBox with a null SpriteFont!");
             SpriteFont = spriteFont;
 
             const string testString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -84,8 +82,7 @@ namespace DXGame.Core.GraphicsWidgets
 
         public TextBox WithSpatialComponent(SpatialComponent spatialComponent)
         {
-            GenericUtils.CheckNullOrDefault(spatialComponent,
-                "Cannot instantiate a TextBox with a null Spatial Component!");
+            Validate.IsNotNullOrDefault(spatialComponent, "Cannot instantiate a TextBox with a null Spatial Component!");
             SpatialComponent = spatialComponent;
             var width = (int) SpatialComponent.Width;
             var height = (int) SpatialComponent.Height;
@@ -95,8 +92,9 @@ namespace DXGame.Core.GraphicsWidgets
 
         public TextBox WithBackGroundColor(Color color)
         {
-            GenericUtils.CheckNullOrDefault(Texture,
-                String.Format("Cannot initialize a TextBox with color {0} without a valid Texture", color));
+            // TODO: Come up with a better check
+            Validate.IsNotNullOrDefault(Texture,
+                $"Cannot initialize a TextBox with color {color} without a valid Texture");
             var width = (int) SpatialComponent.Width;
             var height = (int) SpatialComponent.Height;
             // Enumerable.Repeat is very slow - might want to use for loop
@@ -113,7 +111,8 @@ namespace DXGame.Core.GraphicsWidgets
 
         public TextBox WithMaxLength(int length)
         {
-            Debug.Assert(length > 0, "It's pointless to create a TextBox that can't have any text in it");
+            Validate.IsTrue(length > 0,
+                $"It's pointless to create a TextBox that can't have any text in it (length {length})");
             MaxLength = length;
             return this;
         }
@@ -121,7 +120,7 @@ namespace DXGame.Core.GraphicsWidgets
         public TextBox WithValidKeys(IEnumerable<Keys> validKeys)
         {
             var validKeysEnumerated = validKeys as Keys[] ?? validKeys.ToArray();
-            GenericUtils.CheckNullOrDefault(validKeysEnumerated,
+            Validate.IsNotNullOrDefault(validKeysEnumerated,
                 "Cannot initialize a TextBox with an empty set of valid keys");
             ValidKeys = validKeysEnumerated;
             return this;
@@ -129,9 +128,10 @@ namespace DXGame.Core.GraphicsWidgets
 
         public override void Draw(DxGameTime gameTime)
         {
-            GenericUtils.CheckNullOrDefault(SpatialComponent, "Can't use a TextBox without a spatial component!");
-            GenericUtils.CheckNullOrDefault(SpriteFont, "Can't use a TextBox without a sprite font!");
-            GenericUtils.CheckNullOrDefault(Texture, "Can't use a TextBox without a Texture!");
+            // TODO: Come up with a better validation scheme. Do a boolean check?
+            Validate.IsNotNullOrDefault(SpatialComponent, "Can't use a TextBox without a spatial component!");
+            Validate.IsNotNullOrDefault(SpriteFont, "Can't use a TextBox without a sprite font!");
+            Validate.IsNotNullOrDefault(Texture, "Can't use a TextBox without a Texture!");
 
             spriteBatch_.Draw(Texture, SpatialComponent.Position.ToVector2());
             spriteBatch_.DrawString(SpriteFont, Text, SpatialComponent.Position.ToVector2(), TextColor);
@@ -192,29 +192,29 @@ namespace DXGame.Core.GraphicsWidgets
                 var minCursorPos = Math.Max(0, CursorPosition - 1);
                 switch (keyEvent.Key)
                 {
-                case Keys.Left:
-                    CursorPosition = minCursorPos;
-                    break;
-                case Keys.Right:
-                    // Bound to length of word
-                    CursorPosition = Math.Min(CursorPosition + 1, Text.Length);
-                    break;
-                case Keys.Back: // Backspace - delete 1 char (to a max of the front of the word)
-                    preCursor = preCursor.Substring(0, minCursorPos);
-                    CursorPosition = minCursorPos;
-                    break;
-                case Keys.Delete: // Delete - delete 1 char to a max of the back of the word
-                    postCursor = postCursor.Substring(Math.Min(1, postCursor.Length));
-                    break;
-                default:
-                    if (KeyboardEvent.KeyCharacters.ContainsKey(keyEvent.Key))
-                    {
-                        // If this is slow, use a StringBuilder (don't care enough right now)
-                        // The length of the word has increased - ok to do unchecked ++CursorPosition
-                        typedText += KeyboardEvent.KeyCharacters[keyEvent.Key];
-                        ++CursorPosition;
-                    }
-                    break;
+                    case Keys.Left:
+                        CursorPosition = minCursorPos;
+                        break;
+                    case Keys.Right:
+                        // Bound to length of word
+                        CursorPosition = Math.Min(CursorPosition + 1, Text.Length);
+                        break;
+                    case Keys.Back: // Backspace - delete 1 char (to a max of the front of the word)
+                        preCursor = preCursor.Substring(0, minCursorPos);
+                        CursorPosition = minCursorPos;
+                        break;
+                    case Keys.Delete: // Delete - delete 1 char to a max of the back of the word
+                        postCursor = postCursor.Substring(Math.Min(1, postCursor.Length));
+                        break;
+                    default:
+                        if (KeyboardEvent.KeyCharacters.ContainsKey(keyEvent.Key))
+                        {
+                            // If this is slow, use a StringBuilder (don't care enough right now)
+                            // The length of the word has increased - ok to do unchecked ++CursorPosition
+                            typedText += KeyboardEvent.KeyCharacters[keyEvent.Key];
+                            ++CursorPosition;
+                        }
+                        break;
                 }
             }
 

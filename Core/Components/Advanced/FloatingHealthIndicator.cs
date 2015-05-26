@@ -13,6 +13,7 @@ namespace DXGame.Core.Components.Advanced
 {
     // TODO: Still have to test & attach this to the player component
     // TODO: Have this be automagically centered
+    // TODO: Have color values be based on "TEAM" (also, introduce concept of teams)
     public class FloatingHealthIndicator : DrawableComponent
     {
         private const int HEALTH_BAR_PIXEL_HEIGHT = 5;

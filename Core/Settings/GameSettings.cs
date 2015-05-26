@@ -16,6 +16,7 @@ namespace DXGame.Core.Settings
         private static readonly ILog LOG = LogManager.GetLogger(typeof (GameSettings));
         [DataMember] public int ScreenHeight;
         [DataMember] public int ScreenWidth;
+        [DataMember] public 
 
         public static GameSettings DefaultSettings
         {

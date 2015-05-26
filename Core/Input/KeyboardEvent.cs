@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Microsoft.Xna.Framework.Input;
 
 namespace DXGame.Core.Input
@@ -11,6 +12,8 @@ namespace DXGame.Core.Input
         KeyUp
     }
 
+    [Serializable]
+    [DataContract]
     public class KeyboardEvent : InputEvent
     {
         private static readonly TimeSpan HELD_DOWN_TRHESHOLD = TimeSpan.FromSeconds(1.0f / 2.0f);
@@ -149,8 +152,11 @@ namespace DXGame.Core.Input
             get { return AlphaKeys.Concat(NumericKeys).ToArray(); }
         }
 
+        [DataMember]
         public Keys Key { get; set; }
+        [DataMember]
         public TimeSpan Duration { get; set; }
+        [DataMember]
         public TimeSpan StartTime { get; set; }
 
         public bool HeldDown

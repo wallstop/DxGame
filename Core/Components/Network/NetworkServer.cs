@@ -131,7 +131,7 @@ namespace DXGame.Core.Components.Network
                 Only approve the connection here - wait to instantiate the client's FrameModel until they send our 
                 own special ClientApproval packet 
             */
-            LOG.Info(string.Format("Approving NetworkServer client connection {0}", message.SenderConnection));
+            LOG.Info($"Approving NetworkServer client connection {message.SenderConnection}");
             message.SenderConnection.Approve();
             ProcessData(message);
         }

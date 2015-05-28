@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using log4net;
 
@@ -49,7 +48,7 @@ namespace DXGame.Core.Utils
             var casted = typedObject as T;
             if (casted == null)
             {
-                HardFail(string.Format("Could not cast {0} to {1}", typedObject, typeof (T)));
+                HardFail($"Could not cast {typedObject} to {typeof (T)}");
             }
             return casted;
         }

@@ -71,8 +71,7 @@ namespace DXGame.Core.Components.Network
                     break;
                 default:
                     throw new NotImplementedException(
-                        string.Format("Currently not dealing with on MessageType {0} (TODO)",
-                            message.MessageType));
+                        $"Currently not dealing with on MessageType {message.MessageType} (TODO)");
             }
         }
 

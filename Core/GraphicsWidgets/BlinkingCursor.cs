@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
@@ -39,22 +38,22 @@ namespace DXGame.Core.GraphicsWidgets
 
         public BlinkingCursor WithBlinkRate(TimeSpan blinkRate)
         {
-            Debug.Assert(blinkRate > TimeSpan.FromSeconds(0),
-                "Blinking Cursor cannot be initialized with a zero timespan!");
+            Validate.IsTrue(blinkRate > TimeSpan.FromSeconds(0),
+                $"{GetType()} cannot be initialized with a negative TimeSpan ({blinkRate})");
             BlinkRate = blinkRate;
             return this;
         }
 
         public BlinkingCursor WithWidth(float width)
         {
-            Debug.Assert(width > 0, "Blinking Cursor cannot be initialized with a non-positive width");
+            Validate.IsTrue(width > 0, $"{GetType()} cannot be initialized with a negative / 0 width ({width})");
             Width = width;
             return this;
         }
 
         public BlinkingCursor WithHeight(float height)
         {
-            Debug.Assert(height > 0, "Blinking Cursor cannot be initialized with a non-positive height");
+            Validate.IsTrue(height > 0, $"{GetType()} cannot be initialized with a negative / 0 height ({height}");
             Height = height;
             return this;
         }

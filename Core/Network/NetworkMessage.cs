@@ -35,7 +35,7 @@ namespace DXGame.Core.Network
             {
                 // TODO: Log metrics on this
                 var logMessage =
-                    $"Could not create a Network Message for type {typeString}, something went horribly wrong.";
+                    $"Could not create a {typeof(NetworkMessage)} for type {typeString}, something went horribly wrong.";
                 LOG.Error(logMessage, e);
                 Debug.Assert(false, logMessage);
                 return new NetworkMessage();

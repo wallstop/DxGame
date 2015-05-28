@@ -31,9 +31,8 @@ namespace DXGame.Core.Frames
                 if (existingObject.Equals(identifiableObject))
                 {
                     var logMessage =
-                        String.Format(
-                            "Could not insert {0} into frame; a different object" + " already exists with that Id {1}",
-                            identifiableObject, existingObject);
+                        $"Could not insert {identifiableObject} into frame; a different object" +
+                        $" already exists with that Id {existingObject}";
                     LOG.Error(logMessage);
                     throw new ArgumentException(logMessage);
                 }

@@ -7,24 +7,21 @@ namespace DXGame.Core.Components.Advanced.Properties
     public class PlayerPropertiesComponent : EntityPropertiesComponent
     {
         public static PlayerPropertiesComponent DefaultPlayerProperties
-        {
-            get
+            => new PlayerPropertiesComponent(DxGame.Instance)
             {
-                return new PlayerPropertiesComponent(DxGame.Instance)
-                {
-                    // TODO: Tweak these values, they're ok-enough for now
-                    Health = new Property<int>(10, "Health"),
-                    MaxHealth = new Property<int>(10, "MaxHealth"),
-                    Defense = new Property<int>(1, "Defense"),
-                    MoveSpeed = new Property<float>(10.0f, "MoveSpeed"),
-                    JumpSpeed = new Property<float>(8.0f, "JumpSpeed"),
-                    AttackSpeed =
-                        new Property<TimeSpan>(TimeSpan.FromMilliseconds(300), "AttackSpeed")
-                };
-            }
-        }
+                // TODO: Tweak these values, they're ok-enough for now
+                Health = new Property<int>(10, "Health"),
+                MaxHealth = new Property<int>(10, "MaxHealth"),
+                Defense = new Property<int>(1, "Defense"),
+                MoveSpeed = new Property<float>(10.0f, "MoveSpeed"),
+                JumpSpeed = new Property<float>(8.0f, "JumpSpeed"),
+                AttackSpeed =
+                    new Property<TimeSpan>(TimeSpan.FromMilliseconds(300), "AttackSpeed")
+            };
 
         public PlayerPropertiesComponent(DxGame game)
-            : base(game) { }
+            : base(game)
+        {
+        }
     }
 }

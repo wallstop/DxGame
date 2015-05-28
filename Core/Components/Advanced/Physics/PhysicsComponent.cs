@@ -9,12 +9,6 @@ using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Physics
 {
-    /**
-    <summary>
-
-    </summary>
-    */
-
     [Serializable]
     [DataContract]
     public class PhysicsComponent : Component

@@ -18,10 +18,7 @@ namespace DXGame.Core.Components.Advanced
         [DataMember]
         public string State { get; set; }
 
-        public IEnumerable<string> States
-        {
-            get { return states_; }
-        }
+        public IEnumerable<string> States => states_;
 
         public StateComponent(DxGame game)
             : base(game)

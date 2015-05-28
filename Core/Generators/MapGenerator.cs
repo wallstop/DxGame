@@ -9,6 +9,7 @@ using log4net;
 
 namespace DXGame.Core.Generators
 {
+    // TODO: Deprecate this and figure out a better approach then generators
     public class MapGenerator : Generator<GameObject>
     {
         private const char RED_BLOCK = 'R';
@@ -19,22 +20,13 @@ namespace DXGame.Core.Generators
         private const char ORANGE_BLOCK = 'O';
         private const char PLAYER_CHARACTER = 'Z';
         private const string BASE_FOLDER = "Map/Blocks/";
-
         private const char LINE_FEED = (char) 10;
         private const char CARRIAGE_RETURN = (char) 13;
         private const int BLOCK_WIDTH = 50;
-
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapGenerator));
-
+        private readonly DxGame game_;
         private readonly List<GameObject> map_;
         private DxVector2 playerPosition_;
-        private readonly DxGame game_;
-
-        public MapGenerator(DxGame game, string mapPath)
-        {
-            game_ = game;
-            map_ = InitMap(mapPath);
-        }
 
         public DxVector2 PlayerPosition
         {
@@ -48,9 +40,15 @@ namespace DXGame.Core.Generators
             get { return BLOCK_WIDTH; }
         }
 
+        public MapGenerator(DxGame game, string mapPath)
+        {
+            game_ = game;
+            map_ = InitMap(mapPath);
+        }
+
         private List<GameObject> InitMap(string path)
         {
-            LOG.Info(String.Format("Attempting to load map {0}", path));
+            LOG.Info($"Attempting to load map {path}");
 
             var blocks = new List<GameObject>();
             using (TextReader fileReader = File.OpenText(path))
@@ -62,12 +60,10 @@ namespace DXGame.Core.Generators
                 int numBlocks = 0;
                 while ((readValue = fileReader.Read()) != -1)
                 {
-                    if (Char.MaxValue < readValue || Char.MinValue > readValue)
+                    if (char.MaxValue < readValue || char.MinValue > readValue)
                     {
                         LOG.Warn(
-                            String.Format(
-                                "Read {0} from file, expected to be within bounds [{1}, {2}] at position ({3}, {4})",
-                                readValue, Char.MinValue, Char.MaxValue, column, row));
+                            $"Read {readValue} from file, expected to be within bounds [{char.MinValue}, {char.MaxValue}] at position ({column}, {row})");
                     }
                     else
                     {
@@ -93,21 +89,21 @@ namespace DXGame.Core.Generators
 
                         switch (currentChar)
                         {
-                        case LINE_FEED:
-                            ++row;
-                            maxColumn = Math.Max(column, maxColumn);
-                            column = 0;
-                            break;
-                        case CARRIAGE_RETURN:
-                            break;
-                        default:
-                            ++column;
-                            break;
+                            case LINE_FEED:
+                                ++row;
+                                maxColumn = Math.Max(column, maxColumn);
+                                column = 0;
+                                break;
+                            case CARRIAGE_RETURN:
+                                break;
+                            default:
+                                ++column;
+                                break;
                         }
                     }
                 }
 
-                LOG.Info(String.Format("Loaded {0} map blocks.", numBlocks));
+                LOG.Info($"Loaded {numBlocks} map blocks.");
 
                 MapBounds = new DxRectangle(0, 0, BLOCK_WIDTH * maxColumn, BLOCK_WIDTH * row);
             }
@@ -120,26 +116,26 @@ namespace DXGame.Core.Generators
             string assetString = BASE_FOLDER;
             switch (character)
             {
-            case RED_BLOCK:
-                assetString += "RedBlock";
-                break;
-            case GREEN_BLOCK:
-                assetString += "GreenBlock";
-                break;
-            case BLUE_BLOCK:
-                assetString += "BlueBlock";
-                break;
-            case PURPLE_BLOCK:
-                assetString += "PurpleBlock";
-                break;
-            case YELLOW_BLOCK:
-                assetString += "YellowBlock";
-                break;
-            case ORANGE_BLOCK:
-                assetString += "OrangeBlock";
-                break;
-            default:
-                return "";
+                case RED_BLOCK:
+                    assetString += "RedBlock";
+                    break;
+                case GREEN_BLOCK:
+                    assetString += "GreenBlock";
+                    break;
+                case BLUE_BLOCK:
+                    assetString += "BlueBlock";
+                    break;
+                case PURPLE_BLOCK:
+                    assetString += "PurpleBlock";
+                    break;
+                case YELLOW_BLOCK:
+                    assetString += "YellowBlock";
+                    break;
+                case ORANGE_BLOCK:
+                    assetString += "OrangeBlock";
+                    break;
+                default:
+                    return "";
             }
             return assetString;
         }

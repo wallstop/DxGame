@@ -113,8 +113,7 @@ namespace DXGame.Core.Models
             }
             else if (LOG.IsDebugEnabled) // If not, log it
             {
-                LOG.Debug(String.Format("Failed to insert {0} into map",
-                    gameObject));
+                LOG.Debug($"Failed to insert {gameObject} into map");
             }
 
             return allInserted;
@@ -241,9 +240,7 @@ namespace DXGame.Core.Models
                 || occupied.Y % blockSize_ != 0 ||
                 occupied.Height % blockSize_ != 0)
             {
-                LOG.Warn(String.Format("Encountered malformed map entry {0}, ({1}, {2}, {3}, {4})",
-                    space, x,
-                    y, width, height));
+                LOG.Warn($"Encountered malformed map entry {space}, ({x}, {y}, {width}, {height})");
                 return false;
             }
 
@@ -256,14 +253,7 @@ namespace DXGame.Core.Models
                     if (mapElement.Value == null) continue;
                     // Only assert on false
                     Debug.Assert(false,
-                        String.Format(
-                            "Map element {0} already existed, found ({1}, {2}, {3}, {4}), tried to insert ({5}, {6}, {7}, {8})",
-                            mapElement.Value,
-                            mapElement.Value.Space.X, mapElement.Value.Space.Y,
-                            mapElement.Value.Space.Width,
-                            mapElement.Value.Space.Height, space.Space.X, space.Space.Y,
-                            space.Space.Width,
-                            space.Space.Height));
+                        $"Map element {mapElement.Value} already existed, found ({mapElement.Value.Space.X}, {mapElement.Value.Space.Y}, {mapElement.Value.Space.Width}, {mapElement.Value.Space.Height}), tried to insert ({space.Space.X}, {space.Space.Y}, {space.Space.Width}, {space.Space.Height})");
                     return false;
                 }
             }

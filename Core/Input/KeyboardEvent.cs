@@ -154,14 +154,13 @@ namespace DXGame.Core.Input
 
         [DataMember]
         public Keys Key { get; set; }
+
         [DataMember]
         public TimeSpan Duration { get; set; }
+
         [DataMember]
         public TimeSpan StartTime { get; set; }
 
-        public bool HeldDown
-        {
-            get { return Duration >= HELD_DOWN_TRHESHOLD; }
-        }
+        public bool HeldDown => Duration >= HELD_DOWN_TRHESHOLD;
     }
 }

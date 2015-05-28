@@ -18,11 +18,7 @@ namespace DXGame.Core.Components.Basic
         private readonly List<Component> components_ = new List<Component>();
         private readonly IComparer<DrawableComponent> drawPriorityComparer_ = new DrawPriorityComparer();
         private readonly IComparer<Component> updatePriorityComparer_ = new UpdatePriorityComparer();
-
-        public int Count
-        {
-            get { return components_.Count; }
-        }
+        public int Count => components_.Count;
 
         public IEnumerable<Component> Components()
         {

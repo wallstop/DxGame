@@ -8,12 +8,6 @@ using log4net;
 
 namespace DXGame.Core.Components.Advanced.Position
 {
-    /**
-    <summary>
-
-    </summary>
-    */
-
     [Serializable]
     [DataContract]
     public class BoundedSpatialComponent : SpatialComponent

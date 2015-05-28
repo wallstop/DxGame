@@ -101,8 +101,6 @@ namespace DXGame.Core.Components.Advanced.Physics
                         Position = new DxVector2(Position.X, mapBlockPosition.Y + mapBlockDimensions.Y);
                         collision.CollisionDirections.Add(CollisionDirection.North);
                     }
-                    //Velocity = new DxVector2(Velocity.X, 0);
-                    //Acceleration = new DxVector2(Acceleration.X, 0);
                 }
                 /*
                         Wrap to the X axis otherwise. 
@@ -121,8 +119,6 @@ namespace DXGame.Core.Components.Advanced.Physics
                         Position = new DxVector2(mapBlockPosition.X - Dimensions.X, Position.Y);
                         collision.CollisionDirections.Add(CollisionDirection.East);
                     }
-                    //Velocity = new DxVector2(0, Velocity.Y);
-                    //Acceleration = new DxVector2(0, Acceleration.Y);
                 }
             } while (intersections.Any());
 

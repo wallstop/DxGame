@@ -101,7 +101,10 @@ namespace DXGame.Main
             Content.RootDirectory = "Content";
         }
 
-        public T Model<T>() where T : Model { return models_.OfType<T>().FirstOrDefault(); }
+        public T Model<T>() where T : Model
+        {
+            return models_.OfType<T>().FirstOrDefault();
+        }
 
         public bool AttachModel(Model model)
         {
@@ -113,8 +116,7 @@ namespace DXGame.Main
             }
             else
             {
-                LOG.Error(String.Format("AttachModel failed. Model {0} already exists in {1}", model,
-                    models_));
+                LOG.Error($"{nameof(AttachModel)} failed. Model {model} already exists in {models_}");
             }
 
             return !alreadyExists;
@@ -162,7 +164,10 @@ namespace DXGame.Main
             }
         }
 
-        public void RemoveComponent(Component component) { DxComponents.Remove(component); }
+        public void RemoveComponent(Component component)
+        {
+            DxComponents.Remove(component);
+        }
 
         public void RemoveComponents(params Component[] components)
         {
@@ -198,8 +203,15 @@ namespace DXGame.Main
             base.Initialize();
         }
 
-        protected override void LoadContent() { base.LoadContent(); }
-        protected override void UnloadContent() { base.UnloadContent(); }
+        protected override void LoadContent()
+        {
+            base.LoadContent();
+        }
+
+        protected override void UnloadContent()
+        {
+            base.UnloadContent();
+        }
 
         /// <summary>
         ///     Allows the game to run logic such as updating the world,

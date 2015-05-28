@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Player;
@@ -28,8 +27,7 @@ namespace DXGame.Core.Generators
         private readonly EntityPropertiesComponent playerProperties_;
         private readonly PlayerStateComponent state_;
         private readonly WeaponComponent weapon_;
-        // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
-        public SpatialComponent PlayerSpace { get; private set; }
+        public SpatialComponent PlayerSpace { get; }
 
         public PlayerGenerator(DxGame game, DxVector2 playerPosition, DxRectangle bounds)
         {
@@ -81,8 +79,7 @@ namespace DXGame.Core.Generators
 
         private void AddPlayerAnimations()
         {
-            Debug.Assert(animation_ != null,
-                "AnimationComponent cannot be null during AddPlayerAnimations");
+            Validate.IsNotNull(animation_, "AnimationComponent cannot be null during AddPlayerAnimations");
             animation_.AddAnimation("None", PLAYER_NONE);
             animation_.AddAnimation("Walking_Left", PLAYER_WALKING_LEFT);
             animation_.AddAnimation("Walking_Right", PLAYER_WALKING_RIGHT);

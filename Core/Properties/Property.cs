@@ -35,15 +35,16 @@ namespace DXGame.Core.Properties
             if (mutator == null)
             {
                 LOG.Error(
-                    String.Format("Attempted to find a null PropertyMutator from Property {0}",
-                        Name));
+                    $"Attempted to find a null {GetType()} from Property {Name}");
                 return;
             }
 
             InternalAddMutator(mutator);
-            LOG.Debug(String.Format(
-                "Added {0} PropertyMutator count for a total of {1} of PropertyMutator {2} to {3}",
-                1, mutatorCounts_[mutator], mutator, Name));
+            if (LOG.IsDebugEnabled)
+            {
+                LOG.Debug(
+                    $"Added {1} {GetType()} count for a total of {mutatorCounts_[mutator]} of PropertyMutator {mutator} to {Name}");
+            }
         }
 
         public void RemoveMutator(PropertyMutator<T> mutator)
@@ -51,16 +52,15 @@ namespace DXGame.Core.Properties
             if (mutator == null || !mutatorCounts_.ContainsKey(mutator))
             {
                 LOG.Error(
-                    string.Format(
-                        "Attempted to remove non-existing PropertyMutator {0} from Property {1}",
-                        mutator, Name));
+                    $"Attempted to remove non-existing {mutator} from Property {Name}");
                 return;
             }
 
-            LOG.Debug(
-                String.Format(
-                    "Decremented Instance Count of PropertyMutator {0} from {1} to {2} for Property {3}",
-                    mutator, mutatorCounts_[mutator], mutatorCounts_[mutator] - 1, Name));
+            if (LOG.IsDebugEnabled)
+            {
+                LOG.Debug(
+                    $"Decremented Instance Count of PropertyMutator {mutator} from {mutatorCounts_[mutator]} to {mutatorCounts_[mutator] - 1} for Property {Name}");
+            }
 
             InternalRemoveMutator(mutator);
         }
@@ -73,7 +73,8 @@ namespace DXGame.Core.Properties
         {
             ApplyDeMutatorChain();
             mutatorCounts_[mutator] = (mutatorCounts_.ContainsKey(mutator)
-                ? mutatorCounts_[mutator] + 1 : 1);
+                ? mutatorCounts_[mutator] + 1
+                : 1);
             ApplyMutatorChain();
         }
 

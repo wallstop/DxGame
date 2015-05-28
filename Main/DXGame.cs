@@ -49,10 +49,7 @@ namespace DXGame.Main
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
         public ComponentCollection DxComponents { get; private set; }
         // TODO: Thread safety? Move this to some kind of Context static class?
-        public static DxGame Instance
-        {
-            get { return singleton_.Value; }
-        }
+        public static DxGame Instance => singleton_.Value;
 
         public DxRectangle ScreenRegion
         {

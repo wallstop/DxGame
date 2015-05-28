@@ -36,17 +36,14 @@ namespace DXGame.Core.Models
         [DataMember]
         public DxRectangle MapBounds { get; private set; }
 
-        public int BlockSize
-        {
-            get { return blockSize_; }
-        }
+        public int BlockSize => blockSize_;
 
         public List<GameObject> MapObjects
         {
             get
             {
                 var mapObjects = new List<GameObject>();
-                // Do not convert this to LINQ - it sucks
+                // Do not convert this to LINQ - it sucks. Something about it breaks a bunch of crap
                 foreach (KeyValuePair<GameObject, SpatialComponent> element in map_)
                 {
                     if (element.Key != null && element.Value != null)
@@ -197,6 +194,7 @@ namespace DXGame.Core.Models
         public override void Draw(DxGameTime gameTime)
         {
             var screenRegion = DxGame.ScreenRegion;
+            // ... why do we inverse?
             screenRegion.X = -screenRegion.X;
             screenRegion.Y = -screenRegion.Y;
 
@@ -250,7 +248,10 @@ namespace DXGame.Core.Models
                 {
                     var mapElement = map_[x + i, y + j];
                     /* We only care if the Value (SpatialComponent) is null. If a GameObject is there, but has no space, then there really isn't anything there */
-                    if (mapElement.Value == null) continue;
+                    if (mapElement.Value == null)
+                    {
+                        continue;
+                    }
                     // Only assert on false
                     Debug.Assert(false,
                         $"Map element {mapElement.Value} already existed, found ({mapElement.Value.Space.X}, {mapElement.Value.Space.Y}, {mapElement.Value.Space.Width}, {mapElement.Value.Space.Height}), tried to insert ({space.Space.X}, {space.Space.Y}, {space.Space.Width}, {space.Space.Height})");

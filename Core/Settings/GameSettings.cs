@@ -20,12 +20,7 @@ namespace DXGame.Core.Settings
         [DataMember] public Scale HudScale;
         [DataMember] public int ScreenHeight;
         [DataMember] public int ScreenWidth;
-        //[DataMember] public 
-
-        public DxRectangle ScreenRegion
-        {
-            get { return new DxRectangle(0, 0, ScreenWidth, ScreenHeight); }
-        }
+        public DxRectangle ScreenRegion => new DxRectangle(0, 0, ScreenWidth, ScreenHeight);
 
         public DxRectangle HudRegion
         {
@@ -41,14 +36,9 @@ namespace DXGame.Core.Settings
         }
 
         public static GameSettings DefaultSettings
-        {
-            get { return new GameSettings {ScreenHeight = 720, ScreenWidth = 1280, HudScale = Scale.Medium}; }
-        }
+            => new GameSettings {ScreenHeight = 720, ScreenWidth = 1280, HudScale = Scale.Medium};
 
-        public static string Path
-        {
-            get { return "Settings.json"; }
-        }
+        public static string Path => "Settings.json";
 
         public void Save()
         {
@@ -82,10 +72,16 @@ namespace DXGame.Core.Settings
                 DefaultSettings.Save();
             }
 
-            // Copy the loaded object in, then throw it away
-            ScreenHeight = loadedSettings.ScreenHeight;
-            ScreenWidth = loadedSettings.ScreenWidth;
+            CopySettings(loadedSettings);
             return this;
+        }
+
+        private void CopySettings(GameSettings other)
+        {
+            // Assume other GameSettings is non-null
+            ScreenHeight = other.ScreenHeight;
+            ScreenWidth = other.ScreenWidth;
+            HudScale = other.HudScale;
         }
 
         private static double ScalarForHud(Scale scaleFactor)
@@ -108,7 +104,7 @@ namespace DXGame.Core.Settings
 
         public override string ToString()
         {
-            byte [] json = Serializer<GameSettings>.JsonSerialize(this);
+            byte[] json = Serializer<GameSettings>.JsonSerialize(this);
             string jsonAsText = StringUtils.GetString(json);
             return jsonAsText;
         }

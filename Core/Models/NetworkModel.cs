@@ -12,15 +12,9 @@ namespace DXGame.Core.Models
     {
         protected List<NetworkComponent> connections_ = new List<NetworkComponent>();
         // TODO: Empty checks
-        public IEnumerable<NetworkClient> Clients
-        {
-            get { return connections_.OfType<NetworkClient>(); }
-        }
+        public IEnumerable<NetworkClient> Clients => connections_.OfType<NetworkClient>();
 
-        public IEnumerable<NetworkServer> Servers
-        {
-            get { return connections_.OfType<NetworkServer>(); }
-        }
+        public IEnumerable<NetworkServer> Servers => connections_.OfType<NetworkServer>();
 
         public NetworkModel(DxGame game)
             : base(game)

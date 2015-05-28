@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace DXGame.Core
 {
-    public class SortedList<T> : ICollection<T> where T : IComparable<T>
+    public class SortedList<T> : IList<T> where T : IComparable<T>
     {
         private readonly List<T> list_;
 
@@ -20,7 +20,7 @@ namespace DXGame.Core
         }
 
         public SortedList(IEnumerable<T> collection)
-            : this(collection.Count())
+            : this(collection?.Count() ?? 0)
         {
             var collectionAsArray = collection.ToArray();
             Array.Sort(collectionAsArray);
@@ -68,19 +68,28 @@ namespace DXGame.Core
             return list_.Remove(item);
         }
 
-        public int Count
+        public int Count => list_.Count;
+        public bool IsReadOnly => false;
+
+        public int IndexOf(T item)
         {
-            get { return list_.Count; }
+            return list_.IndexOf(item);
         }
 
-        public bool IsReadOnly
+        public void Insert(int index, T item)
         {
-            get { return false; }
+            Add(item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            list_.RemoveAt(index);
         }
 
         public T this[int index]
         {
             get { return list_[index]; }
+            set { throw new ArgumentException($"Cannot call set on access operator of {GetType()}"); }
         }
     }
 }

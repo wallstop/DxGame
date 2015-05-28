@@ -131,13 +131,12 @@
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\AbilityBar.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\BuffBar.cs" />
+    <Compile Include="Core\GraphicsWidgets\HUD\HudComponent.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\HudRegion.cs" />
     <Compile Include="Core\IIdentifiable.cs" />
     <Compile Include="Core\Components\Network\NetworkClient.cs" />
     <Compile Include="Core\Components\Network\NetworkServer.cs" />
-    <Compile Include="Core\Components\Utils\DrawPriorityComparer.cs" />
     <Compile Include="Core\Components\Utils\RectangleAreaComparer.cs" />
-    <Compile Include="Core\Components\Utils\UpdatePriorityComparer.cs" />
     <Compile Include="Core\Frames\Frame.cs" />
     <Compile Include="Core\Frames\GameTimeFrame.cs" />
     <Compile Include="Core\GameComponentCollection.cs" />
@@ -168,6 +167,7 @@
     <Compile Include="Core\Models\MapModel.cs" />
     <Compile Include="Core\Models\Model.cs" />
     <Compile Include="Core\Models\NetworkModel.cs" />
+    <Compile Include="Core\Models\PlayerModel.cs" />
     <Compile Include="Core\Models\WorldGravity.cs" />
     <Compile Include="Core\Network\ClientConnectionRequest.cs" />
     <Compile Include="Core\Network\GameStateDiff.cs" />
@@ -199,6 +199,7 @@
     <Compile Include="Main\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Properties\PropertyMutator.cs" />
+    <Compile Include="TowerGame\Player\PlayerFactory.cs" />
     <Compile Include="TowerGame\PropertyMutators\InheritedHatred.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -208,10 +209,15 @@
     <Reference Include="log4net">
       <HintPath>packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="MonoGame.Framework, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\MonoGame.Framework.WindowsDX.3.3.0.0\lib\net40\MonoGame.Framework.dll</HintPath>
+    <Reference Include="MonoGame.Framework, Version=3.4.0.459, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\MonoGame.Framework.WindowsDX.3.4.0.459\lib\net40\MonoGame.Framework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />

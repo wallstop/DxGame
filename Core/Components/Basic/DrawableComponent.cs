@@ -36,7 +36,7 @@ namespace DXGame.Core.Components.Basic
 
     [Serializable]
     [DataContract]
-    public abstract class DrawableComponent : Component
+    public abstract class DrawableComponent : Component, IComparable<DrawableComponent>
     {
         [NonSerialized] [IgnoreDataMember] protected SpriteBatch spriteBatch_;
 
@@ -50,6 +50,11 @@ namespace DXGame.Core.Components.Basic
             spriteBatch_ = game.SpriteBatch;
             UpdatePriority = UpdatePriority.NORMAL;
             DrawPriority = DrawPriority.NORMAL;
+        }
+
+        public int CompareTo(DrawableComponent other)
+        {
+            return DrawPriority.CompareTo(other?.DrawPriority);
         }
 
         public abstract void Draw(DxGameTime gameTime);

@@ -72,7 +72,7 @@ namespace DXGame.Core.Components.Basic
 
     [Serializable]
     [DataContract]
-    public abstract class Component : IIdentifiable
+    public abstract class Component : IIdentifiable, IComparable<Component>
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (Component));
         [DataMember] private readonly List<Updater> postProcessors_ = new List<Updater>();
@@ -101,10 +101,12 @@ namespace DXGame.Core.Components.Basic
             initialized_ = false;
         }
 
-        public UniqueId Id
+        public int CompareTo(Component other)
         {
-            get { return id_; }
+            return UpdatePriority.CompareTo(other?.UpdatePriority);
         }
+
+        public UniqueId Id => id_;
 
         public void HandleMessage(Message message)
         {
@@ -124,7 +126,7 @@ namespace DXGame.Core.Components.Basic
 
         public void AddPreUpdater(Updater updater)
         {
-            Validate.IsNotNull(updater, "Cannot add a null pre-updater to a component!");
+            Validate.IsNotNull(updater, $"Cannot add a null pre-updater to {GetType()}!");
             Validate.IsTrue(!preProcessors_.Contains(updater),
                 $"Cannot add a pre-updater {updater} that already exists {preProcessors_}");
             preProcessors_.Add(updater);
@@ -132,7 +134,7 @@ namespace DXGame.Core.Components.Basic
 
         public void AddPostUpdater(Updater updater)
         {
-            Validate.IsNotNull(updater, "Cannot add a null post-updater to a component!");
+            Validate.IsNotNull(updater, $"Cannot add a null post-updater to {GetType()}!");
             Validate.IsTrue(!postProcessors_.Contains(updater),
                 $"Cannot add a post-updater {updater} that already exists {postProcessors_}");
             postProcessors_.Add(updater);
@@ -181,7 +183,7 @@ namespace DXGame.Core.Components.Basic
             else
             {
                 // TODO: Log metrics
-                var logMessage = $"Initialize called on already Initialized component {this}";
+                var logMessage = $"Initialize called on already Initialized {GetType()} {this}";
                 LOG.Error(logMessage);
                 throw new ArgumentException(logMessage);
             }
@@ -201,6 +203,7 @@ namespace DXGame.Core.Components.Basic
         protected virtual void DeSerialize()
         {
             Initialize(); // Left as an exercise to the reader to determine specific behavior
+            // LOL why did I write that comment?
             LoadContent();
         }
     }

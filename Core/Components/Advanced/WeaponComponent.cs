@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 
@@ -21,7 +21,7 @@ namespace DXGame.Core.Components.Advanced
 
         public WeaponComponent WithDamage(int damage)
         {
-            Debug.Assert(damage >= 0, "Weapons can't have negative damage!");
+            Validate.IsTrue(damage >= 0, $"Wapons should not be able to have negative damage (damage {damage})");
             Damage = damage;
             return this;
         }

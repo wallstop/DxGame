@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
@@ -47,14 +46,16 @@ namespace DXGame.Core.Components.Basic
         protected DrawableComponent(DxGame game)
             : base(game)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(game),
-                "DrawableComponent cannot be initialized with a null game");
+            Validate.IsNotNullOrDefault(game, $"Cannot initialize {GetType()} with a null/default DxGame");
             spriteBatch_ = game.SpriteBatch;
             UpdatePriority = UpdatePriority.NORMAL;
             DrawPriority = DrawPriority.NORMAL;
         }
 
         public abstract void Draw(DxGameTime gameTime);
-        protected override void Update(DxGameTime gameTime) { }
+
+        protected override void Update(DxGameTime gameTime)
+        {
+        }
     }
 }

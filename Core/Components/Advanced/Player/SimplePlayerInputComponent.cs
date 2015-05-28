@@ -15,9 +15,9 @@ namespace DXGame.Core.Components.Advanced.Player
     // Should not be serialized
     public class SimplePlayerInputComponent : Component
     {
+        protected EntityPropertiesComponent EntityProperties;
         // TODO: Move these out
         protected PhysicsComponent physics_;
-        protected EntityPropertiesComponent EntityProperties;
         protected StateComponent state_;
         protected WeaponComponent weapon_;
 
@@ -29,32 +29,28 @@ namespace DXGame.Core.Components.Advanced.Player
 
         public SimplePlayerInputComponent WithPhysics(PhysicsComponent physics)
         {
-            GenericUtils.CheckNullOrDefault(physics,
-                "SimplePlayerInput cannot be assigned a null PhysicsComponent");
+            Validate.IsNotNullOrDefault(physics, $"Cannot initialize {GetType()} with a null/default PhysicsComponent");
             physics_ = physics;
             return this;
         }
 
         public SimplePlayerInputComponent WithPlayerState(StateComponent state)
         {
-            GenericUtils.CheckNullOrDefault(state,
-                "SimplePlayerInput cannot be initialized with a null PlayerState");
+            Validate.IsNotNullOrDefault(state, $"Cannot intialize {GetType()} with a null/default PlayerState");
             state_ = state;
             return this;
         }
 
         public SimplePlayerInputComponent WithWeapon(WeaponComponent weapon)
         {
-            GenericUtils.CheckNullOrDefault(weapon,
-                "SimplePlayerInput cannot be initialized with a null weapon");
+            Validate.IsNotNullOrDefault(weapon, $"Cannot initialize {GetType()} with a null/default weapon");
             weapon_ = weapon;
             return this;
         }
 
         public SimplePlayerInputComponent WithPlayerProperties(EntityPropertiesComponent properties)
         {
-            GenericUtils.CheckNull(properties,
-                "SimplePlayerInput cannot be initialized with a null EntityPropertiesComponent");
+            Validate.IsNotNullOrDefault(properties, $"Cannot initialize {GetType()} with null/default EntityProperties");
             EntityProperties = properties;
             return this;
         }
@@ -133,20 +129,20 @@ namespace DXGame.Core.Components.Advanced.Player
             {
                 switch (keyEvent.Key)
                 {
-                case Keys.Left:
-                    MoveLeft(request);
-                    break;
-                case Keys.Right:
-                    MoveRight(request);
-                    break;
-                case Keys.Up:
-                    Jump(request);
-                    break;
-                case Keys.Down:
-                    break;
-                case Keys.Space:
-                    weapon_.Attack(gameTime);
-                    break;
+                    case Keys.Left:
+                        MoveLeft(request);
+                        break;
+                    case Keys.Right:
+                        MoveRight(request);
+                        break;
+                    case Keys.Up:
+                        Jump(request);
+                        break;
+                    case Keys.Down:
+                        break;
+                    case Keys.Space:
+                        weapon_.Attack(gameTime);
+                        break;
                 }
             }
 

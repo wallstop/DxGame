@@ -51,7 +51,7 @@ namespace DXGame.Core.Properties
             if (mutator == null || !mutatorCounts_.ContainsKey(mutator))
             {
                 LOG.Error(
-                    String.Format(
+                    string.Format(
                         "Attempted to remove non-existing PropertyMutator {0} from Property {1}",
                         mutator, Name));
                 return;

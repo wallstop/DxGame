@@ -7,21 +7,6 @@ namespace DXGame.Core.Utils
 {
     public static class GenericUtils
     {
-        public static bool IsNullOrDefault<T>(T instance)
-        {
-            return EqualityComparer<T>.Default.Equals(instance, default(T));
-        }
-
-        public static void CheckNullOrDefault<T>(T instance, string message = "")
-        {
-            Debug.Assert(!IsNullOrDefault(instance), message);
-        }
-
-        public static void CheckNull<T>(T instance, string message = "")
-        {
-            Debug.Assert(null != instance, message);
-        }
-
         /*
             Like soft fail, but throws ArgumentException. This allows for 
             both Debug and Release code to fail
@@ -64,7 +49,7 @@ namespace DXGame.Core.Utils
             var casted = typedObject as T;
             if (casted == null)
             {
-                HardFail(String.Format("Could not cast {0} to {1}", typedObject, typeof (T)));
+                HardFail(string.Format("Could not cast {0} to {1}", typedObject, typeof (T)));
             }
             return casted;
         }

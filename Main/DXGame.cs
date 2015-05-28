@@ -59,7 +59,7 @@ namespace DXGame.Main
             get
             {
                 GameModel gameModel = Model<GameModel>();
-                if (GenericUtils.IsNullOrDefault(gameModel))
+                if (Check.IsNullOrDefault(gameModel))
                 {
                     return new DxRectangle(Screen);
                 }

@@ -47,8 +47,7 @@ namespace DXGame.Core.Components.Advanced.Physics
 
         public MapCollideablePhysicsComponent WithSpatialComponent(SpatialComponent space)
         {
-            GenericUtils.CheckNull(space,
-                "MapCollideablePhysicsComponent cannot be initialized with a null SpatialComponent.");
+            Validate.IsNotNull(space, $"Cannot initialize {GetType()} with a null SpatialComponent");
             position_ = space;
             return this;
         }

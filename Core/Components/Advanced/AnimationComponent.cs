@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
@@ -15,14 +14,10 @@ namespace DXGame.Core.Components.Advanced
     [DataContract]
     public class AnimationComponent : DrawableComponent
     {
-        [DataMember]
-        private readonly Dictionary<string, Animation> states_ = new Dictionary<string, Animation>();
-        [DataMember]
-        private string lastState_;
-        [DataMember]
-        protected StateComponent state_;
-        [DataMember]
-        protected PositionalComponent position_;
+        [DataMember] private readonly Dictionary<string, Animation> states_ = new Dictionary<string, Animation>();
+        [DataMember] private string lastState_;
+        [DataMember] protected PositionalComponent position_;
+        [DataMember] protected StateComponent state_;
 
         public AnimationComponent(DxGame game)
             : base(game)
@@ -31,21 +26,21 @@ namespace DXGame.Core.Components.Advanced
 
         public AnimationComponent WithPosition(PositionalComponent position)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(position), "Sprite position cannot be null on assignment");
+            Validate.IsNotNullOrDefault(position, "Cannot create an AnimationComponent with a null PositionalComponent!");
             position_ = position;
             return this;
         }
 
         public AnimationComponent WithState(StateComponent state)
         {
-            Debug.Assert(!GenericUtils.IsNullOrDefault(state) || !state.States.Any(),
-                "Sprite position cannot be null on assignment");
+            Validate.IsNotNullOrDefault(state, "Cannot create an AnimationComponent with a null StateComponent!");
+            Validate.IsNotEmpty(state.States, "Cannot create an AnimationComponent with a state-less StateComponent!");
             state_ = state;
             lastState_ = state.States.First();
             return this;
         }
 
-        public void AddAnimation(String state, String assetName)
+        public void AddAnimation(string state, string assetName)
         {
             var animation = new Animation(assetName).WithPosition(position_);
             states_.Add(state, animation);

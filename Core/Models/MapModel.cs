@@ -215,7 +215,7 @@ namespace DXGame.Core.Models
         {
             foreach (var keyValuePair in map_)
             {
-                if (GenericUtils.IsNullOrDefault(keyValuePair))
+                if (Check.IsNullOrDefault(keyValuePair))
                 {
                     continue;
                 }

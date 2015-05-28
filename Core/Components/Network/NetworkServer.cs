@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Player;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Models;
@@ -14,6 +13,10 @@ using Lidgren.Network;
 
 namespace DXGame.Core.Components.Network
 {
+    /*
+        TODO: Lots of things. We need to handle all kinds of messages, and some other things.
+    */
+
     public class NetworkServer : NetworkComponent
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (NetworkServer));
@@ -49,26 +52,26 @@ namespace DXGame.Core.Components.Network
             // TODO: Deal with gameTime
             switch (incomingMessage.MessageType)
             {
-            case NetIncomingMessageType.Error:
-                ProcessError(incomingMessage);
-                break;
-            case NetIncomingMessageType.Data:
-                ProcessData(incomingMessage);
-                break;
-            case NetIncomingMessageType.ConnectionLatencyUpdated:
-                ProcessConnectionLatencyUpdated(incomingMessage);
-                break;
-            case NetIncomingMessageType.ConnectionApproval:
-                ProcessConnectionApproval(incomingMessage);
-                break;
-            case NetIncomingMessageType.StatusChanged:
-                // TODO: Handle
-                break;
-            default:
-                // TODO: Handle
-                break;
-            //ProcessUnhandledMessageType(incomingMessage);
-            //break;
+                case NetIncomingMessageType.Error:
+                    ProcessError(incomingMessage);
+                    break;
+                case NetIncomingMessageType.Data:
+                    ProcessData(incomingMessage);
+                    break;
+                case NetIncomingMessageType.ConnectionLatencyUpdated:
+                    ProcessConnectionLatencyUpdated(incomingMessage);
+                    break;
+                case NetIncomingMessageType.ConnectionApproval:
+                    ProcessConnectionApproval(incomingMessage);
+                    break;
+                case NetIncomingMessageType.StatusChanged:
+                    // TODO: Handle
+                    break;
+                default:
+                    // TODO: Handle
+                    break;
+                //ProcessUnhandledMessageType(incomingMessage);
+                //break;
             }
         }
 
@@ -79,7 +82,8 @@ namespace DXGame.Core.Components.Network
                 // Quick and dirty for now - do some nice differentials later
                 var message = new GameStateKeyFrame
                 {
-                    Components = DxGame.DxComponents.Components().Where(n => !(n is SimplePlayerInputComponent)).ToList(),
+                    Components =
+                        DxGame.DxComponents.Components().Where(n => !(n is SimplePlayerInputComponent)).ToList(),
                     GameTime = gameTime,
                     MessageType = MessageType.SERVER_DATA_KEYFRAME
                 };
@@ -97,20 +101,19 @@ namespace DXGame.Core.Components.Network
         protected void ProcessUnhandledMessageType(NetIncomingMessage message)
         {
             GenericUtils.HardFail(LOG,
-                String.Format("NetworkServer currently doesn't support messages of the type {0}. Message: {1}",
-                    message.MessageType, message));
+                $"NetworkServer currently doesn't support messages of the type {message.MessageType}. Message: {message}");
         }
 
         protected void ProcessError(NetIncomingMessage message)
         {
             GenericUtils.HardFail(LOG,
-                String.Format("Received IncomingMessage with error type, this shouldn't happen! Message: {0}", message));
+                $"Received IncomingMessage with error type, this shouldn't happen! Message: {message}");
         }
 
         protected void ProcessConnectionLatencyUpdated(NetIncomingMessage message)
         {
             // TODO: Handle latency updates (currently not supported)
-            LOG.Info(String.Format("Received LatencyUpdate {0}", message));
+            LOG.Info($"Received LatencyUpdate {message}");
             throw new NotImplementedException();
         }
 
@@ -119,8 +122,8 @@ namespace DXGame.Core.Components.Network
             if (ClientFrameStates.ContainsKey(message.SenderConnection))
             {
                 // TODO: Metrics
-                LOG.Error(String.Format("Denying Connection {0}, this connection is currently already approved.",
-                    message.SenderConnection));
+                LOG.Error(
+                    $"Denying Connection {message.SenderConnection}, this connection is currently already approved.");
                 message.SenderConnection.Deny();
             }
 
@@ -128,40 +131,40 @@ namespace DXGame.Core.Components.Network
                 Only approve the connection here - wait to instantiate the client's FrameModel until they send our 
                 own special ClientApproval packet 
             */
-            LOG.Info(String.Format("Approving NetworkServer client connection {0}", message.SenderConnection));
+            LOG.Info(string.Format("Approving NetworkServer client connection {0}", message.SenderConnection));
             message.SenderConnection.Approve();
             ProcessData(message);
         }
 
         protected void ProcessData(NetIncomingMessage message)
         {
-            GenericUtils.CheckNull(message, "Cannot process server data on a null message!");
+            Validate.IsNotNull(message, "Cannot process server data on a null message!");
             var networkMessage = NetworkMessage.FromNetIncomingMessage(message);
-            GenericUtils.CheckNull(networkMessage,
-                "Could not properly format a NetworkMessage from the NetIncomingMessage");
+            Validate.IsNotNull(networkMessage,
+                $"Could not properly format a NetworkMessage from NetIncomingMessage {message}");
 
             DeMarshall demarshall;
 
             switch (networkMessage.MessageType)
             {
-            case MessageType.CLIENT_CONNECTION_REQUEST:
-                demarshall = HandleClientConnectionRequest;
-                break;
-            case MessageType.CLIENT_DATA_DIFF:
-                demarshall = HandleClientDataDiff;
-                break;
-            case MessageType.CLIENT_KEY_FRAME:
-                demarshall = HandleClientDataKeyFrame;
-                break;
-            case MessageType.SERVER_DATA_DIFF:
-                demarshall = HandleServerDataDiff;
-                break;
-            case MessageType.SERVER_DATA_KEYFRAME:
-                demarshall = HandleServerDataKeyframe;
-                break;
-            default:
-                demarshall = HandleUnhandledType;
-                break;
+                case MessageType.CLIENT_CONNECTION_REQUEST:
+                    demarshall = HandleClientConnectionRequest;
+                    break;
+                case MessageType.CLIENT_DATA_DIFF:
+                    demarshall = HandleClientDataDiff;
+                    break;
+                case MessageType.CLIENT_KEY_FRAME:
+                    demarshall = HandleClientDataKeyFrame;
+                    break;
+                case MessageType.SERVER_DATA_DIFF:
+                    demarshall = HandleServerDataDiff;
+                    break;
+                case MessageType.SERVER_DATA_KEYFRAME:
+                    demarshall = HandleServerDataKeyframe;
+                    break;
+                default:
+                    demarshall = HandleUnhandledType;
+                    break;
             }
 
             demarshall(networkMessage, message.SenderConnection);
@@ -188,37 +191,32 @@ namespace DXGame.Core.Components.Network
             if (ClientFrameStates.ContainsKey(connection))
             {
                 GenericUtils.HardFail(LOG,
-                    String.Format(
-                        "Received ClientConnectionRequest that we're already tracking, this is an issue! Request: {0}",
-                        clientConnectionRequest));
+                    $"Received ClientConnectionRequest that we're already tracking, this is an issue! Request: {clientConnectionRequest}");
                 return;
             }
 
             var frameModel = new FrameModel(DxGame);
             ClientFrameStates.Add(connection, frameModel);
-            LOG.Info(String.Format("Successfully initialized ClientConnection {0} for player {1}", connection,
-                clientConnectionRequest.PlayerName));
+            LOG.Info(
+                $"Successfully initialized ClientConnection {connection} for player {clientConnectionRequest.PlayerName}");
         }
 
         protected void HandleServerDataDiff(NetworkMessage message, NetConnection connection)
         {
             GenericUtils.HardFail(LOG,
-                String.Format("Received a Server Data Diff {0} from a client. This should not happen",
-                    message));
+                $"Received a Server Data Diff {message} from a client. This should not happen");
         }
 
         protected void HandleServerDataKeyframe(NetworkMessage message, NetConnection connection)
         {
             GenericUtils.HardFail(LOG,
-                String.Format("Received a Server Data Keyframe {0} from a client. This should not happen",
-                    message));
+                $"Received a Server Data Keyframe {message} from a client. This should not happen");
         }
 
         protected void HandleUnhandledType(NetworkMessage message, NetConnection connection)
         {
             GenericUtils.HardFail(LOG,
-                String.Format("Received an unexpected messagetype {0} from a client. This should not happen",
-                    message));
+                $"Received an unexpected messagetype {message} from a client. This should not happen");
         }
     }
 }

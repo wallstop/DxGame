@@ -13,10 +13,9 @@ namespace DXGame.Core.Utils
 
     public static class MathUtils
     {
-        private static readonly log4net.ILog LOG = log4net.LogManager.GetLogger(typeof (MathUtils));
-
         private const float floatTolerance_ = 0.00001f;
         private const double doubleTolerance_ = 0.0000001;
+        private static readonly log4net.ILog LOG = log4net.LogManager.GetLogger(typeof (MathUtils));
 
         public static float FloatTolerance
         {
@@ -92,7 +91,7 @@ namespace DXGame.Core.Utils
         public static T Constrain<T>(T value, T min, T max)
         {
             Debug.Assert(Compare(min, max) <= 0,
-                String.Format("Could not constrain {0} with min {1}, max {2}", value, min, max));
+                $"Could not constrain {value} with min {min}, max {max}");
             value = Max(value, min);
             value = Min(value, max);
             return value;
@@ -113,10 +112,13 @@ namespace DXGame.Core.Utils
                 }
             </code>
         */
+
         public static int FuzzyCompare(float lhs, float rhs, float epsilon = floatTolerance_)
         {
             if (Math.Abs(lhs - rhs) <= epsilon)
+            {
                 return 0;
+            }
             return (lhs > rhs ? 1 : -1);
         }
 
@@ -134,10 +136,13 @@ namespace DXGame.Core.Utils
                 }
             </code>
         */
+
         public static int FuzzyCompare(double lhs, double rhs, double epsilon = doubleTolerance_)
         {
             if (Math.Max(lhs, rhs) - Math.Min(lhs, rhs) <= epsilon)
+            {
                 return 0;
+            }
             return (lhs > rhs ? 1 : -1);
         }
 

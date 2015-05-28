@@ -10,18 +10,10 @@ namespace DXGame.Core.Wrappers
     public struct DxRectangle : IEquatable<DxRectangle>, IEquatable<Rectangle>
     {
         private const float TOLERANCE = 0.000001f;
-
-        [DataMember]
-        public float X { get; set; }
-
-        [DataMember]
-        public float Y { get; set; }
-
-        [DataMember]
-        public float Width { get; set; }
-
-        [DataMember]
-        public float Height { get; set; }
+        [DataMember] public float Height;
+        [DataMember] public float Width;
+        [DataMember] public float X;
+        [DataMember] public float Y;
 
         public float Area
         {
@@ -90,8 +82,15 @@ namespace DXGame.Core.Wrappers
             Height = height;
         }
 
-        public bool Equals(DxRectangle rhs) { return this == rhs; }
-        public bool Equals(Rectangle other) { return X.Equals(other.X) && Y.Equals(other.Y); }
+        public bool Equals(DxRectangle rhs)
+        {
+            return this == rhs;
+        }
+
+        public bool Equals(Rectangle other)
+        {
+            return X.Equals(other.X) && Y.Equals(other.Y);
+        }
 
         public Rectangle ToRectangle()
         {
@@ -103,7 +102,10 @@ namespace DXGame.Core.Wrappers
             return new DxRectangle(rectangle);
         }
 
-        public Vector2 XY() { return new Vector2(X, Y); }
+        public Vector2 XY()
+        {
+            return new Vector2(X, Y);
+        }
 
         public static bool operator ==(DxRectangle lhs, DxRectangle rhs)
         {
@@ -130,8 +132,15 @@ namespace DXGame.Core.Wrappers
             return false;
         }
 
-        public bool Contains(Vector2 point) { return Contains(point.X, point.Y); }
-        public bool Contains(Point point) { return Contains(point.X, point.Y); }
+        public bool Contains(Vector2 point)
+        {
+            return Contains(point.X, point.Y);
+        }
+
+        public bool Contains(Point point)
+        {
+            return Contains(point.X, point.Y);
+        }
 
         public bool Intersects(Rectangle rectangle)
         {
@@ -220,8 +229,7 @@ namespace DXGame.Core.Wrappers
 
         public override string ToString()
         {
-            return string.Format("{{X:{0:N2} Y:{1:N2} Width:{2:N2} Height:{3:N2}", X, Y, Width,
-                Height);
+            return $"{{X:{X:N2} Y:{Y:N2} Width:{Width:N2} Height:{Height:N2}";
         }
 
         public override int GetHashCode()

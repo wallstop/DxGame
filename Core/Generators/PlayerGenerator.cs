@@ -5,6 +5,7 @@ using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Player;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
+using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
@@ -73,7 +74,8 @@ namespace DXGame.Core.Generators
 
         private void AddPlayerStates()
         {
-            Debug.Assert(state_ != null, "StateComponent cannot be null during AddPlayerStates");
+            Validate.IsNotNullOrDefault(state_,
+                $"StateComponent cannot be null/default during AddPlayerStates for {GetType()}");
             state_.AddStates("None", "Walking_Left", "Walking_Right", "Jumping");
         }
 

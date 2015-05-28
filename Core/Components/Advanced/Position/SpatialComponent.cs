@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
@@ -66,7 +65,7 @@ namespace DXGame.Core.Components.Advanced.Position
 
         public virtual SpatialComponent WithDimensions(DxVector2 dimensions)
         {
-            Debug.Assert(dimensions != null, "SpatialComponent cannot be constructed with null dimensions");
+            Validate.IsNotNullOrDefault(dimensions, $"Cannot initialize {GetType()} with null/default dimensions");
             dimensions_ = dimensions;
             return this;
         }

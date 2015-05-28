@@ -6,7 +6,6 @@ namespace DXGame.Core.Utils
     public static class GameObjectUtils
     {
         private static readonly log4net.ILog LOG = log4net.LogManager.GetLogger(typeof (GameObjectUtils));
-
         /**
         <summary>
             Given a list of GameObjects, returns a list of all Components of a provided type that 

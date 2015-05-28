@@ -29,8 +29,15 @@ namespace DXGame.Core.Wrappers
             Y = value;
         }
 
-        public bool Equals(DxVector2 other) { return this == other; }
-        public bool Equals(Vector2 other) { return X.Equals(other.X) && Y.Equals(other.Y); }
+        public bool Equals(DxVector2 other)
+        {
+            return this == other;
+        }
+
+        public bool Equals(Vector2 other)
+        {
+            return X.Equals(other.X) && Y.Equals(other.Y);
+        }
 
         public static DxVector2 operator +(DxVector2 lhs, DxVector2 rhs)
         {
@@ -84,7 +91,7 @@ namespace DXGame.Core.Wrappers
             return !lhs.X.Equals(rhs.X) || !lhs.Y.Equals(rhs.Y);
         }
 
-        public override bool Equals(Object other)
+        public override bool Equals(object other)
         {
             if (other is DxVector2)
             {
@@ -97,18 +104,19 @@ namespace DXGame.Core.Wrappers
             return false;
         }
 
-        public override int GetHashCode() { return X.GetHashCode() + Y.GetHashCode(); }
-        public Vector2 ToVector2() { return new Vector2(X, Y); }
-        //public static implicit operator Vector2(DxVector2 vector)
-        //{
-        //    return vector.ToVector2();
-        //}
+        public override int GetHashCode()
+        {
+            return X.GetHashCode() + Y.GetHashCode();
+        }
 
-        //public static implicit operator DxVector2(Vector2 vector)
-        //{
-        //    return new DxVector2(vector);
-        //}
+        public Vector2 ToVector2()
+        {
+            return new Vector2(X, Y);
+        }
 
-        public override string ToString() { return "{X:" + X + " Y: " + Y + "}"; }
+        public override string ToString()
+        {
+            return "{X:" + X + " Y: " + Y + "}";
+        }
     }
 }

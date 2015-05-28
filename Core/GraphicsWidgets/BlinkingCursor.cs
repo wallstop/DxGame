@@ -86,7 +86,7 @@ namespace DXGame.Core.GraphicsWidgets
         public override void Draw(DxGameTime gameTime)
         {
             // Only draw ourselves if we're in our "Drawn" state
-            if (GenericUtils.IsNullOrDefault(Texture))
+            if (Check.IsNullOrDefault(Texture))
             {
                 Texture = new Texture2D(DxGame.GraphicsDevice, (int) Width, (int) Height);
                 Texture.SetData(Enumerable.Repeat(Color, (int) (Width * Height)).ToArray());

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
@@ -125,16 +124,17 @@ namespace DXGame.Core.Components.Basic
 
         public void AddPreUpdater(Updater updater)
         {
-            GenericUtils.CheckNull(updater, "Cannot add a null pre-updater to a component!");
-            Debug.Assert(!preProcessors_.Contains(updater), "Cannot add an already existing pre-updater to a component!");
+            Validate.IsNotNull(updater, "Cannot add a null pre-updater to a component!");
+            Validate.IsTrue(!preProcessors_.Contains(updater),
+                $"Cannot add a pre-updater {updater} that already exists {preProcessors_}");
             preProcessors_.Add(updater);
         }
 
         public void AddPostUpdater(Updater updater)
         {
-            GenericUtils.CheckNull(updater, "Cannot add a null pre-updater to a component!");
-            Debug.Assert(!postProcessors_.Contains(updater),
-                "Cannot add an already existing pre-updater to a component!");
+            Validate.IsNotNull(updater, "Cannot add a null post-updater to a component!");
+            Validate.IsTrue(!postProcessors_.Contains(updater),
+                $"Cannot add a post-updater {updater} that already exists {postProcessors_}");
             postProcessors_.Add(updater);
         }
 
@@ -181,7 +181,7 @@ namespace DXGame.Core.Components.Basic
             else
             {
                 // TODO: Log metrics
-                var logMessage = String.Format("Initialize called on already Initialized component {0}", this);
+                var logMessage = $"Initialize called on already Initialized component {this}";
                 LOG.Error(logMessage);
                 throw new ArgumentException(logMessage);
             }

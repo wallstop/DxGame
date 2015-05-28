@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using DXGame.Core.Frames;
 using DXGame.Core.Utils;
@@ -21,15 +20,16 @@ namespace DXGame.Core.Models
 
         public FrameModel WithFrameRetention(TimeSpan timespan)
         {
-            GenericUtils.CheckNullOrDefault(timespan,
-                "Cannot create a FrameModel without a null/default FrameRetention policy");
+            Validate.IsNotNullOrDefault(timespan,
+                $"Cannot initialize {GetType()} with a null/default FrameRetention policy");
             FrameRetention = timespan;
             return this;
         }
 
         public void AttachFrame(GameTimeFrame frame)
         {
-            Debug.Assert(!Frames.Contains(frame), "FrameModel already has this frame!");
+            Validate.IsTrue(!Frames.Contains(frame),
+                $"Cannot attach frame {frame} to {GetType()}. This frame already exists in {Frames}");
             Frames.Add(frame);
         }
 

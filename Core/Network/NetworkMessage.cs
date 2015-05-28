@@ -25,7 +25,7 @@ namespace DXGame.Core.Network
 
         public static NetworkMessage FromNetIncomingMessage(NetIncomingMessage message)
         {
-            GenericUtils.CheckNull(message, "Cannot create a NetworkMessage object from a null NetIncomingMessage!");
+            Validate.IsNotNull(message, $"Cannot create a {typeof (NetworkMessage)} from a null NetIncomingMessage!");
             var typeString = message.ReadString();
             try
             {
@@ -35,8 +35,7 @@ namespace DXGame.Core.Network
             {
                 // TODO: Log metrics on this
                 var logMessage =
-                    String.Format("Could not create a Network Message for type {0}, something went horribly wrong.",
-                        typeString);
+                    $"Could not create a Network Message for type {typeString}, something went horribly wrong.";
                 LOG.Error(logMessage, e);
                 Debug.Assert(false, logMessage);
                 return new NetworkMessage();
@@ -45,9 +44,8 @@ namespace DXGame.Core.Network
 
         public NetOutgoingMessage ToNetOutgoingMessage(NetPeer connection)
         {
-            GenericUtils.CheckNull(connection,
-                String.Format(
-                    "Cannot create a NetOutgoingMessage from {0}, the connection provided connection is null!", this));
+            Validate.IsNotNull(connection,
+                $"Cannot create a NetOutgoingMessage from {this}, the connection provided connection is null!");
 
             /*
                 We always rely on having the type (as a string) be the first thing in a message, so 

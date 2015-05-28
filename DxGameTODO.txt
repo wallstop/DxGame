@@ -1,0 +1,32 @@
+-Work with Holden to get some basic animations for a character in place. See if we can also get some sample environment pieces.
+	-Integrate them. The sooner we see the art in game, the better we can give feedback
+-Come up with some character designs. "Hadrien" or something. Simple backstories and motivations.
+-Figure out a behavior tree system. This is most likely the route we want to take going forward. Pull in an existing one or build one from scratch, no big deal. Unfortunately this increases computational complexity, as every single trigger for every enemy's current state will need to be evaluated for "truthiness" every frame. If there are any other ideas, I'd love to hear them and discuess them. The goal here is a modular, plug-able framework of behaviors that can somehow be compartmentalized, updated solely server-side, and created / arranged in some kind of editor (will probably have to make that too, but that's ok)
+-Figure out the best way to do skills/abilities + simple interface. Design 4 simple skills/abilities to start with.
+-Add config options for movement + skills
+	-Config menu screen (doesn't pause the game)
+	-Potential graphics options at this point
+-Add some simple buffs. 
+-Figure out simple player properties (Attack speed, health, jump speed, turn rate, whatever. Come up with a basic list)
+-Come up with a basic enemy, equip them with said behavior system (something extremely simple, like run towards player)
+-Figure out multiple players (another dive into the network code)
+-Flesh out more of the network code
+-Add serialization tests around new classes. I haven't ensured that the Attributes are properly serialized to binary / json for all components/ new stuff.
+-Fuck local co-op for now. Network only atm, should be easiest. We can figure the rest out later.
+-Figure out a collidables...thing. Right now we only have collision between objects and the map. What we want going forward is an n-body collision system. Look up a KDTree, I used an impressive one called Nanoflann for C++. We might have to implement this ourselves, but that's alright. Add this shit to a proper CollisionModel, which I have the basics of.
+-Right now we load the map from a text file. Change this to load properly from Holden-art. This may require custom files for each of Holden's assets, but that's alright. We want these to be binary so the user can't screw with them.
+-Come up with a way to verify map assets on startup. Md5 checksums? Can punt this, not super important atm.
+-Expand the FrameModel. Right now I don't think it really does much of anything.
+-Think about async logging. Might want to build our own? Not too big a deal, can punt this / worry about it when it's an issue.
+-Come up with an interaction system. IE, "Player collideable" objects. We should be able to pick up buffs.
+-Finish fleshing out "Buff Bar" + work on interaction system with buffs. 
+-Implement some basic buffs. We may want to do timed buffs or buffs that expire. Figure out if this is something worth pursuing and implement it.
+-Behaviour editor.
+-Map editor (drag/drop Holden's assets)
+-Incorporate Holden's art/thought process into our process. Right now he has some really cool art, but it doesn't resonate with our original vision. Come to some kind of consensus (love the art)
+-Figure out a list of starting/total weapons. Swords? (probably) Bow + arrow? (maybe) Lazors/guns? (maybe) All melee weapons? (eh). Think through this and come up with some good stuff.
+-Figure out some kind of room templates / environments that we can get Holden to utilize.
+-Get better menus. Maybe a better menu system. Figure out if we can get rid of mouse and change to only keyboard. That might be cool. Maybe not.
+-Design a level-to-level interconnect. Right now we load from a menu into the game, then from there...? We need to be able to transition levels. Come up with a way to do this.
+-Start thinking about / designing the "database of things". If we want to have dynamic enemy behaviour, we need a way to quanitify player behavior so that we can feed our algorithm with "stuff". This should be an initial DB thinking + way of getting info there.
+-Start thinking about damage / health / death. A player should be able to die + trigger a death animation + trigger "something that happens when players die". Level restart? Main menu? Dead screen ("YOU ARE DED LOL")? idk

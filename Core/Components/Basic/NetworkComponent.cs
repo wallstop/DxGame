@@ -16,40 +16,16 @@ namespace DXGame.Core.Components.Basic
 
     public abstract class NetworkComponent : Component
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (NetworkComponent));
-
         public delegate void DeMarshall(NetworkMessage message, NetConnection connection);
 
+        private static readonly ILog LOG = LogManager.GetLogger(typeof (NetworkComponent));
+        private NetPeer connection_;
         /*
             Make sure you know what you're doing when you get/set this. 
             This Connection listener should only be set via Connection setter and never gotten
         */
         protected Thread ConnectionListener { get; set; }
         protected ConcurrentQueue<NetIncomingMessage> MessageQueue { get; set; }
-
-        protected void ReadFromConnection()
-        {
-            TimeSpan sleepTime = DxGame.TargetElapsedTime;
-            try
-            {
-                while (true)
-                {
-                    NetIncomingMessage message;
-                    while ((message = Connection.ReadMessage()) != null)
-                    {
-                        MessageQueue.Enqueue(message);
-                    }
-                    Thread.Sleep(sleepTime);
-                }
-            }
-            catch (ThreadInterruptedException e)
-            {
-                LOG.Info(String.Format("Shutting down reader for Connection {0}", Connection), e);
-            }
-        }
-
-        private NetPeer connection_;
-
         /*
             The Connection property will attempt to terminate the current ConnectionListener thread
             when set and spawn a new one.
@@ -100,9 +76,30 @@ namespace DXGame.Core.Components.Basic
             MessageQueue = new ConcurrentQueue<NetIncomingMessage>();
         }
 
+        protected void ReadFromConnection()
+        {
+            TimeSpan sleepTime = DxGame.TargetElapsedTime;
+            try
+            {
+                while (true)
+                {
+                    NetIncomingMessage message;
+                    while ((message = Connection.ReadMessage()) != null)
+                    {
+                        MessageQueue.Enqueue(message);
+                    }
+                    Thread.Sleep(sleepTime);
+                }
+            }
+            catch (ThreadInterruptedException e)
+            {
+                LOG.Info($"Shutting down reader for Connection {Connection}", e);
+            }
+        }
+
         public virtual NetworkComponent WithConnection(NetPeer connection)
         {
-            GenericUtils.CheckNullOrDefault(connection, "Cannot create a NetworkComponent with a null/default NetPeer");
+            Validate.IsNotNullOrDefault(connection, "Cannot create a NetworkComponent with a null/default NetPeer");
             Connection = connection;
             return this;
         }
@@ -112,7 +109,7 @@ namespace DXGame.Core.Components.Basic
         protected static T ConvertMessageType<T>(NetworkMessage message) where T : class
         {
             return GenericUtils.CheckedCast<T>(message, LOG,
-                String.Format("Received message expecting type {0}, but was unable to dynamic cast", typeof (T)));
+                $"Received message expecting type {typeof (T)}, but was unable to dynamic cast");
         }
 
         // We need to know the GameTime in order to Receive Data
@@ -127,14 +124,13 @@ namespace DXGame.Core.Components.Basic
                 {
                     // If we couldn't dequeue anything, hard-bail
                     LOG.Info(
-                        String.Format("Expected {0} messages, but only received {1} before we could not dequeue any.",
-                            maxMessages, i));
+                        $"Expected {maxMessages} messages, but only received {i} before we could not dequeue any.");
                     return;
                 }
 
                 if (incomingMessage == null)
                 {
-                    LOG.Info(String.Format("Found a null message inside the MessageQueue. This shouldn't happen."));
+                    LOG.Info("Found a null message inside the MessageQueue. This shouldn\'t happen.");
                     continue;
                 }
 
@@ -143,12 +139,9 @@ namespace DXGame.Core.Components.Basic
         }
 
         public abstract void EstablishConnection();
-
         public abstract void RouteDataOnMessageType(NetIncomingMessage message, DxGameTime gameTime);
-
         // ...and also to send data
         public abstract void SendData(DxGameTime gameTime);
-
         public abstract void Shutdown();
     }
 }

@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DXGameTest</RootNamespace>
     <AssemblyName>DXGameTest</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -28,6 +28,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -91,6 +92,7 @@
     <Compile Include="Core\Property\PropertyMutatationChain.cs" />
     <Compile Include="Core\Property\PropertyMutation.cs" />
     <Compile Include="Core\Property\PropertyMutatorComparer.cs" />
+    <Compile Include="Core\SortedListTest.cs" />
     <Compile Include="Core\UniqueIdTest.cs" />
     <Compile Include="Core\Utils\MathUtilsTest.cs" />
     <Compile Include="Core\Utils\VectorUtilsTest.cs" />

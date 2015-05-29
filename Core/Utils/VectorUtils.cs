@@ -66,25 +66,19 @@ namespace DXGame.Core.Utils
         </summary>
         */
 
-        // TODO: Create a floating point based Rectangle
-        public static Rectangle RectangleFrom(Vector2 position, Vector2 dimensions)
-        {
-            Validate.IsTrue(dimensions.X >= 0, $"Rectangle width should be >=0 (but was {dimensions.X})");
-            Validate.IsTrue(dimensions.Y >= 0, $"Rectangle height should be >= (but was {dimensions.Y})");
-            return new Rectangle(
-                /*
-                        The position may be anywhere, so if it's -.05, we actually want it to wrap to -1. Similarly, 
-                        if the position is 0.5, we want it to wrap to 1.0
-                    */
-                (int) Math.Ceiling(Math.Abs(position.X)) * Math.Sign(position.X),
-                (int) Math.Ceiling(Math.Abs(position.Y)) * Math.Sign(position.Y),
-                (int) Math.Ceiling(dimensions.X), // Assume dimensions are always positive
-                (int) Math.Ceiling(dimensions.Y));
-        }
-
         public static DxRectangle RectangleFrom(DxVector2 position, DxVector2 dimensions)
         {
-            return new DxRectangle(RectangleFrom(position.ToVector2(), dimensions.ToVector2()));
+            Validate.IsTrue(dimensions.X >= 0);
+            Validate.IsTrue(dimensions.Y >= 0);
+            return new DxRectangle(
+                /*
+                    The position may be anywhere, so if it's -.05, we actually want it to wrap to -1. Similarly, 
+                    if the position is 0.5, we want it to wrap to 1.0
+                */
+                (float) Math.Ceiling(Math.Abs(position.X)) * Math.Sign(position.X),
+                (float) Math.Ceiling(Math.Abs(position.Y)) * Math.Sign(position.Y),
+                (float) Math.Ceiling(dimensions.X), // Assume dimensions are always positive
+                (float) Math.Ceiling(dimensions.Y));
         }
     }
 }

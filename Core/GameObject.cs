@@ -8,13 +8,6 @@ using DXGame.Core.Utils;
 
 namespace DXGame.Core
 {
-/*
-    pragma warning disable 649 ignores a warning for "default value is used" for the UniqueId property.
-    UniqueIds are special. When they're constructed, they are gauranteed to be Unique. Therefore, we want
-    a default constructed one.
-*/
-#pragma warning disable 649
-
     /**
     <summary>
         GameObjects are a wrapper that holds some bundle of components. However, each Component already knows
@@ -31,34 +24,18 @@ namespace DXGame.Core
     [DataContract]
     public class GameObject : IIdentifiable, IEquatable<GameObject>
     {
-        [DataMember] private List<DrawableComponent> drawableComponents_ =
-            new List<DrawableComponent>();
-
         // DataMembers can't be readonly :(
-        [DataMember] private List<Component> dxComponents_ = new List<Component>();
+        [DataMember] private List<Component> components_ = new List<Component>();
         [DataMember] private UniqueId id_ = new UniqueId();
-
-        public List<Component> Components
-        {
-            get { return AllComponents.ToList(); }
-        }
-
-        private IEnumerable<Component> AllComponents
-        {
-            get { return dxComponents_.Union(dxComponents_).Union(drawableComponents_); }
-        }
+        public IEnumerable<Component> Components => components_;
 
         public bool Equals(GameObject other)
         {
-            return Id.Equals(other.Id)
-                   && new HashSet<Component>(AllComponents).SetEquals(other.AllComponents);
+            return components_.Count == other.components_.Count &&
+                   new HashSet<Component>(components_).SetEquals(other.components_);
         }
 
-        public UniqueId Id
-        {
-            get { return id_; }
-        }
-
+        public UniqueId Id => id_;
         /**
         <summary>
             Given a type, iterates over all components that the game object contains and returns them as a list.
@@ -73,7 +50,7 @@ namespace DXGame.Core
 
         public IEnumerable<T> ComponentsOfType<T>() where T : Component
         {
-            return AllComponents.OfType<T>();
+            return components_.OfType<T>();
         }
 
         public T ComponentOfType<T>() where T : Component
@@ -95,7 +72,7 @@ namespace DXGame.Core
 
         public GameObject WithComponent(Component component)
         {
-            Validate.IsNotNullOrDefault(component, $"Cannot add a null component to {GetType()}");
+            Validate.IsNotNullOrDefault(component, $"Cannot add a null {typeof (Component)} to {GetType()}");
             AddComponent(component);
             return this;
         }
@@ -116,7 +93,8 @@ namespace DXGame.Core
 
         public GameObject WithComponents(params Component[] components)
         {
-            Validate.IsNotNullOrDefault(components, $"Cannot add a null/empty component collection to {GetType()}");
+            Validate.IsNotNullOrDefault(components,
+                $"Cannot add a null/empty {typeof (Component)} collection to {GetType()}");
             foreach (var component in components)
             {
                 WithComponent(component);
@@ -127,29 +105,18 @@ namespace DXGame.Core
         // TODO: Check for prior containment
         private void AddComponent(Component component)
         {
-            var drawableComponent = component as DrawableComponent;
-            if (drawableComponent != null)
-            {
-                drawableComponent.Parent = this;
-                drawableComponents_.Add(drawableComponent);
-                return;
-            }
-
+            Validate.IsNotNull(component, $"Cannot attach a null {nameof(Component)} to a {GetType()}");
+            Validate.IsFalse(components_.Contains(component));
             component.Parent = this;
-            dxComponents_.Add(component);
+            components_.Add(component);
         }
 
         public void BroadcastMessage(Message message)
         {
-            foreach (var dxComponent in dxComponents_)
+            foreach (var component in components_)
             {
-                dxComponent.HandleMessage(message);
-            }
-            foreach (var drawableComponent in drawableComponents_)
-            {
-                drawableComponent.HandleMessage(message);
+                component.HandleMessage(message);
             }
         }
     }
-#pragma warning restore 649
 }

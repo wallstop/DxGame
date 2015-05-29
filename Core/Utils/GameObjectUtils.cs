@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DXGame.Core.Components.Basic;
 
 namespace DXGame.Core.Utils
@@ -22,7 +23,7 @@ namespace DXGame.Core.Utils
 
         public static IEnumerable<T> ComponentsOfType<T>(IEnumerable<GameObject> gameObjects) where T : Component
         {
-            var components = new List<T>();
+            var components = new List<T>(gameObjects.Count());
             foreach (GameObject gameObject in gameObjects)
             {
                 components.AddRange(gameObject.ComponentsOfType<T>());

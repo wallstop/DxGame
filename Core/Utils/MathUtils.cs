@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace DXGame.Core.Utils
 {
@@ -90,8 +89,6 @@ namespace DXGame.Core.Utils
 
         public static T Constrain<T>(T value, T min, T max)
         {
-            Debug.Assert(Compare(min, max) <= 0,
-                $"Could not constrain {value} with min {min}, max {max}");
             value = Max(value, min);
             value = Min(value, max);
             return value;

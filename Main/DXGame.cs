@@ -154,8 +154,7 @@ namespace DXGame.Main
 
         public void RemoveGameObject(GameObject gameObject)
         {
-            List<Component> components = gameObject.Components;
-            foreach (var component in components)
+            foreach (var component in gameObject.Components)
             {
                 DxComponents.Remove(component);
             }

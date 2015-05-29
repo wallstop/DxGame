@@ -131,7 +131,6 @@ namespace DXGame.Core.Models
             DxRectangle range)
         {
             Rectangle rectangleRange = range.ToRectangle();
-            var objects = new List<KeyValuePair<GameObject, SpatialComponent>>();
             // Make sure to wrap the requested values to those servable by the map
             // TODO: Clean this up
             int x = MathUtils.Constrain(rectangleRange.X / blockSize_,
@@ -148,6 +147,8 @@ namespace DXGame.Core.Models
                 MathUtils.Constrain((int) Math.Ceiling((float) rectangleRange.Height / blockSize_),
                     0,
                     (int) (MapBounds.Y + MapBounds.Height) / blockSize_ - y);
+
+            var objects = new List<KeyValuePair<GameObject, SpatialComponent>>(width * height);
             for (int i = 0; i < width; ++i)
             {
                 for (int j = 0; j < height; ++j)

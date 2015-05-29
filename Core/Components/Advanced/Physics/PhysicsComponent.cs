@@ -22,13 +22,13 @@ namespace DXGame.Core.Components.Advanced.Physics
         public virtual DxVector2 Velocity
         {
             get { return velocity_; }
-            set { velocity_ = VectorUtils.ConstrainVector(value, maxVelocity_); }
+            set { velocity_ = VectorUtils.ClampVector(value, maxVelocity_); }
         }
 
         public virtual DxVector2 Acceleration
         {
             get { return acceleration_; }
-            set { acceleration_ = VectorUtils.ConstrainVector(value, maxAcceleration_); }
+            set { acceleration_ = VectorUtils.ClampVector(value, maxAcceleration_); }
         }
 
         public virtual DxVector2 Position
@@ -55,21 +55,24 @@ namespace DXGame.Core.Components.Advanced.Physics
 
         public PhysicsComponent WithVelocity(DxVector2 velocity)
         {
-            Validate.IsNotNullOrDefault(velocity, $"Cannot initialize {GetType()} with a null/default velocity");
+            Validate.IsNotNullOrDefault(velocity,
+                $"Cannot initialize {GetType()} with a null/default {nameof(velocity)}");
             velocity_ = velocity;
             return this;
         }
 
         public PhysicsComponent WithAcceleration(DxVector2 acceleration)
         {
-            Validate.IsNotNullOrDefault(acceleration, $"Cannot initialize {GetType()} with a null/default acceleration");
+            Validate.IsNotNullOrDefault(acceleration,
+                $"Cannot initialize {GetType()} with a null/default {nameof(acceleration)}");
             acceleration_ = acceleration;
             return this;
         }
 
         public PhysicsComponent WithPositionalComponent(PositionalComponent position)
         {
-            Validate.IsNotNullOrDefault(position, $"Cannot initialize {GetType()} with a null/default PositionComponent");
+            Validate.IsNotNullOrDefault(position,
+                $"Cannot initialize {GetType()} with a null/default {nameof(position)}");
             position_ = position;
             return this;
         }
@@ -77,7 +80,7 @@ namespace DXGame.Core.Components.Advanced.Physics
         public PhysicsComponent WithMaxVelocity(DxVector2 maxVelocity)
         {
             Validate.IsNotNullOrDefault(maxVelocity,
-                $"Cannot initialize {GetType()} with a null/default maximum velocity");
+                $"Cannot initialize {GetType()} with a null/default {nameof(maxVelocity)}");
             maxVelocity_ = maxVelocity;
             return this;
         }
@@ -85,18 +88,18 @@ namespace DXGame.Core.Components.Advanced.Physics
         public PhysicsComponent WithMaxAcceleration(DxVector2 maxAcceleration)
         {
             Validate.IsNotNullOrDefault(maxAcceleration,
-                $"Cannot initialize {GetType()} with a null/default maximum acceleration");
+                $"Cannot initialize {GetType()} with a null/default maximum {nameof(maxAcceleration)}");
             maxAcceleration_ = maxAcceleration;
             return this;
         }
 
         protected override void Update(DxGameTime gameTime)
         {
-            DxVector2 velocity = VectorUtils.ConstrainVector(Velocity + acceleration_, maxVelocity_);
+            DxVector2 velocity = VectorUtils.ClampVector(Velocity + acceleration_, maxVelocity_);
             position_.Position += velocity;
 
             // The velocity may have been changed (by bumping into the map, for example), so just recompute what it should be
-            Velocity = VectorUtils.ConstrainVector(Velocity + Acceleration, maxVelocity_);
+            Velocity = VectorUtils.ClampVector(Velocity + Acceleration, maxVelocity_);
         }
 
         protected void HandleCollisionMessage(Message message)
@@ -106,12 +109,14 @@ namespace DXGame.Core.Components.Advanced.Physics
             var velocity = Velocity;
             // Check for x-wise collisions 
             var acceleration = Acceleration;
+            // Collide on x axis? Cease movement & acceleration in that direction
             if (collisionDirections.Contains(CollisionDirection.East) ||
                 collisionDirections.Contains(CollisionDirection.West))
             {
                 velocity.X = 0;
                 acceleration.X = 0;
             }
+            // Same for horizontal movement
             if (collisionDirections.Contains(CollisionDirection.South) ||
                 collisionDirections.Contains(CollisionDirection.North))
             {

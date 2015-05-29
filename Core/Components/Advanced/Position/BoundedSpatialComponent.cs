@@ -5,6 +5,7 @@ using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
+using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Components.Advanced.Position
 {
@@ -15,22 +16,9 @@ namespace DXGame.Core.Components.Advanced.Position
         private static readonly ILog LOG = LogManager.GetLogger(typeof (BoundedSpatialComponent));
         [DataMember] protected DxVector2 xBounds_;
         [DataMember] protected DxVector2 yBounds_;
-
-        public DxVector2 XBounds
-        {
-            get { return xBounds_; }
-        }
-
-        public DxVector2 YBounds
-        {
-            get { return yBounds_; }
-        }
-
-        public DxRectangle Bounds
-        {
-            get { return new DxRectangle(XBounds, YBounds); }
-        }
-
+        public DxVector2 XBounds => xBounds_;
+        public DxVector2 YBounds => yBounds_;
+        public DxRectangle Bounds => new DxRectangle(XBounds, YBounds);
         /**
         <summary>
             The Position property on a BoundedSpatialComponent
@@ -45,8 +33,8 @@ namespace DXGame.Core.Components.Advanced.Position
             {
                 float width = dimensions_.X;
                 float height = dimensions_.Y;
-                float x = MathUtils.Constrain(value.X, xBounds_.X, xBounds_.Y - width);
-                float y = MathUtils.Constrain(value.Y, yBounds_.X, yBounds_.Y - height);
+                float x = MathHelper.Clamp(value.X, xBounds_.X, xBounds_.Y - width);
+                float y = MathHelper.Clamp(value.Y, yBounds_.X, yBounds_.Y - height);
                 var newPosition = new DxVector2(x, y);
                 position_ = newPosition;
                 if (newPosition != value)
@@ -87,26 +75,26 @@ namespace DXGame.Core.Components.Advanced.Position
 
         public BoundedSpatialComponent WithXBounds(DxVector2 xBounds)
         {
+            Validate.IsTrue(xBounds.X <= xBounds.Y);
             xBounds_ = xBounds;
             return this;
         }
 
         public BoundedSpatialComponent WithYBounds(DxVector2 yBounds)
         {
+            Validate.IsTrue(yBounds.X <= yBounds.Y);
             yBounds_ = yBounds;
             return this;
         }
 
-        // TODO: Create a Rectangle class based around floats instead of ints
         public BoundedSpatialComponent WithBounds(DxRectangle bounds)
         {
             // To ensure that we don't have any weird Rectangles with negative heights / widths, take the Max/Min
 
-            // TODO: Remove the Min/Max checks, replace with an assert or similar
-            yBounds_ = new DxVector2(Math.Min(bounds.Y, bounds.Y + bounds.Height),
-                Math.Max(bounds.Y, bounds.Y + bounds.Height));
-            xBounds_ = new
-                DxVector2(Math.Min(bounds.X, bounds.X + bounds.Width), Math.Max(bounds.X, bounds.X + bounds.Width));
+            Validate.IsTrue(bounds.Width >= 0);
+            Validate.IsTrue(bounds.Height >= 0);
+            yBounds_ = new DxVector2(bounds.Y, bounds.Y + bounds.Height);
+            xBounds_ = new DxVector2(bounds.X, bounds.X + bounds.Width);
             return this;
         }
     }

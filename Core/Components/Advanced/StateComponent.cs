@@ -28,9 +28,9 @@ namespace DXGame.Core.Components.Advanced
 
         public StateComponent WithState(string state)
         {
-            Validate.IsNotNull(state, "StateComponent cannot have its state set to a null state");
+            Validate.IsNotNull(state, $"Cannot initialize a {GetType()} with a null {nameof(state)}");
             Validate.IsTrue(states_.Contains(state),
-                $"StateComponent was assigned an invalid state {state}. Valid states: {states_}");
+                $"Cannot initialize a {GetType()} with an invalid state ({state}). Valid states: {states_}");
 
             State = state;
 

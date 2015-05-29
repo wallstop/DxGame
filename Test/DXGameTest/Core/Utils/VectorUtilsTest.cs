@@ -14,7 +14,7 @@ namespace DXGameTest.Core.Utils
             float min = float.MinValue;
             float max = float.MaxValue;
 
-            Vector2 resultVector = VectorUtils.ConstrainVector(testVector, min, max);
+            Vector2 resultVector = VectorUtils.ClampVector(testVector, min, max);
             // Ensure that the returned vector remains unchanged
             Assert.AreEqual(testVector, resultVector);
         }
@@ -26,7 +26,7 @@ namespace DXGameTest.Core.Utils
             float max = 100.0f;
             var testVector = new Vector2(-100.0f, max);
 
-            Vector2 resultVector = VectorUtils.ConstrainVector(testVector, min, max);
+            Vector2 resultVector = VectorUtils.ClampVector(testVector, min, max);
             // Ensure that the resultVector has been properly constrained
             Assert.AreNotEqual(testVector, resultVector);
             Assert.AreEqual(testVector.Y, resultVector.Y);
@@ -42,7 +42,7 @@ namespace DXGameTest.Core.Utils
             float max = 100.0f;
             var testVector = new Vector2(2.0f, max + 300.0f);
 
-            Vector2 resultVector = VectorUtils.ConstrainVector(testVector, min, max);
+            Vector2 resultVector = VectorUtils.ClampVector(testVector, min, max);
             // Ensure that the resultVector has been properly constrained
             Assert.AreNotEqual(testVector, resultVector);
             Assert.AreEqual(testVector.X, resultVector.X);
@@ -58,7 +58,7 @@ namespace DXGameTest.Core.Utils
             float max = 100.0f;
             var testVector = new Vector2(min - 100.0f, max + 100.0f);
 
-            Vector2 resultVector = VectorUtils.ConstrainVector(testVector, min, max);
+            Vector2 resultVector = VectorUtils.ClampVector(testVector, min, max);
             // Ensure that the resultVector has been properly constrained
             Assert.AreNotEqual(testVector, resultVector);
             Assert.AreEqual(min, resultVector.X);
@@ -78,7 +78,7 @@ namespace DXGameTest.Core.Utils
         {
             Vector2 constraint = new Vector2(2.0f, 15.0f);
 
-            Vector2 constrained = VectorUtils.ConstrainVector(new Vector2(3, -14), constraint);
+            Vector2 constrained = VectorUtils.ClampVector(new Vector2(3, -14), constraint);
             Assert.AreNotEqual(constraint, constrained);
             Assert.AreEqual(new Vector2(2, -14), constrained);
         }

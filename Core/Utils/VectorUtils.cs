@@ -14,18 +14,18 @@ namespace DXGame.Core.Utils
             Given a vector, a minimum value, and a maximum value, constrains both the x and y component of the vector to be within [min, max]
 
             <code>
-                Vector2 constrained = VectorUtils.ConstrainVector(new Vector2(-200.0f, 200.0f), 0.0f, 100.0f); // constrained == {0.0f, 100.0f}
+                Vector2 constrained = VectorUtils.ClampVector(new Vector2(-200.0f, 200.0f), 0.0f, 100.0f); // constrained == {0.0f, 100.0f}
             </code>
             <code>
-                Vector2 constrained = VectorUtils.ConstrainVector(new Vector2(-200.0f, 200.0f), -200.0f, 10000.0f); // constrained == {-200.0f, 200.0f}
+                Vector2 constrained = VectorUtils.ClampVector(new Vector2(-200.0f, 200.0f), -200.0f, 10000.0f); // constrained == {-200.0f, 200.0f}
             </code>
         </summary>
         */
 
-        public static Vector2 ConstrainVector(Vector2 vector, float constraintMin, float constraintMax)
+        public static Vector2 ClampVector(Vector2 vector, float constraintMin, float constraintMax)
         {
-            vector.X = MathUtils.Constrain(vector.X, constraintMin, constraintMax);
-            vector.Y = MathUtils.Constrain(vector.Y, constraintMin, constraintMax);
+            vector.X = MathHelper.Clamp(vector.X, constraintMin, constraintMax);
+            vector.Y = MathHelper.Clamp(vector.Y, constraintMin, constraintMax);
             return vector;
         }
 
@@ -36,25 +36,25 @@ namespace DXGame.Core.Utils
                 Y within [-constraintVector.Y, constraintVector.Y]
 
             <code>
-                Vector2 constrained = VectorUtils.ConstrainVector(new Vector2(-200.0f, 200.0f), new Vector2(150, 300)); // constrained == {-150, 200}
+                Vector2 constrained = VectorUtils.ClampVector(new Vector2(-200.0f, 200.0f), new Vector2(150, 300)); // constrained == {-150, 200}
             </code>
             <code>
-                Vector2 constrained = VectorUtils.ConstrainVector(new Vector2(-300, 350), new Vector(140, 141)); // constrained == {-140, 141}
+                Vector2 constrained = VectorUtils.ClampVector(new Vector2(-300, 350), new Vector(140, 141)); // constrained == {-140, 141}
             </code>
         </summary>
         */
 
-        public static Vector2 ConstrainVector(Vector2 vector, Vector2 constraintVector)
+        public static Vector2 ClampVector(Vector2 vector, Vector2 constraintVector)
         {
-            vector.X = MathUtils.Constrain(vector.X, -constraintVector.X, constraintVector.X);
-            vector.Y = MathUtils.Constrain(vector.Y, -constraintVector.Y, constraintVector.Y);
+            vector.X = MathHelper.Clamp(vector.X, -constraintVector.X, constraintVector.X);
+            vector.Y = MathHelper.Clamp(vector.Y, -constraintVector.Y, constraintVector.Y);
             return vector;
         }
 
-        public static DxVector2 ConstrainVector(DxVector2 vector, DxVector2 constraintVector)
+        public static DxVector2 ClampVector(DxVector2 vector, DxVector2 constraintVector)
         {
-            vector.X = MathUtils.Constrain(vector.X, -constraintVector.X, constraintVector.X);
-            vector.Y = MathUtils.Constrain(vector.Y, -constraintVector.Y, constraintVector.Y);
+            vector.X = MathHelper.Clamp(vector.X, -constraintVector.X, constraintVector.X);
+            vector.Y = MathHelper.Clamp(vector.Y, -constraintVector.Y, constraintVector.Y);
             return vector;
         }
 

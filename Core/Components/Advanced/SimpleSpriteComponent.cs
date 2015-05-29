@@ -7,6 +7,7 @@ using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Components.Advanced
@@ -42,21 +43,24 @@ namespace DXGame.Core.Components.Advanced
 
         public SimpleSpriteComponent WithAsset(string assetName)
         {
-            Validate.IsNotNullOrDefault(assetName, $"Cannot initialize {GetType()} with a null/default asset name");
+            Validate.IsNotNullOrDefault(assetName,
+                $"Cannot initialize {GetType()} with a null/default {nameof(assetName)}");
             assetName_ = assetName;
             return this;
         }
 
         public SimpleSpriteComponent WithPosition(PositionalComponent position)
         {
-            Validate.IsNotNullOrDefault(position, $"Cannot initialize {GetType()} with a null/default position");
+            Validate.IsNotNullOrDefault(position,
+                $"Cannot initialize {GetType()} with a null/default {nameof(position)}");
             position_ = position;
             return this;
         }
 
         public SimpleSpriteComponent WithBoundingBox(DxRectangle boundingBox)
         {
-            Validate.IsNotNullOrDefault(boundingBox, $"Cannot initialize {GetType()} with a null/default bounding box");
+            Validate.IsNotNullOrDefault(boundingBox,
+                $"Cannot initialize {GetType()} with a null/default {nameof(boundingBox)}");
             boundingBox_ = boundingBox;
             return this;
         }
@@ -70,7 +74,7 @@ namespace DXGame.Core.Components.Advanced
         public override void Initialize()
         {
             Validate.IsNotNull(DxGame.Content,
-                $"Cannot initialize {GetType()} with a null/default ContentManager");
+                $"Cannot initialize {GetType()} with a null/default {typeof (ContentManager)}");
             texture_ = DxGame.Content.Load<Texture2D>(assetName_);
             // Assign boundingBox to be the shape of the texture only if it hasn't been custom-set
             // TODO: Change to an isLoaded bool flag / state

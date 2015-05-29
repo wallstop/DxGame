@@ -62,13 +62,13 @@ namespace DXGame.Main
                 }
                 MapModel mapModel = Model<MapModel>();
                 float x = Screen.Width / 2.0f - gameModel.FocalPoint.Position.X;
-                x = MathUtils.Constrain(x,
+                x = MathHelper.Clamp(x,
                     Math.Max(float.MinValue,
                         -(mapModel.MapBounds.X + mapModel.MapBounds.Width - Screen.Width)),
                     mapModel.MapBounds.X);
 
                 float y = Screen.Height / 2.0f - gameModel.FocalPoint.Position.Y;
-                y = MathUtils.Constrain(y,
+                y = MathHelper.Clamp(y,
                     Math.Max(0, mapModel.MapBounds.Y + mapModel.MapBounds.Height - Screen.Height),
                     mapModel.MapBounds.Y);
 

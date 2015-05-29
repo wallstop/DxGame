@@ -48,8 +48,10 @@ namespace DXGame.Core.Components.Advanced
             : base(game)
         {
             ValidateFloatDistance(floatDistance);
-            Validate.IsNotNullOrDefault(properties, $"Cannot initialize {GetType()} with null/default EntityProperties");
-            Validate.IsNotNullOrDefault(position, $"Cannot initialize {GetType()} with a null/default PositionalComponet");
+            Validate.IsNotNullOrDefault(properties,
+                $"Cannot initialize {GetType()} with null/default {typeof (EntityPropertiesComponent)}");
+            Validate.IsNotNullOrDefault(position,
+                $"Cannot initialize {GetType()} with a null/default {typeof (PositionalComponent)}");
 
             floatDistance_ = floatDistance;
             foregroundColor_ = foregroundColor;

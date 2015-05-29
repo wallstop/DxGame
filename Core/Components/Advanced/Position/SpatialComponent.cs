@@ -26,26 +26,10 @@ namespace DXGame.Core.Components.Advanced.Position
         </summary>
         */
 
-        public virtual DxRectangle Space
-        {
-            get { return VectorUtils.RectangleFrom(position_, dimensions_); }
-        }
-
-        public virtual float Width
-        {
-            get { return dimensions_.X; }
-        }
-
-        public virtual float Height
-        {
-            get { return dimensions_.Y; }
-        }
-
-        public virtual DxVector2 Dimensions
-        {
-            get { return dimensions_; }
-        }
-
+        public virtual DxRectangle Space => VectorUtils.RectangleFrom(position_, dimensions_);
+        public virtual float Width => dimensions_.X;
+        public virtual float Height => dimensions_.Y;
+        public virtual DxVector2 Dimensions => dimensions_;
         /**
         <summary>
             The center position that the SpatialComponent occupies. This is equivalane to 
@@ -53,10 +37,7 @@ namespace DXGame.Core.Components.Advanced.Position
         </summary>
         */
 
-        public virtual DxVector2 Center
-        {
-            get { return position_ + dimensions_ / 2.0f; }
-        }
+        public virtual DxVector2 Center => position_ + dimensions_ / 2.0f;
 
         public SpatialComponent(DxGame game)
             : base(game)
@@ -65,7 +46,8 @@ namespace DXGame.Core.Components.Advanced.Position
 
         public virtual SpatialComponent WithDimensions(DxVector2 dimensions)
         {
-            Validate.IsNotNullOrDefault(dimensions, $"Cannot initialize {GetType()} with null/default dimensions");
+            Validate.IsNotNullOrDefault(dimensions,
+                $"Cannot initialize {GetType()} with null/default {nameof(dimensions)}");
             dimensions_ = dimensions;
             return this;
         }

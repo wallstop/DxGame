@@ -41,7 +41,8 @@ namespace DXGame.Core.Components.Advanced
 
         public RangedWeaponComponent WithPhysicsComponent(PhysicsComponent physics)
         {
-            Validate.IsNotNullOrDefault(physics, $"Cannot initialize {GetType()} with a null PhysicsComponent");
+            Validate.IsNotNullOrDefault(physics,
+                $"Cannot initialize {GetType()} with a null {typeof (PhysicsComponent)}");
             Owner = physics;
             return this;
         }
@@ -49,7 +50,10 @@ namespace DXGame.Core.Components.Advanced
         protected override void Update(DxGameTime gameTime)
         {
             var velocity = Owner.Velocity;
-            // If we're moving in the +/- X direction, update our Direction
+            /*
+                If we're moving in the +/- X direction, update our Direction to 
+                be whatever our Owner's is (we face the same direction as our owner)
+            */
             if (0 != MathUtils.FuzzyCompare(velocity.X, 0.0))
             {
                 Direction = velocity;
@@ -60,7 +64,7 @@ namespace DXGame.Core.Components.Advanced
 
         public override void Attack(DxGameTime gameTime)
         {
-            // Check if we can fire the weapon again (
+            // Check if we can fire the weapon again 
             var currentTime = gameTime.TotalGameTime;
             if (LastAttacked.Add(Cooldown) > currentTime)
             {

@@ -15,17 +15,8 @@ namespace DXGame.Core.Utils
         private const float floatTolerance_ = 0.00001f;
         private const double doubleTolerance_ = 0.0000001;
         private static readonly log4net.ILog LOG = log4net.LogManager.GetLogger(typeof (MathUtils));
-
-        public static float FloatTolerance
-        {
-            get { return floatTolerance_; }
-        }
-
-        public static double DoubleTolerance
-        {
-            get { return doubleTolerance_; }
-        }
-
+        public static float FloatTolerance => floatTolerance_;
+        public static double DoubleTolerance => doubleTolerance_;
         /**
         <summary>
             Given two values, returns the maximum of the two.
@@ -72,26 +63,6 @@ namespace DXGame.Core.Utils
         public static int Compare<T>(T x, T y)
         {
             return Comparer<T>.Default.Compare(x, y);
-        }
-
-        /**
-        <summary>
-            Given a value, a minimum, and a maximum, constrains the value to be between the two.
-
-            <code>
-                int constrained = MathUtils.Constrain(3, 100, 1000); // constrained == 100
-            </code>
-            <code>
-                float constrained = MathUtils.Constrain(0.0f, -10.0f, 10.0f); // constrained == 0.0f;
-            </code>
-        </summary>
-        */
-
-        public static T Constrain<T>(T value, T min, T max)
-        {
-            value = Max(value, min);
-            value = Min(value, max);
-            return value;
         }
 
         /**

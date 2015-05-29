@@ -14,6 +14,7 @@ namespace DXGame.Core.Components.Basic
 
         public override void Draw(DxGameTime gameTime)
         {
+            // TODO: Change this ugly color
             DxGame.GraphicsDevice.Clear(Color.CornflowerBlue);
 
             DxRectangle screen = DxGame.ScreenRegion;

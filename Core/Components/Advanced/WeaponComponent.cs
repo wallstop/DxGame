@@ -21,7 +21,7 @@ namespace DXGame.Core.Components.Advanced
 
         public WeaponComponent WithDamage(int damage)
         {
-            Validate.IsTrue(damage >= 0, $"Wapons should not be able to have negative damage (damage {damage})");
+            Validate.IsTrue(damage >= 0, $"{GetType()} should not be able to have negative {nameof(damage)} ({damage})");
             Damage = damage;
             return this;
         }

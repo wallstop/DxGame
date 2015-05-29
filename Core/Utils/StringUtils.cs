@@ -15,5 +15,10 @@
             System.Buffer.BlockCopy(bytes, 0, characters, 0, bytes.Length);
             return new string(characters);
         }
+
+        public static string GetFormattedNullDefaultMessage<T, U>(T instance, U argument)
+        {
+            return $"Cannot initialize a {instance.GetType()} with a null/default {typeof (U)}";
+        }
     }
 }

@@ -133,18 +133,18 @@ namespace DXGame.Core.Models
             Rectangle rectangleRange = range.ToRectangle();
             // Make sure to wrap the requested values to those servable by the map
             // TODO: Clean this up
-            int x = MathUtils.Constrain(rectangleRange.X / blockSize_,
+            int x = MathHelper.Clamp(rectangleRange.X / blockSize_,
                 (int) MapBounds.X / blockSize_,
                 (int) (MapBounds.X + MapBounds.Width) / blockSize_);
             int width =
-                MathUtils.Constrain(
+                MathHelper.Clamp(
                     (int) Math.Ceiling((float) rectangleRange.Width / blockSize_ + 1), 0,
                     (int) (MapBounds.X + MapBounds.Width) / blockSize_ - x);
-            int y = MathUtils.Constrain(rectangleRange.Y / blockSize_,
+            int y = MathHelper.Clamp(rectangleRange.Y / blockSize_,
                 (int) MapBounds.Y / blockSize_,
                 (int) (MapBounds.Y + MapBounds.Height) / blockSize_);
             int height =
-                MathUtils.Constrain((int) Math.Ceiling((float) rectangleRange.Height / blockSize_),
+                MathHelper.Clamp((int) Math.Ceiling((float) rectangleRange.Height / blockSize_),
                     0,
                     (int) (MapBounds.Y + MapBounds.Height) / blockSize_ - y);
 

@@ -70,7 +70,8 @@ namespace DXGame.Core.GraphicsWidgets
 
         public TextBox WithSpriteFont(SpriteFont spriteFont)
         {
-            Validate.IsNotNullOrDefault(spriteFont, $"Cannot initialize a TextBox with a null SpriteFont!");
+            Validate.IsNotNullOrDefault(spriteFont,
+                $"Cannot initialize a {GetType()} with a null/default {nameof(spriteFont)}!");
             SpriteFont = spriteFont;
 
             const string testString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -82,7 +83,8 @@ namespace DXGame.Core.GraphicsWidgets
 
         public TextBox WithSpatialComponent(SpatialComponent spatialComponent)
         {
-            Validate.IsNotNullOrDefault(spatialComponent, $"Cannot initialize a {GetType()} with a null/default {typeof(SpatialComponent)} !");
+            Validate.IsNotNullOrDefault(spatialComponent,
+                $"Cannot initialize a {GetType()} with a null/default {typeof (SpatialComponent)} !");
             SpatialComponent = spatialComponent;
             var width = (int) SpatialComponent.Width;
             var height = (int) SpatialComponent.Height;
@@ -94,7 +96,7 @@ namespace DXGame.Core.GraphicsWidgets
         {
             // TODO: Come up with a better check
             Validate.IsNotNullOrDefault(Texture,
-                $"Cannot initialize a {GetType()} with color {color} without a valid {typeof(Texture)}");
+                $"Cannot initialize a {GetType()} with color {color} without a valid {typeof (Texture)}");
             var width = (int) SpatialComponent.Width;
             var height = (int) SpatialComponent.Height;
             // Enumerable.Repeat is very slow - might want to use for loop

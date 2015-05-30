@@ -19,16 +19,8 @@ namespace DXGame.Core.Components.Advanced.Physics
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (MapCollideablePhysicsComponent));
         private static readonly DxRectangleAreaComparer DXRECTANGLE_AREA_COMPARER = new DxRectangleAreaComparer();
-
-        private DxRectangle Space
-        {
-            get { return ((SpatialComponent) position_).Space; }
-        }
-
-        private DxVector2 Dimensions
-        {
-            get { return ((SpatialComponent) position_).Dimensions; }
-        }
+        private DxRectangle Space => ((SpatialComponent) position_).Space;
+        private DxVector2 Dimensions => ((SpatialComponent) position_).Dimensions;
 
         private DxRectangle MapQueryRegion
         {
@@ -66,7 +58,6 @@ namespace DXGame.Core.Components.Advanced.Physics
 
             CollisionMessage collision = new CollisionMessage();
             SortedDictionary<DxRectangle, SpatialComponent> intersections;
-
             do
             {
                 intersections = FindIntersections(mapTiles, Space);
@@ -131,9 +122,10 @@ namespace DXGame.Core.Components.Advanced.Physics
 
         /*
             Given a list of SpatialComponents (maptiles) and a space, returns a sorted dictionary of intersections, 
-            with smallest intersections appearing first.
+            with smallest intersections appearing first. This lets us prioritize
         */
 
+        // TODO: Change this to ditch the sorteddictionary. We actually only care about the largest intersection, so just find that instead.
         private static SortedDictionary<DxRectangle, SpatialComponent> FindIntersections(
             IEnumerable<SpatialComponent> mapTiles, DxRectangle currentSpace)
         {
@@ -146,12 +138,39 @@ namespace DXGame.Core.Components.Advanced.Physics
                     continue;
                 }
                 var intersection = DxRectangle.Intersect(spatial.Space, currentSpace);
+                // If we have duplicates, that's ok, they'll be picked up next time
                 if (!intersections.ContainsKey(intersection))
                 {
                     intersections.Add(intersection, spatial);
                 }
             }
             return intersections;
+        }
+
+        private static RectangleSpatialPair? FindLargestIntersection(IEnumerable<SpatialComponent> mapTiles,
+            DxRectangle currentSpace)
+        {
+            RectangleSpatialPair largestIntersection = new RectangleSpatialPair();
+            foreach (SpatialComponent mapTile in mapTiles)
+            {
+                if (!currentSpace.Intersects(mapTile.Space))
+                {
+                    continue;
+                }
+                var intersection = DxRectangle.Intersect(mapTile.Space, currentSpace);
+                if (DXRECTANGLE_AREA_COMPARER.Compare(intersection, largestIntersection.Rectangle) > 0)
+                {
+                    largestIntersection.Rectangle = intersection;
+                    largestIntersection.Spatial = mapTile;
+                }
+            }
+            return largestIntersection;
+        }
+
+        private struct RectangleSpatialPair
+        {
+            public DxRectangle Rectangle;
+            public SpatialComponent Spatial;
         }
     }
 }

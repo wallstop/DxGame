@@ -34,22 +34,22 @@ namespace DXGame.Core.Utils
             FailIfTrue(expression, message);
         }
 
-        public static void IsInClosedRange<T>(T value, T min, T max) where T : IComparable<T>
+        public static void IsInClosedInterval<T>(T value, T min, T max) where T : IComparable<T>
         {
-            IsInClosedRange(value, min, max, $"{value} is not within [{min}, {max}]");
+            IsInClosedInterval(value, min, max, $"{value} is not within [{min}, {max}]");
         }
 
-        public static void IsInClosedRange<T>(T value, T min, T max, string message) where T : IComparable<T>
+        public static void IsInClosedInterval<T>(T value, T min, T max, string message) where T : IComparable<T>
         {
             FailIfTrue(value.CompareTo(min) < 0 || value.CompareTo(max) > 0, message);
         }
 
-        public static void IsInOpenRange<T>(T value, T min, T max) where T : IComparable<T>
+        public static void IsInOpenInterval<T>(T value, T min, T max) where T : IComparable<T>
         {
-            IsInOpenRange(value, min, max, $"{value} is not within ({min}, {max})");
+            IsInOpenInterval(value, min, max, $"{value} is not within ({min}, {max})");
         }
 
-        public static void IsInOpenRange<T>(T value, T min, T max, string message) where T : IComparable<T>
+        public static void IsInOpenInterval<T>(T value, T min, T max, string message) where T : IComparable<T>
         {
             FailIfTrue(value.CompareTo(min) <= 0 || value.CompareTo(max) >= 0, message);
         }

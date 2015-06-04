@@ -39,11 +39,7 @@ namespace DXGame.Core
             var otherId = rhs as UniqueId;
             if (otherId != null)
             {
-                if (otherId.id_ == id_)
-                {
-                    return 0;
-                }
-                return otherId.id_ > id_ ? 1 : -1;
+                return (id_.CompareTo(otherId.id_));
             }
             return -1;
         }
@@ -53,9 +49,9 @@ namespace DXGame.Core
             return CompareTo(other) == 0;
         }
 
-        public bool isValid()
+        public bool IsValid()
         {
-            return id_ != invalidId().id_;
+            return id_ != InvalidId().id_;
         }
 
         public override bool Equals(object other)
@@ -78,7 +74,7 @@ namespace DXGame.Core
             return Interlocked.Increment(ref staticId);
         }
 
-        public static UniqueId invalidId()
+        public static UniqueId InvalidId()
         {
             return INVALID;
         }

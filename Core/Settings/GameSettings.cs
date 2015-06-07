@@ -9,9 +9,12 @@ namespace DXGame.Core.Settings
 {
     /*
         This class will hold all of the Game-specific options like Keybings, screen resolution, graphics fidelity, etc
+
+        Should be easily serializable as a JSON file.
     */
 
     [DataContract]
+    [Serializable]
     public class GameSettings : IPersistable<GameSettings>
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (GameSettings));

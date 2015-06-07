@@ -13,9 +13,9 @@ namespace DXGameTest.Core
 
             UniqueId secondId = new UniqueId();
 
-            Assert.IsTrue(firstId.isValid());
-            Assert.IsTrue(secondId.isValid());
-            Assert.IsTrue(copyOfFirst.isValid());
+            Assert.IsTrue(firstId.IsValid());
+            Assert.IsTrue(secondId.IsValid());
+            Assert.IsTrue(copyOfFirst.IsValid());
 
             Assert.AreNotEqual(firstId, secondId);
             Assert.Greater(firstId, secondId);

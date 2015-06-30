@@ -100,13 +100,13 @@ namespace DXGame.Core.Components.Network
 
         protected void ProcessUnhandledMessageType(NetIncomingMessage message)
         {
-            GenericUtils.HardFail(LOG,
+            Validate.IsTrue(false,
                 $"NetworkServer currently doesn't support messages of the type {message.MessageType}. Message: {message}");
         }
 
         protected void ProcessError(NetIncomingMessage message)
         {
-            GenericUtils.HardFail(LOG,
+            Validate.IsTrue(false,
                 $"Received IncomingMessage with error type, this shouldn't happen! Message: {message}");
         }
 
@@ -188,12 +188,8 @@ namespace DXGame.Core.Components.Network
         {
             var clientConnectionRequest = ConvertMessageType<ClientConnectionRequest>(message);
 
-            if (ClientFrameStates.ContainsKey(connection))
-            {
-                GenericUtils.HardFail(LOG,
-                    $"Received ClientConnectionRequest that we're already tracking, this is an issue! Request: {clientConnectionRequest}");
-                return;
-            }
+            Validate.IsFalse(ClientFrameStates.ContainsKey(connection),
+                $"Received ClientConnectionRequest that we're already tracking, this is an issue! Request: {clientConnectionRequest}");
 
             var frameModel = new FrameModel(DxGame);
             ClientFrameStates.Add(connection, frameModel);
@@ -203,20 +199,17 @@ namespace DXGame.Core.Components.Network
 
         protected void HandleServerDataDiff(NetworkMessage message, NetConnection connection)
         {
-            GenericUtils.HardFail(LOG,
-                $"Received a Server Data Diff {message} from a client. This should not happen");
+            Validate.IsTrue(false, $"Received a Server Data Diff {message} from a client. This should not happen");
         }
 
         protected void HandleServerDataKeyframe(NetworkMessage message, NetConnection connection)
         {
-            GenericUtils.HardFail(LOG,
-                $"Received a Server Data Keyframe {message} from a client. This should not happen");
+            Validate.IsTrue(false, $"Received a Server Data Keyframe {message} from a client. This should not happen");
         }
 
         protected void HandleUnhandledType(NetworkMessage message, NetConnection connection)
         {
-            GenericUtils.HardFail(LOG,
-                $"Received an unexpected messagetype {message} from a client. This should not happen");
+            Validate.IsTrue(false, $"Received an unexpected messagetype {message} from a client. This should not happen");
         }
     }
 }

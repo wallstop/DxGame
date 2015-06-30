@@ -1,6 +1,6 @@
-﻿using System;
-using DXGame.Core.Utils;
+﻿using DXGame.Core.Utils;
 using NUnit.Framework;
+using Assert = NUnit.Framework.Assert;
 
 namespace DXGameTest.Core.Utils
 {
@@ -18,7 +18,7 @@ namespace DXGameTest.Core.Utils
             Max<float>(small, medium, large);
             Max<double>(small, medium, large);
             Max<long>(small, medium, large);
-            Max<Int64>(small, medium, large);
+            Max<long>(small, medium, large);
         }
 
         [Test]
@@ -33,7 +33,7 @@ namespace DXGameTest.Core.Utils
             Min<float>(small, medium, large);
             Min<double>(small, medium, large);
             Min<long>(small, medium, large);
-            Min<Int64>(small, medium, large);
+            Min<long>(small, medium, large);
         }
 
         [Test]
@@ -48,7 +48,7 @@ namespace DXGameTest.Core.Utils
             Compare<float>(small, medium, large);
             Compare<double>(small, medium, large);
             Compare<long>(small, medium, large);
-            Compare<Int64>(small, medium, large);
+            Compare<long>(small, medium, large);
         }
 
         private static void Max<T>(T small, T medium, T large)

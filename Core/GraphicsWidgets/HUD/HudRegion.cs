@@ -12,7 +12,7 @@ namespace DXGame.Core.GraphicsWidgets.HUD
         // Gap between each Skill area
         private static readonly int MIN_PIXEL_GAP = 5;
         /* 
-            Only check for a different number of skills once per second 
+            The delay for which we check to see whether or not we have a different number of skills (since our last check)
         */
         private static readonly TimeSpan SKILL_CHECK_DELAY = TimeSpan.FromSeconds(1.0);
         //private IEnumerable<Rectangle> skillArea_;

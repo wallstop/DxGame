@@ -2,7 +2,6 @@
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Generators;
-using DXGame.Core.Wrappers;
 using DXGame.Main;
 
 namespace DXGame.Core.Models
@@ -17,7 +16,10 @@ namespace DXGame.Core.Models
     {
         public float GameSpeed { get; set; }
         public SpatialComponent FocalPoint { get; protected set; }
-        public GameModel(DxGame game) : base(game) { }
+
+        public GameModel(DxGame game) : base(game)
+        {
+        }
 
         public override void Initialize()
         {
@@ -34,7 +36,7 @@ namespace DXGame.Core.Models
             {
                 var component = physicsComponent;
                 physicsComponent.AddPostUpdater(
-                    (DxGameTime gameTime) => { WorldGravity.ApplyGravityToPhysics(component); });
+                    gameTime => WorldGravity.ApplyGravityToPhysics(component));
             }
 
             // TODO: Split these out into some kind of unified loading... thing

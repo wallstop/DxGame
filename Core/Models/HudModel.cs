@@ -7,7 +7,7 @@ namespace DXGame.Core.Models
 {
     public class HudModel : Model
     {
-        private HudRegion HudRegion;
+        public HudRegion HudRegion { get; private set; }
 
         public HudModel(DxGame game)
             : base(game)

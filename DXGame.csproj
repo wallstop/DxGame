@@ -129,6 +129,7 @@
     <Compile Include="Core\Components\Basic\SpriteBatchEnder.cs" />
     <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
+    <Compile Include="Core\Components\Utils\State.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\AbilityBar.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\BuffBar.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\HudComponent.cs" />
@@ -183,6 +184,7 @@
     <Compile Include="Core\Skills\Skill.cs" />
     <Compile Include="Core\SortedList.cs" />
     <Compile Include="Core\UniqueId.cs" />
+    <Compile Include="Core\Utils\Assert.cs" />
     <Compile Include="Core\Utils\Check.cs" />
     <Compile Include="Core\Utils\CollectionUtils.cs" />
     <Compile Include="Core\Utils\GameObjectUtils.cs" />

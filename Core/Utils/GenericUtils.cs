@@ -1,56 +1,19 @@
 ﻿using System;
-using System.Diagnostics;
-using log4net;
 
 namespace DXGame.Core.Utils
 {
     public static class GenericUtils
     {
-        /*
-            Like soft fail, but throws ArgumentException. This allows for 
-            both Debug and Release code to fail
-        */
-
-        public static void HardFail(ILog log, string message)
-        {
-            SoftFail(log, message);
-            HardFail(message);
-        }
-
-        public static void HardFail(string message)
-        {
-            throw new ArgumentException(message);
-        }
-
-        /*
-            Utilizes Debug.Assert(false, message) in order to only fail in Debug.
-            Code flow will continue in Release.
-        */
-
-        public static void SoftFail(ILog log, string message)
-        {
-            log.Error(message);
-            Debug.Assert(false, message);
-        }
-
-        public static T CheckedCast<T>(object typedObject, ILog log, string message) where T : class
+        public static T CheckedCast<T>(object typedObject, string message) where T : class
         {
             var casted = typedObject as T;
-            if (casted == null)
-            {
-                HardFail(log, message);
-            }
+            Validate.IsNotNull(casted, message);
             return casted;
         }
 
         public static T CheckedCast<T>(object typedObject) where T : class
         {
-            var casted = typedObject as T;
-            if (casted == null)
-            {
-                HardFail($"Could not cast {typedObject} to {typeof (T)}");
-            }
-            return casted;
+            return CheckedCast<T>(typedObject, $"Could not cast {typedObject} to {typeof (T)}");
         }
 
         public static T Create<T>(Type type)

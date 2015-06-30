@@ -39,7 +39,11 @@ namespace DXGame.Core
             var otherId = rhs as UniqueId;
             if (otherId != null)
             {
-                return (id_.CompareTo(otherId.id_));
+                /* 
+                    We compare negative to allow for first-created UniqueIds to be 
+                    "greater than " all UniqueIds created after 
+                */
+                return -(id_.CompareTo(otherId.id_));
             }
             return -1;
         }

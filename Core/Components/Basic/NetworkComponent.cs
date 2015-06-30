@@ -108,7 +108,7 @@ namespace DXGame.Core.Components.Basic
 
         protected static T ConvertMessageType<T>(NetworkMessage message) where T : class
         {
-            return GenericUtils.CheckedCast<T>(message, LOG,
+            return GenericUtils.CheckedCast<T>(message,
                 $"Received message expecting type {typeof (T)}, but was unable to dynamic cast");
         }
 
@@ -130,7 +130,7 @@ namespace DXGame.Core.Components.Basic
 
                 if (incomingMessage == null)
                 {
-                    LOG.Info("Found a null message inside the MessageQueue. This shouldn\'t happen.");
+                    LOG.Info("Found a null message inside the MessageQueue. This shouldn't happen.");
                     continue;
                 }
 

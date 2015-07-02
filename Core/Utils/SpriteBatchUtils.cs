@@ -24,7 +24,7 @@ namespace DXGame.Core.Utils
             IEnumerable<Rectangle> borderRectangles = GenerateBorderRectangles(rectangle, borderThickness);
             foreach (Rectangle borderRectangle in borderRectangles)
             {
-                spriteBatch.Draw(pixel, destinationRectangle: borderRectangle);
+                spriteBatch.Draw(texture: pixel, destinationRectangle: borderRectangle);
             }
         }
 

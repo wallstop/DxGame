@@ -104,7 +104,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Core\Animation.cs" />
+    <Compile Include="Core\Behavior\Behavior.cs" />
     <Compile Include="Core\Behavior\Response.cs" />
+    <Compile Include="Core\Behavior\State.cs" />
+    <Compile Include="Core\Behavior\Transition.cs" />
     <Compile Include="Core\Behavior\Trigger.cs" />
     <Compile Include="Core\Components\Advanced\AnimationComponent.cs" />
     <Compile Include="Core\Components\Advanced\CollisionDestructibleComponent.cs" />

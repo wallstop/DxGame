@@ -1,6 +1,4 @@
 ﻿namespace DXGame.Core.Behavior
 {
-    public class Trigger
-    {
-    }
+    public delegate bool Trigger();
 }

@@ -17,6 +17,12 @@ namespace DXGame.Core.Wrappers
             Y = vector.Y;
         }
 
+        public DxVector2(DxVector2 vector)
+        {
+            X = vector.X;
+            Y = vector.Y;
+        }
+
         public DxVector2(float x, float y)
         {
             X = x;

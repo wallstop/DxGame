@@ -97,10 +97,12 @@ namespace DXGame.Core.Components.Advanced.Physics
         {
             var scaleAmount = gameTime.DetermineScaleFactor(DxGame);
             DxVector2 velocity = VectorUtils.ClampVector(Velocity + (acceleration_ * scaleAmount), maxVelocity_);
-            position_.Position += velocity * scaleAmount;
-
-            // The velocity may have been changed (by bumping into the map, for example), so just recompute what it should be
             Velocity = velocity;
+            /* 
+                We need to update our Position before we update our velocity. Updating position may cause things like map-bumping/clamping, which will update our velocity from under us.
+                So, simply updating velocity first, instead of after, will avoid double-writes.
+            */
+            Position += velocity * scaleAmount;
         }
 
         protected void HandleCollisionMessage(Message message)

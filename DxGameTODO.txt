@@ -1,3 +1,5 @@
+-Get multiple players set up in terms of the game engine + network
+-Switch loggers to NLOG (HOLY COW SO AWESOME)
 -Work with Holden to get some basic animations for a character in place. See if we can also get some sample environment pieces.
 	-Integrate them. The sooner we see the art in game, the better we can give feedback
 -Come up with some character designs. "Hadrien" or something. Simple backstories and motivations.

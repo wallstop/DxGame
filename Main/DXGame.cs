@@ -94,6 +94,9 @@ namespace DXGame.Main
             TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 60.0f);
             IsFixedTimeStep = false;
 
+            // LOL VSYNC
+            graphics.SynchronizeWithVerticalRetrace = false;
+
             DxComponents = new ComponentCollection();
             Content.RootDirectory = "Content";
         }

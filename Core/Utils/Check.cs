@@ -8,5 +8,10 @@ namespace DXGame.Core.Utils
         {
             return EqualityComparer<T>.Default.Equals(instance, default(T));
         }
+
+        public static bool IsNotNullOrDefault<T>(T instance)
+        {
+            return !IsNullOrDefault(instance);
+        }
     }
 }

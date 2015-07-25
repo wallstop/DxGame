@@ -2,16 +2,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DXGame.Core.Utils;
 
 namespace DXGame.Core
 {
     public class SortedList<T> : IList<T> where T : IComparable<T>
     {
+        private readonly Comparer<T> comparer_;
         private readonly List<T> list_;
 
         public SortedList()
         {
             list_ = new List<T>();
+            comparer_ = Comparer<T>.Default;
+        }
+
+        public SortedList(Comparer<T> comparer)
+        {
+            Validate.IsNotNull(comparer, $"Cannot create a SortedList for Type {typeof (T)} with a null Comparer");
+            comparer_ = comparer;
         }
 
         public SortedList(int capacity)
@@ -23,7 +32,7 @@ namespace DXGame.Core
             : this(collection?.Count() ?? 0)
         {
             var collectionAsArray = collection.ToArray();
-            Array.Sort(collectionAsArray);
+            Array.Sort(collectionAsArray, comparer_);
             list_.AddRange(collectionAsArray);
         }
 
@@ -39,7 +48,7 @@ namespace DXGame.Core
 
         public void Add(T item)
         {
-            int index = list_.BinarySearch(item);
+            int index = list_.BinarySearch(item, comparer_);
             if (index < 0)
             {
                 index = ~index;
@@ -54,7 +63,7 @@ namespace DXGame.Core
 
         public bool Contains(T item)
         {
-            int index = list_.BinarySearch(item);
+            int index = list_.BinarySearch(item, comparer_);
             return index >= 0;
         }
 
@@ -90,6 +99,22 @@ namespace DXGame.Core
         {
             get { return list_[index]; }
             set { throw new ArgumentException($"Cannot call set on access operator of {GetType()}"); }
+        }
+
+        public void RemoveBelow(T item)
+        {
+            while (Count > 0 && comparer_.Compare(list_[0], item) < 0)
+            {
+                RemoveAt(0);
+            }
+        }
+
+        public void RemoveAbove(T item)
+        {
+            while (Count > 0 && comparer_.Compare(list_[Count - 1], item) > 0)
+            {
+                RemoveAt(Count - 1);
+            }
         }
     }
 }

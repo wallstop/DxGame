@@ -6,9 +6,12 @@ namespace DXGame.Core.Behavior
     public class State
     {
         public ICollection<Transition> Transitions { get; }
+        public string Name { get; }
 
-        public State()
+        public State(string name)
         {
+            Validate.IsNotNullOrDefault(name, $"Cannot create a {nameof(State)} with a null name");
+            Name = name;
             Transitions = new HashSet<Transition>();
         }
 

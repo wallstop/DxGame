@@ -2,6 +2,7 @@
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Generators;
+using DXGame.Core.GraphicsWidgets.HUD;
 using DXGame.Main;
 
 namespace DXGame.Core.Models
@@ -29,6 +30,14 @@ namespace DXGame.Core.Models
                 mapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;
             var player = playerGenerator.Generate().First();
+
+            var activePlayer = Player.PlayerFrom(player);
+            // TODO
+            //var playerModel = new PlayerModel(DxGame).WithActivePlayer(activePlayer);
+            //DxGame.AttachModel(playerModel);
+
+            var fpsTracker = new FpsTracker(DxGame);
+            DxGame.AddAndInitializeComponent(fpsTracker);
             var physicsComponents = player.ComponentsOfType<PhysicsComponent>();
 
 

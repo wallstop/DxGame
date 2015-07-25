@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using DXGame.Core.Skills;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using log4net;
@@ -16,28 +14,42 @@ namespace DXGame.Core.Models
         private static readonly ILog LOG = LogManager.GetLogger(typeof (PlayerModel));
 
         [DataMember]
-        public string PlayerName { get; private set; }
+        public Player ActivePlayer { get; private set; }
 
         [DataMember]
-        public IEnumerable<ISkill> Skills { get; private set; }
+        public ICollection<Player> Players { get; private set; }
 
         public PlayerModel(DxGame game)
             : base(game)
         {
         }
 
-        public PlayerModel WithName(string name)
+        /* 
+            Do we need this distinction?
+        */
+
+        public PlayerModel WithActivePlayer(Player player)
         {
-            Validate.IsNotNullOrDefault(name, $"Cannot initialize {GetType()} with a null/default name ({name})");
-            PlayerName = name;
+            Validate.IsNotNull(player, $"Cannot initialize {GetType()} with a null/default ActivePlayer ({player})");
+            Validate.IsNull(ActivePlayer,
+                $"Cannot initialize {GetType()} with an already initialized {nameof(ActivePlayer)}");
+
+            LOG.Debug($"Assigning {player} to be ActivePlayer");
+            ActivePlayer = player;
+            Players.Add(player);
             return this;
         }
 
-        public PlayerModel WithSkills(IEnumerable<ISkill> skills)
+        public PlayerModel WithPlayers(Player[] players)
         {
-            var skillsAsArray = skills as ISkill[] ?? skills.ToArray();
-            Validate.IsNotEmpty(skillsAsArray, $"Cannot initialize {GetType()} with a null/default skill collection");
-            Skills = skillsAsArray;
+            Validate.IsNotNull(players, $"Cannot initialize {GetType()} with null/default {nameof(players)})");
+
+            LOG.Info("Initialized ");
+            Players = players;
+            if (Check.IsNotNullOrDefault(ActivePlayer))
+            {
+                Players.Add(ActivePlayer);
+            }
             return this;
         }
     }

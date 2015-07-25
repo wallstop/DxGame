@@ -25,8 +25,8 @@ namespace DXGame.Core
     public class GameObject : IIdentifiable, IEquatable<GameObject>
     {
         // DataMembers can't be readonly :(
-        [DataMember] private List<Component> components_ = new List<Component>();
-        [DataMember] private UniqueId id_ = new UniqueId();
+        [DataMember] protected List<Component> components_ = new List<Component>();
+        [DataMember] protected UniqueId id_ = new UniqueId();
         public IEnumerable<Component> Components => components_;
 
         public bool Equals(GameObject other)
@@ -98,6 +98,16 @@ namespace DXGame.Core
             foreach (var component in components)
             {
                 WithComponent(component);
+            }
+            return this;
+        }
+
+        public GameObject WithComponents(IEnumerable<Component> components)
+        {
+            Validate.IsNotNull(components, $"Cannot add a null collection of {nameof(components)} to {GetType()}");
+            foreach (var component in components)
+            {
+                AddComponent(component);
             }
             return this;
         }

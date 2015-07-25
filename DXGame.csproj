@@ -135,6 +135,7 @@
     <Compile Include="Core\Components\Utils\State.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\AbilityBar.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\BuffBar.cs" />
+    <Compile Include="Core\GraphicsWidgets\HUD\FpsTracker.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\HudComponent.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\HudRegion.cs" />
     <Compile Include="Core\IIdentifiable.cs" />
@@ -179,6 +180,7 @@
     <Compile Include="Core\Network\GameStateKeyFrame.cs" />
     <Compile Include="Core\Network\NetworkMessage.cs" />
     <Compile Include="Core\Network\MessageType.cs" />
+    <Compile Include="Core\Player.cs" />
     <Compile Include="Core\Properties\Property.cs" />
     <Compile Include="Core\Serializer.cs" />
     <Compile Include="Core\Settings\GameSettings.cs" />
@@ -205,6 +207,7 @@
     <Compile Include="Main\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Properties\PropertyMutator.cs" />
+    <Compile Include="TowerGame\Behaviors\SimpleBehaviorFactory.cs" />
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />
     <Compile Include="TowerGame\PropertyMutators\InheritedHatred.cs" />
   </ItemGroup>
@@ -321,6 +324,7 @@
   <ItemGroup>
     <Folder Include="Network\" />
     <Folder Include="TowerGame\Buffs\" />
+    <Folder Include="TowerGame\Enemies\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

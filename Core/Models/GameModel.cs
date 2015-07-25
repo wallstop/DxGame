@@ -45,7 +45,7 @@ namespace DXGame.Core.Models
             {
                 var component = physicsComponent;
                 physicsComponent.AddPostUpdater(
-                    gameTime => WorldGravity.ApplyGravityToPhysics(component));
+                    gameTime => WorldGravity.ApplyGravityToPhysics(gameTime, DxGame, component));
             }
 
             // TODO: Split these out into some kind of unified loading... thing

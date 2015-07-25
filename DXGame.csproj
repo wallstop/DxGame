@@ -131,6 +131,7 @@
     <Compile Include="Core\Components\Basic\NetworkComponent.cs" />
     <Compile Include="Core\Components\Basic\SpriteBatchEnder.cs" />
     <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
+    <Compile Include="Core\Utils\DateTimeConstants.cs" />
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
     <Compile Include="Core\Components\Utils\State.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\AbilityBar.cs" />

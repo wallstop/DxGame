@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using DXGame.Core.Utils;
+using DXGame.Main;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Wrappers
 {
-
     /**
         Serializable wrapper for XNA GameTime 
     */
+
     [Serializable]
     [DataContract]
     public class DxGameTime : IEquatable<DxGameTime>
@@ -31,11 +33,6 @@ namespace DXGame.Core.Wrappers
         {
         }
 
-        public GameTime ToGameTime()
-        {
-            return new GameTime(TotalGameTime, ElapsedGameTime, IsRunningSlowly);
-        }
-
         public DxGameTime(TimeSpan totalGameTime, TimeSpan elapsedGameTime)
             : this(totalGameTime, elapsedGameTime, false)
         {
@@ -52,6 +49,16 @@ namespace DXGame.Core.Wrappers
         {
             return TotalGameTime.Equals(other.TotalGameTime) && ElapsedGameTime.Equals(other.ElapsedGameTime) &&
                    IsRunningSlowly.Equals(other.IsRunningSlowly);
+        }
+
+        public GameTime ToGameTime()
+        {
+            return new GameTime(TotalGameTime, ElapsedGameTime, IsRunningSlowly);
+        }
+
+        public double DetermineScaleFactor(DxGame dxGame)
+        {
+            return ElapsedGameTime.TotalMilliseconds * dxGame.TargetFps / DateTimeConstants.MILLISECONDS_PER_SECOND;
         }
     }
 }

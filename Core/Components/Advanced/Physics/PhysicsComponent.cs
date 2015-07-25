@@ -95,11 +95,12 @@ namespace DXGame.Core.Components.Advanced.Physics
 
         protected override void Update(DxGameTime gameTime)
         {
-            DxVector2 velocity = VectorUtils.ClampVector(Velocity + acceleration_, maxVelocity_);
-            position_.Position += velocity;
+            var scaleAmount = gameTime.DetermineScaleFactor(DxGame);
+            DxVector2 velocity = VectorUtils.ClampVector(Velocity + (acceleration_ * scaleAmount), maxVelocity_);
+            position_.Position += velocity * scaleAmount;
 
             // The velocity may have been changed (by bumping into the map, for example), so just recompute what it should be
-            Velocity = VectorUtils.ClampVector(Velocity + Acceleration, maxVelocity_);
+            Velocity = velocity;
         }
 
         protected void HandleCollisionMessage(Message message)

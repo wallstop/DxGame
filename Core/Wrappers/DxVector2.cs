@@ -67,6 +67,11 @@ namespace DXGame.Core.Wrappers
             return lhs;
         }
 
+        public static DxVector2 operator *(DxVector2 lhs, double scaleFactor)
+        {
+            return lhs * (float) scaleFactor;
+        }
+
         public static DxVector2 operator /(DxVector2 lhs, DxVector2 rhs)
         {
             lhs.X /= rhs.X;

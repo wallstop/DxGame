@@ -82,7 +82,7 @@ namespace DXGame.Core.Components.Advanced.Physics
                     MathUtils.FuzzyCompare(Velocity.X, 0.0f) == 0)
                 {
                     // below collision
-                    if (Position.Y + Dimensions.Y > mapBlockPosition.Y && mapBlockPosition.Y > Position.Y)
+                    if (Position.Y + Dimensions.Y >= mapBlockPosition.Y && mapBlockPosition.Y > Position.Y)
                     {
                         Position = new DxVector2(Position.X, mapBlockPosition.Y - Dimensions.Y);
                         collision.CollisionDirections.Add(CollisionDirection.South);

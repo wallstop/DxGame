@@ -50,6 +50,7 @@ namespace DXGame.Main
         public ComponentCollection DxComponents { get; private set; }
         // TODO: Thread safety? Move this to some kind of Context static class?
         public static DxGame Instance => singleton_.Value;
+        public double TargetFps => 60.0;
 
         public DxRectangle ScreenRegion
         {
@@ -91,7 +92,7 @@ namespace DXGame.Main
                 PreferredBackBufferWidth = Screen.Width
             };
 
-            TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 60.0f);
+            TargetElapsedTime = TimeSpan.FromSeconds(1.0f / TargetFps);
             IsFixedTimeStep = false;
 
             // LOL VSYNC

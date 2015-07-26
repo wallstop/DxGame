@@ -112,7 +112,7 @@ namespace DXGame.Core.Components.Advanced.Physics
             var velocity = Velocity;
             // Check for x-wise collisions 
             var acceleration = Acceleration;
-            // Collide on x axis? Cease movement & acceleration in that direction
+            // Collide on against y axis (vertical)? Cease movement & acceleration in that direction
             if (collisionDirections.Contains(CollisionDirection.East) ||
                 collisionDirections.Contains(CollisionDirection.West))
             {

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
@@ -15,7 +14,7 @@ namespace DXGame.Core.Settings
 
     [DataContract]
     [Serializable]
-    public class GameSettings : IPersistable<GameSettings>
+    public class GameSettings : AbstractSettings<GameSettings>
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (GameSettings));
         private static readonly double HUD_HEIGHT_SCALE = 0.3;
@@ -38,50 +37,17 @@ namespace DXGame.Core.Settings
             }
         }
 
-        public static GameSettings DefaultSettings
+        public static GameSettings DefaultGameSettings
             => new GameSettings {ScreenHeight = 720, ScreenWidth = 1280, HudScale = Scale.Medium};
 
-        public static string Path => "Settings.json";
+        public override GameSettings DefaultSettings => DefaultGameSettings;
+        public override GameSettings CurrentSettings => this;
+        public override string Path => GameSettingsPath;
+        public static string GameSettingsPath => "Settings.json";
 
-        public void Save()
+        protected override void CopySettings(GameSettings other)
         {
-            try
-            {
-                var json = Serializer<GameSettings>.JsonSerialize(this);
-                var jsonAsText = System.Text.Encoding.Default.GetString(json);
-                File.WriteAllText(Path, jsonAsText);
-            }
-            catch (Exception e)
-            {
-                LOG.Error($"Caught unexpected exception while saving {this}", e);
-            }
-        }
-
-        public GameSettings Load()
-        {
-            GameSettings loadedSettings;
-            try
-            {
-                var gameSettingsAsText = File.ReadAllText(Path);
-                var gameSettingsAsJsonByteArray = StringUtils.GetBytes(gameSettingsAsText);
-                loadedSettings =
-                    Serializer<GameSettings>.JsonDeserialize(gameSettingsAsJsonByteArray);
-            }
-            catch (Exception e)
-            {
-                LOG.Error("Caught unexpected exception while loading settings file",
-                    e);
-                loadedSettings = DefaultSettings;
-                DefaultSettings.Save();
-            }
-
-            CopySettings(loadedSettings);
-            return this;
-        }
-
-        private void CopySettings(GameSettings other)
-        {
-            // Assume other GameSettings is non-null
+            Validate.IsNotNullOrDefault(other, $"Cannot copy Settings for a null {nameof(GameSettings)}");
             ScreenHeight = other.ScreenHeight;
             ScreenWidth = other.ScreenWidth;
             HudScale = other.HudScale;

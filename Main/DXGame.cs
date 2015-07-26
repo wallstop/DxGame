@@ -77,13 +77,17 @@ namespace DXGame.Main
             }
         }
 
-        public GameSettings GameSettings { get; set; }
+        public GameSettings GameSettings { get; }
+        public Controls Controls { get; }
 
         private DxGame()
         {
             // TODO: See what parts of this can be offloaded to initialize
             GameSettings = new GameSettings();
             GameSettings.Load();
+
+            Controls = new Controls();
+            Controls.Load();
 
             Screen = new Rectangle(0, 0, GameSettings.ScreenWidth, GameSettings.ScreenHeight);
             var graphics = new GraphicsDeviceManager(this)
@@ -123,6 +127,7 @@ namespace DXGame.Main
             return !alreadyExists;
         }
 
+        // TODO: Figure out a better way to attach shit to the game
         public void AddAndInitializeComponent(Component component)
         {
             component.Initialize();
@@ -169,6 +174,7 @@ namespace DXGame.Main
             DxComponents.Remove(component);
         }
 
+        // TODO: Figure out a better way to remove shit from the game
         public void RemoveComponents(params Component[] components)
         {
             foreach (var component in components)

@@ -104,8 +104,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Core\Animation.cs" />
+    <Compile Include="Core\Behavior\Action.cs" />
     <Compile Include="Core\Behavior\Behavior.cs" />
-    <Compile Include="Core\Behavior\Response.cs" />
+    <Compile Include="Core\Behavior\Presentation.cs" />
     <Compile Include="Core\Behavior\State.cs" />
     <Compile Include="Core\Behavior\Transition.cs" />
     <Compile Include="Core\Behavior\Trigger.cs" />
@@ -131,6 +132,10 @@
     <Compile Include="Core\Components\Basic\NetworkComponent.cs" />
     <Compile Include="Core\Components\Basic\SpriteBatchEnder.cs" />
     <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
+    <Compile Include="Core\Input\Input.cs" />
+    <Compile Include="Core\Input\MouseButtons.cs" />
+    <Compile Include="Core\Settings\AbstractSettings.cs" />
+    <Compile Include="Core\Settings\Controls.cs" />
     <Compile Include="Core\Utils\DateTimeConstants.cs" />
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
     <Compile Include="Core\Components\Utils\State.cs" />

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DXGame.Core.Wrappers;
 
 namespace DXGame.Core.Behavior
 {
-    public void delegate Action();
+    /* Will be called for a State's update method */
+
+    public delegate void Action(DxGameTime gameTime);
 }

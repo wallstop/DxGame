@@ -23,18 +23,18 @@ namespace DXGame.Core.Input
             UpdatePriority = UpdatePriority.HIGHEST;
         }
 
-        public List<KeyboardEvent> CurrentEvents { get; private set; }
-        public List<KeyboardEvent> FinishedEvents { get; private set; }
+        public List<KeyboardEvent> CurrentEvents { get; }
+        public List<KeyboardEvent> FinishedEvents { get; }
 
         protected override void Update(DxGameTime gameTime)
         {
             KeyboardState keyboardState = Keyboard.GetState();
             List<Keys> currentKeys = keyboardState.GetPressedKeys().ToList();
 
-            DetermineEvents(gameTime, currentKeys);
+            DetermineKeyboardEvents(gameTime, currentKeys);
         }
 
-        private void DetermineEvents(DxGameTime gameTime, List<Keys> currentKeys)
+        private void DetermineKeyboardEvents(DxGameTime gameTime, List<Keys> currentKeys)
         {
             var elapsedTime = gameTime.ElapsedGameTime;
             var currentTime = gameTime.TotalGameTime;

@@ -1,8 +1,6 @@
 ﻿using DXGame.Core.Behavior;
 using DXGame.Core.Components.Advanced.Position;
-using DXGame.Core.Models;
 using DXGame.Main;
-using Microsoft.Xna.Framework;
 
 namespace DXGame.TowerGame.Behaviors
 {
@@ -10,28 +8,36 @@ namespace DXGame.TowerGame.Behaviors
     {
         public static Behavior SimpleActivePlayerProximityTriggerFollow(DxGame game, PositionalComponent position)
         {
-            int maxFollowDistance = 150;
-            State idleState = new State("Idle");
-            State followState = new State("Following Player");
-            Transition idleToFollowTransition = new Transition(() =>
-            {
-                var playerPosition = game.Model<PlayerModel>().ActivePlayer.Position;
-                var distance = Vector2.Distance(playerPosition.Position.ToVector2(), position.Position.ToVector2());
-                return distance < maxFollowDistance;
-            }, followState);
+            /* 
+                TODO: How do we build generic Behaviors? IE, have a behavior that is 
+                desynced from it's state's Actions and Presentations? Should we allow 
+                States to be mutable and simply assign them later? 
+            */
+            return null;
+            //int maxFollowDistance = 150;
 
-            Transition followToIdleTransition = new Transition(() =>
-            {
-                var playerPosition = game.Model<PlayerModel>().ActivePlayer.Position;
-                var distance = Vector2.Distance(playerPosition.Position.ToVector2(), position.Position.ToVector2());
-                return distance >= maxFollowDistance;
-            }, idleState);
+            //var stateBuilder = State.Builder().WithName("Idle").WithTransition()
+            //State idleState = new State("Idle");
+            //State followState = new State("Following Player");
+            //Transition idleToFollowTransition = new Transition(() =>
+            //{
+            //    var playerPosition = game.Model<PlayerModel>().ActivePlayer.Position;
+            //    var distance = Vector2.Distance(playerPosition.Position.ToVector2(), position.Position.ToVector2());
+            //    return distance < maxFollowDistance;
+            //}, followState);
 
-            idleState.WithTransition(idleToFollowTransition);
-            followState.WithTransition(followToIdleTransition);
+            //Transition followToIdleTransition = new Transition(() =>
+            //{
+            //    var playerPosition = game.Model<PlayerModel>().ActivePlayer.Position;
+            //    var distance = Vector2.Distance(playerPosition.Position.ToVector2(), position.Position.ToVector2());
+            //    return distance >= maxFollowDistance;
+            //}, idleState);
 
-            Behavior activePlayerFollowBehavior = new Behavior(idleState);
-            return activePlayerFollowBehavior;
+            //idleState.WithTransition(idleToFollowTransition);
+            //followState.WithTransition(followToIdleTransition);
+
+            //Behavior activePlayerFollowBehavior = new Behavior(idleState);
+            //return activePlayerFollowBehavior;
         }
     }
 }

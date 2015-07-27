@@ -13,12 +13,13 @@ using Microsoft.Xna.Framework.Input;
 namespace DXGame.Core.Components.Advanced.Player
 {
     // Should not be serialized
+
+    // TODO: Move pretty much all of this into the basic player Behavior
     public class SimplePlayerInputComponent : Component
     {
         protected EntityPropertiesComponent EntityProperties;
         // TODO: Move these out
         protected PhysicsComponent physics_;
-        protected StateComponent state_;
         protected WeaponComponent weapon_;
 
         public SimplePlayerInputComponent(DxGame game)
@@ -31,13 +32,6 @@ namespace DXGame.Core.Components.Advanced.Player
         {
             Validate.IsNotNullOrDefault(physics, $"Cannot initialize {GetType()} with a null/default PhysicsComponent");
             physics_ = physics;
-            return this;
-        }
-
-        public SimplePlayerInputComponent WithPlayerState(StateComponent state)
-        {
-            Validate.IsNotNullOrDefault(state, $"Cannot intialize {GetType()} with a null/default PlayerState");
-            state_ = state;
             return this;
         }
 

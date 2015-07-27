@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Skills;
@@ -18,7 +20,9 @@ namespace DXGame.Core
         */
         private static readonly int NUM_SKILLS = 4;
         public SpatialComponent Position => ComponentOfType<SpatialComponent>();
-        public PlayerPropertiesComponent PlayerProperties => ComponentOfType<PlayerPropertiesComponent>();
+        public PlayerPropertiesComponent Properties => ComponentOfType<PlayerPropertiesComponent>();
+        public PhysicsComponent Physics => ComponentOfType<PhysicsComponent>();
+        public AnimationComponent Animation => ComponentOfType<AnimationComponent>();
 
         [DataMember]
         public string Name { get; private set; }

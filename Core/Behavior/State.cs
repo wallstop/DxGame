@@ -33,6 +33,23 @@ namespace DXGame.Core.Behavior
             return new StateBuilder();
         }
 
+        public override bool Equals(object other)
+        {
+            var otherState = other as State;
+            return otherState != null && Name.Equals(otherState.Name) &&
+                   LambdaUtils.DelegateHashCode(Action).Equals(LambdaUtils.DelegateHashCode(otherState.Action));
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode() ^ LambdaUtils.DelegateHashCode(Action);
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
+
         public class StateBuilder
         {
             private readonly List<Transition> transitions_ = new List<Transition>();

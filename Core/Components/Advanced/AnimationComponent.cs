@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
+using DXGame.Core.Behavior;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
@@ -14,10 +14,9 @@ namespace DXGame.Core.Components.Advanced
     [DataContract]
     public class AnimationComponent : DrawableComponent
     {
-        [DataMember] private readonly Dictionary<string, Animation> states_ = new Dictionary<string, Animation>();
-        [DataMember] private string lastState_;
+        [DataMember] private readonly Dictionary<State, Animation> states_ = new Dictionary<State, Animation>();
+        [DataMember] protected Behavior.Behavior behavior_;
         [DataMember] protected PositionalComponent position_;
-        [DataMember] protected StateComponent state_;
 
         public AnimationComponent(DxGame game)
             : base(game)
@@ -26,17 +25,15 @@ namespace DXGame.Core.Components.Advanced
 
         public AnimationComponent WithPosition(PositionalComponent position)
         {
-            Validate.IsNotNullOrDefault(position, "Cannot create an AnimationComponent with a null PositionalComponent!");
+            Validate.IsNotNullOrDefault(position, StringUtils.GetFormattedNullDefaultMessage(this, position));
             position_ = position;
             return this;
         }
 
-        public AnimationComponent WithState(StateComponent state)
+        public AnimationComponent WithBehavior(Behavior.Behavior behavior)
         {
-            Validate.IsNotNullOrDefault(state, "Cannot create an AnimationComponent with a null StateComponent!");
-            Validate.IsNotEmpty(state.States, "Cannot create an AnimationComponent with a state-less StateComponent!");
-            state_ = state;
-            lastState_ = state.States.First();
+            Validate.IsNotNullOrDefault(behavior, StringUtils.GetFormattedNullDefaultMessage(this, behavior));
+            behavior_ = behavior;
             return this;
         }
 

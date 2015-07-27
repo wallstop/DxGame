@@ -1,4 +1,6 @@
 ﻿using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
+using DXGame.Main;
 
 namespace DXGame.Core.Behavior
 {
@@ -9,15 +11,15 @@ namespace DXGame.Core.Behavior
 
         public Transition(Trigger trigger, State resultState)
         {
-            Validate.IsNotNull(trigger, "Cannot create a transition with a null trigger");
-            Validate.IsNotNull(resultState, "Cannot create a Transition with a null resultState");
+            Validate.IsNotNull(trigger, $"Cannot create a transition with a null {nameof(trigger)}");
+            Validate.IsNotNull(resultState, $"Cannot create a Transition with a null {nameof(resultState)}");
             Trigger = trigger;
             State = resultState;
         }
 
-        public bool ShouldTransition()
+        public bool ShouldTransition(DxGame game, DxGameTime gameTime)
         {
-            return Trigger.Invoke();
+            return Trigger.Invoke(game, gameTime);
         }
     }
 }

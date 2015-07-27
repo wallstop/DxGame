@@ -140,7 +140,7 @@ namespace DXGame.Core.Components.Basic
             postProcessors_.Add(updater);
         }
 
-        protected void RegisterMessageHandler(Type type, MessageHandler handler)
+        public void RegisterMessageHandler(Type type, MessageHandler handler)
         {
             List<MessageHandler> messageHandlers = (typesToMessageHandlers_.ContainsKey(type)
                 ? typesToMessageHandlers_[type]

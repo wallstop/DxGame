@@ -7,11 +7,11 @@ using DXGame.Main;
 
 namespace DXGame.Core.Behavior
 {
-    public class Behavior : DrawableComponent
+    public class Behavior : Component
     {
         public State InitialState { get; }
         public State CurrentState { get; private set; }
-
+        // TODO: Verify this is correct
         public int States
         {
             get
@@ -47,14 +47,9 @@ namespace DXGame.Core.Behavior
             Reset();
         }
 
-        public override void Draw(DxGameTime gameTime)
-        {
-            CurrentState.Presentation(gameTime);
-        }
-
         protected override void Update(DxGameTime gameTime)
         {
-            CurrentState = CurrentState.Transitions.First(transition => transition.ShouldTransition())
+            CurrentState = CurrentState.Transitions.First(transition => transition.ShouldTransition(DxGame, gameTime))
                 ?.State ?? CurrentState;
             CurrentState.Action(gameTime);
         }

@@ -114,7 +114,6 @@
     <Compile Include="Core\Components\Advanced\CollisionDestructibleComponent.cs" />
     <Compile Include="Core\Components\Advanced\FloatingHealthIndicator.cs" />
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Player\PlayerStateComponent.cs" />
     <Compile Include="Core\Components\Advanced\Properties\EntityPropertiesComponent.cs" />
     <Compile Include="Core\Components\Advanced\Properties\PlayerPropertiesComponent.cs" />
     <Compile Include="Core\Components\Advanced\RangedWeaponComponent.cs" />
@@ -122,7 +121,6 @@
     <Compile Include="Core\Components\Basic\Component.cs" />
     <Compile Include="Core\Components\Advanced\Position\BoundedSpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\Physics\MapCollideablePhysicsComponent.cs" />
-    <Compile Include="Core\Components\Advanced\StateComponent.cs" />
     <Compile Include="Core\Components\Advanced\Position\SpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\Player\SimplePlayerInputComponent.cs" />
     <Compile Include="Core\Components\Advanced\Position\PositionalComponent.cs" />
@@ -138,7 +136,6 @@
     <Compile Include="Core\Settings\Controls.cs" />
     <Compile Include="Core\Utils\DateTimeConstants.cs" />
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
-    <Compile Include="Core\Components\Utils\State.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\AbilityBar.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\BuffBar.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\FpsTracker.cs" />
@@ -213,6 +210,7 @@
     <Compile Include="Main\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Properties\PropertyMutator.cs" />
+    <Compile Include="TowerGame\Behaviors\PlayerBehaviorFactory.cs" />
     <Compile Include="TowerGame\Behaviors\SimpleBehaviorFactory.cs" />
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />
     <Compile Include="TowerGame\PropertyMutators\InheritedHatred.cs" />

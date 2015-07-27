@@ -18,7 +18,7 @@
 
         public static string GetFormattedNullDefaultMessage<T, U>(T instance, U argument)
         {
-            return $"Cannot initialize a {instance.GetType()} with a null/default {typeof (U)}";
+            return $"Cannot initialize a {typeof (T)} with a null/default {typeof (U)}";
         }
     }
 }

@@ -8,7 +8,7 @@ namespace DXGame.Core
 {
     public class SortedList<T> : IList<T> where T : IComparable<T>
     {
-        private readonly Comparer<T> comparer_;
+        private readonly IComparer<T> comparer_;
         private readonly List<T> list_;
 
         public SortedList()
@@ -17,9 +17,9 @@ namespace DXGame.Core
             comparer_ = Comparer<T>.Default;
         }
 
-        public SortedList(Comparer<T> comparer)
+        public SortedList(IComparer<T> comparer)
         {
-            Validate.IsNotNull(comparer, $"Cannot create a SortedList for Type {typeof (T)} with a null Comparer");
+            Validate.IsNotNull(comparer, StringUtils.GetFormattedNullDefaultMessage(this, nameof(comparer)));
             comparer_ = comparer;
         }
 

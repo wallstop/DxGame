@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
 
 namespace DXGame.Core
 {
@@ -22,12 +23,23 @@ namespace DXGame.Core
 
     [Serializable]
     [DataContract]
-    public sealed class GameObject : IIdentifiable, IEquatable<GameObject>
+    public sealed class GameObject : IIdentifiable, IEquatable<GameObject>, IProcessable
     {
         // DataMembers can't be readonly :(
-        [DataMember] private List<Component> components_ = new List<Component>();
+        [DataMember] private List<Component> components_;
         [DataMember] private UniqueId id_ = new UniqueId();
         public IEnumerable<Component> Components => components_;
+
+        [DataMember]
+        public List<Message> CurrentMessages { get; private set; } = new List<Message>();
+
+        [DataMember]
+        public List<Message> FutureMessages { get; private set; } = new List<Message>();
+
+        private GameObject(List<Component> components)
+        {
+            components_ = components;
+        }
 
         public bool Equals(GameObject other)
         {
@@ -36,6 +48,33 @@ namespace DXGame.Core
         }
 
         public UniqueId Id => id_;
+        public UpdatePriority UpdatePriority => UpdatePriority.GAME_OBJECT;
+
+        public void Process(DxGameTime gameTime)
+        {
+            /* Simply swap Message buffers */
+            List<Message> temp = CurrentMessages;
+            CurrentMessages = FutureMessages;
+            FutureMessages = temp;
+            FutureMessages.Clear();
+        }
+
+        public void AttachComponent(Component component)
+        {
+            Validate.IsNotNull(component, StringUtils.GetFormattedNullDefaultMessage(this, component));
+            Validate.IsFalse(components_.Contains(component),
+                $"Cannot add a {typeof (Component)} that already exists to a {typeof (GameObject)} ");
+            components_.Add(component);
+        }
+
+        public void RemoveComponent(Component component)
+        {
+            if (components_.Contains(component))
+            {
+                components_.Remove(component);
+            }
+        }
+
         /**
         <summary>
             Given a type, iterates over all components that the game object contains and returns them as a list.
@@ -55,71 +94,12 @@ namespace DXGame.Core
 
         public T ComponentOfType<T>() where T : Component
         {
-            // TODO: Optionals?
             return ComponentsOfType<T>().First();
         }
 
-        /**
-        <summary>
-            Given a component, properly determines if it is a Drawable / Initializable / Updateable, adds it
-            to the GameObject, and returns a reference to the updated GameObject.
-
-            The following code will produce a GameObject with component1 and component2 attached.
-            <code>
-                GameObject object = new GameObject().WithComponent(component1).WithComponent(component2);
-            </code>
-        </summary>
-        */
-
-        public GameObject WithComponent(Component component)
+        public static GameObjectBuilder Builder()
         {
-            Validate.IsNotNullOrDefault(component, $"Cannot add a null {typeof (Component)} to {GetType()}");
-            AddComponent(component);
-            return this;
-        }
-
-        /**
-        <summary>
-            Given some number of components, properly sorts them out into 
-            Drawables / Initializables / Updateables, adds them to the 
-            GameObject, and returns a reference to the updated GameObject.
-            
-            The following code will produce a GameObject with component1, component2, and component3 
-            attached.
-            <code>
-                GameObject object = new GameObject().AttachComponents(component1, component2, component3);
-            </code>
-        </summary>
-        */
-
-        public GameObject WithComponents(params Component[] components)
-        {
-            Validate.IsNotNullOrDefault(components,
-                $"Cannot add a null/empty {typeof (Component)} collection to {GetType()}");
-            foreach (var component in components)
-            {
-                WithComponent(component);
-            }
-            return this;
-        }
-
-        public GameObject WithComponents(IEnumerable<Component> components)
-        {
-            Validate.IsNotNull(components, $"Cannot add a null collection of {nameof(components)} to {GetType()}");
-            foreach (var component in components)
-            {
-                AddComponent(component);
-            }
-            return this;
-        }
-
-        // TODO: Check for prior containment
-        private void AddComponent(Component component)
-        {
-            Validate.IsNotNull(component, $"Cannot attach a null {nameof(Component)} to a {GetType()}");
-            Validate.IsFalse(components_.Contains(component));
-            component.Parent = this;
-            components_.Add(component);
+            return new GameObjectBuilder();
         }
 
         public void BroadcastMessage(Message message)
@@ -128,6 +108,47 @@ namespace DXGame.Core
             foreach (var component in components_)
             {
                 component.HandleMessage(message);
+            }
+        }
+
+        public class GameObjectBuilder
+        {
+            private List<Component> components_ = new List<Component>();
+
+            public GameObjectBuilder WithComponents(params Component[] components)
+            {
+                return WithComponents(components.ToList());
+            }
+
+            public GameObjectBuilder WithComponents(IEnumerable<Component> components)
+            {
+                Validate.IsNotNull(components, StringUtils.GetFormattedNullDefaultMessage(this, nameof(components)));
+                foreach (var component in components)
+                {
+                    WithComponent(component);
+                }
+                return this;
+            }
+
+            public GameObjectBuilder WithComponent(Component component)
+            {
+                Validate.IsNotNullOrDefault(component, StringUtils.GetFormattedNullDefaultMessage(this, component));
+                Validate.IsFalse(components_.Contains(component),
+                    $"Cannot create a {GetType()} with the same component {component} more than once");
+                components_.Add(component);
+                return this;
+            }
+
+            public GameObject Build()
+            {
+                GameObject createdObject = new GameObject(components_);
+                foreach (var component in components_)
+                {
+                    component.Parent = createdObject;
+                }
+                /* Reset, but don't clear, since the GameObject holds a reference to it now */
+                components_ = new List<Component>();
+                return createdObject;
             }
         }
     }

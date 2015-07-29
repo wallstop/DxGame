@@ -2,7 +2,7 @@
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 
-namespace DXGame.Core.Behavior
+namespace DXGame.Core.State
 {
     public class Transition
     {

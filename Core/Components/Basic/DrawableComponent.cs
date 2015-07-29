@@ -1,23 +1,11 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Components.Basic
 {
-    public enum DrawPriority
-    {
-        INIT_SPRITEBATCH = -100,
-        HIGHEST = -99,
-        HIGH = 1,
-        NORMAL = 5,
-        HUD_LAYER = 8,
-        LOW = 10,
-        END_SPRITEBATCH = 1000
-    }
-
     /**
     <summary>
         DrawableComponent forms the base of all Components that wish to be rendered at some point in time.
@@ -36,19 +24,14 @@ namespace DXGame.Core.Components.Basic
 
     [Serializable]
     [DataContract]
-    public abstract class DrawableComponent : Component, IComparable<DrawableComponent>
+    public abstract class DrawableComponent : Component, IComparable<DrawableComponent>, IDrawable
     {
         [NonSerialized] [IgnoreDataMember] protected SpriteBatch spriteBatch_;
-
-        [DataMember]
-        public DrawPriority DrawPriority { get; set; }
 
         protected DrawableComponent(DxGame game)
             : base(game)
         {
-            Validate.IsNotNullOrDefault(game, $"Cannot initialize {GetType()} with a null/default DxGame");
             spriteBatch_ = game.SpriteBatch;
-            UpdatePriority = UpdatePriority.NORMAL;
             DrawPriority = DrawPriority.NORMAL;
         }
 
@@ -57,10 +40,9 @@ namespace DXGame.Core.Components.Basic
             return DrawPriority.CompareTo(other?.DrawPriority);
         }
 
-        public abstract void Draw(DxGameTime gameTime);
+        [DataMember]
+        public DrawPriority DrawPriority { get; protected set; }
 
-        protected override void Update(DxGameTime gameTime)
-        {
-        }
+        public abstract void Draw(DxGameTime gameTime);
     }
 }

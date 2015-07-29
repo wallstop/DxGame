@@ -1,4 +1,6 @@
-﻿namespace DXGame.Core.Utils
+﻿using System.Collections.Generic;
+
+namespace DXGame.Core.Utils
 {
     public static class StringUtils
     {
@@ -19,6 +21,11 @@
         public static string GetFormattedNullDefaultMessage<T, U>(T instance, U argument)
         {
             return $"Cannot initialize a {typeof (T)} with a null/default {typeof (U)}";
+        }
+
+        public static string GetFormattedAlreadyContainsMessage<T, U>(T instance, U argument, IEnumerable<U> collection)
+        {
+            return $"Cannot add a {typeof (U)} to a {typeof (T)}, as one already exists ({collection})";
         }
     }
 }

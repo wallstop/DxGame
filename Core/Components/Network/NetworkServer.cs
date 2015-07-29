@@ -83,7 +83,7 @@ namespace DXGame.Core.Components.Network
                 var message = new GameStateKeyFrame
                 {
                     Components =
-                        DxGame.DxComponents.Components().Where(n => !(n is SimplePlayerInputComponent)).ToList(),
+                        DxGame.DxGameElements.Components().Where(n => !(n is SimplePlayerInputComponent)).ToList(),
                     GameTime = gameTime,
                     MessageType = MessageType.SERVER_DATA_KEYFRAME
                 };

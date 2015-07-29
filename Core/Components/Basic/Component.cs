@@ -9,16 +9,6 @@ using log4net;
 
 namespace DXGame.Core.Components.Basic
 {
-    public enum UpdatePriority
-    {
-        HIGHEST = -1,
-        PHYSICS = HIGHEST,
-        STATE = 0,
-        HIGH = 1,
-        NORMAL = 5,
-        LOW = 10
-    }
-
     /**
     <summary>
         This class forms the base class for all Components. Components are a methodology for 
@@ -72,17 +62,12 @@ namespace DXGame.Core.Components.Basic
 
     [Serializable]
     [DataContract]
-    public abstract class Component : IIdentifiable, IComparable<Component>
+    public abstract class Component : IIdentifiable, IComparable<Component>, IProcessable
     {
         private static readonly ILog LOG = LogManager.GetLogger(typeof (Component));
         [DataMember] private readonly List<Updater> postProcessors_ = new List<Updater>();
         [DataMember] private readonly List<Updater> preProcessors_ = new List<Updater>();
         [NonSerialized] [IgnoreDataMember] public DxGame DxGame;
-        /**
-            Note: This id_ field is the UniqueId of the Component, *NOT* of the GameObject. 
-            This is a very important distinction.
-        */
-        [DataMember] protected UniqueId id_ = new UniqueId();
         [DataMember] private bool initialized_;
 
         [DataMember] private Dictionary<Type, List<MessageHandler>> typesToMessageHandlers_ =
@@ -91,11 +76,9 @@ namespace DXGame.Core.Components.Basic
         [DataMember]
         public GameObject Parent { get; set; }
 
-        [DataMember]
-        public UpdatePriority UpdatePriority { protected set; get; }
-
         protected Component(DxGame game)
         {
+            Validate.IsNotNullOrDefault(game, StringUtils.GetFormattedNullDefaultMessage(this, nameof(game)));
             DxGame = game;
             UpdatePriority = UpdatePriority.NORMAL;
             initialized_ = false;
@@ -106,7 +89,37 @@ namespace DXGame.Core.Components.Basic
             return UpdatePriority.CompareTo(other?.UpdatePriority);
         }
 
-        public UniqueId Id => id_;
+        [DataMember]
+        public UniqueId Id => new UniqueId();
+
+        [DataMember]
+        public UpdatePriority UpdatePriority { protected set; get; }
+
+        public void Process(DxGameTime gameTime)
+        {
+            foreach (var updater in preProcessors_)
+            {
+                updater(gameTime);
+            }
+
+            Update(gameTime);
+
+            foreach (var updater in postProcessors_)
+            {
+                updater(gameTime);
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
+        public override bool Equals(object other)
+        {
+            var rhs = other as Component;
+            return rhs != null && Id.Equals(other);
+        }
 
         public void HandleMessage(Message message)
         {
@@ -125,17 +138,17 @@ namespace DXGame.Core.Components.Basic
 
         public void AddPreUpdater(Updater updater)
         {
-            Validate.IsNotNull(updater, $"Cannot add a null pre-updater to {GetType()}!");
-            Validate.IsTrue(!preProcessors_.Contains(updater),
-                $"Cannot add a pre-updater {updater} that already exists {preProcessors_}");
+            Validate.IsNotNull(updater, StringUtils.GetFormattedNullDefaultMessage(this, "pre-updater"));
+            Validate.IsFalse(preProcessors_.Contains(updater),
+                StringUtils.GetFormattedAlreadyContainsMessage(this, updater, preProcessors_));
             preProcessors_.Add(updater);
         }
 
         public void AddPostUpdater(Updater updater)
         {
-            Validate.IsNotNull(updater, $"Cannot add a null post-updater to {GetType()}!");
-            Validate.IsTrue(!postProcessors_.Contains(updater),
-                $"Cannot add a post-updater {updater} that already exists {postProcessors_}");
+            Validate.IsNotNullOrDefault(updater, StringUtils.GetFormattedNullDefaultMessage(this, "post-updater"));
+            Validate.IsFalse(postProcessors_.Contains(updater),
+                StringUtils.GetFormattedAlreadyContainsMessage(this, updater, postProcessors_));
             postProcessors_.Add(updater);
         }
 
@@ -151,22 +164,10 @@ namespace DXGame.Core.Components.Basic
 
         public virtual void Remove()
         {
+            Parent.RemoveComponent(this);
+            Parent = null;
             DxGame.RemoveComponent(this);
-        }
-
-        public void Process(DxGameTime gameTime)
-        {
-            foreach (var updater in preProcessors_)
-            {
-                updater(gameTime);
-            }
-
-            Update(gameTime);
-
-            foreach (var updater in postProcessors_)
-            {
-                updater(gameTime);
-            }
+            DxGame = null;
         }
 
         protected virtual void Update(DxGameTime gameTime)
@@ -181,7 +182,7 @@ namespace DXGame.Core.Components.Basic
             }
             else
             {
-                // TODO: Log metrics
+                // Why are we doing this?
                 var logMessage = $"Initialize called on already Initialized {GetType()} {this}";
                 LOG.Error(logMessage);
                 throw new ArgumentException(logMessage);
@@ -201,8 +202,7 @@ namespace DXGame.Core.Components.Basic
 
         protected virtual void DeSerialize()
         {
-            Initialize(); // Left as an exercise to the reader to determine specific behavior
-            // LOL why did I write that comment?
+            Initialize(); // Left as an exercise to the reader to determine specific behavior (wat)
             LoadContent();
         }
     }

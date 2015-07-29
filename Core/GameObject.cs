@@ -22,11 +22,11 @@ namespace DXGame.Core
 
     [Serializable]
     [DataContract]
-    public class GameObject : IIdentifiable, IEquatable<GameObject>
+    public sealed class GameObject : IIdentifiable, IEquatable<GameObject>
     {
         // DataMembers can't be readonly :(
-        [DataMember] protected List<Component> components_ = new List<Component>();
-        [DataMember] protected UniqueId id_ = new UniqueId();
+        [DataMember] private List<Component> components_ = new List<Component>();
+        [DataMember] private UniqueId id_ = new UniqueId();
         public IEnumerable<Component> Components => components_;
 
         public bool Equals(GameObject other)
@@ -55,6 +55,7 @@ namespace DXGame.Core
 
         public T ComponentOfType<T>() where T : Component
         {
+            // TODO: Optionals?
             return ComponentsOfType<T>().First();
         }
 
@@ -123,6 +124,7 @@ namespace DXGame.Core
 
         public void BroadcastMessage(Message message)
         {
+            FutureMessages.Add(message);
             foreach (var component in components_)
             {
                 component.HandleMessage(message);

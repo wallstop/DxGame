@@ -117,7 +117,6 @@ namespace DXGame.Core.Components.Basic
             }
 
             IEnumerable<MessageHandler> messageHandlers = typesToMessageHandlers_[message.GetType()];
-
             foreach (var messageHandler in messageHandlers)
             {
                 messageHandler(message);

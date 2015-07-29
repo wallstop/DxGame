@@ -18,6 +18,10 @@ namespace DXGame.TowerGame.Behaviors
 
         private static Behavior.BehaviorBuilder BasicPlayerBehaviorBuilder(DxGame game, Core.Player player)
         {
+            /* 
+                WTF Behavior creation BLOWWWWWWWWWS. Figure out some way to automate this / 
+                make wiring things up SIGNFICANTLY less painful 
+            */
             var behaviorBuilder = Behavior.Builder();
             behaviorBuilder.WithDxGame(game);
 

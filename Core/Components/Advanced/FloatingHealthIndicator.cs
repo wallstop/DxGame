@@ -26,21 +26,9 @@ namespace DXGame.Core.Components.Advanced
         protected Color foregroundColor_;
         protected Texture2D foregroundTexture_;
         protected PositionalComponent position_;
-
-        public virtual int Health
-        {
-            get { return entityProperties_.Health.CurrentValue; }
-        }
-
-        public virtual int MaxHealth
-        {
-            get { return entityProperties_.MaxHealth.CurrentValue; }
-        }
-
-        public virtual double PercentHealthRemaining
-        {
-            get { return (double) Health / MaxHealth; }
-        }
+        public virtual int Health => entityProperties_.Health.CurrentValue;
+        public virtual int MaxHealth => entityProperties_.MaxHealth.CurrentValue;
+        public virtual double PercentHealthRemaining => (double) Health / MaxHealth;
 
         public FloatingHealthIndicator(DxGame game, DxVector2 floatDistance, Color foregroundColor,
             Color backgroundColor, EntityPropertiesComponent properties,
@@ -48,10 +36,8 @@ namespace DXGame.Core.Components.Advanced
             : base(game)
         {
             ValidateFloatDistance(floatDistance);
-            Validate.IsNotNullOrDefault(properties,
-                $"Cannot initialize {GetType()} with null/default {typeof (EntityPropertiesComponent)}");
-            Validate.IsNotNullOrDefault(position,
-                $"Cannot initialize {GetType()} with a null/default {typeof (PositionalComponent)}");
+            Validate.IsNotNullOrDefault(properties, StringUtils.GetFormattedNullOrDefaultMessage(this, properties));
+            Validate.IsNotNullOrDefault(position, StringUtils.GetFormattedNullOrDefaultMessage(this, position));
 
             floatDistance_ = floatDistance;
             foregroundColor_ = foregroundColor;
@@ -89,15 +75,15 @@ namespace DXGame.Core.Components.Advanced
             return (position + floatDistance).ToVector2();
         }
 
-        public override void Draw(DxGameTime gameTime)
+        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             var origin = DetermineHealthBarOrigin(position_.Position, floatDistance_);
             var foregroundWidth =
                 (int) Math.Ceiling(PercentHealthRemaining * HEALTH_BAR_PIXEL_WIDTH);
-            spriteBatch_.Draw(foregroundTexture_,
+            spriteBatch.Draw(foregroundTexture_,
                 new Rectangle((int) origin.X, (int) origin.Y, foregroundWidth,
                     HEALTH_BAR_PIXEL_HEIGHT), foregroundColor_);
-            spriteBatch_.Draw(backgroundTexture_,
+            spriteBatch.Draw(backgroundTexture_,
                 new Rectangle((int) origin.X + foregroundWidth, (int) origin.Y,
                     (HEALTH_BAR_PIXEL_WIDTH - foregroundWidth),
                     HEALTH_BAR_PIXEL_HEIGHT), backgroundColor_);

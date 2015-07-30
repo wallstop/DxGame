@@ -59,9 +59,14 @@ namespace DXGame.Core
             FutureMessages.Clear();
         }
 
+        public int CompareTo(IProcessable other)
+        {
+            return Processable.DefaultComparer.Compare(this, other);
+        }
+
         public void AttachComponent(Component component)
         {
-            Validate.IsNotNull(component, StringUtils.GetFormattedNullDefaultMessage(this, component));
+            Validate.IsNotNull(component, StringUtils.GetFormattedNullOrDefaultMessage(this, component));
             Validate.IsFalse(components_.Contains(component),
                 $"Cannot add a {typeof (Component)} that already exists to a {typeof (GameObject)} ");
             components_.Add(component);
@@ -111,33 +116,9 @@ namespace DXGame.Core
             }
         }
 
-        public class GameObjectBuilder
+        public class GameObjectBuilder : IBuilder<GameObject>
         {
             private List<Component> components_ = new List<Component>();
-
-            public GameObjectBuilder WithComponents(params Component[] components)
-            {
-                return WithComponents(components.ToList());
-            }
-
-            public GameObjectBuilder WithComponents(IEnumerable<Component> components)
-            {
-                Validate.IsNotNull(components, StringUtils.GetFormattedNullDefaultMessage(this, nameof(components)));
-                foreach (var component in components)
-                {
-                    WithComponent(component);
-                }
-                return this;
-            }
-
-            public GameObjectBuilder WithComponent(Component component)
-            {
-                Validate.IsNotNullOrDefault(component, StringUtils.GetFormattedNullDefaultMessage(this, component));
-                Validate.IsFalse(components_.Contains(component),
-                    $"Cannot create a {GetType()} with the same component {component} more than once");
-                components_.Add(component);
-                return this;
-            }
 
             public GameObject Build()
             {
@@ -149,6 +130,30 @@ namespace DXGame.Core
                 /* Reset, but don't clear, since the GameObject holds a reference to it now */
                 components_ = new List<Component>();
                 return createdObject;
+            }
+
+            public GameObjectBuilder WithComponents(params Component[] components)
+            {
+                return WithComponents(components.ToList());
+            }
+
+            public GameObjectBuilder WithComponents(IEnumerable<Component> components)
+            {
+                Validate.IsNotNull(components, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(components)));
+                foreach (var component in components)
+                {
+                    WithComponent(component);
+                }
+                return this;
+            }
+
+            public GameObjectBuilder WithComponent(Component component)
+            {
+                Validate.IsNotNullOrDefault(component, StringUtils.GetFormattedNullOrDefaultMessage(this, component));
+                Validate.IsFalse(components_.Contains(component),
+                    $"Cannot create a {GetType()} with the same component {component} more than once");
+                components_.Add(component);
+                return this;
             }
         }
     }

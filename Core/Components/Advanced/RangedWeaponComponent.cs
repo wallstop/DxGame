@@ -77,7 +77,6 @@ namespace DXGame.Core.Components.Advanced
         private void DoAttack()
         {
             // TODO: Remove all of this code, it's just for "live-testing"
-            GameObject projectile = new GameObject();
             var mapModel = DxGame.Model<MapModel>();
             var bounds = mapModel.MapBounds;
             // TODO: Unhard code the dimensions
@@ -95,7 +94,7 @@ namespace DXGame.Core.Components.Advanced
             SimpleSpriteComponent sprite =
                 new SimpleSpriteComponent(DxGame).WithPosition(space).WithAsset("Orb");
             CollisionDestructibleComponent destructible = new CollisionDestructibleComponent(DxGame);
-            projectile.WithComponents(space, physics, sprite, destructible);
+            var projectile = GameObject.Builder().WithComponents(space, physics, sprite, destructible).Build();
 
             DxGame.AddAndInitializeGameObject(projectile);
         }

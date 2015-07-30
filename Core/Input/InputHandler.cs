@@ -15,16 +15,16 @@ namespace DXGame.Core.Input
 
     public class InputHandler : Component
     {
+        public List<KeyboardEvent> CurrentEvents { get; }
+        public List<KeyboardEvent> FinishedEvents { get; }
+
         public InputHandler(DxGame game)
             : base(game)
         {
             CurrentEvents = new List<KeyboardEvent>();
             FinishedEvents = new List<KeyboardEvent>();
-            UpdatePriority = UpdatePriority.HIGHEST;
+            UpdatePriority = UpdatePriority.INPUT;
         }
-
-        public List<KeyboardEvent> CurrentEvents { get; }
-        public List<KeyboardEvent> FinishedEvents { get; }
 
         protected override void Update(DxGameTime gameTime)
         {

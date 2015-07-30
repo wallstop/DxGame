@@ -78,7 +78,7 @@ namespace DXGame.Core.Components.Basic
 
         protected Component(DxGame game)
         {
-            Validate.IsNotNullOrDefault(game, StringUtils.GetFormattedNullDefaultMessage(this, nameof(game)));
+            Validate.IsNotNullOrDefault(game, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(game)));
             DxGame = game;
             UpdatePriority = UpdatePriority.NORMAL;
             initialized_ = false;
@@ -110,6 +110,11 @@ namespace DXGame.Core.Components.Basic
             }
         }
 
+        public int CompareTo(IProcessable other)
+        {
+            return Processable.DefaultComparer.Compare(this, other);
+        }
+
         public override int GetHashCode()
         {
             return Id.GetHashCode();
@@ -138,7 +143,7 @@ namespace DXGame.Core.Components.Basic
 
         public void AddPreUpdater(Updater updater)
         {
-            Validate.IsNotNull(updater, StringUtils.GetFormattedNullDefaultMessage(this, "pre-updater"));
+            Validate.IsNotNull(updater, StringUtils.GetFormattedNullOrDefaultMessage(this, "pre-updater"));
             Validate.IsFalse(preProcessors_.Contains(updater),
                 StringUtils.GetFormattedAlreadyContainsMessage(this, updater, preProcessors_));
             preProcessors_.Add(updater);
@@ -146,7 +151,7 @@ namespace DXGame.Core.Components.Basic
 
         public void AddPostUpdater(Updater updater)
         {
-            Validate.IsNotNullOrDefault(updater, StringUtils.GetFormattedNullDefaultMessage(this, "post-updater"));
+            Validate.IsNotNullOrDefault(updater, StringUtils.GetFormattedNullOrDefaultMessage(this, "post-updater"));
             Validate.IsFalse(postProcessors_.Contains(updater),
                 StringUtils.GetFormattedAlreadyContainsMessage(this, updater, postProcessors_));
             postProcessors_.Add(updater);
@@ -154,12 +159,34 @@ namespace DXGame.Core.Components.Basic
 
         public void RegisterMessageHandler(Type type, MessageHandler handler)
         {
-            List<MessageHandler> messageHandlers = (typesToMessageHandlers_.ContainsKey(type)
+            Validate.IsNotNull(type, StringUtils.GetFormattedNullOrDefaultMessage(this, type));
+            List<MessageHandler> existingHandlers = ExistingMessageHandlers(type);
+            Validate.IsFalse(existingHandlers.Contains(handler),
+                StringUtils.GetFormattedAlreadyContainsMessage(this, handler, existingHandlers));
+            existingHandlers.Add(handler);
+            typesToMessageHandlers_[type] = existingHandlers;
+        }
+
+        private List<MessageHandler> ExistingMessageHandlers(Type type)
+        {
+            return (typesToMessageHandlers_.ContainsKey(type)
                 ? typesToMessageHandlers_[type]
                 : new List<MessageHandler>());
+        }
 
-            messageHandlers.Add(handler);
-            typesToMessageHandlers_[type] = messageHandlers;
+        public void DeregisterMessageHandlers(Type type)
+        {
+            List<MessageHandler> existingHandlers = ExistingMessageHandlers(type);
+            existingHandlers.Clear();
+        }
+
+        public void DeregisterMessageHandler(Type type, MessageHandler handler)
+        {
+            Validate.IsNotNull(type, StringUtils.GetFormattedNullOrDefaultMessage(this, type));
+            List<MessageHandler> existingMessageHandlers = ExistingMessageHandlers(type);
+            Validate.IsTrue(existingMessageHandlers.Contains(handler),
+                $"Cannot remove {typeof (MessageHandler)} {handler}, as it is not associated with the provided type");
+            existingMessageHandlers.Remove(handler);
         }
 
         public virtual void Remove()

@@ -11,7 +11,7 @@ namespace DXGame.Core
 {
     [Serializable]
     [DataContract]
-    public class Animation
+    public class Animation : IDrawable
     {
         /* TODO: Configure FPS for animations based on Holden's animations. Make it configurable? */
         private static readonly double ANIMATION_FRAMES_PER_SECOND = 60;
@@ -34,22 +34,16 @@ namespace DXGame.Core
             Validate.IsTrue(totalFrames >= 1,
                 $"Cannot initialize an {nameof(Animation)} with {nameof(totalFrames)} of {totalFrames}");
             Validate.IsNotNullOrDefault(spriteSheet,
-                StringUtils.GetFormattedNullDefaultMessage(this, nameof(spriteSheet)));
+                StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(spriteSheet)));
             AssetName = spriteSheet;
             totalFrames_ = totalFrames;
         }
 
-        /* TODO: Make proper builders for everything */
-
-        public Animation WithPosition(PositionalComponent position)
-        {
-            Validate.IsNotNullOrDefault(position, StringUtils.GetFormattedNullDefaultMessage(this, position));
-            position_ = position;
-            return this;
-        }
-
         /* TODO: make this actually handle spritesheets and animations (LOL) */
         /* Bundle Update + Draw into one, might want to break this out into two separate functions later */
+
+        /* This should be pretty much unused in Animation */
+        public DrawPriority DrawPriority => DrawPriority.NORMAL;
 
         public void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
@@ -59,6 +53,20 @@ namespace DXGame.Core
             spriteBatch.Draw(spriteSheet_, position_.Position.ToVector2(), frameOutline, Color.White, 0.0f, Vector2.Zero,
                 1.0f,
                 SpriteEffects.None, 0);
+        }
+
+        public int CompareTo(IDrawable other)
+        {
+            throw new NotImplementedException();
+        }
+
+        /* TODO: Make proper builders for everything */
+
+        public Animation WithPosition(PositionalComponent position)
+        {
+            Validate.IsNotNullOrDefault(position, StringUtils.GetFormattedNullOrDefaultMessage(this, position));
+            position_ = position;
+            return this;
         }
 
         private void UpdateCurrentFrame(DxGameTime gameTime)

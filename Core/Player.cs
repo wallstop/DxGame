@@ -1,57 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
-using DXGame.Core.Skills;
 using DXGame.Core.Utils;
 
 namespace DXGame.Core
 {
     [DataContract]
     [Serializable]
-    public class Player : GameObject
+    public class Player
     {
-        /*
-            We're making the executive design decision to limit players to 4 skills
-        */
-        private static readonly int NUM_SKILLS = 4;
-        public SpatialComponent Position => ComponentOfType<SpatialComponent>();
-        public PlayerPropertiesComponent Properties => ComponentOfType<PlayerPropertiesComponent>();
-        public PhysicsComponent Physics => ComponentOfType<PhysicsComponent>();
-        public AnimationComponent Animation => ComponentOfType<AnimationComponent>();
+        [DataMember] private readonly GameObject player_;
+        public SpatialComponent Position => player_.ComponentOfType<SpatialComponent>();
+        public PlayerPropertiesComponent Properties => player_.ComponentOfType<PlayerPropertiesComponent>();
+        public PhysicsComponent Physics => player_.ComponentOfType<PhysicsComponent>();
+        public AnimationComponent Animation => player_.ComponentOfType<AnimationComponent>();
 
         [DataMember]
         public string Name { get; private set; }
 
-        [DataMember]
-        public IEnumerable<ISkill> Skills { get; private set; }
+        public IEnumerable<SkillComponent> Skills => player_.ComponentsOfType<SkillComponent>();
 
-        public static Player PlayerFrom(GameObject existingPlayer)
+        private Player(GameObject gameObject)
         {
-            Validate.IsNotNull(existingPlayer, "Cannot create a Player from a null existing player");
-
-            return (Player) new Player().WithComponents(existingPlayer.Components);
+            player_ = gameObject;
         }
 
-        public Player WithName(string name)
+        public static Player PlayerFrom(GameObject existingPlayer, string name)
         {
-            Validate.IsNotNullOrDefault(name, $"Cannot initialize {GetType()} with a null/default name ({name})");
-            Name = name;
-            return this;
-        }
-
-        public Player WithSkills(ISkill[] skills)
-        {
-            var skillsAsArray = skills ?? skills.ToArray();
-            Validate.IsNotEmpty(skillsAsArray, $"Cannot initialize {GetType()} with a null/default skill collection");
-            Validate.IsTrue(skillsAsArray.Length == NUM_SKILLS,
-                $"Cannot initialize {GetType()} with {skillsAsArray.Length} skills)");
-            Skills = skillsAsArray;
-            return this;
+            Validate.IsNotNull(existingPlayer, StringUtils.GetFormattedNullOrDefaultMessage(typeof (Player), name));
+            return new Player(existingPlayer) {Name = name};
         }
     }
 }

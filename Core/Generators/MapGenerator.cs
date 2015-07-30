@@ -27,18 +27,9 @@ namespace DXGame.Core.Generators
         private readonly DxGame game_;
         private readonly List<GameObject> map_;
         private DxVector2 playerPosition_;
-
-        public DxVector2 PlayerPosition
-        {
-            get { return playerPosition_; }
-        }
-
+        public DxVector2 PlayerPosition => playerPosition_;
         public DxRectangle MapBounds { get; private set; }
-
-        public static int BlockSize
-        {
-            get { return BLOCK_WIDTH; }
-        }
+        public static int BlockSize => BLOCK_WIDTH;
 
         public MapGenerator(DxGame game, string mapPath)
         {
@@ -77,7 +68,7 @@ namespace DXGame.Core.Generators
                                         row * BLOCK_WIDTH);
                             SimpleSpriteComponent sprite =
                                 new SimpleSpriteComponent(game_).WithAsset(asset).WithPosition(position);
-                            GameObject block = new GameObject().WithComponents(position, sprite);
+                            GameObject block = GameObject.Builder().WithComponents(position, sprite).Build();
                             blocks.Add(block);
                             ++numBlocks;
                         }

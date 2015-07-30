@@ -27,7 +27,7 @@ namespace DXGame.Core.Utils
             public LambdaComparer(Func<T, T, int> lambdaComparer)
             {
                 Validate.IsNotNull(lambdaComparer,
-                    StringUtils.GetFormattedNullDefaultMessage(this, nameof(lambdaComparer)));
+                    StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(lambdaComparer)));
                 lambdaComparer_ = lambdaComparer;
             }
 

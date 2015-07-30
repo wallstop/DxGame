@@ -7,7 +7,6 @@ using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Components.Advanced
@@ -65,16 +64,15 @@ namespace DXGame.Core.Components.Advanced
             return this;
         }
 
-        public override void Draw(DxGameTime gameTime)
+        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            spriteBatch_.Draw(texture_, position_.Position.ToVector2(), null, Color.White, 0.0f, Vector2.Zero, 1.0f,
+            spriteBatch.Draw(texture_, position_.Position.ToVector2(), null, Color.White, 0.0f, Vector2.Zero, 1.0f,
                 SpriteEffects.None, 0);
         }
 
         public override void Initialize()
         {
-            Validate.IsNotNull(DxGame.Content,
-                $"Cannot initialize {GetType()} with a null/default {typeof (ContentManager)}");
+            Validate.IsNotNull(DxGame.Content, StringUtils.GetFormattedNullOrDefaultMessage(this, DxGame.Content));
             texture_ = DxGame.Content.Load<Texture2D>(assetName_);
             // Assign boundingBox to be the shape of the texture only if it hasn't been custom-set
             // TODO: Change to an isLoaded bool flag / state

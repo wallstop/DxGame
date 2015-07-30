@@ -1,6 +1,6 @@
 ﻿using DXGame.Core.Wrappers;
 
-namespace DXGame.Core.Behavior
+namespace DXGame.Core.State
 {
     /* Will be called for a State's update method */
 

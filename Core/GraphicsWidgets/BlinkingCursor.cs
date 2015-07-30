@@ -82,7 +82,7 @@ namespace DXGame.Core.GraphicsWidgets
             base.Update(gameTime);
         }
 
-        public override void Draw(DxGameTime gameTime)
+        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             // Only draw ourselves if we're in our "Drawn" state
             if (Check.IsNullOrDefault(Texture))
@@ -93,7 +93,7 @@ namespace DXGame.Core.GraphicsWidgets
 
             if (Drawn)
             {
-                spriteBatch_.Draw(Texture, Origin);
+                spriteBatch.Draw(Texture, Origin);
             }
         }
     }

@@ -47,7 +47,7 @@ namespace DXGame.Main
         public Rectangle Screen { get; protected set; }
         public SpriteBatch SpriteBatch { get; private set; }
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
-        public ComponentCollection DxComponents { get; private set; }
+        public GameElementCollection DxGameElements { get; private set; }
         // TODO: Thread safety? Move this to some kind of Context static class?
         public static DxGame Instance => singleton_.Value;
         public double TargetFps => 60.0;
@@ -102,7 +102,7 @@ namespace DXGame.Main
             // LOL VSYNC
             graphics.SynchronizeWithVerticalRetrace = false;
 
-            DxComponents = new ComponentCollection();
+            DxGameElements = new GameElementCollection();
             Content.RootDirectory = "Content";
         }
 
@@ -131,7 +131,7 @@ namespace DXGame.Main
         public void AddAndInitializeComponent(Component component)
         {
             component.Initialize();
-            DxComponents.Add(component);
+            DxGameElements.Add(component);
         }
 
         public void AddAndInitializeComponents(params Component[] components)
@@ -144,12 +144,9 @@ namespace DXGame.Main
 
         public void AddAndInitializeGameObjects(IEnumerable<GameObject> gameObjects)
         {
-            foreach (
-                var component in
-                    gameObjects.Select(gameObject => gameObject.Components)
-                        .SelectMany(components => components))
+            foreach (var gameObject in gameObjects)
             {
-                AddAndInitializeComponent(component);
+                AddAndInitializeGameObject(gameObject);
             }
         }
 
@@ -159,19 +156,21 @@ namespace DXGame.Main
             {
                 AddAndInitializeComponent(component);
             }
+            DxGameElements.Add(gameObject);
         }
 
         public void RemoveGameObject(GameObject gameObject)
         {
             foreach (var component in gameObject.Components)
             {
-                DxComponents.Remove(component);
+                DxGameElements.Remove(component);
             }
+            DxGameElements.Remove(gameObject);
         }
 
         public void RemoveComponent(Component component)
         {
-            DxComponents.Remove(component);
+            DxGameElements.Remove(component);
         }
 
         // TODO: Figure out a better way to remove shit from the game
@@ -246,10 +245,9 @@ namespace DXGame.Main
 
             // Should probably thread this... but wait until we have perf testing :)
             networkModel.ReceiveData(dxGameTime);
-            List<Component> currentComponents = new List<Component>(DxComponents.Components());
-            foreach (Component component in currentComponents)
+            foreach (var processable in DxGameElements.Processables)
             {
-                component.Process(dxGameTime);
+                processable.Process(dxGameTime);
             }
             networkModel.SendData(dxGameTime);
             base.Update(gameTime);
@@ -262,9 +260,9 @@ namespace DXGame.Main
         protected override void Draw(GameTime gameTime)
         {
             var dxGameTime = new DxGameTime(gameTime);
-            foreach (DrawableComponent drawable in DxComponents.Drawables())
+            foreach (var drawable in DxGameElements.Drawables)
             {
-                drawable.Draw(dxGameTime);
+                drawable.Draw(SpriteBatch, dxGameTime);
             }
             base.Draw(gameTime);
         }

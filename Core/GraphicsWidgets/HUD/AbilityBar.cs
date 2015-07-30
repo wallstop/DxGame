@@ -1,5 +1,6 @@
 ﻿using DXGame.Core.Wrappers;
 using DXGame.Main;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.GraphicsWidgets.HUD
 {
@@ -14,7 +15,7 @@ namespace DXGame.Core.GraphicsWidgets.HUD
         {
         }
 
-        public override void Draw(DxGameTime gameTime)
+        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             throw new System.NotImplementedException();
         }

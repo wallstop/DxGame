@@ -14,7 +14,7 @@ namespace DXGame.Core.Components.Advanced.Player
 {
     // Should not be serialized
 
-    // TODO: Move pretty much all of this into the basic player Behavior
+    // TODO: Move pretty much all of this into the basic player StateMachine
     public class SimplePlayerInputComponent : Component
     {
         protected EntityPropertiesComponent EntityProperties;

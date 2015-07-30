@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DXGame.Core.Components.Basic
+namespace DXGame.Core.Utils
 {
     /**
     <summary>

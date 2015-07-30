@@ -4,6 +4,7 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.GraphicsWidgets.HUD
 {
@@ -21,9 +22,9 @@ namespace DXGame.Core.GraphicsWidgets.HUD
             stopWatch_ = Stopwatch.StartNew();
         }
 
-        public override void Draw(DxGameTime gameTime)
+        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            TimeSpan timeStamp = gameTime.TotalGameTime;
+            var timeStamp = gameTime.TotalGameTime;
             UpdateFrameCount();
 
             if ((timeStamp - oneSecond_) > lastUpdated_)

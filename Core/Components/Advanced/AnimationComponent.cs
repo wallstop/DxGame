@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using DXGame.Core.Behavior;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.State;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Components.Advanced
 {
@@ -14,32 +15,34 @@ namespace DXGame.Core.Components.Advanced
     [DataContract]
     public class AnimationComponent : DrawableComponent
     {
-        [DataMember] private readonly Dictionary<State, Animation> states_ = new Dictionary<State, Animation>();
-        [DataMember] protected Behavior.Behavior behavior_;
-        [DataMember] protected PositionalComponent position_;
+        [DataMember] private readonly Dictionary<State.State, Animation> states_ =
+            new Dictionary<State.State, Animation>();
 
-        public AnimationComponent(DxGame game)
-            : base(game)
+        [DataMember]
+        public PositionalComponent Position { get; protected set; }
+
+        [DataMember]
+        public StateMachine StateMachine { get; protected set; }
+
+        private AnimationComponent(DxGame game, StateMachine stateMachine, PositionalComponent position) : base(game)
         {
+            Validate.IsNotNullOrDefault(stateMachine, StringUtils.GetFormattedNullOrDefaultMessage(this, stateMachine));
+            Validate.IsNotNullOrDefault(position, StringUtils.GetFormattedNullOrDefaultMessage(this, position));
+            StateMachine = stateMachine;
+            Position = position;
         }
 
-        public AnimationComponent WithPosition(PositionalComponent position)
+        public static AnimationComponentBuilder Builder()
         {
-            Validate.IsNotNullOrDefault(position, StringUtils.GetFormattedNullDefaultMessage(this, position));
-            position_ = position;
-            return this;
+            return new AnimationComponentBuilder();
         }
 
-        public AnimationComponent WithBehavior(Behavior.Behavior behavior)
+        public void AddAnimation(State.State state, string assetName)
         {
-            Validate.IsNotNullOrDefault(behavior, StringUtils.GetFormattedNullDefaultMessage(this, behavior));
-            behavior_ = behavior;
-            return this;
-        }
-
-        public void AddAnimation(string state, string assetName)
-        {
-            var animation = new Animation(assetName).WithPosition(position_);
+            Validate.IsNotNullOrDefault(state, $"Cannot add a null {nameof(state)} to a {nameof(AnimationComponent)}");
+            Validate.IsFalse(states_.ContainsKey(state),
+                StringUtils.GetFormattedAlreadyContainsMessage(this, state, states_.Keys));
+            var animation = new Animation(assetName).WithPosition(Position);
             states_.Add(state, animation);
         }
 
@@ -59,24 +62,41 @@ namespace DXGame.Core.Components.Advanced
             }
         }
 
-        public override void Draw(DxGameTime gameTime)
+        public override void Draw(SpriteBatch spritebatch, DxGameTime gameTime)
         {
-            var currentState = state_.State;
-            if (lastState_ != currentState && states_.ContainsKey(currentState))
+            var currentState = StateMachine.CurrentState;
+            var animation = states_[currentState];
+            animation.Draw(spritebatch, gameTime);
+        }
+
+        public class AnimationComponentBuilder : IBuilder<AnimationComponent>
+        {
+            private DxGame game_;
+            private PositionalComponent position_;
+            private StateMachine stateMachine_;
+
+            public AnimationComponent Build()
             {
-                states_[lastState_].Reset();
-                lastState_ = currentState;
+                return new AnimationComponent(game_, stateMachine_, position_);
             }
 
-            states_[lastState_].Draw(spriteBatch_);
-
-            // TODO: Do timing based on gameTime
-            if (lastState_ != state_.State)
+            public AnimationComponentBuilder WithDxGame(DxGame game)
             {
-                states_[lastState_].Reset();
+                game_ = game;
+                return this;
             }
-            states_[state_.State].Draw(spriteBatch_);
-            lastState_ = state_.State;
+
+            public AnimationComponentBuilder WithPosition(PositionalComponent position)
+            {
+                position_ = position;
+                return this;
+            }
+
+            public AnimationComponentBuilder WithStateMachine(StateMachine stateMachine)
+            {
+                stateMachine_ = stateMachine;
+                return this;
+            }
         }
     }
 }

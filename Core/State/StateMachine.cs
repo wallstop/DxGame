@@ -5,9 +5,9 @@ using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 
-namespace DXGame.Core.Behavior
+namespace DXGame.Core.State
 {
-    public class Behavior : Component
+    public class StateMachine : Component
     {
         public State InitialState { get; }
         public State CurrentState { get; private set; }
@@ -17,8 +17,8 @@ namespace DXGame.Core.Behavior
             get
             {
                 /* Breadth-first state graph traversal to determine number of States in state graph */
-                Queue<State> statesToVisit = new Queue<State>();
-                HashSet<State> seenStates = new HashSet<State>();
+                var statesToVisit = new Queue<State>();
+                var seenStates = new HashSet<State>();
                 statesToVisit.Enqueue(InitialState);
 
                 do
@@ -37,12 +37,10 @@ namespace DXGame.Core.Behavior
             }
         }
 
-        public Behavior(DxGame game, State initialState) : base(game)
+        public StateMachine(DxGame game, State initialState) : base(game)
         {
-            Validate.IsNotNull(game, $"Cannot create a {nameof(Behavior)} with a null{typeof (DxGame)}");
-            Validate.IsNotNullOrDefault(initialState,
-                $"Cannot create a {nameof(Behavior)} with a null {nameof(initialState)}");
-
+            Validate.IsNotNull(game, $"Cannot create a {nameof(StateMachine)} with a null{typeof (DxGame)}");
+            Validate.IsNotNullOrDefault(initialState, StringUtils.GetFormattedNullOrDefaultMessage(this, initialState));
             InitialState = initialState;
             Reset();
         }
@@ -59,32 +57,32 @@ namespace DXGame.Core.Behavior
             CurrentState = InitialState;
         }
 
-        public static BehaviorBuilder Builder()
+        public static StateMachineBuilder Builder()
         {
-            return new BehaviorBuilder();
+            return new StateMachineBuilder();
         }
 
-        public class BehaviorBuilder
+        public class StateMachineBuilder : IBuilder<StateMachine>
         {
             private DxGame game_;
             private State initialState_;
 
-            public BehaviorBuilder WithDxGame(DxGame game)
+            public StateMachine Build()
+            {
+                /* Rely on validation inside StateMachine to null-check inputs */
+                return new StateMachine(game_, initialState_);
+            }
+
+            public StateMachineBuilder WithDxGame(DxGame game)
             {
                 game_ = game;
                 return this;
             }
 
-            public BehaviorBuilder WithInitialState(State initialState)
+            public StateMachineBuilder WithInitialState(State initialState)
             {
                 initialState_ = initialState;
                 return this;
-            }
-
-            public Behavior Build()
-            {
-                /* Rely on validation inside Behavior to null-check inputs */
-                return new Behavior(game_, initialState_);
             }
         }
     }

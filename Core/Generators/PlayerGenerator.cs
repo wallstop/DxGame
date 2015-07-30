@@ -4,7 +4,6 @@ using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Player;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
-using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
@@ -25,7 +24,6 @@ namespace DXGame.Core.Generators
         private readonly SimplePlayerInputComponent input_;
         private readonly PhysicsComponent physics_;
         private readonly EntityPropertiesComponent playerProperties_;
-        private readonly PlayerStateComponent state_;
         private readonly WeaponComponent weapon_;
         public SpatialComponent PlayerSpace { get; }
 
@@ -44,14 +42,12 @@ namespace DXGame.Core.Generators
 
             playerProperties_ = PlayerPropertiesComponent.DefaultPlayerProperties;
             playerProperties_.Health.CurrentValue -= 5;
-            state_ = new PlayerStateComponent(game);
-            AddPlayerStates();
-            animation_ = new AnimationComponent(game).WithPosition(PlayerSpace).WithState(state_);
-            AddPlayerAnimations();
+            // TODO: Need to add state machine in (how?)
+            animation_ = AnimationComponent.Builder().WithDxGame(game).WithPosition(PlayerSpace).Build();
+            // TODO Make sure animation component works 
             weapon_ = new RangedWeaponComponent(game).WithPhysicsComponent(physics_).WithDamage(50);
             input_ =
                 new SimplePlayerInputComponent(game).WithPhysics(physics_)
-                    .WithPlayerState(state_)
                     .WithWeapon(weapon_)
                     .WithPlayerProperties(playerProperties_);
             // TODO
@@ -63,27 +59,12 @@ namespace DXGame.Core.Generators
         public override List<GameObject> Generate()
         {
             var objects = new List<GameObject>();
-            var player = new GameObject();
-            player.WithComponents(PlayerSpace, physics_, animation_, input_, state_, weapon_,
+            var playerBuilder = GameObject.Builder();
+            playerBuilder.WithComponents(PlayerSpace, physics_, animation_, input_, weapon_,
                 playerProperties_, healthBar_);
+            var player = playerBuilder.Build();
             objects.Add(player);
             return objects;
-        }
-
-        private void AddPlayerStates()
-        {
-            Validate.IsNotNullOrDefault(state_,
-                $"StateComponent cannot be null/default during AddPlayerStates for {GetType()}");
-            state_.AddStates("None", "Walking_Left", "Walking_Right", "Jumping");
-        }
-
-        private void AddPlayerAnimations()
-        {
-            Validate.IsNotNull(animation_, "AnimationComponent cannot be null during AddPlayerAnimations");
-            animation_.AddAnimation("None", PLAYER_NONE);
-            animation_.AddAnimation("Walking_Left", PLAYER_WALKING_LEFT);
-            animation_.AddAnimation("Walking_Right", PLAYER_WALKING_RIGHT);
-            animation_.AddAnimation("Jumping", PLAYER_JUMPING);
         }
     }
 }

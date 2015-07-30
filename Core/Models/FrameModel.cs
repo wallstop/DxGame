@@ -20,8 +20,7 @@ namespace DXGame.Core.Models
 
         public FrameModel WithFrameRetention(TimeSpan timespan)
         {
-            Validate.IsNotNullOrDefault(timespan,
-                $"Cannot initialize {GetType()} with a null/default FrameRetention policy");
+            Validate.IsNotNullOrDefault(timespan, StringUtils.GetFormattedNullOrDefaultMessage(this, timespan));
             FrameRetention = timespan;
             return this;
         }

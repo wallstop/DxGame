@@ -11,6 +11,7 @@ using DXGame.Core.Wrappers;
 using DXGame.Main;
 using log4net;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Models
 {
@@ -192,10 +193,10 @@ namespace DXGame.Core.Models
             return ObjectsAndSpatialsInRange(range).Select(element => element.Value);
         }
 
-        public override void Draw(DxGameTime gameTime)
+        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             var screenRegion = DxGame.ScreenRegion;
-            // ... why do we inverse?
+            // ... why do we inverse? WHO CARES
             screenRegion.X = -screenRegion.X;
             screenRegion.Y = -screenRegion.Y;
 
@@ -203,10 +204,10 @@ namespace DXGame.Core.Models
             var drawables = GameObjectUtils.ComponentsOfType<DrawableComponent>(mapObjects);
             foreach (DrawableComponent component in drawables)
             {
-                component.Draw(gameTime);
+                component.Draw(spriteBatch, gameTime);
             }
 
-            base.Draw(gameTime);
+            base.Draw(spriteBatch, gameTime);
         }
 
         public override void Initialize()

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DXGame.Core.Utils
 {
@@ -7,20 +8,25 @@ namespace DXGame.Core.Utils
         public static byte[] GetBytes(string input)
         {
             byte[] bytes = new byte[input.Length * sizeof (char)];
-            System.Buffer.BlockCopy(input.ToCharArray(), 0, bytes, 0, bytes.Length);
+            Buffer.BlockCopy(input.ToCharArray(), 0, bytes, 0, bytes.Length);
             return bytes;
         }
 
         public static string GetString(byte[] bytes)
         {
             char[] characters = new char[bytes.Length / sizeof (char)];
-            System.Buffer.BlockCopy(bytes, 0, characters, 0, bytes.Length);
+            Buffer.BlockCopy(bytes, 0, characters, 0, bytes.Length);
             return new string(characters);
         }
 
-        public static string GetFormattedNullDefaultMessage<T, U>(T instance, U argument)
+        public static string GetFormattedNullOrDefaultMessage<T>(Type type, T argument)
         {
-            return $"Cannot initialize a {typeof (T)} with a null/default {typeof (U)}";
+            return $"Cannot initialize a {type} with a null/default {typeof (T)}";
+        }
+
+        public static string GetFormattedNullOrDefaultMessage<T, U>(T instance, U argument)
+        {
+            return GetFormattedNullOrDefaultMessage(typeof (T), argument);
         }
 
         public static string GetFormattedAlreadyContainsMessage<T, U>(T instance, U argument, IEnumerable<U> collection)

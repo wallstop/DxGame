@@ -1,12 +1,12 @@
-﻿using DXGame.Core.Behavior;
-using DXGame.Core.Components.Advanced.Position;
+﻿using DXGame.Core.Components.Advanced.Position;
+using DXGame.Core.State;
 using DXGame.Main;
 
 namespace DXGame.TowerGame.Behaviors
 {
     public class SimpleBehaviorFactory
     {
-        public static Behavior SimpleActivePlayerProximityTriggerFollow(DxGame game, PositionalComponent position)
+        public static StateMachine SimpleActivePlayerProximityTriggerFollow(DxGame game, PositionalComponent position)
         {
             /* 
                 TODO: How do we build generic Behaviors? IE, have a behavior that is 
@@ -36,7 +36,7 @@ namespace DXGame.TowerGame.Behaviors
             //idleState.WithTransition(idleToFollowTransition);
             //followState.WithTransition(followToIdleTransition);
 
-            //Behavior activePlayerFollowBehavior = new Behavior(idleState);
+            //StateMachine activePlayerFollowBehavior = new StateMachine(idleState);
             //return activePlayerFollowBehavior;
         }
     }

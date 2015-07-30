@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using DXGame.Core.Behavior;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.State;
@@ -12,18 +11,18 @@ namespace DXGame.TowerGame.Behaviors
     {
         private static readonly float INITIAL_MOVEMENT_BOOST = 1.5f;
 
-        public static Behavior BasicPlayerBehavior(DxGame game)
+        public static StateMachine BasicPlayerBehavior(DxGame game)
         {
             return null;
         }
 
-        private static Behavior.BehaviorBuilder BasicPlayerBehaviorBuilder(DxGame game, Core.Player player)
+        private static StateMachine.StateMachineBuilder BasicPlayerBehaviorBuilder(DxGame game, Core.Player player)
         {
             /* 
-                WTF Behavior creation BLOWWWWWWWWWS. Figure out some way to automate this / 
+                WTF StateMachine creation BLOWWWWWWWWWS. Figure out some way to automate this / 
                 make wiring things up SIGNFICANTLY less painful 
             */
-            var behaviorBuilder = Behavior.Builder();
+            var behaviorBuilder = StateMachine.Builder();
             behaviorBuilder.WithDxGame(game);
 
             var idleState = IdleState(player);
@@ -185,7 +184,7 @@ namespace DXGame.TowerGame.Behaviors
                     .Build();
         }
 
-        public static Behavior GeruvahBehavior(DxGame game)
+        public static StateMachine GeruvahBehavior(DxGame game)
         {
             // TODO
             return null;

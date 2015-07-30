@@ -8,6 +8,7 @@ namespace DXGame.Core
     public enum UpdatePriority
     {
         GAME_OBJECT = -150, /* Game Objects need to update before all else so their message queues are swapped */
+        INPUT = -130,
         PHYSICS = -100,
         STATE = 0,
         HIGH = 1,

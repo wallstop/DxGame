@@ -1,6 +1,7 @@
 ﻿using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Components.Basic
 {
@@ -12,7 +13,7 @@ namespace DXGame.Core.Components.Basic
             DrawPriority = DrawPriority.INIT_SPRITEBATCH;
         }
 
-        public override void Draw(DxGameTime gameTime)
+        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             // TODO: Change this ugly color
             DxGame.GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -20,7 +21,7 @@ namespace DXGame.Core.Components.Basic
             DxRectangle screen = DxGame.ScreenRegion;
 
             Matrix cameraShift = Matrix.CreateTranslation(screen.X, screen.Y, 0);
-            spriteBatch_.Begin(0, null, null, null, null, null, cameraShift);
+            spriteBatch.Begin(0, null, null, null, null, null, cameraShift);
         }
     }
 }

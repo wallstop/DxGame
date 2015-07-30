@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core
 {
@@ -19,7 +20,7 @@ namespace DXGame.Core
     public interface IDrawable : IComparable<IDrawable>
     {
         DrawPriority DrawPriority { get; }
-        void Draw(DxGameTime gameTime);
+        void Draw(SpriteBatch spriteBatch, DxGameTime gameTime);
     }
 
     public static class Drawable

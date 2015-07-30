@@ -2,7 +2,7 @@
 using DXGame.Core.Utils;
 using log4net;
 
-namespace DXGame.Core.Behavior
+namespace DXGame.Core.State
 {
     public class State
     {
@@ -50,12 +50,28 @@ namespace DXGame.Core.Behavior
             return Name;
         }
 
-        public class StateBuilder
+        public class StateBuilder : IBuilder<State>
         {
             private readonly List<Transition> transitions_ = new List<Transition>();
             private Action action_;
             private string name_;
             private Presentation presentation_;
+
+            public State Build()
+            {
+                Validate.IsNotNullOrDefault(action_,
+                    $"Cannot create a {nameof(State)} with a null/default {nameof(action_)}");
+                Validate.IsNotNullOrDefault(presentation_,
+                    $"Cannot create a {nameof(State)} with a null/default) {nameof(presentation_)}");
+                Validate.IsNotNullOrDefault(name_,
+                    $"Cannot create a {nameof(State)} with a null/default/empty {nameof(name_)}");
+                if (transitions_.Count == 0)
+                {
+                    LOG.Info($"Creating {nameof(State)} ({name_}) without any transitions");
+                }
+
+                return new State(transitions_, name_, action_, presentation_);
+            }
 
             public StateBuilder WithTransition(Transition transition)
             {
@@ -83,22 +99,6 @@ namespace DXGame.Core.Behavior
             {
                 name_ = name;
                 return this;
-            }
-
-            public State Build()
-            {
-                Validate.IsNotNullOrDefault(action_,
-                    $"Cannot create a {nameof(State)} with a null/default {nameof(action_)}");
-                Validate.IsNotNullOrDefault(presentation_,
-                    $"Cannot create a {nameof(State)} with a null/default) {nameof(presentation_)}");
-                Validate.IsNotNullOrDefault(name_,
-                    $"Cannot create a {nameof(State)} with a null/default/empty {nameof(name_)}");
-                if (transitions_.Count == 0)
-                {
-                    LOG.Info($"Creating {nameof(State)} ({name_}) without any transitions");
-                }
-
-                return new State(transitions_, name_, action_, presentation_);
             }
         }
     }

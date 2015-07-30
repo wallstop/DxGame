@@ -31,7 +31,7 @@ namespace DXGame.Core.Models
             FocalPoint = playerGenerator.PlayerSpace;
             var player = playerGenerator.Generate().First();
 
-            var activePlayer = Player.PlayerFrom(player);
+            var activePlayer = Player.PlayerFrom(player, "Player1");
             // TODO
             //var playerModel = new PlayerModel(DxGame).WithActivePlayer(activePlayer);
             //DxGame.AttachModel(playerModel);

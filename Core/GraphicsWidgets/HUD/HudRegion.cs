@@ -4,6 +4,7 @@ using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.GraphicsWidgets.HUD
 {
@@ -55,7 +56,7 @@ namespace DXGame.Core.GraphicsWidgets.HUD
             return skillAreas;
         }
 
-        public override void Draw(DxGameTime gameTime)
+        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             var totalTime = gameTime.TotalGameTime;
             if (totalTime >= skillAreaLastUpdated_.Add(SKILL_CHECK_DELAY))

@@ -128,20 +128,20 @@ namespace DXGame.Core.GraphicsWidgets
             return this;
         }
 
-        public override void Draw(DxGameTime gameTime)
+        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             // TODO: Come up with a better validation scheme. Do a boolean check?
             Validate.IsNotNullOrDefault(SpatialComponent, "Can't use a TextBox without a spatial component!");
             Validate.IsNotNullOrDefault(SpriteFont, "Can't use a TextBox without a sprite font!");
             Validate.IsNotNullOrDefault(Texture, "Can't use a TextBox without a Texture!");
 
-            spriteBatch_.Draw(Texture, SpatialComponent.Position.ToVector2());
-            spriteBatch_.DrawString(SpriteFont, Text, SpatialComponent.Position.ToVector2(), TextColor);
+            spriteBatch.Draw(Texture, SpatialComponent.Position.ToVector2());
+            spriteBatch.DrawString(SpriteFont, Text, SpatialComponent.Position.ToVector2(), TextColor);
 
             // TODO: Change this to some kind of focused-style state, possible set via the owner
             if (InFocus)
             {
-                blinkingCursor_.Draw(gameTime);
+                blinkingCursor_.Draw(spriteBatch, gameTime);
             }
         }
 

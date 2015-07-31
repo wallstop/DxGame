@@ -39,7 +39,6 @@ namespace DXGame.Core.State
 
         public StateMachine(DxGame game, State initialState) : base(game)
         {
-            Validate.IsNotNull(game, $"Cannot create a {nameof(StateMachine)} with a null{typeof (DxGame)}");
             Validate.IsNotNullOrDefault(initialState, StringUtils.GetFormattedNullOrDefaultMessage(this, initialState));
             InitialState = initialState;
             Reset();
@@ -47,7 +46,8 @@ namespace DXGame.Core.State
 
         protected override void Update(DxGameTime gameTime)
         {
-            CurrentState = CurrentState.Transitions.First(transition => transition.ShouldTransition(DxGame, gameTime))
+            CurrentState = CurrentState.Transitions.FirstOrDefault(
+                transition => transition.ShouldTransition(DxGame, gameTime))
                 ?.State ?? CurrentState;
             CurrentState.Action(gameTime);
         }

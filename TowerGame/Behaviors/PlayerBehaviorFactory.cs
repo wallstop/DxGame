@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using DXGame.Core.Components.Advanced;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.State;
@@ -16,24 +17,35 @@ namespace DXGame.TowerGame.Behaviors
             return null;
         }
 
-        private static StateMachine.StateMachineBuilder BasicPlayerBehaviorBuilder(DxGame game, Core.Player player)
+        private static StateMachine BasicPlayerStateBuilder(DxGame game,
+            AnimationComponent.AnimationComponentBuilder animation, Core.Player player)
         {
             /* 
                 WTF StateMachine creation BLOWWWWWWWWWS. Figure out some way to automate this / 
                 make wiring things up SIGNFICANTLY less painful 
+
+                TODO: Clean this the hell up
             */
-            var behaviorBuilder = StateMachine.Builder();
-            behaviorBuilder.WithDxGame(game);
+            var stateMachineBuilder = StateMachine.Builder();
+            stateMachineBuilder.WithDxGame(game);
 
             var idleState = IdleState(player);
-            var behavior = behaviorBuilder.WithInitialState(idleState).Build();
+            // TODO: Figure out how to make this generic / modular
+            animation.WithStateAndAsset(idleState, "PlayerNone");
+            var stateMachine = stateMachineBuilder.WithInitialState(idleState).Build();
 
             var moveLeftState = MoveLeftState(player);
+            animation.WithStateAndAsset(moveLeftState, "PlayerWalkingLeft");
             var moveRightState = MoveRightState(player);
+            animation.WithStateAndAsset(moveRightState, "PlayerWalkingRight");
             var initialJumpState = BeginningJumpState(player);
+            animation.WithStateAndAsset(initialJumpState, "PlayerJumping");
             var jumpingLeftState = JumpingLeftState(player);
+            animation.WithStateAndAsset(jumpingLeftState, "PlayerJumping");
             var jumpingRightState = JumpingRightState(player);
+            animation.WithStateAndAsset(jumpingRightState, "PlayerJumping");
             var jumpingState = JumpState(player);
+            animation.WithStateAndAsset(jumpingState, "PlayerJumping");
 
             Trigger moveLeftTrigger =
                 (dxGame, gameTime) =>
@@ -61,9 +73,20 @@ namespace DXGame.TowerGame.Behaviors
             jumpingLeftState.Transitions.Add(jumpRightTransition);
             jumpingRightState.Transitions.Add(jumpRightTransition);
 
+            Trigger jumpTrigger =
+                (dxGame, gameTime) =>
+                    dxGame.Model<InputModel>().Events.Any(keyEvent => keyEvent.Key == dxGame.Controls.Jump);
+            var jumpTransition = new Transition(jumpTrigger, initialJumpState, Priority.HIGH);
+            moveLeftState.Transitions.Add(jumpTransition);
+            moveRightState.Transitions.Add(jumpTransition);
+            idleState.Transitions.Add(jumpTransition);
+
+            Trigger initialToRealJumpTrigger = (dxGame, gameTime) => true;
+            initialJumpState.Transitions.Add(new Transition(initialToRealJumpTrigger, jumpingState));
+
             var idleTrigger = new Trigger((dxGame, gameTime) => !dxGame.Model<InputModel>().Events.Any());
-            var idleMoveTransition = new Transition(idleTrigger, idleState);
-            var idleJumpTransition = new Transition(idleTrigger, jumpingState);
+            var idleMoveTransition = new Transition(idleTrigger, idleState, Priority.LOW);
+            var idleJumpTransition = new Transition(idleTrigger, jumpingState, Priority.LOW);
             idleState.Transitions.Add(idleMoveTransition);
             moveLeftState.Transitions.Add(idleMoveTransition);
             moveRightState.Transitions.Add(idleMoveTransition);
@@ -71,13 +94,24 @@ namespace DXGame.TowerGame.Behaviors
             jumpingLeftState.Transitions.Add(idleJumpTransition);
             jumpingRightState.Transitions.Add(idleJumpTransition);
 
-            // TODO
-
-            behavior.RegisterMessageHandler(typeof (CollisionMessage), message =>
+            Trigger belowCollisionTrigger = (dxGame, gameTime) =>
             {
-                // TODO
-            });
-            return null;
+                if (stateMachine.Parent == null)
+                {
+                    return false;
+                }
+
+                var collisions = stateMachine.Parent.CurrentMessages.OfType<CollisionMessage>();
+                return collisions.Any(collision => collision.CollisionDirections.Contains(CollisionDirection.South));
+            };
+            var jumpToIdleTransition = new Transition(belowCollisionTrigger, idleState, Priority.HIGH);
+
+            jumpingLeftState.Transitions.Add(jumpToIdleTransition);
+            jumpingRightState.Transitions.Add(jumpToIdleTransition);
+            jumpingState.Transitions.Add(jumpToIdleTransition);
+
+
+            return stateMachine;
         }
 
         private static State IdleState(Core.Player player)
@@ -85,7 +119,7 @@ namespace DXGame.TowerGame.Behaviors
             return State.Builder()
                 .WithName("Idle")
                 .WithAction(gameTime => player.Physics.Velocity = new DxVector2(0, player.Physics.Velocity.Y))
-                .WithPresentation(player.Animation.Draw).Build();
+                .Build();
         }
 
         private static State MoveLeftState(Core.Player player)
@@ -94,7 +128,6 @@ namespace DXGame.TowerGame.Behaviors
                 State.Builder()
                     .WithName("Moving Left")
                     .WithAction(MoveLeftAction(player))
-                    .WithPresentation(player.Animation.Draw)
                     .Build();
         }
 
@@ -122,7 +155,6 @@ namespace DXGame.TowerGame.Behaviors
                 State.Builder()
                     .WithName("Moving Right")
                     .WithAction(MoveRightAction(player))
-                    .WithPresentation(player.Animation.Draw)
                     .Build();
         }
 
@@ -133,7 +165,7 @@ namespace DXGame.TowerGame.Behaviors
                 player.Physics.Velocity = new DxVector2(player.Physics.Velocity.X, 0);
                 player.Physics.Acceleration = new DxVector2(player.Physics.Acceleration.X,
                     -player.Properties.JumpSpeed.CurrentValue);
-            }).WithPresentation(player.Animation.Draw).Build();
+            }).Build();
         }
 
         private static State JumpState(Core.Player player)
@@ -142,7 +174,6 @@ namespace DXGame.TowerGame.Behaviors
                 State.Builder()
                     .WithName("Jumping")
                     .WithAction(gameTime => { })
-                    .WithPresentation(player.Animation.Draw)
                     .Build();
         }
 
@@ -170,7 +201,6 @@ namespace DXGame.TowerGame.Behaviors
                 State.Builder()
                     .WithName("Jumping Left")
                     .WithAction(MoveLeftAction(player))
-                    .WithPresentation(player.Animation.Draw)
                     .Build();
         }
 
@@ -180,14 +210,13 @@ namespace DXGame.TowerGame.Behaviors
                 State.Builder()
                     .WithName("Jumping Right")
                     .WithAction(MoveRightAction(player))
-                    .WithPresentation(player.Animation.Draw)
                     .Build();
         }
 
-        public static StateMachine GeruvahBehavior(DxGame game)
+        public static StateMachine GevurahBehavior(DxGame game,
+            AnimationComponent.AnimationComponentBuilder animationBuilder, Core.Player player)
         {
-            // TODO
-            return null;
+            return BasicPlayerStateBuilder(game, animationBuilder, player);
         }
     }
 }

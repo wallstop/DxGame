@@ -20,6 +20,7 @@ namespace DXGame.Core
         public SortedList(IComparer<T> comparer)
         {
             Validate.IsNotNull(comparer, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(comparer)));
+            list_ = new List<T>();
             comparer_ = comparer;
         }
 

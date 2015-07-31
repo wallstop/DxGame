@@ -90,7 +90,7 @@ namespace DXGame.Core.Components.Basic
         }
 
         [DataMember]
-        public UniqueId Id => new UniqueId();
+        public UniqueId Id { get; } = new UniqueId();
 
         [DataMember]
         public UpdatePriority UpdatePriority { protected set; get; }
@@ -123,7 +123,7 @@ namespace DXGame.Core.Components.Basic
         public override bool Equals(object other)
         {
             var rhs = other as Component;
-            return rhs != null && Id.Equals(other);
+            return rhs != null && Id.Equals(rhs.Id);
         }
 
         public void HandleMessage(Message message)
@@ -191,9 +191,9 @@ namespace DXGame.Core.Components.Basic
 
         public virtual void Remove()
         {
-            Parent.RemoveComponent(this);
+            Parent?.RemoveComponent(this);
             Parent = null;
-            DxGame.RemoveComponent(this);
+            DxGame?.RemoveComponent(this);
             DxGame = null;
         }
 

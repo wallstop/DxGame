@@ -10,15 +10,13 @@ namespace DXGame.Core.State
         public ICollection<Transition> Transitions { get; }
         public string Name { get; }
         public Action Action { get; }
-        public Presentation Presentation { get; }
 
-        private State(ICollection<Transition> transitions, string name, Action action, Presentation presentation)
+        private State(ICollection<Transition> transitions, string name, Action action)
         {
             Validate.IsNotNullOrDefault(name, $"Cannot create a {nameof(State)} with a null name");
             Name = name;
-            Transitions = new HashSet<Transition>();
+            Transitions = new SortedList<Transition>();
             Action = action;
-            Presentation = presentation;
         }
 
         public State WithTransition(Transition transition)
@@ -55,14 +53,12 @@ namespace DXGame.Core.State
             private readonly List<Transition> transitions_ = new List<Transition>();
             private Action action_;
             private string name_;
-            private Presentation presentation_;
 
             public State Build()
             {
                 Validate.IsNotNullOrDefault(action_,
                     $"Cannot create a {nameof(State)} with a null/default {nameof(action_)}");
-                Validate.IsNotNullOrDefault(presentation_,
-                    $"Cannot create a {nameof(State)} with a null/default) {nameof(presentation_)}");
+
                 Validate.IsNotNullOrDefault(name_,
                     $"Cannot create a {nameof(State)} with a null/default/empty {nameof(name_)}");
                 if (transitions_.Count == 0)
@@ -70,7 +66,7 @@ namespace DXGame.Core.State
                     LOG.Info($"Creating {nameof(State)} ({name_}) without any transitions");
                 }
 
-                return new State(transitions_, name_, action_, presentation_);
+                return new State(transitions_, name_, action_);
             }
 
             public StateBuilder WithTransition(Transition transition)
@@ -84,14 +80,6 @@ namespace DXGame.Core.State
                 Validate.IsNull(action_,
                     $"Cannot assign a {nameof(action)} to a Builder with an already assigned {nameof(action)}");
                 action_ = action;
-                return this;
-            }
-
-            public StateBuilder WithPresentation(Presentation presentation)
-            {
-                Validate.IsNull(presentation_,
-                    $"Cannot assign a {nameof(presentation)} to a Builder with an already assigned {nameof(presentation)}");
-                presentation_ = presentation;
                 return this;
             }
 

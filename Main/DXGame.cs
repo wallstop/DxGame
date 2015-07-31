@@ -51,6 +51,8 @@ namespace DXGame.Main
         // TODO: Thread safety? Move this to some kind of Context static class?
         public static DxGame Instance => singleton_.Value;
         public double TargetFps => 60.0;
+        public GameElementCollection NewGameElements { get; } = new GameElementCollection();
+        public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
 
         public DxRectangle ScreenRegion
         {
@@ -131,7 +133,7 @@ namespace DXGame.Main
         public void AddAndInitializeComponent(Component component)
         {
             component.Initialize();
-            DxGameElements.Add(component);
+            NewGameElements.Add(component);
         }
 
         public void AddAndInitializeComponents(params Component[] components)
@@ -156,21 +158,21 @@ namespace DXGame.Main
             {
                 AddAndInitializeComponent(component);
             }
-            DxGameElements.Add(gameObject);
+            NewGameElements.Add(gameObject);
         }
 
         public void RemoveGameObject(GameObject gameObject)
         {
             foreach (var component in gameObject.Components)
             {
-                DxGameElements.Remove(component);
+                RemovedGameElements.Add(component);
             }
-            DxGameElements.Remove(gameObject);
+            RemovedGameElements.Add(gameObject);
         }
 
         public void RemoveComponent(Component component)
         {
-            DxGameElements.Remove(component);
+            RemovedGameElements.Add(component);
         }
 
         // TODO: Figure out a better way to remove shit from the game
@@ -205,6 +207,10 @@ namespace DXGame.Main
 
             var netModel = new NetworkModel(this);
             AttachModel(netModel);
+
+            var inputModel = new InputModel(this);
+            AttachModel(inputModel);
+
             base.Initialize();
         }
 
@@ -216,6 +222,20 @@ namespace DXGame.Main
         protected override void UnloadContent()
         {
             base.UnloadContent();
+        }
+
+        private void UpdateElements()
+        {
+            foreach (var newGameElement in NewGameElements)
+            {
+                DxGameElements.Add(newGameElement);
+            }
+            NewGameElements.Clear();
+            foreach (var removedGameElement in RemovedGameElements)
+            {
+                DxGameElements.Remove(removedGameElement);
+            }
+            RemovedGameElements.Clear();
         }
 
         /// <summary>
@@ -245,11 +265,13 @@ namespace DXGame.Main
 
             // Should probably thread this... but wait until we have perf testing :)
             networkModel.ReceiveData(dxGameTime);
+            /* We may end up modifying these as we iterate over them, so take an immutable copy */
             foreach (var processable in DxGameElements.Processables)
             {
                 processable.Process(dxGameTime);
             }
             networkModel.SendData(dxGameTime);
+            UpdateElements();
             base.Update(gameTime);
         }
 
@@ -260,6 +282,7 @@ namespace DXGame.Main
         protected override void Draw(GameTime gameTime)
         {
             var dxGameTime = new DxGameTime(gameTime);
+            /* We may end up modifying these as we iterate over them, so take an immutable copy */
             foreach (var drawable in DxGameElements.Drawables)
             {
                 drawable.Draw(SpriteBatch, dxGameTime);

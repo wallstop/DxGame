@@ -1,5 +1,4 @@
-﻿using DXGame.Core.Models;
-using DXGame.Core.Wrappers;
+﻿using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -23,16 +22,13 @@ namespace DXGame.Core.Menus
                     .WithSpace(new DxRectangle(400, 400, 100, 100));
             MenuItems.Add(play);
 
-            var inputModel = new InputModel(DxGame);
-            DxGame.AttachModel(inputModel);
-
             base.Initialize();
         }
 
         private void PlayAction()
         {
-            Remove();
             DxGame.AddAndInitializeComponent(new PlayMenu(DxGame));
+            Remove();
         }
     }
 }

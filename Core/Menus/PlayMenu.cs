@@ -39,20 +39,20 @@ namespace DXGame.Core.Menus
 
         private void SinglePlayerAction()
         {
-            Remove();
             DxGame.AttachModel(new GameModel(DxGame));
+            Remove();
         }
 
         private void HostMultiplayer()
         {
-            Remove();
             DxGame.AddAndInitializeComponent(new HostMultiplayerMenu(DxGame));
+            Remove();
         }
 
         private void JoinMultiplayer()
         {
-            Remove();
             DxGame.AddAndInitializeComponent(new JoinMultiplayerMenu(DxGame));
+            Remove();
         }
     }
 }

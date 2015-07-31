@@ -69,6 +69,7 @@ namespace DXGame.Core
             Validate.IsNotNull(component, StringUtils.GetFormattedNullOrDefaultMessage(this, component));
             Validate.IsFalse(components_.Contains(component),
                 $"Cannot add a {typeof (Component)} that already exists to a {typeof (GameObject)} ");
+            component.Parent = this;
             components_.Add(component);
         }
 
@@ -77,6 +78,7 @@ namespace DXGame.Core
             if (components_.Contains(component))
             {
                 components_.Remove(component);
+                component.Parent = null;
             }
         }
 

@@ -125,7 +125,6 @@
     <Compile Include="Core\Components\Advanced\Position\BoundedSpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\Physics\MapCollideablePhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\Position\SpatialComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Player\SimplePlayerInputComponent.cs" />
     <Compile Include="Core\Components\Advanced\Position\PositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
     <Compile Include="Core\Utils\GameElementCollection.cs" />
@@ -329,6 +328,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\Behavior\" />
+    <Folder Include="Core\Components\Advanced\Player\" />
     <Folder Include="Core\Skills\" />
     <Folder Include="Network\" />
     <Folder Include="TowerGame\Buffs\" />

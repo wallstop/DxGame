@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DXGame.Core.Utils
 {
@@ -11,7 +13,8 @@ namespace DXGame.Core.Utils
     </summary>
     */
 
-    public class GameElementCollection /* Should we deal with having this implement the ICollection interface? */
+    public class GameElementCollection : IEnumerable
+        /* Should we deal with having this implement the ICollection interface? */
     {
         private readonly ICollection<IDrawable> drawables_ = new SortedList<IDrawable>(Drawable.DefaultComparer);
         /* 
@@ -27,6 +30,28 @@ namespace DXGame.Core.Utils
         public int Count => processables_.Count;
         public IEnumerable<IProcessable> Processables => processables_;
         public IEnumerable<IDrawable> Drawables => drawables_;
+
+        public IEnumerator GetEnumerator()
+        {
+            // TODO: Make this not suck
+            var allOwnedElements = new HashSet<object>();
+            foreach (var processable in processables_.Where(processable => !allOwnedElements.Contains(processable)))
+            {
+                allOwnedElements.Add(processable);
+            }
+            foreach (var drawable in drawables_.Where(drawable => !allOwnedElements.Contains(drawable)))
+            {
+                allOwnedElements.Add(drawable);
+            }
+
+            return allOwnedElements.GetEnumerator();
+        }
+
+        public void Clear()
+        {
+            processables_.Clear();
+            drawables_.Clear();
+        }
 
         public void Add(object component)
         {

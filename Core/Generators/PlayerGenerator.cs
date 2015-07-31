@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Physics;
-using DXGame.Core.Components.Advanced.Player;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
+using DXGame.TowerGame.Behaviors;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Generators
@@ -19,9 +19,8 @@ namespace DXGame.Core.Generators
         private const string PLAYER_JUMPING = "PlayerJumping";
         private const string PLAYER_2 = "Player2";
         private static readonly DxVector2 MAX_VELOCITY = new DxVector2(5.0f, 20.0f);
-        private readonly AnimationComponent animation_;
+        private readonly DxGame game_;
         private readonly FloatingHealthIndicator healthBar_;
-        private readonly SimplePlayerInputComponent input_;
         private readonly PhysicsComponent physics_;
         private readonly EntityPropertiesComponent playerProperties_;
         private readonly WeaponComponent weapon_;
@@ -43,26 +42,30 @@ namespace DXGame.Core.Generators
             playerProperties_ = PlayerPropertiesComponent.DefaultPlayerProperties;
             playerProperties_.Health.CurrentValue -= 5;
             // TODO: Need to add state machine in (how?)
-            animation_ = AnimationComponent.Builder().WithDxGame(game).WithPosition(PlayerSpace).Build();
+
             // TODO Make sure animation component works 
             weapon_ = new RangedWeaponComponent(game).WithPhysicsComponent(physics_).WithDamage(50);
-            input_ =
-                new SimplePlayerInputComponent(game).WithPhysics(physics_)
-                    .WithWeapon(weapon_)
-                    .WithPlayerProperties(playerProperties_);
+
             // TODO
             healthBar_ = new FloatingHealthIndicator(game, new DxVector2(-10, -10), Color.Green,
                 Color.Aquamarine, playerProperties_, PlayerSpace);
             healthBar_.LoadContent();
+            game_ = game;
         }
 
         public override List<GameObject> Generate()
         {
             var objects = new List<GameObject>();
             var playerBuilder = GameObject.Builder();
-            playerBuilder.WithComponents(PlayerSpace, physics_, animation_, input_, weapon_,
+            playerBuilder.WithComponents(PlayerSpace, physics_, weapon_,
                 playerProperties_, healthBar_);
             var player = playerBuilder.Build();
+            var animationBuilder = AnimationComponent.Builder().WithDxGame(game_).WithPosition(PlayerSpace);
+            var playerStateMachine = PlayerBehaviorFactory.GevurahBehavior(game_, animationBuilder,
+                Player.PlayerFrom(player, "Gevurah"));
+            animationBuilder.WithStateMachine(playerStateMachine);
+            player.AttachComponent(playerStateMachine);
+            player.AttachComponent(animationBuilder.Build());
             objects.Add(player);
             return objects;
         }

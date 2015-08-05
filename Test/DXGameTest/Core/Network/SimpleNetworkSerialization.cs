@@ -34,7 +34,7 @@ namespace DXGameTest.Core.Network
             physics_ =
                 new MapCollideablePhysicsComponent(game_).WithSpatialComponent(
                     (SpatialComponent) spatial_);
-            gameObject_ = new GameObject().WithComponents(spatial_, sprite_, physics_);
+            gameObject_ = GameObject.Builder().WithComponents(spatial_, sprite_, physics_).Build();
         }
 
         [Test]

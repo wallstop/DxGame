@@ -4,8 +4,8 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using log4net;
 using Microsoft.Xna.Framework;
+using NLog;
 
 namespace DXGame.Core.Components.Advanced.Position
 {
@@ -13,7 +13,7 @@ namespace DXGame.Core.Components.Advanced.Position
     [DataContract]
     public class BoundedSpatialComponent : SpatialComponent
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (BoundedSpatialComponent));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         [DataMember] protected DxVector2 xBounds_;
         [DataMember] protected DxVector2 yBounds_;
         public DxVector2 XBounds => xBounds_;

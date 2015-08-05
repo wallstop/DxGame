@@ -3,13 +3,13 @@ using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using NLog;
 
 namespace DXGame.Core.Utils
 {
     public static class SpriteBatchUtils
     {
-        private static readonly log4net.ILog LOG =
-            log4net.LogManager.GetLogger(typeof (SpriteBatchUtils));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
         public static void DrawBorder(DxGame game, DxRectangle rectangle, int borderThickness, Color borderColor)
         {
@@ -24,7 +24,7 @@ namespace DXGame.Core.Utils
             IEnumerable<Rectangle> borderRectangles = GenerateBorderRectangles(rectangle, borderThickness);
             foreach (Rectangle borderRectangle in borderRectangles)
             {
-                spriteBatch.Draw(texture: pixel, destinationRectangle: borderRectangle);
+                spriteBatch.Draw(pixel, destinationRectangle: borderRectangle);
             }
         }
 

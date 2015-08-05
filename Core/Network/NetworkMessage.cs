@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
-using log4net;
 using Lidgren.Network;
+using NLog;
 
 namespace DXGame.Core.Network
 {
@@ -18,7 +18,7 @@ namespace DXGame.Core.Network
     [DataContract]
     public class NetworkMessage
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (NetworkMessage));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
         [DataMember]
         public MessageType MessageType { get; set; }
@@ -35,8 +35,8 @@ namespace DXGame.Core.Network
             {
                 // TODO: Log metrics on this
                 var logMessage =
-                    $"Could not create a {typeof(NetworkMessage)} for type {typeString}, something went horribly wrong.";
-                LOG.Error(logMessage, e);
+                    $"Could not create a {typeof (NetworkMessage)} for type {typeString}, something went horribly wrong.";
+                LOG.Error(e, logMessage);
                 Debug.Assert(false, logMessage);
                 return new NetworkMessage();
             }

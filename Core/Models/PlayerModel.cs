@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using log4net;
+using NLog;
 
 namespace DXGame.Core.Models
 {
@@ -11,7 +11,7 @@ namespace DXGame.Core.Models
     [Serializable]
     public class PlayerModel : Model
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (PlayerModel));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
         [DataMember]
         public Player ActivePlayer { get; private set; }

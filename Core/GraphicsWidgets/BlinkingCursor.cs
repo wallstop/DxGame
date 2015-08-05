@@ -4,15 +4,15 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using log4net;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using NLog;
 
 namespace DXGame.Core.GraphicsWidgets
 {
     public class BlinkingCursor : DrawableComponent
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (BlinkingCursor));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         public Vector2 Origin { get; set; }
         public float Width { get; protected set; }
         public float Height { get; protected set; }

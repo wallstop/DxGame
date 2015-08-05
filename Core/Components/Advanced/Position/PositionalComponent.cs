@@ -4,7 +4,7 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using log4net;
+using NLog;
 
 namespace DXGame.Core.Components.Advanced.Position
 {
@@ -31,7 +31,7 @@ namespace DXGame.Core.Components.Advanced.Position
     [DataContract]
     public class PositionalComponent : Component
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (PositionalComponent));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         [DataMember] protected DxVector2 position_;
         /**
         <summary>

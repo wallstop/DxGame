@@ -1,14 +1,13 @@
 ﻿using System;
 using DXGame.Core.Wrappers;
 using Microsoft.Xna.Framework;
+using NLog;
 
 namespace DXGame.Core.Utils
 {
     public static class VectorUtils
     {
-        private static readonly log4net.ILog LOG =
-            log4net.LogManager.GetLogger(typeof (VectorUtils));
-
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         /**
         <summary>
             Given a vector, a minimum value, and a maximum value, constrains both the x and y component of the vector to be within [min, max]

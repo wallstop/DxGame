@@ -1,5 +1,4 @@
 -Get multiple players set up in terms of the game engine + network
--Switch loggers to NLOG (HOLY COW SO AWESOME)
 -Work with Holden to get some basic animations for a character in place. See if we can also get some sample environment pieces.
 	-Integrate them. The sooner we see the art in game, the better we can give feedback
 -Come up with some character designs. "Hadrien" or something. Simple backstories and motivations.
@@ -33,5 +32,4 @@
 -Design a level-to-level interconnect. Right now we load from a menu into the game, then from there...? We need to be able to transition levels. Come up with a way to do this.
 -Start thinking about / designing the "database of things". If we want to have dynamic enemy behaviour, we need a way to quanitify player behavior so that we can feed our algorithm with "stuff". This should be an initial DB thinking + way of getting info there.
 -Start thinking about damage / health / death. A player should be able to die + trigger a death animation + trigger "something that happens when players die". Level restart? Main menu? Dead screen ("YOU ARE DED LOL")? idk
-
--Game started being slightly shitty in debug mode, do another perf run to figure out some optimization wins
+-Fix test project build errors

@@ -6,16 +6,16 @@ using DXGame.Core.Input;
 using DXGame.Core.Models;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using log4net;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using NLog;
 
 namespace DXGame.Core.Menus
 {
     public class HostMultiplayerMenu : Menu
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (HostMultiplayerMenu));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         protected TextBox PortBox { get; set; }
 
         public HostMultiplayerMenu(DxGame game)
@@ -93,7 +93,7 @@ namespace DXGame.Core.Menus
             }
             catch (Exception e)
             {
-                LOG.Error("Could not format port", e);
+                LOG.Error(e, "Could not format port");
             }
 
             config.Port = port;

@@ -5,8 +5,8 @@ using DXGame.Core.Network;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using log4net;
 using Lidgren.Network;
+using NLog;
 
 namespace DXGame.Core.Components.Network
 {
@@ -19,13 +19,9 @@ namespace DXGame.Core.Components.Network
 
     public class NetworkClient : NetworkComponent
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (NetworkClient));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         protected NetworkClientConfig ClientConfig { get; set; }
-
-        public NetClient ClientConnection
-        {
-            get { return Connection as NetClient; }
-        }
+        public NetClient ClientConnection => Connection as NetClient;
 
         public NetworkClient(DxGame game)
             : base(game)

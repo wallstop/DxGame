@@ -5,9 +5,9 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using log4net;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using NLog;
 
 namespace DXGame.Core.Components.Advanced
 {
@@ -18,7 +18,7 @@ namespace DXGame.Core.Components.Advanced
     {
         private const int HEALTH_BAR_PIXEL_HEIGHT = 5;
         private const int HEALTH_BAR_PIXEL_WIDTH = 75;
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (FloatingHealthIndicator));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         protected Color backgroundColor_;
         protected Texture2D backgroundTexture_;
         protected EntityPropertiesComponent entityProperties_;

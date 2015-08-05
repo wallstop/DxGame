@@ -5,7 +5,7 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using log4net;
+using NLog;
 
 namespace DXGame.Core.Components.Basic
 {
@@ -64,7 +64,7 @@ namespace DXGame.Core.Components.Basic
     [DataContract]
     public abstract class Component : IIdentifiable, IComparable<Component>, IProcessable
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (Component));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         [DataMember] private readonly List<Updater> postProcessors_ = new List<Updater>();
         [DataMember] private readonly List<Updater> preProcessors_ = new List<Updater>();
         [NonSerialized] [IgnoreDataMember] public DxGame DxGame;

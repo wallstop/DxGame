@@ -9,7 +9,7 @@ using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using log4net;
+using NLog;
 
 namespace DXGame.Core.Components.Advanced.Physics
 {
@@ -17,7 +17,7 @@ namespace DXGame.Core.Components.Advanced.Physics
     [DataContract]
     public class MapCollideablePhysicsComponent : PhysicsComponent
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (MapCollideablePhysicsComponent));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private static readonly DxRectangleAreaComparer DXRECTANGLE_AREA_COMPARER = new DxRectangleAreaComparer();
         private DxRectangle Space => ((SpatialComponent) position_).Space;
         private DxVector2 Dimensions => ((SpatialComponent) position_).Dimensions;

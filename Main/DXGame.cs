@@ -8,10 +8,10 @@ using DXGame.Core.Models;
 using DXGame.Core.Settings;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
-using log4net;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using NLog;
 using Model = DXGame.Core.Models.Model;
 
 namespace DXGame.Main
@@ -38,7 +38,7 @@ namespace DXGame.Main
     /// </summary>
     public class DxGame : Game
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (DxGame));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
         private static readonly Lazy<DxGame> singleton_ =
             new Lazy<DxGame>(() => new DxGame());

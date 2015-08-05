@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using log4net;
+using NLog;
 
 namespace DXGame.Core.Properties
 {
@@ -10,7 +10,7 @@ namespace DXGame.Core.Properties
     [DataContract]
     public sealed class Property<T>
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (Property<T>));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         // TODO: Figure out how to properly serialize / hide name
         [DataMember] public readonly string Name;
 

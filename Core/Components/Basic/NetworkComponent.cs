@@ -5,8 +5,8 @@ using DXGame.Core.Network;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using log4net;
 using Lidgren.Network;
+using NLog;
 
 namespace DXGame.Core.Components.Basic
 {
@@ -18,7 +18,7 @@ namespace DXGame.Core.Components.Basic
     {
         public delegate void DeMarshall(NetworkMessage message, NetConnection connection);
 
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (NetworkComponent));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private NetPeer connection_;
         /*
             Make sure you know what you're doing when you get/set this. 
@@ -60,7 +60,7 @@ namespace DXGame.Core.Components.Basic
                 }
                 catch (Exception e)
                 {
-                    LOG.Error("Caught an exception while attempting to abort a connection listener", e);
+                    LOG.Error(e, "Caught an exception while attempting to abort a connection listener");
                 }
 
                 connection_ = value;

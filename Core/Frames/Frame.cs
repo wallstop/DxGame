@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Wrappers;
-using log4net;
+using NLog;
 
 namespace DXGame.Core.Frames
 {
@@ -10,7 +10,7 @@ namespace DXGame.Core.Frames
     [DataContract]
     public class Frame
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (Frame));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
         [DataMember] private readonly Dictionary<UniqueId, IIdentifiable> frameObjects_ =
             new Dictionary<UniqueId, IIdentifiable>();

@@ -3,14 +3,14 @@ using System.Diagnostics;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using log4net;
 using Microsoft.Xna.Framework.Graphics;
+using NLog;
 
 namespace DXGame.Core.GraphicsWidgets.HUD
 {
     public class FpsTracker : DrawableComponent
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (FpsTracker));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private readonly SortedList<TimeSpan> frameTimes_ = new SortedList<TimeSpan>();
         private readonly TimeSpan oneSecond_ = TimeSpan.FromSeconds(1);
         private readonly Stopwatch stopWatch_;

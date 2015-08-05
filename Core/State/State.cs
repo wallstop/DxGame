@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using DXGame.Core.Utils;
-using log4net;
+using NLog;
 
 namespace DXGame.Core.State
 {
     public class State
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (State));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         public ICollection<Transition> Transitions { get; }
         public string Name { get; }
         public Action Action { get; }

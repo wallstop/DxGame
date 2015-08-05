@@ -8,11 +8,7 @@ namespace DXGame.Core
     public abstract class GameComponentCollection : GameComponent
     {
         public List<GameComponent> Components { get; set; }
-
-        public DxGame DxGame
-        {
-            get { return (DxGame) Game; }
-        }
+        public DxGame DxGame => (DxGame) Game;
 
         protected GameComponentCollection(DxGame game) : base(game)
         {

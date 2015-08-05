@@ -5,7 +5,7 @@ using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using log4net;
+using NLog;
 
 namespace DXGame.Core.Generators
 {
@@ -23,7 +23,7 @@ namespace DXGame.Core.Generators
         private const char LINE_FEED = (char) 10;
         private const char CARRIAGE_RETURN = (char) 13;
         private const int BLOCK_WIDTH = 50;
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (MapGenerator));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private readonly DxGame game_;
         private readonly List<GameObject> map_;
         private DxVector2 playerPosition_;

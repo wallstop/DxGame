@@ -1,7 +1,7 @@
 ﻿using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
-using log4net;
 using Microsoft.Xna.Framework.Graphics;
+using NLog;
 
 namespace DXGame.Core.Menus
 {
@@ -9,7 +9,7 @@ namespace DXGame.Core.Menus
     {
         public delegate void MenuAction();
 
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (MenuItem));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         public string Text { get; set; }
         public MenuAction Action { get; set; }
         public DxRectangle Space { get; set; }

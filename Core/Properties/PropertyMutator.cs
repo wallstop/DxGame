@@ -91,9 +91,9 @@ namespace DXGame.Core.Properties
             MutatePriority priority = MutatePriority.Medium)
         {
             // TODO: Remove these or do property validation checks
-            Validate.IsNotNull(mutator, $"Cannot initialize {GetType()} with a null mutator");
-            Validate.IsNotNull(demutator, $"Cannot intialize {GetType()} with a null demutator");
-            Validate.IsNotNullOrDefault(name, $"Cannot initialize {GetType()} with a null/default name");
+            Validate.IsNotNull(mutator, $"Cannot initialize {GetType()} with a null {nameof(mutator)}");
+            Validate.IsNotNull(demutator, $"Cannot intialize {GetType()} with a null {nameof(demutator)}");
+            Validate.IsNotNullOrDefault(name, $"Cannot initialize {GetType()} with a null/default {nameof(name)}");
             mutator_ = mutator;
             deMutator_ = demutator;
             Name = name;

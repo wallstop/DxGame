@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
 using DXGame.Core.Utils;
-using log4net;
+using NLog;
 
 namespace DXGame.Core.Settings
 {
@@ -11,7 +11,7 @@ namespace DXGame.Core.Settings
     [Serializable]
     public abstract class AbstractSettings<T> : IPersistable<T> where T : IPersistable<T>
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (AbstractSettings<T>));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         public abstract string Path { get; }
         public abstract T DefaultSettings { get; }
         public abstract T CurrentSettings { get; }
@@ -28,8 +28,8 @@ namespace DXGame.Core.Settings
             }
             catch (Exception e)
             {
-                LOG.Error($"Caught unexpected exception while loading settings file for {typeof (T)} at {Path}",
-                    e);
+                LOG.Error(e, $"Caught unexpected exception while loading settings file for {typeof (T)} at {Path}"
+                    );
                 loadedSettings = DefaultSettings;
                 DefaultSettings.Save();
             }
@@ -48,7 +48,7 @@ namespace DXGame.Core.Settings
             }
             catch (Exception e)
             {
-                LOG.Error($"Caught unexpected exception while saving {typeof (T)} {this} at {Path}", e);
+                LOG.Error(e, $"Caught unexpected exception while saving {typeof (T)} {this} at {Path}");
             }
         }
 

@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
-using log4net;
+using NLog;
 
 namespace DXGame.Core.Settings
 {
@@ -16,7 +16,7 @@ namespace DXGame.Core.Settings
     [Serializable]
     public class GameSettings : AbstractSettings<GameSettings>
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (GameSettings));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private static readonly double HUD_HEIGHT_SCALE = 0.3;
         private static readonly double HUD_WIDTH_SCALE = 1.0;
         [DataMember] public Scale HudScale;

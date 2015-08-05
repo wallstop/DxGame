@@ -220,9 +220,6 @@
     <Reference Include="Lidgren.Network">
       <HintPath>packages\Lidgren.Network.2012.2.15.2\lib\net45\Lidgren.Network.dll</HintPath>
     </Reference>
-    <Reference Include="log4net">
-      <HintPath>packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="MonoGame.Framework, Version=3.4.0.459, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MonoGame.Framework.WindowsDX.3.4.0.459\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
@@ -322,6 +319,12 @@
     <None Include="Content\Fonts\SpriteFonts\ComicSans.spriteFont" />
     <None Include="Content\Fonts\SpriteFonts\Gungsuh.spriteFont" />
     <None Include="Content\Fonts\SpriteFonts\Pericles.spriteFont" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

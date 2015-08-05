@@ -9,9 +9,9 @@ using DXGame.Core.Generators;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using log4net;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using NLog;
 
 namespace DXGame.Core.Models
 {
@@ -27,7 +27,7 @@ namespace DXGame.Core.Models
     [DataContract]
     public class MapModel : Model
     {
-        private static readonly ILog LOG = LogManager.GetLogger(typeof (MapModel));
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         [DataMember] private readonly int blockSize_;
         [DataMember] private readonly KeyValuePair<GameObject, SpatialComponent>[,] map_;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DXGame.Core.Utils;
+using DXGame.Core.Utils.Distance;
 using DXGame.Core.Wrappers;
 using Microsoft.Xna.Framework.Graphics;
 

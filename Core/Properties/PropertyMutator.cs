@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
+using DXGame.Core.Utils.Distance;
 
 namespace DXGame.Core.Properties
 {

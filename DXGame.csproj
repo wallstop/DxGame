@@ -107,6 +107,7 @@
     <Compile Include="Core\Components\Advanced\SkillComponent.cs" />
     <Compile Include="Core\IDrawable.cs" />
     <Compile Include="Core\IProcessable.cs" />
+    <Compile Include="Core\Models\CollisionModel.cs" />
     <Compile Include="Core\State\Action.cs" />
     <Compile Include="Core\State\StateMachine.cs" />
     <Compile Include="Core\State\Presentation.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="Core\Components\Advanced\Position\SpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\Position\PositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
+    <Compile Include="Core\Utils\Distance\Distance.cs" />
     <Compile Include="Core\Utils\GameElementCollection.cs" />
     <Compile Include="Core\Components\Basic\DrawableComponent.cs" />
     <Compile Include="Core\Components\Basic\NetworkComponent.cs" />
@@ -198,6 +200,7 @@
     <Compile Include="Core\Utils\GameObjectUtils.cs" />
     <Compile Include="Core\Utils\GenericUtils.cs" />
     <Compile Include="Core\Utils\IBuilder.cs" />
+    <Compile Include="Core\Utils\Distance\QuadTree.cs" />
     <Compile Include="Core\Utils\LambdaUtils.cs" />
     <Compile Include="Core\Utils\MathUtils.cs" />
     <Compile Include="Core\Utils\SpriteBatchUtils.cs" />

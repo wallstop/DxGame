@@ -92,6 +92,16 @@ namespace DXGame.Core.Wrappers
             return lhs;
         }
 
+        public static double DistanceBetween(DxVector2 lhs, DxVector2 rhs)
+        {
+            return Math.Sqrt(DistanceBetweenSquared(lhs, rhs));
+        }
+
+        public static double DistanceBetweenSquared(DxVector2 lhs, DxVector2 rhs)
+        {
+            return Math.Pow(rhs.X - lhs.X, 2) + Math.Pow(rhs.Y - lhs.Y, 2);
+        }
+
         public static bool operator ==(DxVector2 lhs, DxVector2 rhs)
         {
             return lhs.X.Equals(rhs.X) && lhs.Y.Equals(rhs.Y);

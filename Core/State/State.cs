@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DXGame.Core.Utils;
+using DXGame.Core.Utils.Distance;
 using NLog;
 
 namespace DXGame.Core.State
@@ -15,7 +16,7 @@ namespace DXGame.Core.State
         {
             Validate.IsNotNullOrDefault(name, $"Cannot create a {nameof(State)} with a null name");
             Name = name;
-            Transitions = new SortedList<Transition>();
+            Transitions = new SortedList<Transition>(transitions);
             Action = action;
         }
 

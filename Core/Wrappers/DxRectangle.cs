@@ -14,41 +14,17 @@ namespace DXGame.Core.Wrappers
         [DataMember] public float Width;
         [DataMember] public float X;
         [DataMember] public float Y;
-
-        public float Area
-        {
-            get { return Width * Height; }
-        }
-
-        public DxRectangle EmptyRectangle
-        {
-            get { return new DxRectangle(); }
-        }
-
-        public float Left
-        {
-            get { return X; }
-        }
-
-        public float Right
-        {
-            get { return X + Width; }
-        }
-
-        public float Top
-        {
-            get { return Y; }
-        }
-
-        public float Bottom
-        {
-            get { return Y + Height; }
-        }
-
-        public Point Center
-        {
-            get { return new Point((int) ((X + Width) / 2), (int) ((Y + Height) / 2)); }
-        }
+        public float Area => Width * Height;
+        public DxRectangle EmptyRectangle => new DxRectangle();
+        public float Left => X;
+        public float Right => X + Width;
+        public float Top => Y;
+        public float Bottom => Y + Height;
+        public Point Center => new Point((int) ((X + Width) / 2), (int) ((Y + Height) / 2));
+        public DxRectangle QuadrantOne => new DxRectangle(X + Width / 2, Y, Width / 2, Height / 2);
+        public DxRectangle QuadrantTwo => new DxRectangle(X, Y, Height / 2, Width / 2);
+        public DxRectangle QuadrantThree => new DxRectangle(X, Y + Height / 2, Width / 2, Height / 2);
+        public DxRectangle QuadrantFour => new DxRectangle(X + Width / 2, Y + Height / 2, Width / 2, Height / 2);
 
         public DxRectangle(Vector2 x, Vector2 y) : this()
         {
@@ -130,6 +106,11 @@ namespace DXGame.Core.Wrappers
                 return y < (Y + Height);
             }
             return false;
+        }
+
+        public bool Contains(DxVector2 point)
+        {
+            return Contains(point.X, point.Y);
         }
 
         public bool Contains(Vector2 point)

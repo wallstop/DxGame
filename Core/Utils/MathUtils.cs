@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using NLog;
 
 namespace DXGame.Core.Utils
 {
@@ -15,7 +14,6 @@ namespace DXGame.Core.Utils
     {
         private const float floatTolerance_ = 0.00001f;
         private const double doubleTolerance_ = 0.0000001;
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         public static float FloatTolerance => floatTolerance_;
         public static double DoubleTolerance => doubleTolerance_;
         /**

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DxGameUtils.Core;
 
 namespace DxGameUtils
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
+            TextFileToMapImageConverter.Convert("Content/Map/SimpleMap.txt", "Content/Generated/");
         }
     }
 }

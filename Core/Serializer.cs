@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization.Json;
+using System.Text;
 using DXGame.Core.Utils;
 
 namespace DXGame.Core
@@ -51,6 +52,13 @@ namespace DXGame.Core
         public static T JsonDeserialize(string data)
         {
             return JsonDeserialize(StringUtils.GetBytes(data));
+        }
+
+        public static void WriteToJsonFile(T input, string path)
+        {
+            var json = JsonSerialize(input);
+            var jsonAsText = Encoding.Default.GetString(json);
+            File.WriteAllText(path, jsonAsText);
         }
     }
 }

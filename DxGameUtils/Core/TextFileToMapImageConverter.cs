@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using DXGame.Core;
 using DXGame.Core.Map;
 using DXGame.Core.Wrappers;
 
@@ -26,7 +29,8 @@ namespace DxGameUtils.Core
             {'O', new Bitmap("Content/Map/Blocks/OrangeBlock.png")}
         };
 
-        public static void Convert(string pathToTextFile, string outputDirectory)
+        public static void Convert(string pathToTextFile, string outputDirectory, string mapName = "Generated.map",
+            string descriptorName = "GeneratedMapDescriptor.mdtr")
         {
             List<string> fileContents = new List<string>();
 
@@ -42,13 +46,14 @@ namespace DxGameUtils.Core
             int width = fileContents.Max(line => line.Length) * BLOCK_SIZE;
             int height = fileContents.Count * BLOCK_SIZE;
 
-            MapDescriptor descriptor = new MapDescriptor {Size = new DxRectangle(0, 0, width, height)};
+            MapDescriptor descriptor = new MapDescriptor {Size = new DxRectangle(0, 0, width, height), Asset = mapName};
 
             using (Bitmap bitmap = new Bitmap(width, height))
             {
                 using (Graphics graphics = Graphics.FromImage(bitmap))
                 {
                     graphics.Clear(Color.WhiteSmoke);
+                    graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
                     for (int y = 0; y < fileContents.Count; ++y)
                     {
@@ -76,13 +81,19 @@ namespace DxGameUtils.Core
                             }
 
                             descriptor.Platforms.Add(block);
-
-                            // TODO: Rest of this (image creation & saving, map + map descriptor saving)
                         }
-
-                        //using (
                     }
+                    graphics.Save();
                 }
+
+                if (!Directory.Exists(outputDirectory))
+                {
+                    Directory.CreateDirectory(outputDirectory);
+                }
+                // WTFFF
+                bitmap.Save(outputDirectory + mapName, ImageFormat.Png);
+                Serializer<MapDescriptor>.WriteToJsonFile(descriptor, outputDirectory + descriptorName);
             }
         }
     }
+}

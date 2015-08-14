@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Text;
 using DXGame.Core.Utils;
 using NLog;
 
@@ -42,9 +41,7 @@ namespace DXGame.Core.Settings
         {
             try
             {
-                var json = Serializer<T>.JsonSerialize(CurrentSettings);
-                var jsonAsText = Encoding.Default.GetString(json);
-                File.WriteAllText(Path, jsonAsText);
+                Serializer<T>.WriteToJsonFile(CurrentSettings, Path);
             }
             catch (Exception e)
             {

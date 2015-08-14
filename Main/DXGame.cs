@@ -144,6 +144,14 @@ namespace DXGame.Main
             }
         }
 
+        public void AddAndInitializeComponents(IEnumerable<Component> components)
+        {
+            foreach (var component in components)
+            {
+                AddAndInitializeComponent(component);
+            }
+        }
+
         public void AddAndInitializeGameObjects(IEnumerable<GameObject> gameObjects)
         {
             foreach (var gameObject in gameObjects)

@@ -108,9 +108,11 @@
     <Compile Include="Core\GraphicsWidgets\Utils\QuadTreeWidget.cs" />
     <Compile Include="Core\IDrawable.cs" />
     <Compile Include="Core\IProcessable.cs" />
+    <Compile Include="Core\Map\Map.cs" />
     <Compile Include="Core\Map\MapDescriptor.cs" />
     <Compile Include="Core\Map\Platform.cs" />
     <Compile Include="Core\Models\CollisionModel.cs" />
+    <Compile Include="Core\Models\MapModelv2.cs" />
     <Compile Include="Core\State\Action.cs" />
     <Compile Include="Core\State\StateMachine.cs" />
     <Compile Include="Core\State\Presentation.cs" />

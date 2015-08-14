@@ -9,6 +9,8 @@ namespace DXGame.Core.Map
     [DataContract]
     public class MapDescriptor
     {
+        public static string Extension => ".mdtr";
+
         [DataMember]
         public string Asset { get; set; }
 

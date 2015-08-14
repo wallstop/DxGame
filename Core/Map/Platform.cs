@@ -13,10 +13,19 @@ namespace DXGame.Core.Map
         Right = 3
     }
 
+    public enum PlatformType
+    {
+        Block,
+        Ladder
+    }
+
     [Serializable]
     [DataContract]
     public class Platform
     {
+        [DataMember]
+        public PlatformType Type { get; set; } = PlatformType.Block;
+
         [DataMember]
         public DxRectangle BoundingBox { get; set; }
 

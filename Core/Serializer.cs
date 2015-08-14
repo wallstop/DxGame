@@ -54,6 +54,13 @@ namespace DXGame.Core
             return JsonDeserialize(StringUtils.GetBytes(data));
         }
 
+        public static T ReadFromJsonFile(string path)
+        {
+            var settingsAsText = File.ReadAllText(path);
+            var settingsAsJsonByteArray = StringUtils.GetBytes(settingsAsText);
+            return JsonDeserialize(settingsAsJsonByteArray);
+        }
+
         public static void WriteToJsonFile(T input, string path)
         {
             var json = JsonSerialize(input);

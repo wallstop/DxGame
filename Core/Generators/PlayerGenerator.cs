@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Generators
 {
-    public class PlayerGenerator : Generator<GameObject>
+    public class PlayerGenerator
     {
         // TODO: Make player sprites scalable
         private const string PLAYER_NONE = "PlayerNone";
@@ -53,7 +53,7 @@ namespace DXGame.Core.Generators
             game_ = game;
         }
 
-        public override List<GameObject> Generate()
+        public List<GameObject> Generate()
         {
             var objects = new List<GameObject>();
             var playerBuilder = GameObject.Builder();

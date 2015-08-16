@@ -46,8 +46,6 @@ namespace DXGame.Core.Map
                                     platform.BoundingBox.Height)).WithPosition(new DxVector2(platform.BoundingBox.XY())))
                     .ToList();
 
-            DxGame.AddAndInitializeComponents(mapSpatials);
-
             Collidables = new QuadTree<CollidableComponent>((spatial => spatial.Center), MapDescriptor.Size,
                 mapSpatials);
             DeterminePlayerSpawn();

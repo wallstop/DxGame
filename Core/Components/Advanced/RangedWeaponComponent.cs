@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Physics;
-using DXGame.Core.Components.Advanced.Position;
-using DXGame.Core.Models;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
@@ -76,6 +74,7 @@ namespace DXGame.Core.Components.Advanced
 
         private void DoAttack()
         {
+            /*
             // TODO: Remove all of this code, it's just for "live-testing"
             var mapModel = DxGame.Model<MapModel>();
             var bounds = mapModel.MapBounds;
@@ -97,6 +96,7 @@ namespace DXGame.Core.Components.Advanced
             var projectile = GameObject.Builder().WithComponents(space, physics, sprite, destructible).Build();
 
             DxGame.AddAndInitializeGameObject(projectile);
+            */
         }
     }
 }

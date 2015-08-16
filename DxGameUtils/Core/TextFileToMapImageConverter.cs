@@ -6,6 +6,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using DXGame.Core;
+using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Map;
 using DXGame.Core.Wrappers;
 
@@ -29,7 +30,7 @@ namespace DxGameUtils.Core
             {'O', new Bitmap("Content/Map/Blocks/OrangeBlock.png")}
         };
 
-        public static void Convert(string pathToTextFile, string outputDirectory, string mapName = "Generated.map",
+        public static void Convert(string pathToTextFile, string outputDirectory, string mapName = "Generated.png",
             string descriptorName = "GeneratedMapDescriptor.mdtr")
         {
             List<string> fileContents = new List<string>();
@@ -85,14 +86,15 @@ namespace DxGameUtils.Core
                             descriptor.Platforms.Add(block);
                         }
                     }
-                    graphics.Flush();
+                    graphics.Flush(FlushIntention.Sync);
+                    graphics.Save();
                 }
 
                 if (!Directory.Exists(outputDirectory))
                 {
                     Directory.CreateDirectory(outputDirectory);
                 }
-                bitmap.Save(outputDirectory + mapName, ImageFormat.Bmp);
+                bitmap.Save(outputDirectory + mapName, ImageFormat.Png);
                 Serializer<MapDescriptor>.WriteToJsonFile(descriptor, outputDirectory + descriptorName);
             }
         }

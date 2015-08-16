@@ -8,6 +8,7 @@ namespace DXGame.Core
 {
     public static class Serializer<T>
     {
+        private static readonly Encoding ENCODING = Encoding.Default;
         // TODO: Move all of these to thread-local storage
         public static byte[] BinarySerialize(T input)
         {
@@ -56,7 +57,7 @@ namespace DXGame.Core
 
         public static T ReadFromJsonFile(string path)
         {
-            var settingsAsText = File.ReadAllText(path);
+            var settingsAsText = File.ReadAllText(path, ENCODING);
             var settingsAsJsonByteArray = StringUtils.GetBytes(settingsAsText);
             return JsonDeserialize(settingsAsJsonByteArray);
         }
@@ -64,7 +65,7 @@ namespace DXGame.Core
         public static void WriteToJsonFile(T input, string path)
         {
             var json = JsonSerialize(input);
-            var jsonAsText = Encoding.Default.GetString(json);
+            var jsonAsText = ENCODING.GetString(json);
             File.WriteAllText(path, jsonAsText);
         }
     }

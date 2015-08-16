@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Utils;
 using DXGame.Core.Messaging;
@@ -18,19 +19,14 @@ namespace DXGame.Core.Components.Advanced.Physics
     public class MapCollideablePhysicsComponent : PhysicsComponent
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        private static readonly int QUERY_BUFFER = 50; /* Pixels around the Spatial to check for collisions */
         private static readonly DxRectangleAreaComparer DXRECTANGLE_AREA_COMPARER = new DxRectangleAreaComparer();
         private DxRectangle Space => ((SpatialComponent) position_).Space;
         private DxVector2 Dimensions => ((SpatialComponent) position_).Dimensions;
 
         private DxRectangle MapQueryRegion
-        {
-            get
-            {
-                int blockSize = DxGame.Model<MapModel>().BlockSize;
-                return new DxRectangle(Space.X - blockSize, Space.Y - blockSize, Space.Width + blockSize * 2,
-                    Space.Height + blockSize * 2);
-            }
-        }
+            => new DxRectangle(Space.X - QUERY_BUFFER, Space.Y - QUERY_BUFFER, Space.Width + QUERY_BUFFER * 2,
+                Space.Height + QUERY_BUFFER * 2);
 
         public MapCollideablePhysicsComponent(DxGame game)
             : base(game)
@@ -39,7 +35,7 @@ namespace DXGame.Core.Components.Advanced.Physics
 
         public MapCollideablePhysicsComponent WithSpatialComponent(SpatialComponent space)
         {
-            Validate.IsNotNull(space, $"Cannot initialize {GetType()} with a null SpatialComponent");
+            Validate.IsNotNull(space, StringUtils.GetFormattedNullOrDefaultMessage(this, space));
             position_ = space;
             return this;
         }
@@ -54,10 +50,12 @@ namespace DXGame.Core.Components.Advanced.Physics
             base.Update(gameTime);
 
             var map = DxGame.Model<MapModel>();
-            IEnumerable<SpatialComponent> mapTiles = map.SpatialsInRange(MapQueryRegion);
+            var mapQueryRegion = MapQueryRegion;
+
+            List<CollidableComponent> mapTiles = map.Map.Collidables.InRange(mapQueryRegion);
 
             CollisionMessage collision = new CollisionMessage();
-            SortedDictionary<DxRectangle, SpatialComponent> intersections;
+            SortedDictionary<DxRectangle, CollidableComponent> intersections;
             do
             {
                 intersections = FindIntersections(mapTiles, Space);
@@ -81,13 +79,17 @@ namespace DXGame.Core.Components.Advanced.Physics
                 if (largestIntersection.Width >= largestIntersection.Height ||
                     MathUtils.FuzzyCompare(Velocity.X, 0.0f) == 0)
                 {
-                    // below collision
+                    // Below collision
                     if (Position.Y + Dimensions.Y >= mapBlockPosition.Y && mapBlockPosition.Y > Position.Y)
                     {
-                        Position = new DxVector2(Position.X, mapBlockPosition.Y - Dimensions.Y);
-                        collision.CollisionDirections.Add(CollisionDirection.South);
+                        if (mapSpatial.CollidableDirections.Contains(CollidableDirection.Up))
+                        {
+                            Position = new DxVector2(Position.X, mapBlockPosition.Y - Dimensions.Y);
+                            collision.CollisionDirections.Add(CollisionDirection.South);
+                        }
                     }
-                    else // above collision
+                    // Above collision
+                    else if (mapSpatial.CollidableDirections.Contains(CollidableDirection.Down))
                     {
                         Position = new DxVector2(Position.X, mapBlockPosition.Y + mapBlockDimensions.Y);
                         collision.CollisionDirections.Add(CollisionDirection.North);
@@ -99,13 +101,17 @@ namespace DXGame.Core.Components.Advanced.Physics
                 else
                 // if (intersection.Height > intersection.Width || MathUtils.FuzzyCompare(Velocity.Y, 0.0, MathUtils.DoubleTolerance) == 0)
                 {
-                    // left collision // TODO: Fix this. This left-first case causes a bug of "never being able to move left" while jumping
+                    // left collision 
                     if (Position.X < mapBlockPosition.X + mapBlockDimensions.X && mapBlockPosition.X < Position.X)
                     {
-                        Position = new DxVector2(mapBlockPosition.X + mapBlockDimensions.X, Position.Y);
-                        collision.CollisionDirections.Add(CollisionDirection.West);
+                        if (mapSpatial.CollidableDirections.Contains(CollidableDirection.Right))
+                        {
+                            Position = new DxVector2(mapBlockPosition.X + mapBlockDimensions.X, Position.Y);
+                            collision.CollisionDirections.Add(CollisionDirection.West);
+                        }
                     }
-                    else // right collision
+                    // right collision
+                    else if (mapSpatial.CollidableDirections.Contains(CollidableDirection.Left))
                     {
                         Position = new DxVector2(mapBlockPosition.X - Dimensions.X, Position.Y);
                         collision.CollisionDirections.Add(CollisionDirection.East);
@@ -126,12 +132,12 @@ namespace DXGame.Core.Components.Advanced.Physics
         */
 
         // TODO: Change this to ditch the sorteddictionary. We actually only care about the largest intersection, so just find that instead.
-        private static SortedDictionary<DxRectangle, SpatialComponent> FindIntersections(
-            IEnumerable<SpatialComponent> mapTiles, DxRectangle currentSpace)
+        private static SortedDictionary<DxRectangle, CollidableComponent> FindIntersections(
+            IEnumerable<CollidableComponent> mapTiles, DxRectangle currentSpace)
         {
-            SortedDictionary<DxRectangle, SpatialComponent> intersections =
-                new SortedDictionary<DxRectangle, SpatialComponent>(DXRECTANGLE_AREA_COMPARER);
-            foreach (SpatialComponent spatial in mapTiles)
+            SortedDictionary<DxRectangle, CollidableComponent> intersections =
+                new SortedDictionary<DxRectangle, CollidableComponent>(DXRECTANGLE_AREA_COMPARER);
+            foreach (var spatial in mapTiles)
             {
                 if (!currentSpace.Intersects(spatial.Space))
                 {

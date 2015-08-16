@@ -63,7 +63,7 @@ namespace DXGame.Main
                 {
                     return new DxRectangle(Screen);
                 }
-                MapModel mapModel = Model<MapModel>();
+                var mapModel = Model<MapModel>();
                 float x = Screen.Width / 2.0f - gameModel.FocalPoint.Position.X;
                 x = MathHelper.Clamp(x,
                     Math.Max(float.MinValue,
@@ -132,6 +132,7 @@ namespace DXGame.Main
         // TODO: Figure out a better way to attach shit to the game
         public void AddAndInitializeComponent(Component component)
         {
+            component.LoadContent();
             component.Initialize();
             NewGameElements.Add(component);
         }

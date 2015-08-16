@@ -24,9 +24,9 @@ namespace DXGame.Core.Models
 
         public override void Initialize()
         {
-            var mapGenerator = new MapGenerator(DxGame, "Content/Map/SimpleMap.txt");
-            var mapModel = MapModel.InitializeFromGenerator(DxGame, mapGenerator);
-            PlayerGenerator playerGenerator = new PlayerGenerator(DxGame, mapModel.PlayerPosition,
+            var mapModel = new MapModel(DxGame);
+            DxGame.AttachModel(mapModel);
+            PlayerGenerator playerGenerator = new PlayerGenerator(DxGame, mapModel.PlayerSpawn,
                 mapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;
             var player = playerGenerator.Generate().First();
@@ -50,7 +50,6 @@ namespace DXGame.Core.Models
 
             // TODO: Split these out into some kind of unified loading... thing
             DxGame.AddAndInitializeGameObjects(playerGenerator.Generate());
-            DxGame.AttachModel(mapModel);
             base.Initialize();
         }
     }

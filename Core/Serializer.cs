@@ -1,12 +1,14 @@
 ﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization.Json;
+using System.Text;
 using DXGame.Core.Utils;
 
 namespace DXGame.Core
 {
     public static class Serializer<T>
     {
+        private static readonly Encoding ENCODING = Encoding.Default;
         // TODO: Move all of these to thread-local storage
         public static byte[] BinarySerialize(T input)
         {
@@ -51,6 +53,20 @@ namespace DXGame.Core
         public static T JsonDeserialize(string data)
         {
             return JsonDeserialize(StringUtils.GetBytes(data));
+        }
+
+        public static T ReadFromJsonFile(string path)
+        {
+            var settingsAsText = File.ReadAllText(path, ENCODING);
+            var settingsAsJsonByteArray = StringUtils.GetBytes(settingsAsText);
+            return JsonDeserialize(settingsAsJsonByteArray);
+        }
+
+        public static void WriteToJsonFile(T input, string path)
+        {
+            var json = JsonSerialize(input);
+            var jsonAsText = ENCODING.GetString(json);
+            File.WriteAllText(path, jsonAsText);
         }
     }
 }

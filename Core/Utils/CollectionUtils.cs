@@ -25,5 +25,13 @@ namespace DXGame.Core.Utils
         {
             return from object item in target select (T) item;
         }
+
+        public static IEnumerable<List<T>> Partition<T>(this IList<T> source, int size)
+        {
+            for (int i = 0; i < Math.Ceiling(source.Count / (double) size); ++i)
+            {
+                yield return new List<T>(source.Skip(size * i).Take(size));
+            }
+        }
     }
 }

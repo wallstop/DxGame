@@ -21,12 +21,23 @@ namespace DXGame.Core.Wrappers
         public float Top => Y;
         public float Bottom => Y + Height;
         public Point Center => new Point((int) ((X + Width) / 2), (int) ((Y + Height) / 2));
-        public DxRectangle QuadrantOne => new DxRectangle(X + Width / 2, Y, Width / 2, Height / 2);
-        public DxRectangle QuadrantTwo => new DxRectangle(X, Y, Height / 2, Width / 2);
-        public DxRectangle QuadrantThree => new DxRectangle(X, Y + Height / 2, Width / 2, Height / 2);
-        public DxRectangle QuadrantFour => new DxRectangle(X + Width / 2, Y + Height / 2, Width / 2, Height / 2);
+        /* 
+            Cartesian quadrants of this rectangle:
+            https://en.wikipedia.org/wiki/Quadrant_%28plane_geometry%29
 
-        public DxRectangle(Vector2 x, Vector2 y) : this()
+            Where the quadrants are
+
+            II  | I
+            ____|___
+                |
+            III | IV
+        */
+        public DxRectangle QuadrantOne => new DxRectangle(X + (Width / 2), Y, Width / 2, Height / 2);
+        public DxRectangle QuadrantTwo => new DxRectangle(X, Y, Width / 2, Height / 2);
+        public DxRectangle QuadrantThree => new DxRectangle(X, Y + (Height / 2), Width / 2, Height / 2);
+        public DxRectangle QuadrantFour => new DxRectangle(X + (Width / 2), Y + (Height / 2), Width / 2, Height / 2);
+
+        public DxRectangle(Vector2 x, Vector2 y)
         {
             X = x.X;
             Width = x.Y;
@@ -34,7 +45,7 @@ namespace DXGame.Core.Wrappers
             Height = y.Y;
         }
 
-        public DxRectangle(DxVector2 x, DxVector2 y) : this()
+        public DxRectangle(DxVector2 x, DxVector2 y)
         {
             X = x.X;
             Width = x.Y;
@@ -42,7 +53,7 @@ namespace DXGame.Core.Wrappers
             Height = y.Y;
         }
 
-        public DxRectangle(Rectangle rectangle) : this()
+        public DxRectangle(Rectangle rectangle)
         {
             X = rectangle.X;
             Y = rectangle.Y;
@@ -50,7 +61,7 @@ namespace DXGame.Core.Wrappers
             Height = rectangle.Height;
         }
 
-        public DxRectangle(float x, float y, float width, float height) : this()
+        public DxRectangle(float x, float y, float width, float height)
         {
             X = x;
             Y = y;
@@ -93,19 +104,12 @@ namespace DXGame.Core.Wrappers
 
         public static bool operator !=(DxRectangle lhs, DxRectangle rhs)
         {
-            return MathUtils.FuzzyCompare(lhs.X, rhs.X, TOLERANCE) != 0
-                   && MathUtils.FuzzyCompare(lhs.Y, rhs.Y, TOLERANCE) != 0
-                   && MathUtils.FuzzyCompare(lhs.Width, rhs.Width, TOLERANCE) != 0
-                   && MathUtils.FuzzyCompare(lhs.Height, rhs.Height, TOLERANCE) != 0;
+            return !(lhs == rhs);
         }
 
         public bool Contains(float x, float y)
         {
-            if (X <= x && x < (X + Width) && Y <= y)
-            {
-                return y < (Y + Height);
-            }
-            return false;
+            return X <= x && x < (X + Width) && Y <= y && y < (Y + Height);
         }
 
         public bool Contains(DxVector2 point)
@@ -202,7 +206,7 @@ namespace DXGame.Core.Wrappers
             }
             catch (Exception)
             {
-                // Suprres any class cast exceptions
+                // Suprress any class cast exceptions
             }
 
             return false;

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using DXGame.Core.Utils;
-using DXGame.Core.Utils.Distance;
 using DXGame.Core.Wrappers;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -11,6 +10,7 @@ namespace DXGame.Core
     {
         INIT_SPRITEBATCH = -100,
         HIGHEST = -99,
+        MAP = -80,
         HIGH = 1,
         NORMAL = 5,
         HUD_LAYER = 8,

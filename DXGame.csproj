@@ -136,6 +136,8 @@
     <Compile Include="Core\Components\Advanced\Position\PositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
     <Compile Include="Core\Utils\Distance\Distance.cs" />
+    <Compile Include="Core\Utils\Distance\KDTree.cs" />
+    <Compile Include="Core\Utils\Distance\RTree.cs" />
     <Compile Include="Core\Utils\GameElementCollection.cs" />
     <Compile Include="Core\Components\Basic\DrawableComponent.cs" />
     <Compile Include="Core\Components\Basic\NetworkComponent.cs" />

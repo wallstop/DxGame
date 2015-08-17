@@ -39,7 +39,7 @@ namespace DXGame.Core.Utils.Distance
                 return;
             }
 
-            Children = new List<RTreeNode<T>>(branchFactor);
+            
 
             /*
                 http://www.dtic.mil/get-tr-doc/pdf?AD=ADA324493
@@ -52,9 +52,9 @@ namespace DXGame.Core.Utils.Distance
             */
             double targetSize = rectangles.Count / (double) branchFactor;
             int intTargetSize = (int) Math.Ceiling(targetSize);
-            var P = branchFactor;
-            var S = Math.Sqrt(P);
-            var N = targetSize;
+
+            Children = new List<RTreeNode<T>>(intTargetSize);
+
             double slicesPerAxis = Math.Sqrt(branchFactor);
             int rectanglesPerPagePerAxis = (int) (slicesPerAxis * targetSize);
             rectangles.Sort((box1, box2) => (boundingBox(box1).Center.X.CompareTo(boundingBox(box2).Center.X)));

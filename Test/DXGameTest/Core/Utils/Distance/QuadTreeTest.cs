@@ -9,8 +9,6 @@ using NUnit.Framework;
 
 namespace DXGameTest.Core.Utils.Distance
 {
-
-
     public class QuadTreeTest
     {
         [Test]

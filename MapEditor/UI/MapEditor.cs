@@ -12,7 +12,7 @@ namespace MapEditor.UI
     public class MapEditor : MetroForm, IMessageFilter
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        private static readonly TimeSpan DRAW_INTERVAL = TimeSpan.FromMilliseconds(50);
+        private static readonly TimeSpan DRAW_INTERVAL = TimeSpan.FromMilliseconds(16);
         private static readonly string PLACEHOLDER_DIRECTORY = "Placeholders";
         private static readonly double MINIMUM_ZOOM = .25;
         private static readonly double ZOOM_SCALE = 0.001;
@@ -21,14 +21,12 @@ namespace MapEditor.UI
         private static readonly int MENU_HEIGHT = 24;
         private static readonly int MAIN_PANEL_BORDER = 20;
         private static readonly double DEFAULT_ZOOM = 1.0;
-        private Image baseImage_;
+        private Bitmap baseImage_;
         private Point currentOffset_ = new Point(0, 0);
-        private Image currentRender_;
         private Point dragBegin_;
         private Point dragEnd_;
         private DateTime lastDrawn_;
         private Panel mapArea_;
-        private Point origin_ = new Point(0, 0);
         private double zoomFactor_ = DEFAULT_ZOOM;
 
         private Rectangle ImageView
@@ -44,8 +42,8 @@ namespace MapEditor.UI
             {
                 if (Check.IsNotNullOrDefault(dragBegin_) && Check.IsNotNullOrDefault(dragEnd_))
                 {
-                    return new Point(currentOffset_.X + (dragBegin_.X - dragEnd_.X),
-                        currentOffset_.Y + (dragBegin_.Y - dragEnd_.Y));
+                    return new Point(currentOffset_.X + (dragEnd_.X - dragBegin_.X),
+                        currentOffset_.Y + (dragEnd_.Y - dragBegin_.Y));
                 }
                 return currentOffset_;
             }
@@ -99,39 +97,61 @@ namespace MapEditor.UI
 
             ResumeLayout(false);
             PerformLayout();
+
+            DoubleBuffered = true;
         }
 
         private void SetupMainMenu()
         {
             Text = "MapEditor";
 
-            var mainMenu = new MenuStrip();
+            var mainMenu = new MenuStrip {ShowItemToolTips = true};
             var file = new ToolStripMenuItem();
             var reset = new ToolStripMenuItem();
+            var newMap = new ToolStripMenuItem();
             var save = new ToolStripMenuItem();
             var load = new ToolStripMenuItem();
-
 
             mainMenu.Items.Add(file);
             mainMenu.Items.Add(reset);
             mainMenu.Location = new Point(MAIN_PANEL_BORDER, TITLE_HEIGHT);
             mainMenu.Size = new Size(260, MENU_HEIGHT);
 
-            file.DropDownItems.AddRange(new ToolStripItem[] {save, load});
+            var subMenuSize = new Size(152, 22);
+
+            file.DropDownItems.AddRange(new ToolStripItem[] {newMap, save, load});
             file.Size = new Size(37, 20);
             file.Text = "File";
 
+            var hardReset = new ToolStripMenuItem();
+            var softReset = new ToolStripMenuItem();
+            reset.DropDownItems.AddRange(new ToolStripItem[] {softReset, hardReset});
             reset.Size = new Size(37, 20);
             reset.Text = "Reset";
-            reset.Click += HandleReset;
 
-            var subMenuSize = new Size(152, 22);
-            save.Text = "Save";
+            softReset.Size = subMenuSize;
+            softReset.Text = "Soft Reset";
+            softReset.ToolTipText =
+                "TODO: Clears preferences to the last-snapped set, or default if no preferences were snapped";
+            hardReset.Size = subMenuSize;
+            hardReset.Text = "Hard Reset";
+            hardReset.ToolTipText =
+                "Resets everything to be as if you had freshly started the Map \nEditor with this image loaded. Clears out snapped preferences.";
+            hardReset.Click += HandleHardReset;
+
+            save.Text = "Save Map";
+            save.ToolTipText = "TODO";
             save.Size = subMenuSize;
             save.Click += HandleSave;
-            load.Text = "Load";
+
+            newMap.Text = "New Map";
+            newMap.Size = subMenuSize;
+            newMap.Click += HandleNewMap;
+
+            load.Text = "Load Map";
+            load.ToolTipText = "TODO";
             load.Size = subMenuSize;
-            load.Click += HandleLoad;
+            //load.Click += HandleNewMap;
 
             Controls.Add(mainMenu);
             MainMenuStrip = mainMenu;
@@ -142,12 +162,18 @@ namespace MapEditor.UI
 
         private void SetupMapArea()
         {
-            mapArea_ = new Panel
+            mapArea_ = new DoubleBufferedPanel
             {
                 Location = new Point(MAIN_PANEL_BORDER, TITLE_HEIGHT + MENU_HEIGHT)
             };
+
+            var contextMenu = new ContextMenu();
+            var snapToCurrent = new MenuItem("Snap");
+            contextMenu.MenuItems.Add(snapToCurrent);
+
+            mapArea_.ContextMenu = contextMenu;
+
             baseImage_ = new Bitmap(PLACEHOLDER_DIRECTORY + "/Map.png");
-            currentRender_ = new Bitmap(baseImage_);
             mapArea_.Paint += PaintMapArea;
             mapArea_.MouseDown += HandleDragBegin;
             mapArea_.MouseWheel += HandleMouseWheel;
@@ -161,7 +187,7 @@ namespace MapEditor.UI
         {
         }
 
-        private void HandleReset(object sender, EventArgs args)
+        private void HandleHardReset(object sender, EventArgs args)
         {
             currentOffset_ = new Point(0, 0);
             dragBegin_ = new Point();
@@ -181,7 +207,7 @@ namespace MapEditor.UI
 
         private void HandleMouseWheel(object sender, MouseEventArgs mouseEvent)
         {
-            ZoomFactor += ZOOM_SCALE * mouseEvent.Delta;
+            ZoomFactor -= ZOOM_SCALE * mouseEvent.Delta;
             Redraw();
         }
 
@@ -189,7 +215,6 @@ namespace MapEditor.UI
         {
             if (Check.IsNotNullOrDefault(dragBegin_))
             {
-                // Only redraw if we need to
                 dragEnd_ = new Point(mouseEvent.X, mouseEvent.Y);
                 Redraw();
             }
@@ -209,17 +234,8 @@ namespace MapEditor.UI
         private void PaintMapArea(object sender, PaintEventArgs eventArgs)
         {
             var graphics = eventArgs.Graphics;
-            DetermineCurrentRender();
             mapArea_.Size = ImageSize;
-            //graphics.
-            graphics.DrawImage(currentRender_, origin_.X, origin_.Y, ImageView.Add(Offset), GraphicsUnit.Pixel);
-        }
-
-        private void DetermineCurrentRender()
-        {
-            currentRender_?.Dispose();
-            currentRender_ = new Bitmap(baseImage_, (int) (baseImage_.Width * ZoomFactor),
-                (int) (baseImage_.Height * ZoomFactor));
+            graphics.DrawImage(baseImage_, ImageView.Add(Offset), ImageView.Multiply(ZoomFactor), GraphicsUnit.Pixel);
         }
 
         private void Redraw(bool force = false)
@@ -233,7 +249,7 @@ namespace MapEditor.UI
             }
         }
 
-        private void HandleLoad(object sender, EventArgs args)
+        private void HandleNewMap(object sender, EventArgs args)
         {
             var openFileDialog = new OpenFileDialog
             {
@@ -253,7 +269,6 @@ namespace MapEditor.UI
                         var imageName = openFileDialog.FileName;
                         baseImage_?.Dispose();
                         baseImage_ = new Bitmap(imageName);
-
                         Redraw();
                     }
                     catch (Exception e)

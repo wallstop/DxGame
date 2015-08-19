@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 
 namespace MapEditor.Utils
 {
@@ -12,6 +7,12 @@ namespace MapEditor.Utils
         public static Rectangle Add(this Rectangle rectangle, Point point)
         {
             return new Rectangle(point, rectangle.Size);
+        }
+
+        public static Rectangle Multiply(this Rectangle rectangle, double scale)
+        {
+            return new Rectangle(rectangle.X, rectangle.Y, (int) (rectangle.Width * scale),
+                (int) (rectangle.Height * scale));
         }
     }
 }

@@ -1,14 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using DXGame.Core.Utils;
+using DXGame.Core.Wrappers;
+using MapEditor.Core;
 using MapEditor.Utils;
 using MetroFramework.Forms;
 using NLog;
 
 namespace MapEditor.UI
 {
+    internal enum RectangleMode
+    {
+        None,
+        Pan,
+        Create,
+        Delete
+    }
+
     public class MapEditor : MetroForm, IMessageFilter
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
@@ -21,12 +32,30 @@ namespace MapEditor.UI
         private static readonly int MENU_HEIGHT = 24;
         private static readonly int MAIN_PANEL_BORDER = 20;
         private static readonly double DEFAULT_ZOOM = 1.0;
+        private static readonly float MAX_COLLIDABLE_WIDTH = 50;
+        private static readonly float MAX_COLLIDABLE_HEIGHT = 50;
+
+        private static readonly Dictionary<MouseButtons, RectangleMode> MODE_FOR_BUTTON = new Dictionary
+            <MouseButtons, RectangleMode>
+        {
+            {
+                MouseButtons.Left, RectangleMode.Create
+            },
+            {
+                MouseButtons.Middle, RectangleMode.Pan
+            },
+            {
+                MouseButtons.Right, RectangleMode.Delete
+            }
+        };
+
+        private readonly BoundingBoxEditor boundingBoxEditor_;
         private Bitmap baseImage_;
-        private Point currentOffset_ = new Point(0, 0);
-        private Point dragBegin_;
-        private Point dragEnd_;
         private DateTime lastDrawn_;
         private Panel mapArea_;
+        private RectangleMode mode_ = RectangleMode.None;
+        private Point pointBegin_;
+        private Point pointEnd_;
         private double zoomFactor_ = DEFAULT_ZOOM;
 
         private Rectangle ImageView
@@ -35,25 +64,34 @@ namespace MapEditor.UI
                     Size.Height - (TITLE_HEIGHT + MENU_HEIGHT + MAIN_PANEL_BORDER));
 
         private Size ImageSize => new Size(ImageView.Width, ImageView.Height);
-
-        private Point Offset
-        {
-            get
-            {
-                if (Check.IsNotNullOrDefault(dragBegin_) && Check.IsNotNullOrDefault(dragEnd_))
-                {
-                    return new Point(currentOffset_.X + (dragEnd_.X - dragBegin_.X),
-                        currentOffset_.Y + (dragEnd_.Y - dragBegin_.Y));
-                }
-                return currentOffset_;
-            }
-            set { currentOffset_ = value; }
-        }
+        private Point Offset { get; set; }
 
         private double ZoomFactor
         {
             get { return zoomFactor_; }
             set { zoomFactor_ = Math.Max(MINIMUM_ZOOM, value); }
+        }
+
+        private DxRectangle SelectedArea
+        {
+            get
+            {
+                var translatedOriginPoint = new Point(Offset.X + pointBegin_.X, Offset.Y + pointBegin_.Y);
+                var translatedEndPoint = new Point(Offset.X + pointEnd_.X, Offset.Y + pointEnd_.Y);
+                DxRectangle area = new DxRectangle(translatedOriginPoint.X, translatedOriginPoint.Y,
+                    translatedEndPoint.X - translatedOriginPoint.X, translatedEndPoint.Y - translatedOriginPoint.Y);
+                if (area.Width < 0)
+                {
+                    area.X += area.Width;
+                    area.Width = -area.Width;
+                }
+                if (area.Height < 0)
+                {
+                    area.Y += area.Height;
+                    area.Height = -area.Height;
+                }
+                return area;
+            }
         }
 
         public MapEditor()
@@ -62,6 +100,7 @@ namespace MapEditor.UI
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             InitializeComponent();
             Application.AddMessageFilter(this);
+            boundingBoxEditor_ = new BoundingBoxEditor();
         }
 
         public bool PreFilterMessage(ref Message m)
@@ -78,6 +117,12 @@ namespace MapEditor.UI
                 }
             }
             return false;
+        }
+
+        private void UpdateOffset()
+        {
+            Offset = new Point(Offset.X + (pointEnd_.X - pointBegin_.X),
+                Offset.Y + (pointEnd_.Y - pointBegin_.Y));
         }
 
         // P/Invoke declarations
@@ -169,9 +214,9 @@ namespace MapEditor.UI
 
             var contextMenu = new ContextMenu();
             var snapToCurrent = new MenuItem("Snap");
-            contextMenu.MenuItems.Add(snapToCurrent);
+            //contextMenu.MenuItems.Add(snapToCurrent);
 
-            mapArea_.ContextMenu = contextMenu;
+            //mapArea_.ContextMenu = contextMenu;
 
             baseImage_ = new Bitmap(PLACEHOLDER_DIRECTORY + "/Map.png");
             mapArea_.Paint += PaintMapArea;
@@ -189,53 +234,101 @@ namespace MapEditor.UI
 
         private void HandleHardReset(object sender, EventArgs args)
         {
-            currentOffset_ = new Point(0, 0);
-            dragBegin_ = new Point();
-            dragEnd_ = new Point();
+            Offset = new Point(0, 0);
+            pointBegin_ = new Point();
+            pointEnd_ = new Point();
             ZoomFactor = DEFAULT_ZOOM;
             Redraw(true);
         }
 
         private void HandleDragBegin(object sender, MouseEventArgs mouseEvent)
         {
-            /* Only pan on middle mouse */
-            if (mouseEvent.Button == MouseButtons.Middle)
+            if (MODE_FOR_BUTTON.ContainsKey(mouseEvent.Button))
             {
-                dragBegin_ = mouseEvent.Location;
+                mode_ = MODE_FOR_BUTTON[mouseEvent.Button];
+                pointBegin_ = mouseEvent.Location;
             }
         }
 
         private void HandleMouseWheel(object sender, MouseEventArgs mouseEvent)
         {
-            ZoomFactor -= ZOOM_SCALE * mouseEvent.Delta;
+            ZoomFactor += ZOOM_SCALE * mouseEvent.Delta;
             Redraw();
         }
 
         private void HandleDragEvent(object sender, MouseEventArgs mouseEvent)
         {
-            if (Check.IsNotNullOrDefault(dragBegin_))
+            if (mode_ != RectangleMode.None)
             {
-                dragEnd_ = new Point(mouseEvent.X, mouseEvent.Y);
-                Redraw();
+                pointEnd_ = new Point(mouseEvent.X, mouseEvent.Y);
             }
+
+            Redraw();
         }
 
         private void HandleDragEnd(object sender, MouseEventArgs mouseEvent)
         {
-            if (mouseEvent.Button == MouseButtons.Middle)
+            pointEnd_ = new Point(mouseEvent.X, mouseEvent.Y);
+            switch (mode_)
             {
-                Offset = Offset;
-                dragBegin_ = new Point();
-                dragEnd_ = new Point();
-                Redraw();
+                case RectangleMode.Create:
+                    HandleNewCollisionArea();
+                    break;
+                case RectangleMode.Delete:
+                    HandleDelete();
+                    break;
+                case RectangleMode.Pan:
+                    HandlePanEnd();
+                    break;
             }
+
+            pointBegin_ = new Point();
+            pointEnd_ = new Point();
+            Redraw();
+            mode_ = RectangleMode.None;
+        }
+
+        private void HandleNewCollisionArea()
+        {
+            var area = SelectedArea;
+            List<DxRectangle> collidableAreas = area.Divide(MAX_COLLIDABLE_WIDTH, MAX_COLLIDABLE_HEIGHT);
+            boundingBoxEditor_.Add(collidableAreas);
+        }
+
+        private void HandleDelete()
+        {
+            var area = SelectedArea;
+            boundingBoxEditor_.RemoveInRange(area);
+        }
+
+        private void HandlePanEnd()
+        {
+            UpdateOffset();
         }
 
         private void PaintMapArea(object sender, PaintEventArgs eventArgs)
         {
             var graphics = eventArgs.Graphics;
             mapArea_.Size = ImageSize;
-            graphics.DrawImage(baseImage_, ImageView.Add(Offset), ImageView.Multiply(ZoomFactor), GraphicsUnit.Pixel);
+            var translation = Offset;
+            if (mode_ == RectangleMode.Pan)
+            {
+                translation = translation.Add(pointBegin_.Subtract(pointEnd_));
+            }
+            graphics.DrawImage(baseImage_, ImageView.Multiply(ZoomFactor).Add(translation),
+                ImageView.Multiply(1 / ZoomFactor),
+                GraphicsUnit.Pixel);
+            foreach (var rectangle in boundingBoxEditor_.Collidables)
+            {
+                graphics.DrawRectangle(Pens.Black,
+                    new Rectangle((int) rectangle.X, (int) rectangle.Y, (int) rectangle.Width, (int) rectangle.Height));
+            }
+            if (mode_ != RectangleMode.Pan && mode_ != RectangleMode.None)
+            {
+                var selectedArea = SelectedArea;
+                graphics.DrawRectangle(Pens.Red, (int) selectedArea.X, (int) selectedArea.Y, (int) selectedArea.Width,
+                    (int) selectedArea.Height);
+            }
         }
 
         private void Redraw(bool force = false)

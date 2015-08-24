@@ -17,13 +17,41 @@ namespace DXGame.Core.Map
     public class Platform
     {
         [DataMember]
-        public PlatformType Type { get; set; } = PlatformType.Block;
+        public PlatformType Type { get; }
 
         [DataMember]
-        public DxRectangle BoundingBox { get; set; }
+        public DxRectangle BoundingBox { get; }
 
         [DataMember]
-        public List<CollidableDirection> CollidableDirections { get; private set; } =
+        public List<CollidableDirection> CollidableDirections { get; } =
             new List<CollidableDirection>();
+
+        public Platform(DxRectangle boundingBox, PlatformType type = PlatformType.Block)
+        {
+            BoundingBox = boundingBox;
+            Type = type;
+        }
+
+        public override bool Equals(object other)
+        {
+            var platform = other as Platform;
+            if (ReferenceEquals(platform, null))
+            {
+                return false;
+            }
+
+            return Type == platform.Type && BoundingBox == platform.BoundingBox &&
+                   CollidableDirections == platform.CollidableDirections;
+        }
+
+        public override int GetHashCode()
+        {
+            return Tuple.Create(Type, BoundingBox, CollidableDirections).GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return BoundingBox.ToString();
+        }
     }
 }

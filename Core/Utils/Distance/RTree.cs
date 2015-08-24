@@ -26,9 +26,9 @@ namespace DXGame.Core.Utils.Distance
             {
                 var rectangle = boundingBox(rectangularObject);
                 minX = Math.Min(minX, rectangle.X);
-                maxX = Math.Max(maxX, rectangle.X);
+                maxX = Math.Max(maxX, rectangle.X + rectangle.Width);
                 minY = Math.Min(minY, rectangle.Y);
-                maxY = Math.Max(maxY, rectangle.Y);
+                maxY = Math.Max(maxY, rectangle.Y + rectangle.Height);
             }
 
             Boundary = new DxRectangle(minX, minY, (maxX - minX), (maxY - minY));
@@ -39,7 +39,6 @@ namespace DXGame.Core.Utils.Distance
                 return;
             }
 
-            
 
             /*
                 http://www.dtic.mil/get-tr-doc/pdf?AD=ADA324493

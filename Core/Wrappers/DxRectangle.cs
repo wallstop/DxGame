@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
@@ -36,6 +37,14 @@ namespace DXGame.Core.Wrappers
         public DxRectangle QuadrantTwo => new DxRectangle(X, Y, Width / 2, Height / 2);
         public DxRectangle QuadrantThree => new DxRectangle(X, Y + (Height / 2), Width / 2, Height / 2);
         public DxRectangle QuadrantFour => new DxRectangle(X + (Width / 2), Y + (Height / 2), Width / 2, Height / 2);
+
+        public DxRectangle(Point upperLeftCorner, Point lowerRightCorner)
+        {
+            X = upperLeftCorner.X;
+            Width = lowerRightCorner.X - upperLeftCorner.X;
+            Y = upperLeftCorner.Y;
+            Height = upperLeftCorner.Y - lowerRightCorner.Y;
+        }
 
         public DxRectangle(Vector2 x, Vector2 y)
         {
@@ -129,26 +138,32 @@ namespace DXGame.Core.Wrappers
 
         public bool Intersects(Rectangle rectangle)
         {
-            if (MathUtils.FuzzyCompare(rectangle.Left, Right, TOLERANCE) < 0
-                && MathUtils.FuzzyCompare(Left, rectangle.Right, TOLERANCE) < 0
-                && MathUtils.FuzzyCompare(rectangle.Top, Bottom) < 0)
-            {
-                return MathUtils.FuzzyCompare(Top, rectangle.Bottom, TOLERANCE) < 0;
-            }
-
-            return false;
+            return rectangle.Left < Right && Left < rectangle.Right && rectangle.Top < Bottom && Top < rectangle.Bottom;
         }
 
         public bool Intersects(DxRectangle rectangle)
         {
-            if (MathUtils.FuzzyCompare(rectangle.Left, Right, TOLERANCE) < 0
-                && MathUtils.FuzzyCompare(Left, rectangle.Right, TOLERANCE) < 0
-                && MathUtils.FuzzyCompare(rectangle.Top, Bottom) < 0)
-            {
-                return MathUtils.FuzzyCompare(Top, rectangle.Bottom, TOLERANCE) < 0;
-            }
+            return rectangle.Left < Right && Left < rectangle.Right && rectangle.Top < Bottom && Top < rectangle.Bottom;
+        }
 
-            return false;
+        public List<DxRectangle> Divide(float maxWidth, float maxHeight)
+        {
+            var numXSections = Width / maxWidth;
+            var numYSections = Height / maxHeight;
+            List<DxRectangle> dividedRegions = new List<DxRectangle>((int) Math.Max(1, numXSections * numYSections));
+            for (int i = 0; i < numXSections; ++i)
+            {
+                float startX = X + maxWidth * i;
+                float endX = X + Math.Min(maxWidth * (i + 1), Width);
+                for (int j = 0; j < numYSections; ++j)
+                {
+                    float startY = Y + maxHeight * j;
+                    float endY = Y + Math.Min(maxHeight * (j + 1), Height);
+                    DxRectangle division = new DxRectangle(startX, startY, endX - startX, endY - startY);
+                    dividedRegions.Add(division);
+                }
+            }
+            return dividedRegions;
         }
 
         public static DxRectangle Intersect(DxRectangle lhs, DxRectangle rhs)

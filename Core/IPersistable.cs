@@ -2,7 +2,7 @@
 {
     public interface IPersistable<out T>
     {
-        T Load();
-        void Save();
+        T Load(string fileName);
+        void Save(string fileName);
     }
 }

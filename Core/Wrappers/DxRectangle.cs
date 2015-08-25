@@ -116,6 +116,27 @@ namespace DXGame.Core.Wrappers
             return !(lhs == rhs);
         }
 
+        public static DxRectangle operator *(DxRectangle lhs, float scalar)
+        {
+            return new DxRectangle(lhs.X * scalar, lhs.Y * scalar, lhs.Width * scalar, lhs.Height * scalar);
+        }
+
+        public static DxRectangle operator *(DxRectangle lhs, double scalar)
+        {
+            return new DxRectangle((float) (lhs.X * scalar), (float) (lhs.Y * scalar), (float) (lhs.Width * scalar),
+                (float) (lhs.Height * scalar));
+        }
+
+        public static DxRectangle operator /(DxRectangle lhs, double scalar)
+        {
+            return lhs * (1.0 / scalar);
+        }
+
+        public static DxRectangle operator /(DxRectangle lhs, float scalar)
+        {
+            return lhs * (1.0 / scalar);
+        }
+
         public bool Contains(float x, float y)
         {
             return X <= x && x < (X + Width) && Y <= y && y < (Y + Height);

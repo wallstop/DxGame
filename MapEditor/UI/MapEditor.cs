@@ -66,6 +66,19 @@ namespace MapEditor.UI
         private Size ImageSize => new Size(ImageView.Width, ImageView.Height);
         private Point Offset { get; set; }
 
+        private Point Translation
+        {
+            get
+            {
+                var translation = Offset;
+                if (mode_ == RectangleMode.Pan)
+                {
+                    translation = translation.Add(pointBegin_.Subtract(pointEnd_));
+                }
+                return translation;
+            }
+        }
+
         private double ZoomFactor
         {
             get { return zoomFactor_; }
@@ -90,6 +103,18 @@ namespace MapEditor.UI
                     area.Y += area.Height;
                     area.Height = -area.Height;
                 }
+                return area;
+            }
+        }
+
+        private DxRectangle TranslatedSelectedArea
+        {
+            get
+            {
+                var tempArea = (SelectedArea / ZoomFactor);
+                var translation = Translation;
+                var area = new DxRectangle(tempArea.X - translation.X, tempArea.Y - translation.Y, tempArea.Width,
+                    tempArea.Height);
                 return area;
             }
         }
@@ -230,6 +255,24 @@ namespace MapEditor.UI
 
         private void HandleSave(object sender, EventArgs args)
         {
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "Image Files(*.png;)|*.png;",
+                FilterIndex = 1,
+                RestoreDirectory = true,
+                CheckPathExists = true
+            };
+
+            switch (saveFileDialog.ShowDialog())
+            {
+                case DialogResult.OK:
+                {
+                    var outFile = saveFileDialog.FileName;
+
+                    boundingBoxEditor_.Save(outFile, baseImage_, (float) ZoomFactor);
+                }
+                    break;
+            }
         }
 
         private void HandleHardReset(object sender, EventArgs args)
@@ -238,6 +281,7 @@ namespace MapEditor.UI
             pointBegin_ = new Point();
             pointEnd_ = new Point();
             ZoomFactor = DEFAULT_ZOOM;
+            boundingBoxEditor_.Clear();
             Redraw(true);
         }
 
@@ -253,6 +297,7 @@ namespace MapEditor.UI
         private void HandleMouseWheel(object sender, MouseEventArgs mouseEvent)
         {
             ZoomFactor += ZOOM_SCALE * mouseEvent.Delta;
+            // TODO: Rescale all existing bounding boxes to new shit (redraw + resize)
             Redraw();
         }
 
@@ -290,14 +335,15 @@ namespace MapEditor.UI
 
         private void HandleNewCollisionArea()
         {
-            var area = SelectedArea;
-            List<DxRectangle> collidableAreas = area.Divide(MAX_COLLIDABLE_WIDTH, MAX_COLLIDABLE_HEIGHT);
+            var area = TranslatedSelectedArea;
+            List<DxRectangle> collidableAreas = area.Divide(MAX_COLLIDABLE_WIDTH,
+                MAX_COLLIDABLE_HEIGHT);
             boundingBoxEditor_.Add(collidableAreas);
         }
 
         private void HandleDelete()
         {
-            var area = SelectedArea;
+            var area = TranslatedSelectedArea;
             boundingBoxEditor_.RemoveInRange(area);
         }
 
@@ -310,23 +356,22 @@ namespace MapEditor.UI
         {
             var graphics = eventArgs.Graphics;
             mapArea_.Size = ImageSize;
-            var translation = Offset;
-            if (mode_ == RectangleMode.Pan)
-            {
-                translation = translation.Add(pointBegin_.Subtract(pointEnd_));
-            }
-            graphics.DrawImage(baseImage_, ImageView.Multiply(ZoomFactor).Add(translation),
+            var translation = Translation;
+            graphics.DrawImage(baseImage_, ImageView.Add(translation),
                 ImageView.Multiply(1 / ZoomFactor),
                 GraphicsUnit.Pixel);
             foreach (var rectangle in boundingBoxEditor_.Collidables)
             {
                 graphics.DrawRectangle(Pens.Black,
-                    new Rectangle((int) rectangle.X, (int) rectangle.Y, (int) rectangle.Width, (int) rectangle.Height));
+                    new Rectangle((int) (rectangle.X * ZoomFactor + translation.X),
+                        (int) (rectangle.Y * ZoomFactor + translation.Y),
+                        (int) (rectangle.Width * ZoomFactor), (int) (rectangle.Height * ZoomFactor)));
             }
             if (mode_ != RectangleMode.Pan && mode_ != RectangleMode.None)
             {
                 var selectedArea = SelectedArea;
-                graphics.DrawRectangle(Pens.Red, (int) selectedArea.X, (int) selectedArea.Y, (int) selectedArea.Width,
+                graphics.DrawRectangle(Pens.Red, (int) selectedArea.X + translation.X,
+                    (int) selectedArea.Y + translation.Y, (int) selectedArea.Width,
                     (int) selectedArea.Height);
             }
         }

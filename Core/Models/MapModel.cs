@@ -44,7 +44,7 @@ namespace DXGame.Core.Models
         public override void Initialize()
         {
             // Figure out a better way of choosing the map
-            Map = maps_[0];
+            Map = maps_[1];
             Map.LoadContent();
             Map.Initialize();
             base.Initialize();

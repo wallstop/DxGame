@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using DXGame.Core.Map;
 using DXGame.Core.Utils.Distance;
@@ -29,6 +32,34 @@ namespace MapEditor.Core
             var platformsInRange = tree_.InRange(range);
             descriptor_.Platforms.RemoveAll(platform => platformsInRange.Contains(platform));
             ResetTree();
+        }
+
+        public void Clear()
+        {
+            ResetTree();
+            descriptor_.Platforms.Clear();
+        }
+
+        public void Save(string fileName, Image map, float scalar)
+        {
+            /* TODO: Take into account collidable directions */
+            var collidables =
+                descriptor_.Platforms.Select(platform => new Platform(platform.BoundingBox * scalar)).ToList();
+            var simpleName = Path.GetFileNameWithoutExtension(fileName);
+            var directory = Path.GetDirectoryName(fileName);
+            var baseName = directory + Path.DirectorySeparatorChar + simpleName;
+            var mapImageFileEnding = ".png";
+
+            var outImage = new Bitmap(map, (int) (map.Width * scalar), (int) (map.Height * scalar));
+            outImage.Save(baseName + mapImageFileEnding, ImageFormat.Png);
+            var descriptor = new MapDescriptor
+            {
+                Asset = simpleName + mapImageFileEnding,
+                Platforms = collidables,
+                Size = new DxRectangle(0, 0, outImage.Width, outImage.Height)
+            };
+
+            descriptor.Save(fileName);
         }
 
         private void ResetTree()

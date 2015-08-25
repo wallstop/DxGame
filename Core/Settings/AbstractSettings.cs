@@ -15,7 +15,7 @@ namespace DXGame.Core.Settings
         public abstract T DefaultSettings { get; }
         public abstract T CurrentSettings { get; }
 
-        public T Load()
+        public T Load(string fileName)
         {
             T loadedSettings;
             try
@@ -30,14 +30,14 @@ namespace DXGame.Core.Settings
                 LOG.Error(e, $"Caught unexpected exception while loading settings file for {typeof (T)} at {Path}"
                     );
                 loadedSettings = DefaultSettings;
-                DefaultSettings.Save();
+                DefaultSettings.Save(fileName);
             }
 
             CopySettings(loadedSettings);
             return loadedSettings;
         }
 
-        public void Save()
+        public void Save(string fileName)
         {
             try
             {
@@ -47,6 +47,16 @@ namespace DXGame.Core.Settings
             {
                 LOG.Error(e, $"Caught unexpected exception while saving {typeof (T)} {this} at {Path}");
             }
+        }
+
+        public void Save()
+        {
+            Save(Path);
+        }
+
+        public T Load()
+        {
+            return Load(Path);
         }
 
         protected abstract void CopySettings(T other);

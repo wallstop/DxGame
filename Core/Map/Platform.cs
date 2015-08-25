@@ -17,13 +17,13 @@ namespace DXGame.Core.Map
     public class Platform
     {
         [DataMember]
-        public PlatformType Type { get; }
+        public PlatformType Type { get; set; }
 
         [DataMember]
-        public DxRectangle BoundingBox { get; }
+        public DxRectangle BoundingBox { get; set; }
 
         [DataMember]
-        public List<CollidableDirection> CollidableDirections { get; } =
+        public List<CollidableDirection> CollidableDirections { get; set; } =
             new List<CollidableDirection>();
 
         public Platform(DxRectangle boundingBox, PlatformType type = PlatformType.Block)

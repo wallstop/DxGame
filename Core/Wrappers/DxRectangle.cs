@@ -80,7 +80,7 @@ namespace DXGame.Core.Wrappers
 
         public bool Equals(DxRectangle rhs)
         {
-            return this == rhs;
+            return X == rhs.X && Y == rhs.Y && Width == rhs.Width && Height == rhs.Height;
         }
 
         public bool Equals(Rectangle other)
@@ -250,7 +250,7 @@ namespace DXGame.Core.Wrappers
 
         public override string ToString()
         {
-            return $"{{X:{X:N2} Y:{Y:N2} Width:{Width:N2} Height:{Height:N2}";
+            return $"{{ X:{X:N2} Y:{Y:N2} Width:{Width:N2} Height:{Height:N2} }}";
         }
 
         public override int GetHashCode()

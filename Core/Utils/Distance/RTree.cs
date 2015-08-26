@@ -79,6 +79,32 @@ namespace DXGame.Core.Utils.Distance
         private readonly BoundingBox<T> boundingBox_;
         private readonly RTreeNode<T> head_;
 
+        public List<DxRectangle> Rectangles
+        {
+            get
+            {
+                var nodesToVisit = new Queue<RTreeNode<T>>();
+                nodesToVisit.Enqueue(head_);
+
+                var rectangles = new List<DxRectangle>();
+                do
+                {
+                    var currentNode = nodesToVisit.Dequeue();
+                    if (!currentNode.Terminal)
+                    {
+                        foreach (var node in currentNode.Children)
+                        {
+                            nodesToVisit.Enqueue(node);
+                        }
+                        continue;
+                    }
+                    rectangles.AddRange(currentNode.Rectangles.Select(rectangle => boundingBox_(rectangle)));
+                } while (nodesToVisit.Any());
+
+                return rectangles;
+            }
+        }
+
         public RTree(BoundingBox<T> boundingBox, List<T> rectangles)
             : this(boundingBox, rectangles, DEFAULT_BUCKET_SIZE, DEFAULT_BRANCH_FACTOR)
         {

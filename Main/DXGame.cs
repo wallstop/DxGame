@@ -72,7 +72,7 @@ namespace DXGame.Main
 
                 float y = Screen.Height / 2.0f - gameModel.FocalPoint.Position.Y;
                 y = MathHelper.Clamp(y,
-                    Math.Max(0, mapModel.MapBounds.Y + mapModel.MapBounds.Height - Screen.Height),
+                    Math.Max(float.MinValue, -(mapModel.MapBounds.Y + mapModel.MapBounds.Height - Screen.Height)),
                     mapModel.MapBounds.Y);
 
                 return new DxRectangle(x, y, Screen.Width, Screen.Height);

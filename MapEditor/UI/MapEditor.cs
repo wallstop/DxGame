@@ -32,8 +32,6 @@ namespace MapEditor.UI
         private static readonly int MENU_HEIGHT = 24;
         private static readonly int MAIN_PANEL_BORDER = 20;
         private static readonly double DEFAULT_ZOOM = 1.0;
-        private static readonly float MAX_COLLIDABLE_WIDTH = 50;
-        private static readonly float MAX_COLLIDABLE_HEIGHT = 50;
 
         private static readonly Dictionary<MouseButtons, RectangleMode> MODE_FOR_BUTTON = new Dictionary
             <MouseButtons, RectangleMode>
@@ -269,7 +267,7 @@ namespace MapEditor.UI
                 {
                     var outFile = saveFileDialog.FileName;
 
-                    boundingBoxEditor_.Save(outFile, baseImage_, (float) ZoomFactor);
+                    boundingBoxEditor_.Save(outFile, baseImage_);
                 }
                     break;
             }
@@ -298,6 +296,7 @@ namespace MapEditor.UI
         {
             ZoomFactor += ZOOM_SCALE * mouseEvent.Delta;
             // TODO: Rescale all existing bounding boxes to new shit (redraw + resize)
+            boundingBoxEditor_.Resize(ZoomFactor);
             Redraw();
         }
 
@@ -336,9 +335,7 @@ namespace MapEditor.UI
         private void HandleNewCollisionArea()
         {
             var area = TranslatedSelectedArea;
-            List<DxRectangle> collidableAreas = area.Divide(MAX_COLLIDABLE_WIDTH,
-                MAX_COLLIDABLE_HEIGHT);
-            boundingBoxEditor_.Add(collidableAreas);
+            boundingBoxEditor_.Add(area);
         }
 
         private void HandleDelete()

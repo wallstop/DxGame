@@ -21,7 +21,7 @@ namespace DXGame.Core.Utils
 
         public static string GetFormattedNullOrDefaultMessage<T>(Type type, T argument)
         {
-            return $"Cannot initialize a {type} with a null/default {typeof (T)}";
+            return GetFormattedNullOrDefaultMessage(type, $"{typeof (T)}");
         }
 
         public static string GetFormattedNullOrDefaultMessage(Type type, string argument)
@@ -30,6 +30,11 @@ namespace DXGame.Core.Utils
         }
 
         public static string GetFormattedNullOrDefaultMessage<T>(T instance, string argument)
+        {
+            return GetFormattedNullOrDefaultMessage(typeof (T), argument);
+        }
+
+        public static string GetFormattedNullOrDefaultMessage<T, U>(T instance, U argument)
         {
             return GetFormattedNullOrDefaultMessage(typeof (T), argument);
         }

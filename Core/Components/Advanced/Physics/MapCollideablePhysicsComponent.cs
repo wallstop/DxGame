@@ -79,17 +79,13 @@ namespace DXGame.Core.Components.Advanced.Physics
                 if (largestIntersection.Width >= largestIntersection.Height ||
                     MathUtils.FuzzyCompare(Velocity.X, 0.0f) == 0)
                 {
-                    // Below collision
+                    // below collision
                     if (Position.Y + Dimensions.Y >= mapBlockPosition.Y && mapBlockPosition.Y > Position.Y)
                     {
-                        if (mapSpatial.CollidableDirections.Contains(CollidableDirection.Up))
-                        {
-                            Position = new DxVector2(Position.X, mapBlockPosition.Y - Dimensions.Y);
-                            collision.CollisionDirections.Add(CollisionDirection.South);
-                        }
+                        Position = new DxVector2(Position.X, mapBlockPosition.Y - Dimensions.Y);
+                        collision.CollisionDirections.Add(CollisionDirection.South);
                     }
-                    // Above collision
-                    else if (mapSpatial.CollidableDirections.Contains(CollidableDirection.Down))
+                    else // above collision
                     {
                         Position = new DxVector2(Position.X, mapBlockPosition.Y + mapBlockDimensions.Y);
                         collision.CollisionDirections.Add(CollisionDirection.North);
@@ -106,14 +102,14 @@ namespace DXGame.Core.Components.Advanced.Physics
                     {
                         if (mapSpatial.CollidableDirections.Contains(CollidableDirection.Right))
                         {
-                            Position = new DxVector2(mapBlockPosition.X + mapBlockDimensions.X, Position.Y);
+                            Position = new DxVector2(Position.X + largestIntersection.Width, Position.Y);
                             collision.CollisionDirections.Add(CollisionDirection.West);
                         }
                     }
                     // right collision
                     else if (mapSpatial.CollidableDirections.Contains(CollidableDirection.Left))
                     {
-                        Position = new DxVector2(mapBlockPosition.X - Dimensions.X, Position.Y);
+                        Position = new DxVector2(Position.X - largestIntersection.Width, Position.Y);
                         collision.CollisionDirections.Add(CollisionDirection.East);
                     }
                 }

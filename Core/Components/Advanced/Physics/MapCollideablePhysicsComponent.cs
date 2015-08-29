@@ -55,16 +55,16 @@ namespace DXGame.Core.Components.Advanced.Physics
             List<CollidableComponent> mapTiles = map.Map.Collidables.InRange(mapQueryRegion);
 
             CollisionMessage collision = new CollisionMessage();
-            SortedDictionary<DxRectangle, CollidableComponent> intersections;
-            do
+
+            while (true)
             {
-                intersections = FindIntersections(mapTiles, Space);
-                if (!intersections.Any())
+                var largestIntersectionTuple = FindLargestIntersection(mapTiles, Space);
+                if (largestIntersectionTuple == null)
                 {
-                    continue;
+                    break;
                 }
-                var largestIntersection = intersections.Keys.Last();
-                var mapSpatial = intersections.Values.Last();
+                var largestIntersection = largestIntersectionTuple.Item1;
+                var mapSpatial = largestIntersectionTuple.Item2;
                 var mapBlockPosition = mapSpatial.Position;
                 var mapBlockDimensions = mapSpatial.Dimensions;
                 /*
@@ -100,20 +100,17 @@ namespace DXGame.Core.Components.Advanced.Physics
                     // left collision 
                     if (Position.X < mapBlockPosition.X + mapBlockDimensions.X && mapBlockPosition.X < Position.X)
                     {
-                        if (mapSpatial.CollidableDirections.Contains(CollidableDirection.Right))
-                        {
-                            Position = new DxVector2(Position.X + largestIntersection.Width, Position.Y);
-                            collision.CollisionDirections.Add(CollisionDirection.West);
-                        }
+                        Position = new DxVector2(Position.X + largestIntersection.Width, Position.Y);
+                        collision.CollisionDirections.Add(CollisionDirection.West);
                     }
                     // right collision
-                    else if (mapSpatial.CollidableDirections.Contains(CollidableDirection.Left))
+                    else
                     {
                         Position = new DxVector2(Position.X - largestIntersection.Width, Position.Y);
                         collision.CollisionDirections.Add(CollisionDirection.East);
                     }
                 }
-            } while (intersections.Any());
+            }
 
             // Let everyone else know we collided (only if we collided with anything)
             if (collision.CollisionDirections.Any())
@@ -149,30 +146,25 @@ namespace DXGame.Core.Components.Advanced.Physics
             return intersections;
         }
 
-        private static RectangleSpatialPair? FindLargestIntersection(IEnumerable<SpatialComponent> mapTiles,
+        private static Tuple<DxRectangle, SpatialComponent> FindLargestIntersection(
+            IEnumerable<SpatialComponent> mapTiles,
             DxRectangle currentSpace)
         {
-            RectangleSpatialPair largestIntersection = new RectangleSpatialPair();
-            foreach (SpatialComponent mapTile in mapTiles)
+            Tuple<DxRectangle, SpatialComponent> largestIntersection = null;
+            foreach (var mapTile in mapTiles)
             {
                 if (!currentSpace.Intersects(mapTile.Space))
                 {
                     continue;
                 }
                 var intersection = DxRectangle.Intersect(mapTile.Space, currentSpace);
-                if (DXRECTANGLE_AREA_COMPARER.Compare(intersection, largestIntersection.Rectangle) > 0)
+                if (largestIntersection == null || DXRECTANGLE_AREA_COMPARER.Compare(intersection,
+                    largestIntersection.Item1) <= 0)
                 {
-                    largestIntersection.Rectangle = intersection;
-                    largestIntersection.Spatial = mapTile;
+                    largestIntersection = Tuple.Create(intersection, mapTile);
                 }
             }
             return largestIntersection;
-        }
-
-        private struct RectangleSpatialPair
-        {
-            public DxRectangle Rectangle;
-            public SpatialComponent Spatial;
         }
     }
 }

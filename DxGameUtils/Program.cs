@@ -1,4 +1,5 @@
-﻿using DxGameUtils.Core;
+﻿using System;
+using DxGameUtils.Core;
 
 namespace DxGameUtils
 {
@@ -8,7 +9,8 @@ namespace DxGameUtils
         {
             //TextFileToMapImageConverter.Convert("Content/Map/SimpleMap2.txt", "Content/Generated/");
             //FontFamilyEnumerator.EnumerateFonts();
-            GridDrawer.DrawGrid("Content/Map/First.jpg");
+            //GridDrawer.DrawGrid("Content/Map/First.jpg");
+            QoraAnimationMaker.Convert("G:/Downloads/Player-2015-08-28/Player");
         }
     }
 }

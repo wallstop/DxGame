@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -22,11 +23,13 @@ namespace DXGame.Core.Components.Advanced.Map
         {
         }
 
-        public CollidableComponent WithCollidableDirections(List<CollidableDirection> directions)
+        public CollidableComponent WithCollidableDirections(IEnumerable<CollidableDirection> directions)
         {
-            Validate.IsNotEmpty(directions, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(directions)));
+            var collidableDirections = directions as IList<CollidableDirection> ?? directions.ToList();
+            Validate.IsNotEmpty(collidableDirections,
+                StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(directions)));
             CollidableDirections.Clear();
-            CollidableDirections.AddRange(directions);
+            CollidableDirections.AddRange(collidableDirections);
             return this;
         }
     }

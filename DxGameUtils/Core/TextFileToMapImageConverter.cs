@@ -72,16 +72,7 @@ namespace DxGameUtils.Core
                             var mapY = y * BLOCK_SIZE;
                             graphics.DrawImage(mapBlock, new Point(mapX, mapY));
 
-                            Platform block = new Platform
-                            {
-                                BoundingBox = new DxRectangle(mapX, mapY, BLOCK_SIZE, BLOCK_SIZE)
-                            };
-
-                            foreach (
-                                CollidableDirection collidableDirection in Enum.GetValues(typeof (CollidableDirection)))
-                            {
-                                block.CollidableDirections.Add(collidableDirection);
-                            }
+                            Platform block = new Platform(new DxRectangle(mapX, mapY, BLOCK_SIZE, BLOCK_SIZE));
 
                             descriptor.Platforms.Add(block);
                         }

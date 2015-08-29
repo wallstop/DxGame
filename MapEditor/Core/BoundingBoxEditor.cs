@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Map;
-using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
 using DXGame.Core.Wrappers;
 
@@ -96,16 +93,10 @@ namespace MapEditor.Core
             originalBoundaries_.Clear();
             originalBoundaries_.AddRange(transformedBoundaries);
 
-            var platforms = OriginalScaleBoundaries.Select(boundary => new Platform(boundary)
-            {
-                CollidableDirections =
-                    new List<CollidableDirection>(
-                        Enum.GetValues(typeof (CollidableDirection)).ToEnumerable<CollidableDirection>())
-            }).ToList();
+            var platforms = OriginalScaleBoundaries.Select(boundary => new Platform(boundary)).ToList();
             descriptor_.Platforms = platforms.Select(platform => new
                 Platform(platform.BoundingBox * Zoom())
             {
-                CollidableDirections = platform.CollidableDirections,
                 Type = platform.Type
             }).ToList();
             tree_ = new RTree<Platform>(PlatformBounds, platforms);

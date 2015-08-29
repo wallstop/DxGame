@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Map;
+using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 
 namespace DXGame.Core.Map
@@ -9,22 +12,40 @@ namespace DXGame.Core.Map
     public enum PlatformType
     {
         Block,
-        Ladder
+        Platform
     }
 
     [Serializable]
     [DataContract]
     public class Platform
     {
+        public static readonly ReadOnlyDictionary<PlatformType, ReadOnlyCollection<CollidableDirection>>
+            PLATFORM_COLLISIONS =
+                new ReadOnlyDictionary<PlatformType, ReadOnlyCollection<CollidableDirection>>(
+                    new Dictionary<PlatformType, ReadOnlyCollection<CollidableDirection>>
+                    {
+                        {
+                            PlatformType.Block,
+                            new ReadOnlyCollection<CollidableDirection>(
+                                Enum.GetValues(typeof (CollidableDirection))
+                                    .ToEnumerable<CollidableDirection>()
+                                    .ToList())
+                        },
+                        {
+                            PlatformType.Platform,
+                            new ReadOnlyCollection<CollidableDirection>(
+                                new List<CollidableDirection>(new[] {CollidableDirection.Up}))
+                        }
+                    })
+            ;
+
         [DataMember]
         public PlatformType Type { get; set; }
 
         [DataMember]
         public DxRectangle BoundingBox { get; set; }
 
-        [DataMember]
-        public List<CollidableDirection> CollidableDirections { get; set; } =
-            new List<CollidableDirection>();
+        public IEnumerable<CollidableDirection> CollidableDirections => PLATFORM_COLLISIONS[Type];
 
         public Platform(DxRectangle boundingBox, PlatformType type = PlatformType.Block)
         {
@@ -40,13 +61,12 @@ namespace DXGame.Core.Map
                 return false;
             }
 
-            return Type == platform.Type && BoundingBox == platform.BoundingBox &&
-                   CollidableDirections == platform.CollidableDirections;
+            return Type == platform.Type && BoundingBox == platform.BoundingBox;
         }
 
         public override int GetHashCode()
         {
-            return Tuple.Create(Type, BoundingBox, CollidableDirections).GetHashCode();
+            return Tuple.Create(Type, BoundingBox).GetHashCode();
         }
 
         public override string ToString()

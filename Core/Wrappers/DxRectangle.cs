@@ -16,7 +16,7 @@ namespace DXGame.Core.Wrappers
         [DataMember] public float X;
         [DataMember] public float Y;
         public float Area => Width * Height;
-        public DxRectangle EmptyRectangle => new DxRectangle();
+        public static DxRectangle EmptyRectangle => new DxRectangle();
         public float Left => X;
         public float Right => X + Width;
         public float Top => Y;

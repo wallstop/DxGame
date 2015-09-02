@@ -1,0 +1,42 @@
+﻿using System;
+using System.IO;
+using DXGame.Core.Map;
+using DXGame.Core.Utils;
+using NLog;
+
+namespace DXGame.Core
+{
+    public abstract class JsonPersistable<T> : IPersistable<T>
+    {
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        public abstract string Extension { get; }
+        public abstract T Item { get; }
+
+        public static T StaticLoad(string fileName)
+        {
+            var settingsAsText = File.ReadAllText(fileName);
+            var settingsAsJsonByteArray = StringUtils.GetBytes(settingsAsText);
+            return Serializer<T>.JsonDeserialize(settingsAsJsonByteArray);
+        }
+
+        public T Load(string fileName)
+        {
+            return StaticLoad(fileName);
+        }
+
+        public void Save(string fileName)
+        {
+            try
+            {
+                string simpleName = Path.GetFileNameWithoutExtension(fileName);
+                string directory = Path.GetDirectoryName(fileName);
+                Serializer<T>.WriteToJsonFile(Item, directory + Path.DirectorySeparatorChar + simpleName + Extension);
+            }
+            catch (Exception e)
+            {
+                LOG.Error(e,
+                    $"Caught unexpected exception while saving {typeof (MapDescriptor)} {this} at {fileName}");
+            }
+        }
+    }
+}

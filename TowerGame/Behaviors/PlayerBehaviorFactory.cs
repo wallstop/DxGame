@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using DXGame.Core.Animation;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
@@ -26,26 +27,33 @@ namespace DXGame.TowerGame.Behaviors
 
                 TODO: Clean this the hell up
             */
+            var playerName = "Player";
             var stateMachineBuilder = StateMachine.Builder();
             stateMachineBuilder.WithDxGame(game);
 
             var idleState = IdleState(player);
             // TODO: Figure out how to make this generic / modular
-            animation.WithStateAndAsset(idleState, "PlayerNone");
+            animation.WithStateAndAsset(idleState, AnimationFactory.AnimationFor(playerName, StandardAnimationType.Idle));
             var stateMachine = stateMachineBuilder.WithInitialState(idleState).Build();
 
             var moveLeftState = MoveLeftState(player);
-            animation.WithStateAndAsset(moveLeftState, "PlayerWalkingLeft");
+            animation.WithStateAndAsset(moveLeftState,
+                AnimationFactory.AnimationFor(playerName, StandardAnimationType.WalkingLeft));
             var moveRightState = MoveRightState(player);
-            animation.WithStateAndAsset(moveRightState, "PlayerWalkingRight");
+            animation.WithStateAndAsset(moveRightState,
+                AnimationFactory.AnimationFor(playerName, StandardAnimationType.WalkingRight));
             var initialJumpState = BeginningJumpState(player);
-            animation.WithStateAndAsset(initialJumpState, "PlayerJumping");
+            animation.WithStateAndAsset(initialJumpState,
+                AnimationFactory.AnimationFor(playerName, StandardAnimationType.JumpLeft));
             var jumpingLeftState = JumpingLeftState(player);
-            animation.WithStateAndAsset(jumpingLeftState, "PlayerJumping");
+            animation.WithStateAndAsset(jumpingLeftState,
+                AnimationFactory.AnimationFor(playerName, StandardAnimationType.JumpLeft));
             var jumpingRightState = JumpingRightState(player);
-            animation.WithStateAndAsset(jumpingRightState, "PlayerJumping");
+            animation.WithStateAndAsset(jumpingRightState,
+                AnimationFactory.AnimationFor(playerName, StandardAnimationType.JumpRight));
             var jumpingState = JumpState(player);
-            animation.WithStateAndAsset(jumpingState, "PlayerJumping");
+            animation.WithStateAndAsset(jumpingState,
+                AnimationFactory.AnimationFor(playerName, StandardAnimationType.JumpLeft));
 
             Trigger moveLeftTrigger =
                 (dxGame, gameTime) =>

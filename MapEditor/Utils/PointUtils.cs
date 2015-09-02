@@ -13,5 +13,10 @@ namespace MapEditor.Utils
         {
             return new Point(offset.X - source.X, offset.Y - source.Y);
         }
+
+        public static Point Multiply(this Point source, double scalar)
+        {
+            return new Point((int)(source.X * scalar), (int)(source.Y * scalar));
+        }   
     }
 }

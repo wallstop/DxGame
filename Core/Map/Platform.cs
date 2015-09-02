@@ -36,8 +36,7 @@ namespace DXGame.Core.Map
                             new ReadOnlyCollection<CollidableDirection>(
                                 new List<CollidableDirection>(new[] {CollidableDirection.Up}))
                         }
-                    })
-            ;
+                    });
 
         [DataMember]
         public PlatformType Type { get; set; }
@@ -45,7 +44,13 @@ namespace DXGame.Core.Map
         [DataMember]
         public DxRectangle BoundingBox { get; set; }
 
+        [IgnoreDataMember]
         public IEnumerable<CollidableDirection> CollidableDirections => PLATFORM_COLLISIONS[Type];
+
+        /* Only necessary for JSON Serialization */
+        private Platform()
+        {
+        }
 
         public Platform(DxRectangle boundingBox, PlatformType type = PlatformType.Block)
         {

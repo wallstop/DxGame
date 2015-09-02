@@ -33,8 +33,8 @@ namespace DXGame.Core.Models
                     .Where(
                         path =>
                             Path.HasExtension(path) &&
-                            (Path.GetExtension(path)?.Equals(MapDescriptor.Extension) ?? false))
-                    .Select(Serializer<MapDescriptor>.ReadFromJsonFile)
+                            (Path.GetExtension(path)?.Equals(MapDescriptor.MapExtension) ?? false))
+                    .Select(MapDescriptor.StaticLoad)
                     .Select(mapDescriptor => new Map.Map(DxGame, mapDescriptor));
             maps_.AddRange(maps);
             Validate.IsNotEmpty(maps_, $"Failed to find maps! Check {MAP_PATH} for valid descriptors");

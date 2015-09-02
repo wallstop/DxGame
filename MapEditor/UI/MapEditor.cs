@@ -109,10 +109,11 @@ namespace MapEditor.UI
         {
             get
             {
-                var tempArea = (SelectedArea / ZoomFactor);
-                var translation = Translation;
-                var area = new DxRectangle(tempArea.X - translation.X, tempArea.Y - translation.Y, tempArea.Width,
-                    tempArea.Height);
+                // TODO: WTF
+                var translation = Translation.Multiply(1 / ZoomFactor);
+
+                var area = new DxRectangle((float)((SelectedArea.X / ZoomFactor  - translation.X)), (float)((SelectedArea.Y / ZoomFactor  - translation.Y) ), (float)(SelectedArea.Width / ZoomFactor),
+                    (float)(SelectedArea.Height / ZoomFactor));
                 return area;
             }
         }
@@ -354,8 +355,8 @@ namespace MapEditor.UI
             var graphics = eventArgs.Graphics;
             mapArea_.Size = ImageSize;
             var translation = Translation;
-            graphics.DrawImage(baseImage_, ImageView.Add(translation),
-                ImageView.Multiply(1 / ZoomFactor),
+            graphics.DrawImage(baseImage_, ImageView,
+                ImageView.Subtract(translation.Multiply(1 / ZoomFactor)).Multiply(1 / ZoomFactor),
                 GraphicsUnit.Pixel);
             foreach (var rectangle in boundingBoxEditor_.Collidables)
             {
@@ -367,8 +368,8 @@ namespace MapEditor.UI
             if (mode_ != RectangleMode.Pan && mode_ != RectangleMode.None)
             {
                 var selectedArea = SelectedArea;
-                graphics.DrawRectangle(Pens.Red, (int) selectedArea.X + translation.X,
-                    (int) selectedArea.Y + translation.Y, (int) selectedArea.Width,
+                graphics.DrawRectangle(Pens.Red, (int) selectedArea.X - translation.X,
+                    (int) selectedArea.Y - translation.Y, (int) selectedArea.Width,
                     (int) selectedArea.Height);
             }
         }

@@ -13,11 +13,6 @@ namespace DXGame.Core.Generators
     public class PlayerGenerator
     {
         // TODO: Make player sprites scalable
-        private const string PLAYER_NONE = "PlayerNone";
-        private const string PLAYER_WALKING_RIGHT = "PlayerWalkingRight";
-        private const string PLAYER_WALKING_LEFT = "PlayerWalkingLeft";
-        private const string PLAYER_JUMPING = "PlayerJumping";
-        private const string PLAYER_2 = "Player2";
         private static readonly DxVector2 MAX_VELOCITY = new DxVector2(5.0f, 20.0f);
         private readonly DxGame game_;
         private readonly FloatingHealthIndicator healthBar_;
@@ -33,7 +28,7 @@ namespace DXGame.Core.Generators
                     .WithXMax(bounds.Width)
                     .WithXMin(bounds.Y)
                     .WithYMax(bounds.Height)
-                    .WithDimensions(new DxVector2(50, 100)) // TODO: un-hard code these
+                    .WithDimensions(new DxVector2(50, 50)) // TODO: un-hard code these
                     .WithPosition(playerPosition);
             physics_ =
                 new MapCollideablePhysicsComponent(game).WithMaxVelocity(MAX_VELOCITY)

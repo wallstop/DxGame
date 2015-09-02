@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using DXGame.Core.Animation;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.State;
@@ -15,7 +16,7 @@ namespace DXGame.Core.Components.Advanced
     [DataContract]
     public class AnimationComponent : DrawableComponent
     {
-        [DataMember] private readonly Dictionary<State.State, Animation> animationsForStates_;
+        [DataMember] private readonly Dictionary<State.State, Animation.Animation> animationsForStates_;
 
         [DataMember]
         public PositionalComponent Position { get; }
@@ -24,7 +25,8 @@ namespace DXGame.Core.Components.Advanced
         public StateMachine StateMachine { get; }
 
         private AnimationComponent(DxGame game, StateMachine stateMachine,
-            Dictionary<State.State, Animation> animationsForStates, PositionalComponent position) : base(game)
+            Dictionary<State.State, Animation.Animation> animationsForStates, PositionalComponent position)
+            : base(game)
         {
             Validate.IsNotNullOrDefault(stateMachine, StringUtils.GetFormattedNullOrDefaultMessage(this, stateMachine));
             Validate.IsNotNullOrDefault(position, StringUtils.GetFormattedNullOrDefaultMessage(this, position));
@@ -61,10 +63,18 @@ namespace DXGame.Core.Components.Advanced
             animation.Draw(spritebatch, gameTime);
         }
 
+        protected override void Update(DxGameTime gameTime)
+        {
+            var currentState = StateMachine.CurrentState;
+            var animation = animationsForStates_[currentState];
+            animation.Process(gameTime);
+            base.Update(gameTime);
+        }
+
         public class AnimationComponentBuilder : IBuilder<AnimationComponent>
         {
-            private readonly Dictionary<State.State, Animation> animationsForStates_ =
-                new Dictionary<State.State, Animation>();
+            private readonly Dictionary<State.State, Animation.Animation> animationsForStates_ =
+                new Dictionary<State.State, Animation.Animation>();
 
             private DxGame game_;
             private PositionalComponent position_;
@@ -94,14 +104,15 @@ namespace DXGame.Core.Components.Advanced
                 return this;
             }
 
-            public AnimationComponentBuilder WithStateAndAsset(State.State state, string assetName)
+            public AnimationComponentBuilder WithStateAndAsset(State.State state, AnimationDescriptor descriptor)
             {
                 Validate.IsNotNull(position_,
-                    $"Creating {typeof (Animation)} requires that the {typeof (PositionalComponent)} be set first");
-                Validate.IsNotNullOrDefault(state, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(assetName)));
+                    $"Creating {typeof (Animation.Animation)} requires that the {typeof (PositionalComponent)} be set first");
+                Validate.IsNotNullOrDefault(state,
+                    StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(descriptor)));
                 Validate.IsFalse(animationsForStates_.ContainsKey(state),
                     StringUtils.GetFormattedAlreadyContainsMessage(this, state, animationsForStates_.Keys));
-                var animation = new Animation(assetName).WithPosition(position_);
+                var animation = new Animation.Animation(descriptor).WithPosition(position_);
                 animationsForStates_.Add(state, animation);
                 return this;
             }

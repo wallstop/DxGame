@@ -6,7 +6,7 @@ namespace DXGame.Core.Models
 {
     public static class WorldGravity
     {
-        private const float Gravity = 0.98f;
+        private const float Gravity = 0.7f;
         private static readonly DxVector2 GRAVITY_VECTOR = new DxVector2 {X = 0.0f, Y = Gravity};
         /*
             Assumes the provided PhysicsComponent is non-null

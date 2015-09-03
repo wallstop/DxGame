@@ -35,13 +35,14 @@ namespace DXGame.Core.Generators
                     .WithPositionalComponent(PlayerSpace);
 
             playerProperties_ = PlayerPropertiesComponent.DefaultPlayerProperties;
-            playerProperties_.Health.CurrentValue -= 5;
+            /* Fuck with the health so we can check if the hp bar works */
+            playerProperties_.Health.CurrentValue -= 3;
             // TODO: Need to add state machine in (how?)
 
             // TODO Make sure animation component works 
             weapon_ = new RangedWeaponComponent(game).WithPhysicsComponent(physics_).WithDamage(50);
 
-            // TODO
+            // TODO make these colors not shit and/or blend into the current biome
             healthBar_ = new FloatingHealthIndicator(game, new DxVector2(-10, -10), Color.Green,
                 Color.Aquamarine, playerProperties_, PlayerSpace);
             healthBar_.LoadContent();

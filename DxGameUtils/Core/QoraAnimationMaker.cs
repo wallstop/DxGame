@@ -80,12 +80,17 @@ namespace DxGameUtils.Core
                 {
                     using (var graphics = Graphics.FromImage(bitmap))
                     {
-                        graphics.DrawImage(firstFrame, new Point(0, 0));
+                        graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+                        graphics.PixelOffsetMode = PixelOffsetMode.None;
+                        
+                        graphics.DrawImage(firstFrame, new Rectangle(0, 0, firstFrame.Width, firstFrame.Height));
                         for (int i = 1; i < animationFiles.Count; ++i)
                         {
                             using (var animationFrame = Image.FromFile(animationFiles[i]))
                             {
-                                graphics.DrawImage(animationFrame, new Point(animationFrame.Width * i, 0));
+                                graphics.DrawImage(animationFrame,
+                                    new Rectangle(animationFrame.Width * i, 0, animationFrame.Width,
+                                        animationFrame.Height));
                             }
 
                         }

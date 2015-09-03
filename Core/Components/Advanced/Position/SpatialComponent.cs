@@ -26,7 +26,7 @@ namespace DXGame.Core.Components.Advanced.Position
         </summary>
         */
 
-        public virtual DxRectangle Space => VectorUtils.RectangleFrom(position_, dimensions_);
+        public virtual DxRectangle Space => new DxRectangle(Position.X, Position.Y, Dimensions.X, Dimensions.Y);// VectorUtils.RectangleFrom(position_, dimensions_);
         public virtual float Width => dimensions_.X;
         public virtual float Height => dimensions_.Y;
         public virtual DxVector2 Dimensions => dimensions_;

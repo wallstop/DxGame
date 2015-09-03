@@ -29,6 +29,7 @@ namespace DXGame.Core.Animation
         */
 
         private int TotalFrames => AnimationDescriptor.FrameCount;
+        private float Scale => (float)AnimationDescriptor.Scale;
 
         public Animation(AnimationDescriptor descriptor, DrawPriority drawPriority = DrawPriority.NORMAL)
         {
@@ -52,7 +53,7 @@ namespace DXGame.Core.Animation
             int frameWidth = spriteSheet_.Width / TotalFrames;
             Rectangle frameOutline = new Rectangle(frameWidth * currentFrame_, 0, frameWidth, spriteSheet_.Height);
             spriteBatch.Draw(spriteSheet_, position_.Position.ToVector2(), frameOutline, Color.White, 0.0f, Vector2.Zero,
-                1.0f,
+                Scale,
                 SpriteEffects.None, 0);
         }
 

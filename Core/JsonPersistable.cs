@@ -1,15 +1,20 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.Serialization;
 using DXGame.Core.Map;
 using DXGame.Core.Utils;
 using NLog;
 
 namespace DXGame.Core
 {
+    [Serializable]
+    [DataContract]
     public abstract class JsonPersistable<T> : IPersistable<T>
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        [IgnoreDataMember]
         public abstract string Extension { get; }
+        [IgnoreDataMember]
         public abstract T Item { get; }
 
         public static T StaticLoad(string fileName)

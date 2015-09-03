@@ -109,10 +109,7 @@ namespace MapEditor.UI
         {
             get
             {
-                // TODO: WTF
-                var translation = Translation.Multiply(1 / ZoomFactor);
-
-                var area = new DxRectangle((float)((SelectedArea.X / ZoomFactor  - translation.X)), (float)((SelectedArea.Y / ZoomFactor  - translation.Y) ), (float)(SelectedArea.Width / ZoomFactor),
+                var area = new DxRectangle((float)((SelectedArea.X  - 2 * Translation.X) / ZoomFactor), (float)((SelectedArea.Y  - 2 * Translation.Y) / ZoomFactor), (float)(SelectedArea.Width / ZoomFactor),
                     (float)(SelectedArea.Height / ZoomFactor));
                 return area;
             }

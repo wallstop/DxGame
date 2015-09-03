@@ -157,6 +157,7 @@ namespace DXGame.Core.Components.Advanced.Physics
                 {
                     continue;
                 }
+                // There's a bug here that causes like infinite collision detection, fix pls
                 var intersection = DxRectangle.Intersect(mapTile.Space, currentSpace);
                 if (largestIntersection == null || DXRECTANGLE_AREA_COMPARER.Compare(intersection,
                     largestIntersection.Item1) <= 0)

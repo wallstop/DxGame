@@ -13,6 +13,9 @@ namespace DXGame.Core.Components.Advanced.Physics
     [DataContract]
     public class PhysicsComponent : Component
     {
+        /* When colliding with an object, we reverse the velocity vector and apply some decay to it */
+        protected static readonly float VELOCITY_DECAY = 0.4f;
+
         [DataMember] protected DxVector2 acceleration_;
         [DataMember] protected DxVector2 maxAcceleration_;
         [DataMember] protected DxVector2 maxVelocity_;

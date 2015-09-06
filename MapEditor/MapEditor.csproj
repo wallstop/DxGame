@@ -76,6 +76,10 @@
     <Compile Include="UI\MapEditor.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="UI\PlatformSelector.cs" />
+    <Compile Include="UI\RadioToolStripMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Utils\PointUtils.cs" />
     <Compile Include="Utils\RectangleUtils.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

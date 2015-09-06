@@ -10,7 +10,9 @@ namespace DXGame.Core.Map
     public class MapDescriptor : JsonPersistable<MapDescriptor>
     {
         public static string MapExtension => ".mdtr";
+        [IgnoreDataMember]
         public override string Extension => MapExtension;
+        [IgnoreDataMember]
         public override MapDescriptor Item => this;
 
         [DataMember]
@@ -21,5 +23,8 @@ namespace DXGame.Core.Map
 
         [DataMember]
         public DxRectangle Size { get; set; }
+
+        [DataMember]
+        public float Scale { get; set; } = 1.0f;
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using MapEditor.Core;
@@ -22,6 +23,7 @@ namespace MapEditor.UI
 
     public class MapEditor : MetroForm, IMessageFilter
     {
+        /* TODO: Clean this up, pls, I'm not good at GUI code */
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private static readonly TimeSpan DRAW_INTERVAL = TimeSpan.FromMilliseconds(16);
         private static readonly string PLACEHOLDER_DIRECTORY = "Placeholders";
@@ -82,6 +84,8 @@ namespace MapEditor.UI
             get { return zoomFactor_; }
             set { zoomFactor_ = Math.Max(MINIMUM_ZOOM, value); }
         }
+
+        private PlatformSelector platformSelector_;
 
         private DxRectangle SelectedArea
         {
@@ -177,9 +181,11 @@ namespace MapEditor.UI
             var newMap = new ToolStripMenuItem();
             var save = new ToolStripMenuItem();
             var load = new ToolStripMenuItem();
-
+           
+            
             mainMenu.Items.Add(file);
             mainMenu.Items.Add(reset);
+            
             mainMenu.Location = new Point(MAIN_PANEL_BORDER, TITLE_HEIGHT);
             mainMenu.Size = new Size(260, MENU_HEIGHT);
 
@@ -219,8 +225,10 @@ namespace MapEditor.UI
             load.Size = subMenuSize;
             //load.Click += HandleNewMap;
 
+            platformSelector_ = new PlatformSelector(mainMenu);
             Controls.Add(mainMenu);
             MainMenuStrip = mainMenu;
+
 
             mainMenu.ResumeLayout(false);
             mainMenu.PerformLayout();
@@ -333,7 +341,7 @@ namespace MapEditor.UI
         private void HandleNewCollisionArea()
         {
             var area = TranslatedSelectedArea;
-            boundingBoxEditor_.Add(area);
+            boundingBoxEditor_.Add(area, platformSelector_.PlatformType);
         }
 
         private void HandleDelete()

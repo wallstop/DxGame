@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
@@ -17,7 +18,7 @@ namespace DXGame.Core.Map
     {
         public MapDescriptor MapDescriptor { get; }
         public Texture2D MapTexture { get; private set; }
-        public QuadTree<CollidableComponent> Collidables { get; private set; }
+        public ICollisionTree<MapCollidableComponent> Collidables { get; private set; }
         public DxVector2 PlayerSpawn { get; private set; }
 
         public Map(DxGame game, MapDescriptor descriptor)
@@ -37,17 +38,16 @@ namespace DXGame.Core.Map
 
         public override void Initialize()
         {
-            List<CollidableComponent> mapSpatials =
+            List<MapCollidableComponent> mapSpatials =
                 MapDescriptor.Platforms.Select(
                     platform =>
-                        (CollidableComponent)
-                            new CollidableComponent(DxGame).WithCollidableDirections(platform.CollidableDirections)
+                        (MapCollidableComponent)
+                            new MapCollidableComponent(DxGame, platform.Type).WithCollidableDirections(platform.CollidableDirections)
                                 .WithDimensions(new DxVector2(platform.BoundingBox.Width,
                                     platform.BoundingBox.Height)).WithPosition(new DxVector2(platform.BoundingBox.XY())))
                     .ToList();
 
-            Collidables = new QuadTree<CollidableComponent>((spatial => spatial.Center), MapDescriptor.Size,
-                mapSpatials);
+            Collidables = new RTree<MapCollidableComponent>((spatial => spatial.Space), mapSpatials);
             DeterminePlayerSpawn();
             base.Initialize();
         }
@@ -62,25 +62,27 @@ namespace DXGame.Core.Map
             var target = range;
             target.X = -target.X;
             target.Y = -target.Y;
-            spriteBatch.Draw(MapTexture, target.ToRectangle(), target.ToRectangle(), Color.White);
+            spriteBatch.Draw(MapTexture, (target ).ToRectangle(), (target / MapDescriptor.Scale).ToRectangle(), Color.White);
         }
 
         public void DeterminePlayerSpawn()
         {
-            var boundary = MapDescriptor.Size;
+            var boundary = MapDescriptor.Size * MapDescriptor.Scale;
             var rGen = new Random();
             DxRectangle playerSpawn;
             do
             {
+                /* Pick a random place that has at least a 500x500 area of "no map collidables" */
+                /* TODO: Have this be some kind of chooseable algorithm or something (bundled in map descriptor? ) */
                 playerSpawn = new DxRectangle(rGen.Next((int) boundary.X, (int) (boundary.X + boundary.Width)),
-                    rGen.Next((int) boundary.Y, (int) (boundary.Y + boundary.Height)), 300, 300);
+                    rGen.Next((int) boundary.Y, (int) (boundary.Y + boundary.Height)), 500, 500);
             } while (CollidesWithMap(playerSpawn));
             PlayerSpawn = new DxVector2(playerSpawn.XY());
         }
 
         private bool CollidesWithMap(DxRectangle region)
         {
-            List<CollidableComponent> collisions = Collidables.InRange(region);
+            List<MapCollidableComponent> collisions = Collidables.InRange(region);
             return collisions.Any(collidable => collidable.Space.Intersects(region));
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Physics;
+using DXGame.Core.Components.Advanced.Player;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Wrappers;
@@ -53,8 +54,9 @@ namespace DXGame.Core.Generators
         {
             var objects = new List<GameObject>();
             var playerBuilder = GameObject.Builder();
+            var inputListener = new PlayerInputListener(game_);
             playerBuilder.WithComponents(PlayerSpace, physics_, weapon_,
-                playerProperties_, healthBar_);
+                playerProperties_, healthBar_, inputListener);
             var player = playerBuilder.Build();
             var animationBuilder = AnimationComponent.Builder().WithDxGame(game_).WithPosition(PlayerSpace);
             var playerStateMachine = PlayerBehaviorFactory.GevurahBehavior(game_, animationBuilder,

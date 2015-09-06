@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
+using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
@@ -50,6 +51,13 @@ namespace DXGame.Core.Map
         /* Only necessary for JSON Serialization */
         private Platform()
         {
+        }
+
+        public Platform(Platform copy)
+        {
+            Validate.IsNotNull(copy, StringUtils.GetFormattedNullOrDefaultMessage(this, copy));
+            BoundingBox = copy.BoundingBox;
+            Type = copy.Type;
         }
 
         public Platform(DxRectangle boundingBox, PlatformType type = PlatformType.Block)

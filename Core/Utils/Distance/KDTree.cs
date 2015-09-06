@@ -61,14 +61,14 @@ namespace DXGame.Core.Utils.Distance
         }
     }
 
-    public class KDTree<T>
+    public class KDTree<T> : ICollisionTree<T>
     {
         private static readonly int DEFAULT_BUCKET_SIZE = 12;
         private readonly DxRectangle boundary_;
         private readonly Coordinate<T> coordinate_;
         private readonly KDTreeNode<T> head_;
 
-        public List<DxRectangle> Quadrants
+        public List<DxRectangle> Divisions
         {
             get
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Menus;
@@ -53,6 +54,8 @@ namespace DXGame.Main
         public double TargetFps => 60.0;
         public GameElementCollection NewGameElements { get; } = new GameElementCollection();
         public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
+
+        public DxGameTime CurrentTime { get; private set; }
 
         public DxRectangle ScreenRegion
         {
@@ -255,6 +258,7 @@ namespace DXGame.Main
         protected override void Update(GameTime gameTime)
         {
             var dxGameTime = new DxGameTime(gameTime);
+            CurrentTime = dxGameTime;
 
             // Querying Gamepad.GetState(...) requires xinput1_3.dll (The xbox 360 controller driver). Interesting fact...
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))

@@ -11,7 +11,7 @@ namespace DXGame.TowerGame.Behaviors
 {
     public static class PlayerBehaviorFactory
     {
-        private static readonly float INITIAL_MOVEMENT_BOOST = 1.5f;
+        private static readonly float INITIAL_MOVEMENT_BOOST = 1.1f;
 
         public static StateMachine BasicPlayerBehavior(DxGame game)
         {
@@ -54,6 +54,8 @@ namespace DXGame.TowerGame.Behaviors
             var jumpingState = JumpState(player);
             animation.WithStateAndAsset(jumpingState,
                 AnimationFactory.AnimationFor(playerName, StandardAnimationType.JumpLeft));
+
+
 
             Trigger moveLeftTrigger =
                 (dxGame, gameTime) =>
@@ -117,7 +119,6 @@ namespace DXGame.TowerGame.Behaviors
             jumpingLeftState.Transitions.Add(jumpToIdleTransition);
             jumpingRightState.Transitions.Add(jumpToIdleTransition);
             jumpingState.Transitions.Add(jumpToIdleTransition);
-
 
             return stateMachine;
         }

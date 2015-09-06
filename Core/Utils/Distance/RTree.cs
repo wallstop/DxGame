@@ -71,7 +71,7 @@ namespace DXGame.Core.Utils.Distance
         }
     }
 
-    public class RTree<T>
+    public class RTree<T> : ICollisionTree<T>
     {
         private static readonly int DEFAULT_BUCKET_SIZE = 10;
         private static readonly int DEFAULT_BRANCH_FACTOR = 4;
@@ -79,7 +79,7 @@ namespace DXGame.Core.Utils.Distance
         private readonly BoundingBox<T> boundingBox_;
         private readonly RTreeNode<T> head_;
 
-        public List<DxRectangle> Rectangles
+        public List<DxRectangle> Divisions
         {
             get
             {

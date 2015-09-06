@@ -16,7 +16,7 @@ namespace DXGame.Core.Models
         private static readonly string MAP_PATH = "Content/Map/";
         private readonly List<Map.Map> maps_ = new List<Map.Map>();
         public DxVector2 PlayerSpawn => Map.PlayerSpawn;
-        public DxRectangle MapBounds => Map.MapDescriptor.Size;
+        public DxRectangle MapBounds => Map.MapDescriptor.Size * Map.MapDescriptor.Scale;
         public Map.Map Map { get; private set; }
 
         public MapModel(DxGame game)
@@ -44,7 +44,7 @@ namespace DXGame.Core.Models
         public override void Initialize()
         {
             // Figure out a better way of choosing the map
-            Map = maps_[1];
+            Map = maps_[1]; // Always grab sample map (testing yay)
             Map.LoadContent();
             Map.Initialize();
             base.Initialize();

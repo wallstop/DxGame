@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -11,10 +12,10 @@ namespace MapEditor.Core
 {
     public class BoundingBoxEditor
     {
-        private static readonly float MAX_COLLIDABLE_WIDTH = 50;
-        private static readonly float MAX_COLLIDABLE_HEIGHT = 50;
         private readonly MapDescriptor descriptor_;
-        private readonly List<DxRectangle> originalBoundaries_ = new List<DxRectangle>();
+
+        private readonly List<Tuple<DxRectangle, PlatformType>> originalBoundaries_ =
+            new List<Tuple<DxRectangle, PlatformType>>();
         private RTree<Platform> tree_;
         private double zoomFactor_ = 1.0;
 
@@ -23,8 +24,8 @@ namespace MapEditor.Core
             get { return platform => platform.BoundingBox; }
         }
 
-        public IEnumerable<DxRectangle> Collidables => tree_.Rectangles;
-        public IEnumerable<DxRectangle> OriginalScaleBoundaries => originalBoundaries_;
+        public IEnumerable<DxRectangle> Collidables => tree_.Divisions;
+        public IEnumerable<Tuple<DxRectangle, PlatformType>> OriginalScaleBoundaries => originalBoundaries_;
 
         public BoundingBoxEditor()
         {
@@ -37,9 +38,9 @@ namespace MapEditor.Core
             return zoomFactor_;
         }
 
-        public void Add(DxRectangle area)
+        public void Add(DxRectangle area, PlatformType type)
         {
-            originalBoundaries_.Add(area);
+            originalBoundaries_.Add(Tuple.Create(area, type));
             ResetTree();
         }
 
@@ -49,7 +50,7 @@ namespace MapEditor.Core
             originalBoundaries_.RemoveAll(
                 boundary =>
                     platformsInRange.Select(platform => platform.BoundingBox)
-                        .Any(existing => existing.Intersects(boundary)));
+                        .Any(existing => existing.Intersects(boundary.Item1)));
             ResetTree();
         }
 
@@ -74,13 +75,14 @@ namespace MapEditor.Core
             var baseName = directory + Path.DirectorySeparatorChar + simpleName;
             var mapImageFileEnding = ".png";
 
-            var outImage = new Bitmap(map, (int) (map.Width * zoomFactor_), (int) (map.Height * zoomFactor_));
+            var outImage = new Bitmap(map);
             outImage.Save(baseName + mapImageFileEnding, ImageFormat.Png);
             var descriptor = new MapDescriptor
             {
                 Asset = simpleName + mapImageFileEnding,
                 Platforms = descriptor_.Platforms,
-                Size = new DxRectangle(0, 0, outImage.Width, outImage.Height)
+                Size = new DxRectangle(0, 0, outImage.Width, outImage.Height),
+                Scale = (float)Zoom()
             };
 
             descriptor.Save(fileName);
@@ -88,16 +90,12 @@ namespace MapEditor.Core
 
         private void ResetTree()
         {
-            var transformedBoundaries = OriginalScaleBoundaries.SelectMany(boundary => (boundary * Zoom())
-                .Divide(MAX_COLLIDABLE_WIDTH, MAX_COLLIDABLE_HEIGHT)).Select(boundary => boundary / Zoom()).ToList();
-            originalBoundaries_.Clear();
-            originalBoundaries_.AddRange(transformedBoundaries);
-
-            var platforms = OriginalScaleBoundaries.Select(boundary => new Platform(boundary)).ToList();
-            descriptor_.Platforms = platforms.Select(platform => new
-                Platform(platform.BoundingBox * Zoom())
+            var platforms = OriginalScaleBoundaries.Select(boundary => new Platform(boundary.Item1, boundary.Item2)).ToList();
+            descriptor_.Platforms = platforms.Select(platform =>
             {
-                Type = platform.Type
+                var copy = new Platform(platform);
+                copy.BoundingBox = copy.BoundingBox * Zoom();
+                return copy;
             }).ToList();
             tree_ = new RTree<Platform>(PlatformBounds, platforms);
         }

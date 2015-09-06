@@ -14,7 +14,7 @@ namespace DXGame.Core.Components.Advanced.Properties
                 MaxHealth = new Property<int>(10, "MaxHealth"),
                 Defense = new Property<int>(1, "Defense"),
                 MoveSpeed = new Property<float>(10.0f, "MoveSpeed"),
-                JumpSpeed = new Property<float>(5.0f, "JumpSpeed"),
+                JumpSpeed = new Property<float>(15.0f, "JumpSpeed"),
                 AttackSpeed =
                     new Property<TimeSpan>(TimeSpan.FromMilliseconds(300), "AttackSpeed")
             };

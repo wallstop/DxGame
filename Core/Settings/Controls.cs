@@ -23,10 +23,13 @@ namespace DXGame.Core.Settings
         public Keys Jump { get; set; }
 
         [DataMember]
+        public Keys Down { get; set; }
+
+        [DataMember]
         public Keys Attack { get; set; }
 
         public static Controls DefaultControls
-            => new Controls {Left = Keys.Left, Right = Keys.Right, Jump = Keys.Up, Attack = Keys.Space};
+            => new Controls {Left = Keys.Left, Right = Keys.Right, Jump = Keys.Up, Down = Keys.Down, Attack = Keys.Space};
 
         public static string ControlSettingsPath => "Controls.json";
         public override string Path => ControlSettingsPath;
@@ -40,6 +43,7 @@ namespace DXGame.Core.Settings
             Left = other.Left;
             Right = other.Right;
             Jump = other.Jump;
+            Down = other.Down;
             Attack = other.Attack;
         }
     }

@@ -9,13 +9,13 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.GraphicsWidgets.Utils
 {
-    public delegate QuadTree<T> QuadTreeProducer<T>();
+    public delegate ICollisionTree<T> CollisionTreeProducer<T>();
 
-    public class QuadTreeWidget<T> : DrawableComponent
+    public class CollisionTreeWidget<T> : DrawableComponent
     {
-        private readonly QuadTreeProducer<T> producer_;
+        private readonly CollisionTreeProducer<T> producer_;
 
-        public QuadTreeWidget(DxGame game, QuadTreeProducer<T> quadTreeProducer) : base(game)
+        public CollisionTreeWidget(DxGame game, CollisionTreeProducer<T> quadTreeProducer) : base(game)
         {
             Validate.IsNotNullOrDefault(quadTreeProducer,
                 StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(quadTreeProducer)));
@@ -24,11 +24,11 @@ namespace DXGame.Core.GraphicsWidgets.Utils
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            QuadTree<T> quadTree = producer_();
-            List<DxRectangle> quadrants = quadTree.Quadrants;
-            foreach (var quadrant in quadrants)
+            ICollisionTree<T> quadTree = producer_();
+            List<DxRectangle> divisions = quadTree.Divisions;
+            foreach (var division in divisions)
             {
-                SpriteBatchUtils.DrawBorder(DxGame, quadrant, 1, Color.DarkSlateBlue);
+                SpriteBatchUtils.DrawBorder(DxGame, division, 1, Color.DarkSlateBlue);
             }
         }
     }

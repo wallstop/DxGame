@@ -355,6 +355,7 @@ namespace MapEditor.UI
             UpdateOffset();
         }
 
+        
         private void PaintMapArea(object sender, PaintEventArgs eventArgs)
         {
             var graphics = eventArgs.Graphics;

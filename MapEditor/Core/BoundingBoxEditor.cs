@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using DXGame.Core.Map;
+using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
 using DXGame.Core.Wrappers;
 
@@ -80,7 +81,8 @@ namespace MapEditor.Core
             var descriptor = new MapDescriptor
             {
                 Asset = simpleName + mapImageFileEnding,
-                Platforms = descriptor_.Platforms,
+                /* There's a subtle bug elsewhere that is causing 0-size rectangles to be created, so simply ignore them for now (bug hunt later) */
+                Platforms = descriptor_.Platforms.Where(platform => platform.BoundingBox.Width > 0 && platform.BoundingBox.Height > 0).ToList(),
                 Size = new DxRectangle(0, 0, outImage.Width, outImage.Height),
                 Scale = (float)Zoom()
             };

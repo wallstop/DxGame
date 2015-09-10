@@ -95,11 +95,16 @@ namespace DXGame.TowerGame.Behaviors
             initialJumpState.Transitions.Add(new Transition(initialToRealJumpTrigger, jumpingState));
 
             var idleTrigger = new Trigger((dxGame, gameTime) => !dxGame.Model<InputModel>().Events.Any());
+            var notMovingLeftTrigger =  new Trigger((dxGame, gameTime) => !(dxGame.Model<InputModel>().Events.Any(keyEvent => keyEvent.Key == dxGame.Controls.Left)));
+            var notMovingRightTrigger = new Trigger((dxGame, gameTime) =>
+                !(dxGame.Model<InputModel>().Events.Any(keyEvent => keyEvent.Key == dxGame.Controls.Right)));
             var idleMoveTransition = new Transition(idleTrigger, idleState, Priority.LOW);
             var idleJumpTransition = new Transition(idleTrigger, jumpingState, Priority.LOW);
             idleState.Transitions.Add(idleMoveTransition);
             moveLeftState.Transitions.Add(idleMoveTransition);
+            moveLeftState.Transitions.Add(new Transition(notMovingLeftTrigger, idleState, Priority.LOW));
             moveRightState.Transitions.Add(idleMoveTransition);
+            moveRightState.Transitions.Add(new Transition(notMovingRightTrigger, idleState, Priority.LOW));
             jumpingState.Transitions.Add(idleJumpTransition);
             jumpingLeftState.Transitions.Add(idleJumpTransition);
             jumpingRightState.Transitions.Add(idleJumpTransition);

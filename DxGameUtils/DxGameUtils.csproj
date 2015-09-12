@@ -66,6 +66,7 @@
     <Compile Include="Core\GridDrawer.cs" />
     <Compile Include="Core\QoraAnimationMaker.cs" />
     <Compile Include="Core\TextFileToMapImageConverter.cs" />
+    <Compile Include="ProceduralGen\MapGenerator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

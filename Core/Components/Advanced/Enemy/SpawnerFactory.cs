@@ -37,6 +37,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
 
             var simpleAi = new SimpleEnemyAI(game);
             enemyObject.AttachComponent(simpleAi);
+            enemyObject.AttachComponent(stateMachine);
 
             bool hasSpawned = false;
             SpawnTrigger spawnTrigger = gameTime => 

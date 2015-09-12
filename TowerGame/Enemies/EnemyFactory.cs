@@ -66,7 +66,7 @@ namespace DXGame.TowerGame.Enemies
             {
                 var moveRequests = enemyInstance.CurrentMessages
                     .OfType<MovementRequest>();
-                return moveRequests.All(request => request.Direction != Direction.West || request.Direction != Direction.East);
+                return moveRequests.All(request => request.Direction != Direction.West && request.Direction != Direction.East);
             };
 
             var returnToIdleTransition = new Transition(returnToIdleTrigger, idleState);

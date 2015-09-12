@@ -13,6 +13,10 @@ namespace DXGame.TowerGame.Components
 {
     public class SimpleEnemyAI : Component
     {
+        private static readonly TimeSpan MOVEMENT_DELAY_CHECK = TimeSpan.FromSeconds(2);
+        private TimeSpan lastChangedMovement_ = TimeSpan.FromSeconds(0);
+        private Direction direction_ = Direction.East;
+
         public SimpleEnemyAI(DxGame game) 
             : base(game)
         {
@@ -20,7 +24,13 @@ namespace DXGame.TowerGame.Components
 
         protected override void Update(DxGameTime gameTime)
         {
-            var movementRequest = new MovementRequest {Direction = Direction.East};
+            if (lastChangedMovement_ + MOVEMENT_DELAY_CHECK < gameTime.TotalGameTime)
+            {
+                Random rGen = new Random();
+                direction_ = rGen.Next() % 2 == 0 ? Direction.East : Direction.West;
+                lastChangedMovement_ = gameTime.TotalGameTime;
+            }
+            var movementRequest = new MovementRequest {Direction = direction_};
             Parent.BroadcastMessage(movementRequest);
             base.Update(gameTime);
         }

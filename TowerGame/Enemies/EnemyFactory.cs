@@ -43,7 +43,7 @@ namespace DXGame.TowerGame.Enemies
             {
                 var moveRequests = enemyInstance.CurrentMessages
                     .OfType<MovementRequest>();
-                return moveRequests.Any(request => request.Direction == Direction.East);
+                return moveRequests.Any(request => request.Direction == Direction.West);
             };
             var moveLeftTransition = new Transition(moveLeftTrigger, moveLeftState);
 
@@ -55,7 +55,7 @@ namespace DXGame.TowerGame.Enemies
             {
                 var moveRequests = enemyInstance.CurrentMessages
                     .OfType<MovementRequest>();
-                return moveRequests.Any(request => request.Direction == Direction.West);
+                return moveRequests.Any(request => request.Direction == Direction.East);
             };
             var moveRightTransition = new Transition(moveRightTrigger, moveRightState);
             idleState.Transitions.Add(moveRightTransition);

@@ -84,7 +84,6 @@ namespace DXGame.Core.Components.Advanced.Enemy
 
             public SpawnerBuilder WithSpawnTrigger(SpawnTrigger trigger)
             {
-                
                 spawnTrigger_ = trigger;
                 return this;
             }

@@ -20,8 +20,7 @@ namespace DXGame.TowerGame.Components
 
         protected override void Update(DxGameTime gameTime)
         {
-            var movementRequest = new MovementRequest();
-            movementRequest.Direction = Direction.East;
+            var movementRequest = new MovementRequest {Direction = Direction.East};
             Parent.BroadcastMessage(movementRequest);
             base.Update(gameTime);
         }

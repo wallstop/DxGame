@@ -47,7 +47,7 @@ namespace DXGame.Core.State
         protected override void Update(DxGameTime gameTime)
         {
             CurrentState = CurrentState.Transitions.FirstOrDefault(
-                transition => transition.ShouldTransition(DxGame, gameTime))
+                transition => transition.ShouldTransition(Parent, gameTime))
                 ?.State ?? CurrentState;
             CurrentState.Action(gameTime);
         }

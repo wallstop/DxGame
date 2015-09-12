@@ -9,6 +9,7 @@ using DXGame.Core.Map;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
+using DXGame.Core.Utils.Distance;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using NLog;
@@ -103,12 +104,12 @@ namespace DXGame.Core.Components.Advanced.Physics
                         if (Position.Y + Dimensions.Y >= mapBlockPosition.Y && mapBlockPosition.Y > Position.Y)
                         {
                             Position = new DxVector2(Position.X, mapBlockPosition.Y - Dimensions.Y);
-                            collision.CollisionDirections.Add(CollisionDirection.South);
+                            collision.CollisionDirections.Add(Direction.South);
                         }
                         else // above collision
                         {
                             Position = new DxVector2(Position.X, mapBlockPosition.Y + mapBlockDimensions.Y);
-                            collision.CollisionDirections.Add(CollisionDirection.North);
+                            collision.CollisionDirections.Add(Direction.North);
                         }
                     }
                     /*
@@ -121,13 +122,13 @@ namespace DXGame.Core.Components.Advanced.Physics
                         if (Position.X < mapBlockPosition.X + mapBlockDimensions.X && mapBlockPosition.X < Position.X)
                         {
                             Position = new DxVector2(Position.X + largestIntersection.Width, Position.Y);
-                            collision.CollisionDirections.Add(CollisionDirection.West);
+                            collision.CollisionDirections.Add(Direction.West);
                         }
                         // right collision
                         else
                         {
                             Position = new DxVector2(Position.X - largestIntersection.Width, Position.Y);
-                            collision.CollisionDirections.Add(CollisionDirection.East);
+                            collision.CollisionDirections.Add(Direction.East);
                         }
                     }
                 }

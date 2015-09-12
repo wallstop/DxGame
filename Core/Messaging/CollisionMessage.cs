@@ -1,15 +1,10 @@
 ﻿using System.Collections.Generic;
+using DXGame.Core.Utils.Distance;
 using DXGame.Core.Wrappers;
 
 namespace DXGame.Core.Messaging
 {
-    public enum CollisionDirection
-    {
-        North,
-        East,
-        South,
-        West
-    }
+
 
     /*
         Collision Messages may or may not contain any CollisionDirections. Users should not rely on the fact that 
@@ -18,14 +13,14 @@ namespace DXGame.Core.Messaging
 
     public class CollisionMessage : Message
     {
-        public List<CollisionDirection> CollisionDirections { get; set; }
+        public List<Direction> CollisionDirections { get; set; }
 
         public CollisionMessage()
         {
-            CollisionDirections = new List<CollisionDirection>();
+            CollisionDirections = new List<Direction>();
         }
 
-        public CollisionMessage WithDirection(CollisionDirection direction)
+        public CollisionMessage WithDirection(Direction direction)
         {
             CollisionDirections.Add(direction);
             return this;
@@ -36,19 +31,19 @@ namespace DXGame.Core.Messaging
         {
             if (collisionVector.X > 0)
             {
-                WithDirection(CollisionDirection.East);
+                WithDirection(Direction.East);
             }
             if (collisionVector.X < 0)
             {
-                WithDirection(CollisionDirection.West);
+                WithDirection(Direction.West);
             }
             if (collisionVector.Y > 0)
             {
-                WithDirection(CollisionDirection.South);
+                WithDirection(Direction.South);
             }
             if (collisionVector.Y < 0)
             {
-                WithDirection(CollisionDirection.North);
+                WithDirection(Direction.North);
             }
         }
     }

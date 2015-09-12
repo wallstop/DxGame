@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading;
 using DXGame.Core;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Menus;
@@ -285,6 +286,7 @@ namespace DXGame.Main
             }
             networkModel.SendData(dxGameTime);
             UpdateElements();
+            
             base.Update(gameTime);
         }
 

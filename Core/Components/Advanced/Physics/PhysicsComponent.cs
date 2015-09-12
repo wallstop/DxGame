@@ -4,6 +4,7 @@ using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
+using DXGame.Core.Utils.Distance;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 
@@ -116,15 +117,15 @@ namespace DXGame.Core.Components.Advanced.Physics
             // Check for x-wise collisions 
             var acceleration = Acceleration;
             // Collide on against y axis (vertical)? Cease movement & acceleration in that direction
-            if (collisionDirections.Contains(CollisionDirection.East) ||
-                collisionDirections.Contains(CollisionDirection.West))
+            if (collisionDirections.Contains(Direction.East) ||
+                collisionDirections.Contains(Direction.West))
             {
                 velocity.X = 0;
                 acceleration.X = 0;
             }
             // Same for horizontal movement
-            if (collisionDirections.Contains(CollisionDirection.South) ||
-                collisionDirections.Contains(CollisionDirection.North))
+            if (collisionDirections.Contains(Direction.South) ||
+                collisionDirections.Contains(Direction.North))
             {
                 velocity.Y = 0;
                 acceleration.Y = 0;

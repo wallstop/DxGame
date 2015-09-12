@@ -107,6 +107,8 @@
     <Compile Include="Core\Animation\AnimationDescriptor.cs" />
     <Compile Include="Core\Animation\AnimationFactory.cs" />
     <Compile Include="Core\Components\Advanced\CollidableComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Enemy\Spawner.cs" />
+    <Compile Include="Core\Components\Advanced\Enemy\SpawnerFactory.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapCollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\Player\PlayerInputListener.cs" />
     <Compile Include="Core\Components\Advanced\SkillComponent.cs" />
@@ -119,6 +121,7 @@
     <Compile Include="Core\Map\MapDescriptor.cs" />
     <Compile Include="Core\Map\Platform.cs" />
     <Compile Include="Core\Messaging\DropThroughPlatformRequest.cs" />
+    <Compile Include="Core\Messaging\MovementRequest.cs" />
     <Compile Include="Core\Models\CollisionModel.cs" />
     <Compile Include="Core\Models\MapModel.cs" />
     <Compile Include="Core\State\Action.cs" />
@@ -141,6 +144,7 @@
     <Compile Include="Core\Components\Advanced\Position\SpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\Position\PositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
+    <Compile Include="Core\Utils\Distance\Directions.cs" />
     <Compile Include="Core\Utils\Distance\ICollisionTree.cs" />
     <Compile Include="Core\Utils\Distance\Distance.cs" />
     <Compile Include="Core\Utils\Distance\KDTree.cs" />
@@ -214,6 +218,7 @@
     <Compile Include="Core\Utils\Distance\QuadTree.cs" />
     <Compile Include="Core\Utils\LambdaUtils.cs" />
     <Compile Include="Core\Utils\MathUtils.cs" />
+    <Compile Include="Core\Utils\Objects.cs" />
     <Compile Include="Core\Utils\SpriteBatchUtils.cs" />
     <Compile Include="Core\Utils\StringUtils.cs" />
     <Compile Include="Core\Utils\Validate.cs" />
@@ -227,6 +232,8 @@
     <Compile Include="Core\Properties\PropertyMutator.cs" />
     <Compile Include="TowerGame\Behaviors\PlayerBehaviorFactory.cs" />
     <Compile Include="TowerGame\Behaviors\SimpleBehaviorFactory.cs" />
+    <Compile Include="TowerGame\Components\SimpleEnemyAI.cs" />
+    <Compile Include="TowerGame\Enemies\EnemyFactory.cs" />
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />
     <Compile Include="TowerGame\PropertyMutators\InheritedHatred.cs" />
   </ItemGroup>
@@ -351,6 +358,12 @@
     <Content Include="Content\Player\Warp.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Sprites\AngryBox.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Sprites\SimpleBox.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Main\Icon.ico" />
     <Content Include="README.txt" />
   </ItemGroup>
@@ -387,6 +400,7 @@
     <Content Include="Content\Fonts\Pericles.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Content\Fonts\SpriteFonts\ComicSans.spriteFont" />
     <None Include="Content\Fonts\SpriteFonts\Gungsuh.spriteFont" />
     <None Include="Content\Fonts\SpriteFonts\Pericles.spriteFont" />
@@ -417,6 +431,9 @@
     <Content Include="Content\Player\Walk_Right.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Content\Sprites\SimpleBox.adtr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -429,7 +446,6 @@
     <Folder Include="Core\Skills\" />
     <Folder Include="Network\" />
     <Folder Include="TowerGame\Buffs\" />
-    <Folder Include="TowerGame\Enemies\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

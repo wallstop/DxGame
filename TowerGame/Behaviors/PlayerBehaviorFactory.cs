@@ -4,6 +4,7 @@ using DXGame.Core.Components.Advanced;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.State;
+using DXGame.Core.Utils.Distance;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 
@@ -58,8 +59,8 @@ namespace DXGame.TowerGame.Behaviors
 
 
             Trigger moveLeftTrigger =
-                (dxGame, gameTime) =>
-                    dxGame.Model<InputModel>().Events.Any(keyEvent => keyEvent.Key == dxGame.Controls.Left);
+                (playerInstance, gameTime) =>
+                    DxGame.Instance.Model<InputModel>().Events.Any(keyEvent => keyEvent.Key == DxGame.Instance.Controls.Left);
             var moveLeftTransition = new Transition(moveLeftTrigger, moveLeftState);
             var jumpLeftTransition = new Transition(moveLeftTrigger, jumpingLeftState);
 
@@ -71,8 +72,8 @@ namespace DXGame.TowerGame.Behaviors
             jumpingRightState.Transitions.Add(jumpLeftTransition);
 
             Trigger moveRightTrigger =
-                (dxGame, gameTime) =>
-                    dxGame.Model<InputModel>().Events.Any(keyEvent => keyEvent.Key == dxGame.Controls.Right);
+                (playerInstance, gameTime) =>
+                    DxGame.Instance.Model<InputModel>().Events.Any(keyEvent => keyEvent.Key == DxGame.Instance.Controls.Right);
             var moveRightTransition = new Transition(moveRightTrigger, moveRightState);
             var jumpRightTransition = new Transition(moveRightTrigger, jumpingRightState);
 
@@ -84,20 +85,20 @@ namespace DXGame.TowerGame.Behaviors
             jumpingRightState.Transitions.Add(jumpRightTransition);
 
             Trigger jumpTrigger =
-                (dxGame, gameTime) =>
-                    dxGame.Model<InputModel>().Events.Any(keyEvent => keyEvent.Key == dxGame.Controls.Jump);
+                (playerInstance, gameTime) =>
+                    DxGame.Instance.Model<InputModel>().Events.Any(keyEvent => keyEvent.Key == DxGame.Instance.Controls.Jump);
             var jumpTransition = new Transition(jumpTrigger, initialJumpState, Priority.HIGH);
             moveLeftState.Transitions.Add(jumpTransition);
             moveRightState.Transitions.Add(jumpTransition);
             idleState.Transitions.Add(jumpTransition);
 
-            Trigger initialToRealJumpTrigger = (dxGame, gameTime) => true;
+            Trigger initialToRealJumpTrigger = (playerInstance, gameTime) => true;
             initialJumpState.Transitions.Add(new Transition(initialToRealJumpTrigger, jumpingState));
 
-            var idleTrigger = new Trigger((dxGame, gameTime) => !dxGame.Model<InputModel>().Events.Any());
-            var notMovingLeftTrigger =  new Trigger((dxGame, gameTime) => !(dxGame.Model<InputModel>().Events.Any(keyEvent => keyEvent.Key == dxGame.Controls.Left)));
-            var notMovingRightTrigger = new Trigger((dxGame, gameTime) =>
-                !(dxGame.Model<InputModel>().Events.Any(keyEvent => keyEvent.Key == dxGame.Controls.Right)));
+            var idleTrigger = new Trigger((playerInstance, gameTime) => !DxGame.Instance.Model<InputModel>().Events.Any());
+            var notMovingLeftTrigger =  new Trigger((playerInstance, gameTime) => !(DxGame.Instance.Model<InputModel>().Events.Any(keyEvent => keyEvent.Key == DxGame.Instance.Controls.Left)));
+            var notMovingRightTrigger = new Trigger((playerInstance, gameTime) =>
+                !(DxGame.Instance.Model<InputModel>().Events.Any(keyEvent => keyEvent.Key == DxGame.Instance.Controls.Right)));
             var idleMoveTransition = new Transition(idleTrigger, idleState, Priority.LOW);
             var idleJumpTransition = new Transition(idleTrigger, jumpingState, Priority.LOW);
             idleState.Transitions.Add(idleMoveTransition);
@@ -117,7 +118,7 @@ namespace DXGame.TowerGame.Behaviors
                 }
 
                 var collisions = stateMachine.Parent.CurrentMessages.OfType<CollisionMessage>();
-                return collisions.Any(collision => collision.CollisionDirections.Contains(CollisionDirection.South));
+                return collisions.Any(collision => collision.CollisionDirections.Contains(Direction.South));
             };
             var jumpToIdleTransition = new Transition(belowCollisionTrigger, idleState, Priority.HIGH);
 

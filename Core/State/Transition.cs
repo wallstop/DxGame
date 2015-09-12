@@ -38,9 +38,9 @@ namespace DXGame.Core.State
             return Priority.CompareTo(other?.Priority);
         }
 
-        public bool ShouldTransition(DxGame game, DxGameTime gameTime)
+        public bool ShouldTransition(GameObject gameObject, DxGameTime gameTime)
         {
-            return Trigger.Invoke(game, gameTime);
+            return Trigger.Invoke(gameObject, gameTime);
         }
     }
 }

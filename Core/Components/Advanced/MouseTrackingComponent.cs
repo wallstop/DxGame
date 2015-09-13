@@ -33,6 +33,10 @@ namespace DXGame.Core.Components.Advanced
                 // Only check left button for now. We can enhance this later.
                 Clicked = mouseState.LeftButton == ButtonState.Released;
             }
+            else
+            {
+                Clicked = false;
+            }
             ClickInProgress = (mouseState.LeftButton == ButtonState.Pressed);
         }
     }

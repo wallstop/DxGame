@@ -400,7 +400,6 @@
     <Content Include="Content\Fonts\Pericles.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="ClassDiagram1.cd" />
     <None Include="Content\Fonts\SpriteFonts\ComicSans.spriteFont" />
     <None Include="Content\Fonts\SpriteFonts\Gungsuh.spriteFont" />
     <None Include="Content\Fonts\SpriteFonts\Pericles.spriteFont" />

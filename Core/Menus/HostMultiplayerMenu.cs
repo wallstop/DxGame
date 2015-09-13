@@ -106,8 +106,9 @@ namespace DXGame.Core.Menus
             networkModel.AttachServer(server);
             server.EstablishConnection();
 
+            var game = DxGame;
             Remove();
-            DxGame.AttachModel(new GameModel(DxGame));
+            game.AttachModel(new GameModel(game));
         }
     }
 }

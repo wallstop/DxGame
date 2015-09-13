@@ -66,8 +66,8 @@ namespace DXGame.Core.Components.Network
                     // TODO: Handle lol
                     break;
                 default:
-                    throw new NotImplementedException(
-                        $"Currently not dealing with on MessageType {message.MessageType} (TODO)");
+                    LOG.Info($"Received NetMessage of type {message.MessageType}. Currently not handling this. ({message})");
+                    break;
             }
         }
 
@@ -83,8 +83,8 @@ namespace DXGame.Core.Components.Network
                     HandleServerDataKeyFrame(networkMessage);
                     break;
                 default:
-                    throw new NotImplementedException(
-                        $"Currently not dealing with on MessageType {message.MessageType} (TODO)");
+                    LOG.Info($"Received MessageType {networkMessage.MessageType}. Currently not handling this. ({networkMessage})");
+                    break;
             }
         }
 

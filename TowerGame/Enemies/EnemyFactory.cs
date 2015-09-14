@@ -28,6 +28,8 @@ namespace DXGame.TowerGame.Enemies
 
             var simpleBoxActionResolve = new SimpleBoxActionResolver(enemy);
             var idleState = simpleBoxActionResolve.IdleState;
+            // Construct states and use them to build animations
+
             animationBuilder.WithStateAndAsset(idleState, AnimationFactory.AnimationFor(enemyName, animationName));
             var stateMachine = stateMachineBuilder.WithInitialState(idleState).Build();
 
@@ -36,6 +38,7 @@ namespace DXGame.TowerGame.Enemies
             var moveRightState = MoveRightState(simpleBoxActionResolve);
             animationBuilder.WithStateAndAsset(moveRightState, AnimationFactory.AnimationFor(enemyName, animationName));
 
+            // Construct and attach triggers
             Trigger moveLeftTrigger = (enemyInstance, gameTime) =>
             {
                 var moveRequests = enemyInstance.CurrentMessages
@@ -146,7 +149,6 @@ namespace DXGame.TowerGame.Enemies
                         enemy_.ComponentOfType<PhysicsComponent>().Velocity.Y);
                 }
             }
-
         }
     }
 }

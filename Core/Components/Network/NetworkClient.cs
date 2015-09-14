@@ -64,28 +64,47 @@ namespace DXGame.Core.Components.Network
                 case NetIncomingMessageType.Data:
                     ProcessData(message);
                     break;
-                case NetIncomingMessageType.StatusChanged:
-                    // TODO: Handle lol
+                case NetIncomingMessageType.DebugMessage:
+                    ProcessDebugMessage(message);
                     break;
                 default:
-                    LOG.Info($"Received NetMessage of type {message.MessageType}. Currently not handling this. ({message})");
+                    LOG.Info(
+                        $"Received NetMessage of type {message.MessageType}. Currently not handling this. ({StringUtils.GetString(message.PeekDataBuffer())})");
                     break;
             }
+        }
+
+        protected void ProcessDebugMessage(NetIncomingMessage message)
+        {
+
         }
 
         protected void ProcessData(NetIncomingMessage message)
         {
             Validate.IsNotNull(message, "Cannot process server data on a null message!");
-            var networkMessage = NetworkMessage.FromNetIncomingMessage(message);
-            Validate.IsNotNull(networkMessage,
-                $"Could not properly format a NetworkMessage from NetIncomingMessage {networkMessage}");
+            NetworkMessage networkMessage = null;
+            try
+            {
+                networkMessage = NetworkMessage.FromNetIncomingMessage(message);
+            }
+            catch (Exception e)
+            {
+                LOG.Error(e, "Caught unexpected exception while attempting to process network data message");
+            }
+            finally
+            {
+                Validate.IsNotNull(networkMessage,
+                    $"Could not properly format a NetworkMessage from NetIncomingMessage {networkMessage}");
+            }
+
             switch (networkMessage.MessageType)
             {
                 case MessageType.SERVER_DATA_KEYFRAME:
                     HandleServerDataKeyFrame(networkMessage);
                     break;
                 default:
-                    LOG.Info($"Received MessageType {networkMessage.MessageType}. Currently not handling this. ({networkMessage})");
+                    LOG.Info(
+                        $"Received NetMessage of type {message.MessageType}. Currently not handling this. ({StringUtils.GetString(message.PeekDataBuffer())})");
                     break;
             }
         }

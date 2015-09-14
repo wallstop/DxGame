@@ -13,6 +13,11 @@ namespace DXGame.Core.Network
     [DataContract]
     public class GameStateDiff : NetworkMessage
     {
+        public GameStateDiff()
+        {
+            MessageType = MessageType.SERVER_DATA_DIFF;
+        }
+
         //[DataMember] public GameTime GameTime = new GameTime();
         [DataMember] public List<IGameComponent> Added = new List<IGameComponent>();
         [DataMember] public List<IGameComponent> Updated = new List<IGameComponent>();

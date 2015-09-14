@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
+using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -97,6 +98,17 @@ namespace DXGame.Core.Animation
         {
             spriteSheet_ = contentManager.Load<Texture2D>(AnimationDescriptor.Asset);
             return true;
+        }
+
+        [OnDeserialized]
+        private void BaseDeSerialize(StreamingContext context)
+        {
+            DeSerialize();
+        }
+
+        protected virtual void DeSerialize()
+        {
+            LoadContent(DxGame.Instance.Content);
         }
     }
 }

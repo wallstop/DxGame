@@ -200,7 +200,6 @@
     <Compile Include="Core\Network\GameStateDiff.cs" />
     <Compile Include="Core\Network\GameStateKeyFrame.cs" />
     <Compile Include="Core\Network\NetworkMessage.cs" />
-    <Compile Include="Core\Network\MessageType.cs" />
     <Compile Include="Core\Player.cs" />
     <Compile Include="Core\Properties\Property.cs" />
     <Compile Include="Core\Serializer.cs" />

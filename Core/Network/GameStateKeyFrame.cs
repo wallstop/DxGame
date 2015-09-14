@@ -28,6 +28,11 @@ namespace DXGame.Core.Network
         [DataMember]
         public GameElementCollection RemovedGameEleemnts { get; set; }
 
+        public GameStateKeyFrame()
+        {
+            MessageType = MessageType.SERVER_DATA_KEYFRAME;
+        }
+
         public static GameStateKeyFrame FromGame(DxGame game, DxGameTime gameTime)
         {
             var keyFrame = new GameStateKeyFrame

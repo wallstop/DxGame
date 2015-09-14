@@ -211,8 +211,7 @@ namespace DXGame.Core.Components.Basic
             {
                 // Why are we doing this?
                 var logMessage = $"Initialize called on already Initialized {GetType()} {this}";
-                LOG.Error(logMessage);
-                throw new ArgumentException(logMessage);
+                LOG.Debug(logMessage);
             }
         }
 

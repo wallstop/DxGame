@@ -3,7 +3,6 @@ using DXGame.Core.Models;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Messaging;
-using DXGame.Core.Models;
 using DXGame.Core.Utils.Distance;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
@@ -14,9 +13,10 @@ namespace DXGame.TowerGame.Components
 {
     public class SimpleEnemyAI : Component
     {
-        private static readonly TimeSpan MOVEMENT_DELAY_CHECK = TimeSpan.FromSeconds(2);
+        private static readonly TimeSpan MOVEMENT_DELAY_CHECK_ = TimeSpan.FromSeconds(1);
+        private static readonly double PERSONAL_SPACE_ = 50;
         private readonly SpatialComponent spatialComponent_;
-        private TimeSpan lastChangedMovement_ = TimeSpan.FromSeconds(0);
+        private TimeSpan lastNearPlayer_ = TimeSpan.FromSeconds(0);
 
         /// <summary>
         /// Initialize a simple AI that follows the player.
@@ -32,9 +32,6 @@ namespace DXGame.TowerGame.Components
         protected override void Update(DxGameTime gameTime)
         {
             // Extract player model, players; handle limitations on AI
-
-            // TODO(mat): Re-implement perhaps once a player model is working
-            /*
             PlayerModel playerModel = DxGame.Model<PlayerModel>();
             if (playerModel.Players.Count > 1) {
                 throw new InvalidOperationException("SimpleEnemyAI cannot fathom multiple players.");
@@ -43,28 +40,21 @@ namespace DXGame.TowerGame.Components
                 throw new InvalidOperationException("SimpleEnemyAI cannot cope with loneliness.");
             }
             Core.Player player = playerModel.Players.First();
-            */
-            Core.Player player = DxGame.Model<PlayerModel>().ActivePlayer;
+
+            // Keep track of when this unit was last near the player
+            if (Math.Abs(player.Position.Position.X - spatialComponent_.Position.X) < PERSONAL_SPACE_)
+            {
+                lastNearPlayer_ = gameTime.TotalGameTime;
+            }
 
             // Chase the player along the X-axis, sending a movement request if the player moves away
-            if (player.Position.Position.X < spatialComponent_.Position.X)
+            if (gameTime.TotalGameTime.Subtract(lastNearPlayer_) > MOVEMENT_DELAY_CHECK_)
             {
-                Parent.BroadcastMessage(new MovementRequest { Direction = Direction.West });
-            } else if (player.Position.Position.X > spatialComponent_.Position.X)
-            {
-                Parent.BroadcastMessage(new MovementRequest { Direction = Direction.East });
-            }
-            /*
-            if (lastChangedMovement_ + MOVEMENT_DELAY_CHECK < gameTime.TotalGameTime)
-            {
-                Random rGen = new Random();
-                direction_ = rGen.Next() % 2 == 0 ? Direction.East : Direction.West;
-                lastChangedMovement_ = gameTime.TotalGameTime;
+                Direction d = (player.Position.Position.X > spatialComponent_.Position.X) 
+                    ? Direction.East : Direction.West;
+                Parent.BroadcastMessage(new MovementRequest { Direction = d });
             }
 
-            var movementRequest = new MovementRequest {Direction = direction_};
-            Parent.BroadcastMessage(movementRequest);
-            */
             base.Update(gameTime);
         }
 

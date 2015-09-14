@@ -30,6 +30,7 @@ namespace DXGame.TowerGame.Enemies
             var stateMachineBuilder = StateMachine.Builder();
             stateMachineBuilder.WithDxGame(game);
 
+            // Construct states and use them to build animations
             var idleState = IdleState(enemy);
             animationBuilder.WithStateAndAsset(idleState, AnimationFactory.AnimationFor(enemyName, simple));
             var stateMachine = stateMachineBuilder.WithInitialState(idleState).Build();
@@ -39,6 +40,7 @@ namespace DXGame.TowerGame.Enemies
             var moveRightState = MoveRightState(enemy);
             animationBuilder.WithStateAndAsset(moveRightState, AnimationFactory.AnimationFor(enemyName, simple));
 
+            // Construct and attach triggers
             Trigger moveLeftTrigger = (enemyInstance, gameTime) =>
             {
                 var moveRequests = enemyInstance.CurrentMessages

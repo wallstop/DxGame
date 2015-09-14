@@ -18,9 +18,12 @@ namespace DXGame.Core.Components.Advanced.Enemy
     {
         public static Spawner SimpleBoxSpawner()
         {
+            // Acquire a reference to the singleton instance of DxGame
             var game =  DxGame.Instance;
+            // Extract the map model and bounds
             var mapModel = game.Model<MapModel>();
             var bounds = mapModel.MapBounds;
+            // Build spatial component from bounds
             var enemySpatial = (BoundedSpatialComponent) new BoundedSpatialComponent(game).WithXMin(bounds.X)
                 .WithXMax(bounds.Width)
                 .WithXMin(bounds.Y)
@@ -31,11 +34,14 @@ namespace DXGame.Core.Components.Advanced.Enemy
                     gameTime => WorldGravity.ApplyGravityToPhysics(gameTime, game, enemyPhysics));
             var animationBuilder = AnimationComponent.Builder().WithDxGame(game).WithPosition(enemySpatial);
             var enemyObject = GameObject.Builder().WithComponents(enemySpatial, enemyPhysics).Build();
+            // Create a state machine for the enemy in question
+            // Horrifically complex; weep, gnash teeth
             var stateMachine = EnemyFactory.SimpleBoxBehavior(game, animationBuilder, enemyObject);
+            // Incremental state update to the animation builder
             animationBuilder.WithStateMachine(stateMachine);
             enemyObject.AttachComponent(animationBuilder.Build());
-
-            var simpleAi = new SimpleEnemyAI(game);
+            // Build and attach AI
+            var simpleAi = SimpleEnemyAI.Builder().WithDxGame(game).WithSpatialComponent(enemySpatial).Build();
             enemyObject.AttachComponent(simpleAi);
             enemyObject.AttachComponent(stateMachine);
 

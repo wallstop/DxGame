@@ -5,6 +5,7 @@ using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Player;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
+using DXGame.Core.Models;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using DXGame.TowerGame.Behaviors;
@@ -58,18 +59,21 @@ namespace DXGame.Core.Generators
             var inputListener = new PlayerInputListener(game_);
             playerBuilder.WithComponents(PlayerSpace, physics_, weapon_,
                 playerProperties_, healthBar_, inputListener);
-            var player = playerBuilder.Build();
+            var playerObject = playerBuilder.Build();
+            var player = Player.PlayerFrom(playerObject, "Gevurah");
+
             var animationBuilder = AnimationComponent.Builder().WithDxGame(game_).WithPosition(PlayerSpace);
             var playerStateMachine = PlayerBehaviorFactory.GevurahBehavior(game_, animationBuilder,
-                Player.PlayerFrom(player, "Gevurah"));
+                Player.PlayerFrom(playerObject, "Gevurah"));
             animationBuilder.WithStateMachine(playerStateMachine);
-            player.AttachComponent(playerStateMachine);
-            player.AttachComponent(animationBuilder.Build());
-            objects.Add(player);
+            playerObject.AttachComponent(playerStateMachine);
+            playerObject.AttachComponent(animationBuilder.Build());
+            objects.Add(playerObject);
 
             var simpleSpawner = SpawnerFactory.SimpleBoxSpawner();
             var simpleSpawnerOwner = GameObject.Builder().WithComponent(simpleSpawner).Build();
             objects.Add(simpleSpawnerOwner);
+
             return objects;
         }
     }

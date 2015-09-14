@@ -18,26 +18,22 @@ using Model = DXGame.Core.Models.Model;
 
 namespace DXGame.Main
 {
-    public enum InteractionState
+    /*
+        The way in which the game updates. If we are a server, or singleplayer, we will be in an "Active" state. That is, once we read input from our connected clients, 
+        WE decide exactly what the state should be, and dictate it to everyone else.
+        For connected clients, we need to be in "Cooperative" mode. That is, we need to do client-side prediction, update our state accordingly, but also take in over-rules
+        from the server in case an action / soemthing that we thought happened didn't actually happen. In that way, we are "cooperating" with the server.
+        In Passive mode, no action that we take has any effect. Our state is treated as "read only" from our point of view. This is useful for things like "spectating" or
+        simple network tests.
+    */
+    public enum UpdateMode
     {
-        None,
-        StartMenu,
-        Loading,
-        Playing,
-        Paused
+        Active,
+        Cooperative,
+        Passive
     }
 
-    public enum GameRole
-    {
-        None,
-        DedicatedServer,
-        HostedServer,
-        Client
-    }
 
-    /// <summary>
-    ///     This is the main type for your game
-    /// </summary>
     public class DxGame : Game
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
@@ -57,6 +53,8 @@ namespace DXGame.Main
         public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
 
         public DxGameTime CurrentTime { get; private set; }
+
+        public UpdateMode UpdateMode { get; set; } = UpdateMode.Active;
 
         public DxRectangle ScreenRegion
         {
@@ -197,16 +195,6 @@ namespace DXGame.Main
             }
         }
 
-        // TODO: Remove. This is currently only for testing
-        public void ResetComponents(IEnumerable<Component> components)
-        {
-            Components.Clear();
-            foreach (var gameComponent in components)
-            {
-                AddAndInitializeComponent(gameComponent);
-            }
-        }
-
         protected override void Initialize()
         {
             SpriteBatch = new SpriteBatch(GraphicsDevice);
@@ -267,6 +255,30 @@ namespace DXGame.Main
                 Exit();
             }
 
+            switch (UpdateMode)
+            {
+                case UpdateMode.Active:
+                    ActiveUpdate(dxGameTime);
+                    break;
+                case UpdateMode.Cooperative:
+                    throw new NotImplementedException($"{UpdateMode} currently not implemented");
+                case UpdateMode.Passive:
+                    PassiveUpdate(dxGameTime);
+                    break;
+                default:
+                    throw new NotImplementedException($"{UpdateMode} currently not implemented");
+            }
+        }
+
+        private void PassiveUpdate(DxGameTime gameTime)
+        {
+            var networkModel = Model<NetworkModel>();
+            networkModel.ReceiveData(gameTime);
+            networkModel.SendData(gameTime);
+        }
+
+        private void ActiveUpdate(DxGameTime gameTime)
+        {
             // TODO: Fix update & draw lockstep so they're de-synced. Sync Update() to 60/30/whatever FPS, Draw() unlocked (or locked to player preference)
 
             // TODO (Short term): Have a dedicated InputSystem 
@@ -278,16 +290,16 @@ namespace DXGame.Main
             var networkModel = Model<NetworkModel>();
 
             // Should probably thread this... but wait until we have perf testing :)
-            networkModel.ReceiveData(dxGameTime);
+            networkModel.ReceiveData(gameTime);
             /* We may end up modifying these as we iterate over them, so take an immutable copy */
             foreach (var processable in DxGameElements.Processables)
             {
-                processable.Process(dxGameTime);
+                processable.Process(gameTime);
             }
-            networkModel.SendData(dxGameTime);
+            networkModel.SendData(gameTime);
             UpdateElements();
-            
-            base.Update(gameTime);
+
+            base.Update(gameTime.ToGameTime());
         }
 
         /// <summary>
@@ -303,6 +315,13 @@ namespace DXGame.Main
                 drawable.Draw(SpriteBatch, dxGameTime);
             }
             base.Draw(gameTime);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            var networkModel = Model<NetworkModel>();
+            networkModel?.ShutDown();
+            base.Dispose(disposing);
         }
     }
 }

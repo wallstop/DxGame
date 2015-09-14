@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core.Map;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
@@ -10,13 +12,18 @@ using NLog;
 
 namespace DXGame.Core.Models
 {
+    [Serializable]
+    [DataContract]
     public class MapModel : Model
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private static readonly string MAP_PATH = "Content/Map/";
+        [DataMember]
         private readonly List<Map.Map> maps_ = new List<Map.Map>();
+
         public DxVector2 PlayerSpawn => Map.PlayerSpawn;
         public DxRectangle MapBounds => Map.MapDescriptor.Size * Map.MapDescriptor.Scale;
+        [DataMember]
         public Map.Map Map { get; private set; }
 
         public MapModel(DxGame game)

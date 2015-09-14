@@ -131,6 +131,7 @@ namespace DXGame.Core.Menus
 
             var game = DxGame;
             Remove();
+            game.UpdateMode = UpdateMode.Passive;
             game.AttachModel(new GameModel(game));
         }
     }

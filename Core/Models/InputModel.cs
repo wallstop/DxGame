@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DXGame.Core.Input;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 
 namespace DXGame.Core.Models
 {
+    [Serializable]
     public class InputModel : Model
     {
         public IEnumerable<KeyboardEvent> Events { get; private set; }

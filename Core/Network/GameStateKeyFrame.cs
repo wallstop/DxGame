@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
+using DXGame.Main;
 
 namespace DXGame.Core.Network
 {
@@ -15,6 +17,26 @@ namespace DXGame.Core.Network
     public class GameStateKeyFrame : NetworkMessage
     {
         [DataMember] public DxGameTime GameTime = new DxGameTime();
-        [DataMember] public List<Component> Components = new List<Component>();
+
+        [DataMember]
+        public GameElementCollection GameElements { get; set; }
+
+        [DataMember]
+        public GameElementCollection NewGameElements { get; set; }
+
+        [DataMember]
+        public GameElementCollection RemovedGameEleemnts { get; set; }
+
+        public static GameStateKeyFrame FromGame(DxGame game, DxGameTime gameTime)
+        {
+            var keyFrame = new GameStateKeyFrame
+            {
+                GameTime = gameTime,
+                GameElements = game.DxGameElements,
+                NewGameElements = game.NewGameElements,
+                RemovedGameEleemnts = game.RemovedGameElements
+            };
+            return keyFrame;
+        }
     }
 }

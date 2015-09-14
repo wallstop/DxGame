@@ -29,12 +29,13 @@ namespace DXGame.Core.Models
             PlayerGenerator playerGenerator = new PlayerGenerator(DxGame, mapModel.PlayerSpawn,
                 mapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;
-            var player = playerGenerator.Generate().First();
+            var generatedObjects = playerGenerator.Generate();
+            var player = generatedObjects.First();
 
             var activePlayer = Player.PlayerFrom(player, "Player1");
             // TODO
-            //var playerModel = new PlayerModel(DxGame).WithActivePlayer(activePlayer);
-            //DxGame.AttachModel(playerModel);
+            var playerModel = new PlayerModel(DxGame).WithActivePlayer(activePlayer);
+            DxGame.AttachModel(playerModel);
 
             var fpsTracker = new FpsTracker(DxGame);
             DxGame.AddAndInitializeComponent(fpsTracker);

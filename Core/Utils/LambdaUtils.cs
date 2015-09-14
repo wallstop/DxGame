@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 
 namespace DXGame.Core.Utils
 {
@@ -20,8 +21,11 @@ namespace DXGame.Core.Utils
             return result;
         }
 
+        [Serializable]
+        [DataContract]
         public class LambdaComparer<T> : IComparer<T>
         {
+            [DataMember]
             private readonly Func<T, T, int> lambdaComparer_;
 
             public LambdaComparer(Func<T, T, int> lambdaComparer)

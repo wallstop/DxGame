@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
+using DXGame.Core.Models;
 using DXGame.Core.Utils.Distance;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
@@ -30,6 +31,7 @@ namespace DXGame.TowerGame.Components
                 direction_ = rGen.Next() % 2 == 0 ? Direction.East : Direction.West;
                 lastChangedMovement_ = gameTime.TotalGameTime;
             }
+
             var movementRequest = new MovementRequest {Direction = direction_};
             Parent.BroadcastMessage(movementRequest);
             base.Update(gameTime);

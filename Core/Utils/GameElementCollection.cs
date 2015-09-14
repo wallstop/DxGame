@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace DXGame.Core.Utils
 {
@@ -13,22 +15,22 @@ namespace DXGame.Core.Utils
     </summary>
     */
 
+    [Serializable]
+    [DataContract]
     public class GameElementCollection : IEnumerable
         /* Should we deal with having this implement the ICollection interface? */
     {
-        private readonly ICollection<IDrawable> drawables_ = new SortedList<IDrawable>(Drawable.DefaultComparer);
-        /* 
-            Right now, this is "good enough". I haven't been able to find something like http://en.cppreference.com/w/cpp/container/priority_queue in C#. 
+        [DataMember]
+        private SortedList<IDrawable> drawables_ = new SortedList<IDrawable>(Drawable.DefaultComparer);
 
-            If this is too expensive, swap out list for a better, custom container (btree? red black tree?) that will be more performant.
-            Right now it's pretty dumb, dunno about performant.
-        */
+        [DataMember]
+        private SortedList<IProcessable> processables_ = new SortedList<IProcessable>(Processable.DefaultComparer);
 
-        private readonly ICollection<IProcessable> processables_ =
-            new SortedList<IProcessable>(Processable.DefaultComparer);
-
+        [IgnoreDataMember]
         public int Count => processables_.Count;
+        [IgnoreDataMember]
         public IEnumerable<IProcessable> Processables => processables_;
+        [IgnoreDataMember]
         public IEnumerable<IDrawable> Drawables => drawables_;
 
         public IEnumerator GetEnumerator()

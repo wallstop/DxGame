@@ -69,7 +69,7 @@ namespace DXGame.TowerGame.Enemies
                 return moveRequests.All(request => request.Direction != Direction.West && request.Direction != Direction.East);
             };
 
-            var returnToIdleTransition = new Transition(returnToIdleTrigger, idleState);
+            var returnToIdleTransition = new Transition(returnToIdleTrigger, idleState, Priority.LOW);
             idleState.Transitions.Add(returnToIdleTransition);
             moveLeftState.Transitions.Add(returnToIdleTransition);
             moveRightState.Transitions.Add(returnToIdleTransition);

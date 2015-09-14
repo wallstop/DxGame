@@ -1,10 +1,14 @@
-﻿using DXGame.Core.Wrappers;
+﻿using System;
+using System.Runtime.Serialization;
+using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Components.Basic
 {
+    [Serializable]
+    [DataContract]
     public class SpriteBatchInitializer : DrawableComponent
     {
         public SpriteBatchInitializer(DxGame game)

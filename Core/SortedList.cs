@@ -2,13 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 
 namespace DXGame.Core
 {
+    [Serializable]
+    [DataContract]
     public class SortedList<T> : IList<T> where T : IComparable<T>
     {
+        [DataMember]
         private readonly IComparer<T> comparer_;
+        [DataMember]
         private readonly List<T> list_;
 
         public SortedList()

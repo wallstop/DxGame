@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Network;
@@ -66,8 +67,8 @@ namespace DXGame.Core.Components.Network
                     // TODO: Handle lol
                     break;
                 default:
-                    throw new NotImplementedException(
-                        $"Currently not dealing with on MessageType {message.MessageType} (TODO)");
+                    LOG.Info($"Received NetMessage of type {message.MessageType}. Currently not handling this. ({message})");
+                    break;
             }
         }
 
@@ -83,18 +84,31 @@ namespace DXGame.Core.Components.Network
                     HandleServerDataKeyFrame(networkMessage);
                     break;
                 default:
-                    throw new NotImplementedException(
-                        $"Currently not dealing with on MessageType {message.MessageType} (TODO)");
+                    LOG.Info($"Received MessageType {networkMessage.MessageType}. Currently not handling this. ({networkMessage})");
+                    break;
             }
         }
 
         protected void HandleServerDataKeyFrame(NetworkMessage message)
         {
             var serverDataKeyFrame = ConvertMessageType<GameStateKeyFrame>(message);
-
-            IEnumerable<Component> components = serverDataKeyFrame.Components;
-
-            DxGame.ResetComponents(components);
+            
+            // TODO: Faster way of dumping state
+            DxGame.DxGameElements.Clear();
+            foreach (var element in serverDataKeyFrame.GameElements)
+            {
+                DxGame.DxGameElements.Add(element);
+            }
+            DxGame.NewGameElements.Clear();
+            foreach (var element in serverDataKeyFrame.NewGameElements)
+            {
+                DxGame.NewGameElements.Add(element);
+            }
+            DxGame.RemovedGameElements.Clear();
+            foreach (var element in serverDataKeyFrame.RemovedGameEleemnts)
+            {
+                DxGame.RemovedGameElements.Add(element);
+            }
         }
 
         public override void SendData(DxGameTime gameTime)

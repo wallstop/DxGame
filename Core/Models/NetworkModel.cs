@@ -68,5 +68,18 @@ namespace DXGame.Core.Models
                 connection.SendData(gameTime);
             }
         }
+
+        public void ShutDown()
+        {
+            foreach (var client in Clients)
+            {
+                client.Shutdown();
+            }
+
+            foreach (var server in Servers)
+            {
+                server.Shutdown();
+            }
+        }
     }
 }

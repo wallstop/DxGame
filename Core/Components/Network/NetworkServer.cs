@@ -19,7 +19,7 @@ namespace DXGame.Core.Components.Network
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         public NetServer ServerConnection => Connection as NetServer;
-        public Dictionary<NetConnection, FrameModel> ClientFrameStates { get; set; }
+        public Dictionary<NetConnection, FrameModel> ClientFrameStates { get; }
 
         public NetworkServer(DxGame game)
             : base(game)
@@ -58,9 +58,8 @@ namespace DXGame.Core.Components.Network
                     ProcessConnectionApproval(incomingMessage);
                     break;
                 case NetIncomingMessageType.StatusChanged:
-                    // TODO: Handle
-                    break;
                 default:
+                    LOG.Info($"Received MessageType {incomingMessage.MessageType}. Currently not handling. ({incomingMessage})");
                     // TODO: Handle
                     break;
                 //ProcessUnhandledMessageType(incomingMessage);
@@ -73,7 +72,7 @@ namespace DXGame.Core.Components.Network
             foreach (NetConnection connection in ClientFrameStates.Keys)
             {
                 // Quick and dirty for now - do some nice differentials later
-                var message = new GameStateKeyFrame();
+                var message = GameStateKeyFrame.FromGame(DxGame, gameTime);
                 var outgoingMessage = message.ToNetOutgoingMessage(ServerConnection);
                 ServerConnection.SendMessage(outgoingMessage, connection, NetDeliveryMethod.ReliableOrdered, 0);
             }

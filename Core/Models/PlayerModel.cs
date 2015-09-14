@@ -17,7 +17,7 @@ namespace DXGame.Core.Models
         public Player ActivePlayer { get; private set; }
 
         [DataMember]
-        public ICollection<Player> Players { get; private set; }
+        public ICollection<Player> Players { get; private set; } = new List<Player>();
 
         public PlayerModel(DxGame game)
             : base(game)

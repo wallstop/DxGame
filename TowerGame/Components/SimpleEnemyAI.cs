@@ -3,6 +3,7 @@ using DXGame.Core.Models;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Messaging;
+using DXGame.Core.Models;
 using DXGame.Core.Utils.Distance;
 using DXGame.Core.Wrappers;
 using DXGame.Main;

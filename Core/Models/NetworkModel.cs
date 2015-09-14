@@ -21,6 +21,8 @@ namespace DXGame.Core.Models
         {
         }
 
+        public override bool ShouldSerialize => false;
+
         public NetworkModel WithClient(NetworkClient client)
         {
             AddNetworkComponent(client);

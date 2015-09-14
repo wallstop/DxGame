@@ -25,8 +25,10 @@ namespace DXGame.Core.Components.Advanced.Physics
         private DxRectangle Space => ((SpatialComponent) position_).Space;
         private DxVector2 Dimensions => ((SpatialComponent) position_).Dimensions;
 
+        [DataMember]
         private readonly List<Tuple<MapCollidableComponent, TimeSpan>> mapTilesToIgnore_ = new List<Tuple<MapCollidableComponent, TimeSpan>>();
-        private readonly TimeSpan IGNORE_EXPIRY = TimeSpan.FromMilliseconds(30);
+        
+        private static readonly TimeSpan IGNORE_EXPIRY = TimeSpan.FromMilliseconds(30);
 
         private DxRectangle MapQueryRegion => Space;
 

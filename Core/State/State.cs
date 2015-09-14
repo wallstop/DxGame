@@ -1,16 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
 using NLog;
 
 namespace DXGame.Core.State
 {
+    [Serializable]
+    [DataContract]
     public class State
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        public ICollection<Transition> Transitions { get; }
-        public string Name { get; }
-        public Action Action { get; }
+
+        [DataMember]
+        public ICollection<Transition> Transitions { get; private set; }
+        [DataMember]
+        public string Name { get; private set; }
+        [DataMember]
+        public Action Action { get; private set; }
 
         private State(ICollection<Transition> transitions, string name, Action action)
         {

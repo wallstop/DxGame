@@ -82,6 +82,7 @@ namespace DXGame.Core.Components.Network
         {
             LOG.Info("Shutting down NetworkServer");
             ServerConnection.Shutdown("NetworkServer shutting down calmly");
+            base.Shutdown();
         }
 
         protected void ProcessUnhandledMessageType(NetIncomingMessage message)

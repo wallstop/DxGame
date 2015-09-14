@@ -20,7 +20,7 @@ namespace DXGameTest.Core.Utils.Distance
             List<DxVector2> points = DistanceHelper.GeneratePointsInRange(range, numPoints);
 
             List<TestPoint> testObjects = points.Select(point => new TestPoint(point)).ToList();
-            DxRectangle selectRange = new DxRectangle(points[0].X - 1, points[0].Y - 1, 10, 10);
+            DxRectangle selectRange = range;
 
             Stopwatch timer = Stopwatch.StartNew();
 

@@ -7,6 +7,7 @@ using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Models;
+using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using DXGame.TowerGame.Components;
@@ -16,6 +17,33 @@ namespace DXGame.Core.Components.Advanced.Enemy
 {
     public static class SpawnerFactory
     {
+        /*
+            Instead of using a lambda, we create a special class to hold the state of our SimpleBox spawn dude.
+            This way, we're able to serialize over the network. We could easily close over a boolean on the stack,
+            but then we could not serialize the state.
+        */
+        [Serializable]
+        private class SimpleBoxSpawnFunction
+        {
+            private bool hasSpawned_ = false;
+            private GameObject enemyObject_;
+
+            public SimpleBoxSpawnFunction(GameObject enemyObject)
+            {
+                enemyObject_ = enemyObject;
+            }
+
+            public Tuple<bool, GameObject> Spawn(DxGameTime gameTime)
+            {
+                if (!hasSpawned_)
+                {
+                    hasSpawned_ = true;
+                    return Tuple.Create(hasSpawned_, enemyObject_);
+                }
+                return Tuple.Create<bool, GameObject>(false, null);
+            }
+        }
+
         public static Spawner SimpleBoxSpawner()
         {
             var game =  DxGame.Instance;
@@ -27,8 +55,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
                 .WithYMax(bounds.Height)
                 .WithDimensions(new DxVector2(50, 50)); // TODO: un-hard code these
             var enemyPhysics = new MapCollideablePhysicsComponent(game).WithSpatialComponent(enemySpatial);
-            enemyPhysics.AddPostUpdater(
-                    gameTime => WorldGravity.ApplyGravityToPhysics(gameTime, game, enemyPhysics));
+            GravityApplier.ApplyGravityToPhysics(enemyPhysics);
             var animationBuilder = AnimationComponent.Builder().WithDxGame(game).WithPosition(enemySpatial);
             var enemyObject = GameObject.Builder().WithComponents(enemySpatial, enemyPhysics).Build();
             var stateMachine = EnemyFactory.SimpleBoxBehavior(game, animationBuilder, enemyObject);
@@ -39,20 +66,11 @@ namespace DXGame.Core.Components.Advanced.Enemy
             enemyObject.AttachComponent(simpleAi);
             enemyObject.AttachComponent(stateMachine);
 
-            bool hasSpawned = false;
-            SpawnTrigger spawnTrigger = gameTime => 
-            {
-                if (!hasSpawned)
-                {
-                    hasSpawned = true;
-                    return Tuple.Create(hasSpawned, enemyObject);
-                }
-                return Tuple.Create<bool, GameObject>(false, null);
-            };
+            var spawnFunction = new SimpleBoxSpawnFunction(enemyObject);
 
             var spawnLocation = mapModel.PlayerSpawn;
             var spawnArea = new DxRectangle(spawnLocation, new DxVector2(50, 50));
-            return Spawner.Builder().WithPosition(spawnLocation).WithGame(game).WithSpawnArea(spawnArea).WithSpawnTrigger(spawnTrigger).Build();
+            return Spawner.Builder().WithPosition(spawnLocation).WithGame(game).WithSpawnArea(spawnArea).WithSpawnTrigger(spawnFunction.Spawn).Build();
         }
     }
 }

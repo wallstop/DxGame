@@ -43,6 +43,8 @@ namespace DXGame.Core.GraphicsWidgets
             }
         }
 
+        public override bool ShouldSerialize => false;
+
         protected SpriteFont SpriteFont { get; set; }
         protected Texture2D Texture { get; set; }
         protected Color TextColor { get; set; }

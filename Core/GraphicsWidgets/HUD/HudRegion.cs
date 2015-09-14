@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
@@ -8,6 +9,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.GraphicsWidgets.HUD
 {
+    [Serializable]
+    [DataContract]
     public class HudRegion : HudComponent
     {
         // Gap between each Skill area

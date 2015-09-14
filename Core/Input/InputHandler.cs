@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
@@ -12,11 +13,14 @@ namespace DXGame.Core.Input
         TODO: Change this to be it's own thread with a high update read, pushing events to a shared, threadsafe queue that is read.
         In other words, redesign. This is short and sweet (and maybe "good enough")
     */
-
+    [Serializable]
+    [DataContract]
     public class InputHandler : Component
     {
-        public List<KeyboardEvent> CurrentEvents { get; }
-        public List<KeyboardEvent> FinishedEvents { get; }
+        [DataMember]
+        public List<KeyboardEvent> CurrentEvents { get; private set; }
+        [DataMember]
+        public List<KeyboardEvent> FinishedEvents { get; private set; }
 
         public InputHandler(DxGame game)
             : base(game)

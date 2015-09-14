@@ -21,10 +21,10 @@ namespace DXGame.Core.Utils
         /* Should we deal with having this implement the ICollection interface? */
     {
         [DataMember]
-        private SortedList<IDrawable> drawables_ = new SortedList<IDrawable>(Drawable.DefaultComparer);
+        private readonly SortedList<IDrawable> drawables_;
 
         [DataMember]
-        private SortedList<IProcessable> processables_ = new SortedList<IProcessable>(Processable.DefaultComparer);
+        private readonly SortedList<IProcessable> processables_;
 
         [IgnoreDataMember]
         public int Count => processables_.Count;
@@ -32,6 +32,19 @@ namespace DXGame.Core.Utils
         public IEnumerable<IProcessable> Processables => processables_;
         [IgnoreDataMember]
         public IEnumerable<IDrawable> Drawables => drawables_;
+
+        public GameElementCollection()
+        {
+            drawables_ = new SortedList<IDrawable>(Drawable.DefaultComparer);
+            processables_ = new SortedList<IProcessable>(Processable.DefaultComparer);
+        }
+
+        public GameElementCollection(GameElementCollection copy)
+        {
+            Validate.IsNotNull(copy, StringUtils.GetFormattedNullOrDefaultMessage(this, copy));
+            drawables_ = new SortedList<IDrawable>(copy.drawables_);
+            processables_ = new SortedList<IProcessable>(copy.processables_);
+        }
 
         public IEnumerator GetEnumerator()
         {
@@ -68,6 +81,12 @@ namespace DXGame.Core.Utils
             {
                 drawables_.Add(drawable);
             }
+        }
+
+        public void Remove(Predicate<object> match)
+        {
+            processables_.RemoveAll(match);
+            drawables_.RemoveAll(match);
         }
 
         public void Remove(object component)

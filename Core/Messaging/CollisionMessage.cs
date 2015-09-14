@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 using DXGame.Core.Utils.Distance;
 using DXGame.Core.Wrappers;
 
@@ -11,8 +13,11 @@ namespace DXGame.Core.Messaging
         the emission of a Collision Message actually means a Collision occurs.
     */
 
+    [Serializable]
+    [DataContract]
     public class CollisionMessage : Message
     {
+        [DataMember]
         public List<Direction> CollisionDirections { get; set; }
 
         public CollisionMessage()

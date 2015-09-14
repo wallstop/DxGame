@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using DXGame.Core.Components.Basic;
@@ -11,10 +12,13 @@ using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Player
 {
+    [Serializable]
+    [DataContract]
     public class PlayerInputListener : Component
     {
         private static readonly TimeSpan DROP_THROUGH_PLATFORM_DELAY = TimeSpan.FromSeconds(1);
 
+        [DataMember]
         private TimeSpan lastDroppedThroughPlatform_ = TimeSpan.FromSeconds(0);
 
         public PlayerInputListener(DxGame game) 

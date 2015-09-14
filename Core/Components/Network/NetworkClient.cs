@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Models;
 using DXGame.Core.Network;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
@@ -92,9 +93,14 @@ namespace DXGame.Core.Components.Network
         protected void HandleServerDataKeyFrame(NetworkMessage message)
         {
             var serverDataKeyFrame = ConvertMessageType<GameStateKeyFrame>(message);
-            
+
+            Predicate<object> shouldSerialize = entity =>
+            {
+                var component = entity as Component;
+                return component != null && component.ShouldSerialize;
+            };
             // TODO: Faster way of dumping state
-            DxGame.DxGameElements.Clear();
+            DxGame.DxGameElements.Remove(shouldSerialize);
             foreach (var element in serverDataKeyFrame.GameElements)
             {
                 DxGame.DxGameElements.Add(element);
@@ -120,6 +126,7 @@ namespace DXGame.Core.Components.Network
         {
             LOG.Info("Shutting down NetworkClient");
             ClientConnection.Shutdown("NetworkClient shutting down calmly");
+            base.Shutdown();
         }
     }
 }

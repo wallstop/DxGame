@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Components.Basic;
@@ -14,11 +15,26 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Map
 {
+    [Serializable]
+    [DataContract]
     public class Map : DrawableComponent
     {
-        public MapDescriptor MapDescriptor { get; }
-        public Texture2D MapTexture { get; private set; }
+        [NonSerialized] [IgnoreDataMember]
+        private Texture2D mapTexture_;
+
+        [DataMember]
+        public MapDescriptor MapDescriptor { get; private set; }
+
+        [IgnoreDataMember]
+        public Texture2D MapTexture
+        {
+            get { return mapTexture_; }
+            private set { mapTexture_ = value; }
+        }
+
+        [DataMember]
         public ICollisionTree<MapCollidableComponent> Collidables { get; private set; }
+        [DataMember]
         public DxVector2 PlayerSpawn { get; private set; }
 
         public Map(DxGame game, MapDescriptor descriptor)

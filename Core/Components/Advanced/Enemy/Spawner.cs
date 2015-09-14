@@ -18,6 +18,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
     */
     public delegate Tuple<bool, GameObject> SpawnTrigger(DxGameTime gameTime);
 
+    [Serializable]
     public class Spawner : Component
     {
         protected DxVector2 Position { get; }

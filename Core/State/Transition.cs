@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
@@ -12,11 +13,16 @@ namespace DXGame.Core.State
         LOW = 1
     }
 
+    [Serializable]
+    [DataContract]
     public class Transition : IComparable<Transition>
     {
-        public Priority Priority { get; }
-        public Trigger Trigger { get; }
-        public State State { get; }
+        [DataMember]
+        public Priority Priority { get; private set; }
+        [DataMember]
+        public Trigger Trigger { get; private set; }
+        [DataMember]
+        public State State { get; private set; }
 
         public Transition(Trigger trigger, State resultState)
             : this(trigger, resultState, Priority.MEDIUM)

@@ -167,6 +167,8 @@ namespace DXGame.Core.Properties
         }
     }
 
+    [Serializable]
+    [DataContract]
     public sealed class PropertyMutatorPriorityComparer<T> : IComparer<PropertyMutator<T>>
     {
         public int Compare(PropertyMutator<T> lhs, PropertyMutator<T> rhs)

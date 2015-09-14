@@ -1,8 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Generators;
 using DXGame.Core.GraphicsWidgets.HUD;
+using DXGame.Core.Utils;
 using DXGame.Main;
 
 namespace DXGame.Core.Models
@@ -13,9 +16,13 @@ namespace DXGame.Core.Models
         Paused
     }
 
+    [Serializable]
+    [DataContract]
     public class GameModel : Model
     {
+        [DataMember]
         public float GameSpeed { get; set; }
+        [DataMember]
         public SpatialComponent FocalPoint { get; protected set; }
 
         public GameModel(DxGame game) : base(game)
@@ -44,13 +51,11 @@ namespace DXGame.Core.Models
 
             foreach (var physicsComponent in physicsComponents)
             {
-                var component = physicsComponent;
-                physicsComponent.AddPostUpdater(
-                    gameTime => WorldGravity.ApplyGravityToPhysics(gameTime, DxGame, component));
+                GravityApplier.ApplyGravityToPhysics(physicsComponent);
             }
 
             // TODO: Split these out into some kind of unified loading... thing
-            DxGame.AddAndInitializeGameObjects(playerGenerator.Generate());
+            DxGame.AddAndInitializeGameObjects(generatedObjects);
             base.Initialize();
         }
     }

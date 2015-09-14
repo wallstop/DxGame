@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Runtime.Serialization;
 using System.Threading;
 using DXGame.Core.Network;
 using DXGame.Core.Utils;
@@ -33,7 +34,6 @@ namespace DXGame.Core.Components.Basic
             This setup assumes that this NetworkComponent will ONLY EVER be accessed from a single-threaded
             context. If that situation no longer applies, we'll have to use some mutexes :(
         */
-
         public NetPeer Connection
         {
             get { return connection_; }
@@ -104,6 +104,8 @@ namespace DXGame.Core.Components.Basic
             return this;
         }
 
+        public override bool ShouldSerialize => false;
+
         public abstract NetworkComponent WithConfiguration(NetPeerConfiguration config);
 
         protected static T ConvertMessageType<T>(NetworkMessage message) where T : class
@@ -118,7 +120,7 @@ namespace DXGame.Core.Components.Basic
             int maxMessages = MessageQueue.Count;
             for (int i = 0; i < maxMessages; ++i)
             {
-                NetIncomingMessage incomingMessage = null;
+                NetIncomingMessage incomingMessage;
                 bool couldDequeue = MessageQueue.TryDequeue(out incomingMessage);
                 if (!couldDequeue)
                 {
@@ -142,6 +144,10 @@ namespace DXGame.Core.Components.Basic
         public abstract void RouteDataOnMessageType(NetIncomingMessage message, DxGameTime gameTime);
         // ...and also to send data
         public abstract void SendData(DxGameTime gameTime);
-        public abstract void Shutdown();
+
+        public virtual void Shutdown()
+        {
+            ConnectionListener.Abort();
+        }
     }
 }

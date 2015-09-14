@@ -17,6 +17,7 @@ namespace DXGame.Core.Animation
         [DataMember] private DrawPriority drawPriority_;
         [DataMember] private TimeSpan lastUpdated_ = TimeSpan.FromSeconds(0);
         [DataMember] protected PositionalComponent position_;
+        [NonSerialized] [IgnoreDataMember]
         private Texture2D spriteSheet_;
         public TimeSpan TimePerFrame => TimeSpan.FromSeconds(1.0f / AnimationDescriptor.FramesPerSecond);
 

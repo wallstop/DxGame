@@ -9,8 +9,8 @@ using DXGame.Core.Utils;
 
 namespace DXGame.Core
 {
-    [DataContract]
     [Serializable]
+    [DataContract]
     public class Player
     {
         [DataMember] private readonly GameObject player_;

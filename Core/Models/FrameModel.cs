@@ -25,6 +25,8 @@ namespace DXGame.Core.Models
             return this;
         }
 
+        public override bool ShouldSerialize => false;
+
         public void AttachFrame(GameTimeFrame frame)
         {
             Validate.IsTrue(!Frames.Contains(frame),

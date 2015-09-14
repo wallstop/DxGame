@@ -34,6 +34,12 @@ namespace DXGame.Core
             list_ = new List<T>(capacity);
         }
 
+        public SortedList(SortedList<T> copy)
+        {
+            comparer_ = copy.comparer_;
+            list_ = new List<T>(copy.list_);
+        }
+
         public SortedList(IEnumerable<T> collection)
             : this(collection?.Count() ?? 0)
         {
@@ -99,6 +105,11 @@ namespace DXGame.Core
         public void RemoveAt(int index)
         {
             list_.RemoveAt(index);
+        }
+
+        public void RemoveAll(Predicate<T> match)
+        {
+            list_.RemoveAll(match);
         }
 
         public T this[int index]

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
@@ -15,9 +17,12 @@ namespace DXGame.Core.Components.Advanced
         Right = 3
     }
 
+    [Serializable]
+    [DataContract]
     public class CollidableComponent : SpatialComponent
     {
-        public List<CollidableDirection> CollidableDirections { get; } = new List<CollidableDirection>();
+        [DataMember]
+        public List<CollidableDirection> CollidableDirections { get; private set; } = new List<CollidableDirection>();
 
         public CollidableComponent(DxGame game)
             : base(game)

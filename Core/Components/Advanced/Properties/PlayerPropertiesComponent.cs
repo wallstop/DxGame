@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using DXGame.Core.Properties;
 using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Properties
 {
+    [Serializable]
+    [DataContract]
     public class PlayerPropertiesComponent : EntityPropertiesComponent
     {
         public static PlayerPropertiesComponent DefaultPlayerProperties

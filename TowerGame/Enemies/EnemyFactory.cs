@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 using DXGame.Core;
 using DXGame.Core.Animation;
 using DXGame.Core.Components.Advanced;
@@ -17,6 +13,7 @@ using Action = DXGame.Core.State.Action;
 
 namespace DXGame.TowerGame.Enemies
 {
+    [Serializable]
     public static class EnemyFactory
     {
         private static readonly float INITIAL_MOVEMENT_BOOST = 1.1f;
@@ -25,19 +22,19 @@ namespace DXGame.TowerGame.Enemies
             AnimationComponent.AnimationComponentBuilder animationBuilder, GameObject enemy)
         {
             var enemyName = "Box";
-            var simple = "Simple";
-            //var angry = "Angry";
+            var animationName = "Simple";
             var stateMachineBuilder = StateMachine.Builder();
             stateMachineBuilder.WithDxGame(game);
 
-            var idleState = IdleState(enemy);
-            animationBuilder.WithStateAndAsset(idleState, AnimationFactory.AnimationFor(enemyName, simple));
+            var simpleBoxActionResolve = new SimpleBoxActionResolver(enemy);
+            var idleState = simpleBoxActionResolve.IdleState;
+            animationBuilder.WithStateAndAsset(idleState, AnimationFactory.AnimationFor(enemyName, animationName));
             var stateMachine = stateMachineBuilder.WithInitialState(idleState).Build();
 
-            var moveLeftState = MoveLeftState(enemy);
-            animationBuilder.WithStateAndAsset(moveLeftState, AnimationFactory.AnimationFor(enemyName, simple));
-            var moveRightState = MoveRightState(enemy);
-            animationBuilder.WithStateAndAsset(moveRightState, AnimationFactory.AnimationFor(enemyName, simple));
+            var moveLeftState = MoveLeftState(simpleBoxActionResolve);
+            animationBuilder.WithStateAndAsset(moveLeftState, AnimationFactory.AnimationFor(enemyName, animationName));
+            var moveRightState = MoveRightState(simpleBoxActionResolve);
+            animationBuilder.WithStateAndAsset(moveRightState, AnimationFactory.AnimationFor(enemyName, animationName));
 
             Trigger moveLeftTrigger = (enemyInstance, gameTime) =>
             {
@@ -51,7 +48,7 @@ namespace DXGame.TowerGame.Enemies
             moveLeftState.Transitions.Add(moveLeftTransition);
             moveRightState.Transitions.Add(moveLeftTransition);
 
-            Trigger moveRightTrigger = (enemyInstance, gameTime) => 
+            Trigger moveRightTrigger = (enemyInstance, gameTime) =>
             {
                 var moveRequests = enemyInstance.CurrentMessages
                     .OfType<MovementRequest>();
@@ -66,7 +63,9 @@ namespace DXGame.TowerGame.Enemies
             {
                 var moveRequests = enemyInstance.CurrentMessages
                     .OfType<MovementRequest>();
-                return moveRequests.All(request => request.Direction != Direction.West && request.Direction != Direction.East);
+                return
+                    moveRequests.All(
+                        request => request.Direction != Direction.West && request.Direction != Direction.East);
             };
 
             var returnToIdleTransition = new Transition(returnToIdleTrigger, idleState, Priority.LOW);
@@ -77,72 +76,77 @@ namespace DXGame.TowerGame.Enemies
             return stateMachine;
         }
 
-        /* TODO: Refactor this and PlayerBuilder, there are some trivially mergable functions. Also, come up with better way to create StateMachines */
-        private static State IdleState(GameObject enemy)
-        {
-            return State.Builder().WithName("Idle").WithAction(gameTime =>
-            {
-                var existingVelocity = enemy.ComponentOfType<PhysicsComponent>().Velocity;
-                enemy.ComponentOfType<PhysicsComponent>().Velocity = new DxVector2(0, existingVelocity.Y);
-            }).Build();
-        }
-
-        private static State MoveLeftState(GameObject enemy)
+        private static State MoveLeftState(SimpleBoxActionResolver resolver)
         {
             return
                 State.Builder()
                     .WithName("Moving Left")
-                    .WithAction(MoveLeftAction(enemy))
+                    .WithAction(resolver.MoveLeftAction)
                     .Build();
         }
 
-        private static Action MoveLeftAction(GameObject enemy)
-        {
-            /* TODO: Configify */
-            var moveSpeed = 5;
-            return gameTime =>
-            {
-                if (enemy.ComponentOfType<PhysicsComponent>().Velocity.X < 0)
-                {
-                    enemy.ComponentOfType<PhysicsComponent>().Velocity =
-                        new DxVector2(INITIAL_MOVEMENT_BOOST * -moveSpeed,
-                            enemy.ComponentOfType<PhysicsComponent>().Velocity.Y);
-                }
-                else
-                {
-                    enemy.ComponentOfType<PhysicsComponent>().Velocity = new DxVector2(-moveSpeed,
-                        enemy.ComponentOfType<PhysicsComponent>().Velocity.Y);
-                }
-            };
-        }
-
-        private static State MoveRightState(GameObject enemy)
+        private static State MoveRightState(SimpleBoxActionResolver resolver)
         {
             return
                 State.Builder()
                     .WithName("Moving Right")
-                    .WithAction(MoveRightAction(enemy))
+                    .WithAction(resolver.MoveRightAction)
                     .Build();
         }
 
-        private static Action MoveRightAction(GameObject enemy)
+        /* 
+            We need to encapsulate all functions that reference an object as members of a serializable class.
+            Otherwise, we cannot serialize Enemies over the network.
+        */
+        [Serializable]
+        private class SimpleBoxActionResolver
         {
-            /* TODO: Configify */
-            var moveSpeed = 5;
-            return gameTime =>
+            private readonly GameObject enemy_;
+            public State IdleState { get; private set; }
+
+            public SimpleBoxActionResolver(GameObject enemy)
             {
-                if (enemy.ComponentOfType<PhysicsComponent>().Velocity.X < 0)
+                enemy_ = enemy;
+
+                IdleState = State.Builder().WithName("Idle").WithAction(IdleAction).Build();
+            }
+
+            private void IdleAction(DxGameTime gameTime)
+            {
+                var existingVelocity = enemy_.ComponentOfType<PhysicsComponent>().Velocity;
+                enemy_.ComponentOfType<PhysicsComponent>().Velocity = new DxVector2(0, existingVelocity.Y);
+            }
+
+            public void MoveLeftAction(DxGameTime gameTime)
+            {
+                if (enemy_.ComponentOfType<PhysicsComponent>().Velocity.X < 0)
                 {
-                    enemy.ComponentOfType<PhysicsComponent>().Velocity =
-                        new DxVector2(INITIAL_MOVEMENT_BOOST * moveSpeed,
-                            enemy.ComponentOfType<PhysicsComponent>().Velocity.Y);
+                    enemy_.ComponentOfType<PhysicsComponent>().Velocity =
+                        new DxVector2(INITIAL_MOVEMENT_BOOST * -5,
+                            enemy_.ComponentOfType<PhysicsComponent>().Velocity.Y);
                 }
                 else
                 {
-                    enemy.ComponentOfType<PhysicsComponent>().Velocity = new DxVector2(moveSpeed,
-                        enemy.ComponentOfType<PhysicsComponent>().Velocity.Y);
+                    enemy_.ComponentOfType<PhysicsComponent>().Velocity = new DxVector2(-5,
+                        enemy_.ComponentOfType<PhysicsComponent>().Velocity.Y);
                 }
-            };
+            }
+
+            public void MoveRightAction(DxGameTime gameTime)
+            {
+                if (enemy_.ComponentOfType<PhysicsComponent>().Velocity.X < 0)
+                {
+                    enemy_.ComponentOfType<PhysicsComponent>().Velocity =
+                        new DxVector2(INITIAL_MOVEMENT_BOOST * 5,
+                            enemy_.ComponentOfType<PhysicsComponent>().Velocity.Y);
+                }
+                else
+                {
+                    enemy_.ComponentOfType<PhysicsComponent>().Velocity = new DxVector2(5,
+                        enemy_.ComponentOfType<PhysicsComponent>().Velocity.Y);
+                }
+            }
+
         }
     }
 }

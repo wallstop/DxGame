@@ -31,6 +31,8 @@ namespace DXGame.Core.GraphicsWidgets
             WithBlinkRate(2);
         }
 
+        public override bool ShouldSerialize => false;
+
         public BlinkingCursor WithBlinkRate(float blinkRate)
         {
             return WithBlinkRate(TimeSpan.FromSeconds(1.0 / blinkRate));

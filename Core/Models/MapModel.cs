@@ -12,18 +12,14 @@ using NLog;
 
 namespace DXGame.Core.Models
 {
-    [Serializable]
-    [DataContract]
     public class MapModel : Model
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private static readonly string MAP_PATH = "Content/Map/";
-        [DataMember]
         private readonly List<Map.Map> maps_ = new List<Map.Map>();
 
         public DxVector2 PlayerSpawn => Map.PlayerSpawn;
         public DxRectangle MapBounds => Map.MapDescriptor.Size * Map.MapDescriptor.Scale;
-        [DataMember]
         public Map.Map Map { get; private set; }
 
         public MapModel(DxGame game)
@@ -31,6 +27,8 @@ namespace DXGame.Core.Models
         {
             DrawPriority = DrawPriority.MAP;
         }
+
+        public override bool ShouldSerialize => false;
 
         public override void LoadContent()
         {

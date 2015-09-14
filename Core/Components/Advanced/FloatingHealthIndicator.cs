@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Components.Basic;
@@ -14,18 +15,69 @@ namespace DXGame.Core.Components.Advanced
     // TODO: Still have to test & attach this to the player component
     // TODO: Have this be automagically centered
     // TODO: Have color values be based on "TEAM" (also, introduce concept of teams)
+    [Serializable]
+    [DataContract]
     public class FloatingHealthIndicator : DrawableComponent, IDisposable
     {
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
         private const int HEALTH_BAR_PIXEL_HEIGHT = 5;
         private const int HEALTH_BAR_PIXEL_WIDTH = 75;
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        protected Color backgroundColor_;
+
+        /* 
+            Serializing colors is nigh impossible. Instead, we can serialize their "packed" values
+        */
+        [DataMember]
+        private uint foregroundColor_;
+        [DataMember]
+        private uint backgroundColor_;
+
+        [IgnoreDataMember]
+        protected Color BackgroundColor {
+            get
+            {
+                var color = new Color
+                {
+                    A = foregroundColor_.A(),
+                    B = foregroundColor_.B(),
+                    G = foregroundColor_.C(),
+                    R = foregroundColor_.D()
+                };
+                return color;
+            }
+            set { foregroundColor_ = value.PackedValue; }
+        }
+
+        [IgnoreDataMember]
+        protected Color ForegroundColor {
+            get
+            {
+                var color = new Color
+                {
+                    A = backgroundColor_.A(),
+                    B = backgroundColor_.B(),
+                    G = backgroundColor_.C(),
+                    R = backgroundColor_.D()
+                };
+                return color;
+            }
+            set { backgroundColor_ = value.PackedValue; }
+        }
+
+
+        [NonSerialized] [IgnoreDataMember]
         protected Texture2D backgroundTexture_;
-        protected EntityPropertiesComponent entityProperties_;
-        protected DxVector2 floatDistance_;
-        protected Color foregroundColor_;
+        [NonSerialized] [IgnoreDataMember]
         protected Texture2D foregroundTexture_;
+
+        [DataMember]
+        protected EntityPropertiesComponent entityProperties_;
+        [DataMember]
+        protected DxVector2 floatDistance_;
+
+        [DataMember]
         protected PositionalComponent position_;
+
         public virtual int Health => entityProperties_.Health.CurrentValue;
         public virtual int MaxHealth => entityProperties_.MaxHealth.CurrentValue;
         public virtual double PercentHealthRemaining => (double) Health / MaxHealth;
@@ -40,8 +92,8 @@ namespace DXGame.Core.Components.Advanced
             Validate.IsNotNullOrDefault(position, StringUtils.GetFormattedNullOrDefaultMessage(this, position));
 
             floatDistance_ = floatDistance;
-            foregroundColor_ = foregroundColor;
-            backgroundColor_ = backgroundColor;
+            ForegroundColor = foregroundColor;
+            BackgroundColor = backgroundColor;
             entityProperties_ = properties;
             position_ = position;
             DrawPriority = DrawPriority.HUD_LAYER;
@@ -63,9 +115,9 @@ namespace DXGame.Core.Components.Advanced
         public override void LoadContent()
         {
             foregroundTexture_ = new Texture2D(DxGame.GraphicsDevice, 1, 1);
-            foregroundTexture_.SetData(new[] {foregroundColor_});
+            foregroundTexture_.SetData(new[] { ForegroundColor });
             backgroundTexture_ = new Texture2D(DxGame.GraphicsDevice, 1, 1);
-            backgroundTexture_.SetData(new[] {backgroundColor_});
+            backgroundTexture_.SetData(new[] { BackgroundColor });
             base.LoadContent();
         }
 
@@ -82,11 +134,11 @@ namespace DXGame.Core.Components.Advanced
                 (int) Math.Ceiling(PercentHealthRemaining * HEALTH_BAR_PIXEL_WIDTH);
             spriteBatch.Draw(foregroundTexture_,
                 new Rectangle((int) origin.X, (int) origin.Y, foregroundWidth,
-                    HEALTH_BAR_PIXEL_HEIGHT), foregroundColor_);
+                    HEALTH_BAR_PIXEL_HEIGHT), ForegroundColor);
             spriteBatch.Draw(backgroundTexture_,
                 new Rectangle((int) origin.X + foregroundWidth, (int) origin.Y,
                     (HEALTH_BAR_PIXEL_WIDTH - foregroundWidth),
-                    HEALTH_BAR_PIXEL_HEIGHT), backgroundColor_);
+                    HEALTH_BAR_PIXEL_HEIGHT), BackgroundColor);
         }
     }
 }

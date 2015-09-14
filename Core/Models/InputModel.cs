@@ -6,7 +6,6 @@ using DXGame.Main;
 
 namespace DXGame.Core.Models
 {
-    [Serializable]
     public class InputModel : Model
     {
         public IEnumerable<KeyboardEvent> Events { get; private set; }
@@ -17,6 +16,8 @@ namespace DXGame.Core.Models
             : base(game)
         {
         }
+
+        public override bool ShouldSerialize => false;
 
         public override void Initialize()
         {

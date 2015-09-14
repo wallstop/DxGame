@@ -216,6 +216,8 @@ namespace DXGame.Core.Components.Basic
             }
         }
 
+        public virtual bool ShouldSerialize => true;
+
         public virtual void LoadContent()
         {
         }

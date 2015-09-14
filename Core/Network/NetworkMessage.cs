@@ -25,8 +25,8 @@ namespace DXGame.Core.Network
 
         public static NetworkMessage FromNetIncomingMessage(NetIncomingMessage message)
         {
-            Validate.IsNotNull(message, $"Cannot create a {typeof (NetworkMessage)} from a null NetIncomingMessage!");
-            var typeString = message.ReadString();
+            Validate.IsNotNull(message, $"Cannot create a {typeof (NetworkMessage)} from a null {typeof(NetIncomingMessage)}!");
+            //var typeString = message.ReadString();
             try
             {
                 return Serializer<NetworkMessage>.BinaryDeserialize(message.PeekDataBuffer());
@@ -35,7 +35,7 @@ namespace DXGame.Core.Network
             {
                 // TODO: Log metrics on this
                 var logMessage =
-                    $"Could not create a {typeof (NetworkMessage)} for type {typeString}, something went horribly wrong.";
+                    $"Could not create a {typeof (NetworkMessage)} for unknown type, something went horribly wrong.";
                 LOG.Error(e, logMessage);
                 Debug.Assert(false, logMessage);
                 return new NetworkMessage();

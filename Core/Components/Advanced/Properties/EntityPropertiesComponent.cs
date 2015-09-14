@@ -6,8 +6,8 @@ using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Properties
 {
-    [DataContract]
     [Serializable]
+    [DataContract]
     public class EntityPropertiesComponent : Component
     {
         /*

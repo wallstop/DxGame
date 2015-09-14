@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
@@ -7,11 +9,16 @@ using DXGame.Main;
 
 namespace DXGame.Core.State
 {
+    [Serializable]
+    [DataContract]
     public class StateMachine : Component
     {
-        public State InitialState { get; }
+        [DataMember]
+        public State InitialState { get; private set; }
+        [DataMember]
         public State CurrentState { get; private set; }
         // TODO: Verify this is correct
+        [IgnoreDataMember]
         public int States
         {
             get

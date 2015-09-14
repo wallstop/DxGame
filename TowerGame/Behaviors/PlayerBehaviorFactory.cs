@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Runtime.Serialization;
+using DXGame.Core;
 using DXGame.Core.Animation;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Messaging;
@@ -7,9 +10,11 @@ using DXGame.Core.State;
 using DXGame.Core.Utils.Distance;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
+using Action = DXGame.Core.State.Action;
 
 namespace DXGame.TowerGame.Behaviors
 {
+    [Serializable]
     public static class PlayerBehaviorFactory
     {
         private static readonly float INITIAL_MOVEMENT_BOOST = 1.1f;
@@ -32,31 +37,32 @@ namespace DXGame.TowerGame.Behaviors
             var stateMachineBuilder = StateMachine.Builder();
             stateMachineBuilder.WithDxGame(game);
 
-            var idleState = IdleState(player);
+            var simplePlayerActionResolver = new SimplePlayerActionResolver(player);
+
+            var idleState = IdleState(simplePlayerActionResolver);
             // TODO: Figure out how to make this generic / modular
             animation.WithStateAndAsset(idleState, AnimationFactory.AnimationFor(playerName, StandardAnimationType.Idle));
             var stateMachine = stateMachineBuilder.WithInitialState(idleState).Build();
+            simplePlayerActionResolver.StateMachine = stateMachine;
 
-            var moveLeftState = MoveLeftState(player);
+            var moveLeftState = MoveLeftState(simplePlayerActionResolver);
             animation.WithStateAndAsset(moveLeftState,
                 AnimationFactory.AnimationFor(playerName, StandardAnimationType.WalkingLeft));
-            var moveRightState = MoveRightState(player);
+            var moveRightState = MoveRightState(simplePlayerActionResolver);
             animation.WithStateAndAsset(moveRightState,
                 AnimationFactory.AnimationFor(playerName, StandardAnimationType.WalkingRight));
-            var initialJumpState = BeginningJumpState(player);
+            var initialJumpState = BeginningJumpState(simplePlayerActionResolver);
             animation.WithStateAndAsset(initialJumpState,
                 AnimationFactory.AnimationFor(playerName, StandardAnimationType.JumpLeft));
-            var jumpingLeftState = JumpingLeftState(player);
+            var jumpingLeftState = JumpingLeftState(simplePlayerActionResolver);
             animation.WithStateAndAsset(jumpingLeftState,
                 AnimationFactory.AnimationFor(playerName, StandardAnimationType.JumpLeft));
-            var jumpingRightState = JumpingRightState(player);
+            var jumpingRightState = JumpingRightState(simplePlayerActionResolver);
             animation.WithStateAndAsset(jumpingRightState,
                 AnimationFactory.AnimationFor(playerName, StandardAnimationType.JumpRight));
-            var jumpingState = JumpState(player);
+            var jumpingState = JumpState(simplePlayerActionResolver);
             animation.WithStateAndAsset(jumpingState,
                 AnimationFactory.AnimationFor(playerName, StandardAnimationType.JumpLeft));
-
-
 
             Trigger moveLeftTrigger =
                 (playerInstance, gameTime) =>
@@ -110,17 +116,7 @@ namespace DXGame.TowerGame.Behaviors
             jumpingLeftState.Transitions.Add(idleJumpTransition);
             jumpingRightState.Transitions.Add(idleJumpTransition);
 
-            Trigger belowCollisionTrigger = (dxGame, gameTime) =>
-            {
-                if (stateMachine.Parent == null)
-                {
-                    return false;
-                }
-
-                var collisions = stateMachine.Parent.CurrentMessages.OfType<CollisionMessage>();
-                return collisions.Any(collision => collision.CollisionDirections.Contains(Direction.South));
-            };
-            var jumpToIdleTransition = new Transition(belowCollisionTrigger, idleState, Priority.HIGH);
+            var jumpToIdleTransition = new Transition(simplePlayerActionResolver.BelowCollisionTrigger, idleState, Priority.HIGH);
 
             jumpingLeftState.Transitions.Add(jumpToIdleTransition);
             jumpingRightState.Transitions.Add(jumpToIdleTransition);
@@ -128,103 +124,137 @@ namespace DXGame.TowerGame.Behaviors
 
             return stateMachine;
         }
+        
+        [Serializable]
+        [DataContract]
+        private class SimplePlayerActionResolver
+        {
+            [DataMember]
+            private readonly Core.Player player_;
 
-        private static State IdleState(Core.Player player)
+            [DataMember]
+            public StateMachine StateMachine { get; set; }
+            
+
+            public SimplePlayerActionResolver(Core.Player player)
+            {
+                player_ = player;
+            }
+
+            public bool BelowCollisionTrigger(GameObject playerInstance, DxGameTime gameTime)
+            {
+                if (StateMachine.Parent == null)
+                {
+                    return false;
+                }
+
+                var collisions = StateMachine.Parent.CurrentMessages.OfType<CollisionMessage>();
+                return collisions.Any(collision => collision.CollisionDirections.Contains(Direction.South));
+            }
+
+            public void MoveLeftAction(DxGameTime gameTime)
+            {
+                if (player_.Physics.Velocity.X < 0)
+                {
+                    player_.Physics.Velocity =
+                        new DxVector2(INITIAL_MOVEMENT_BOOST * -player_.Properties.MoveSpeed.CurrentValue,
+                            player_.Physics.Velocity.Y);
+                }
+                else
+                {
+                    player_.Physics.Velocity = new DxVector2(-player_.Properties.MoveSpeed.CurrentValue,
+                        player_.Physics.Velocity.Y);
+                }
+            }
+
+            public void MoveRightAction(DxGameTime gameTime)
+            {
+                if (player_.Physics.Velocity.X < 0)
+                {
+                    player_.Physics.Velocity =
+                        new DxVector2(INITIAL_MOVEMENT_BOOST * player_.Properties.MoveSpeed.CurrentValue,
+                            player_.Physics.Velocity.Y);
+                }
+                else
+                {
+                    player_.Physics.Velocity = new DxVector2(player_.Properties.MoveSpeed.CurrentValue,
+                        player_.Physics.Velocity.Y);
+                }
+            }
+
+            public void IdleAction(DxGameTime gameTime)
+            {
+                player_.Physics.Velocity = new DxVector2(0, player_.Physics.Velocity.Y);
+            }
+
+            public void BeginningJumpAction(DxGameTime gameTime)
+            {
+                player_.Physics.Velocity = new DxVector2(player_.Physics.Velocity.X, 0);
+                player_.Physics.Acceleration = new DxVector2(player_.Physics.Acceleration.X,
+                    -player_.Properties.JumpSpeed.CurrentValue);
+            }
+
+            public void JumpAction(DxGameTime gameTime)
+            {
+            }
+
+        }
+
+        private static State IdleState(SimplePlayerActionResolver actionResolver)
         {
             return State.Builder()
                 .WithName("Idle")
-                .WithAction(gameTime => player.Physics.Velocity = new DxVector2(0, player.Physics.Velocity.Y))
+                .WithAction(actionResolver.IdleAction)
                 .Build();
         }
 
-        private static State MoveLeftState(Core.Player player)
+        private static State MoveLeftState(SimplePlayerActionResolver actionResolver)
         {
             return
                 State.Builder()
                     .WithName("Moving Left")
-                    .WithAction(MoveLeftAction(player))
+                    .WithAction(actionResolver.MoveLeftAction)
                     .Build();
         }
 
-        private static Action MoveLeftAction(Core.Player player)
-        {
-            return gameTime =>
-            {
-                if (player.Physics.Velocity.X < 0)
-                {
-                    player.Physics.Velocity =
-                        new DxVector2(INITIAL_MOVEMENT_BOOST * -player.Properties.MoveSpeed.CurrentValue,
-                            player.Physics.Velocity.Y);
-                }
-                else
-                {
-                    player.Physics.Velocity = new DxVector2(-player.Properties.MoveSpeed.CurrentValue,
-                        player.Physics.Velocity.Y);
-                }
-            };
-        }
-
-        private static State MoveRightState(Core.Player player)
+        private static State MoveRightState(SimplePlayerActionResolver actionResolver)
         {
             return
                 State.Builder()
                     .WithName("Moving Right")
-                    .WithAction(MoveRightAction(player))
+                    .WithAction(actionResolver.MoveRightAction)
                     .Build();
         }
 
-        private static State BeginningJumpState(Core.Player player)
+        private static State BeginningJumpState(SimplePlayerActionResolver actionResolver)
         {
-            return State.Builder().WithName("Beginning to Jump").WithAction(gameTime =>
-            {
-                player.Physics.Velocity = new DxVector2(player.Physics.Velocity.X, 0);
-                player.Physics.Acceleration = new DxVector2(player.Physics.Acceleration.X,
-                    -player.Properties.JumpSpeed.CurrentValue);
-            }).Build();
+            return State.Builder().WithName("Beginning to Jump").WithAction(actionResolver.BeginningJumpAction).Build();
         }
 
-        private static State JumpState(Core.Player player)
+        private static State JumpState(SimplePlayerActionResolver actionResolver)
         {
             return
                 State.Builder()
                     .WithName("Jumping")
-                    .WithAction(gameTime => { })
+                    .WithAction(actionResolver.JumpAction)
                     .Build();
         }
 
-        private static Action MoveRightAction(Core.Player player)
-        {
-            return gameTime =>
-            {
-                if (player.Physics.Velocity.X < 0)
-                {
-                    player.Physics.Velocity =
-                        new DxVector2(INITIAL_MOVEMENT_BOOST * player.Properties.MoveSpeed.CurrentValue,
-                            player.Physics.Velocity.Y);
-                }
-                else
-                {
-                    player.Physics.Velocity = new DxVector2(player.Properties.MoveSpeed.CurrentValue,
-                        player.Physics.Velocity.Y);
-                }
-            };
-        }
-
-        private static State JumpingLeftState(Core.Player player)
+        private static State JumpingLeftState(SimplePlayerActionResolver actionResolver)
         {
             return
                 State.Builder()
                     .WithName("Jumping Left")
-                    .WithAction(MoveLeftAction(player))
+                    .WithAction(actionResolver.MoveLeftAction)
                     .Build();
         }
 
-        private static State JumpingRightState(Core.Player player)
+        private static State JumpingRightState(SimplePlayerActionResolver actionResolver)
         {
             return
                 State.Builder()
                     .WithName("Jumping Right")
-                    .WithAction(MoveRightAction(player))
+                    .WithAction(actionResolver.MoveRightAction)
                     .Build();
         }
 

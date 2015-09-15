@@ -30,6 +30,8 @@ namespace DXGame.Core.Menus
             }
         }
 
+        public override bool ShouldSerialize => false;
+
         protected override void Update(DxGameTime gameTime)
         {
             var mousePosition = mousePointer_.ComponentOfType<MouseTrackingComponent>();

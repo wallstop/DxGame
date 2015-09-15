@@ -29,6 +29,11 @@ namespace DXGame.Core.Models
         {
         }
 
+        protected override void DeSerialize()
+        {
+            // Do nothing with this, this Initialize will do all kinds of bad things (re-trigger map model spawning, for example)
+        }
+
         public override void Initialize()
         {
             var mapModel = new MapModel(DxGame);

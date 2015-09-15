@@ -195,6 +195,7 @@
     <Compile Include="Core\Models\Model.cs" />
     <Compile Include="Core\Models\NetworkModel.cs" />
     <Compile Include="Core\Models\PlayerModel.cs" />
+    <Compile Include="Core\Utils\LidgrenUtils.cs" />
     <Compile Include="Core\Utils\WorldGravity.cs" />
     <Compile Include="Core\Network\ClientConnectionRequest.cs" />
     <Compile Include="Core\Network\GameStateDiff.cs" />

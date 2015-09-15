@@ -53,11 +53,11 @@ namespace DXGame.Main
         public GameElementCollection NewGameElements { get; } = new GameElementCollection();
         public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
 
-        public TimeSpan TargetTimePerUpdate => TimeSpan.FromSeconds(1.0 / TargetFps);
-
         public DxGameTime CurrentTime { get; private set; }
 
         public UpdateMode UpdateMode { get; set; } = UpdateMode.Active;
+
+        public List<Model> Models => models_;
 
         public DxRectangle ScreenRegion
         {
@@ -249,7 +249,6 @@ namespace DXGame.Main
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            var stopWatch = Stopwatch.StartNew();
             var dxGameTime = new DxGameTime(gameTime);
             CurrentTime = dxGameTime;
 
@@ -271,10 +270,6 @@ namespace DXGame.Main
                     break;
                 default:
                     throw new NotImplementedException($"{UpdateMode} currently not implemented");
-            }
-            while (stopWatch.Elapsed < TargetTimePerUpdate)
-            {
-                ; // Busy sleep to lock at 60 FPS
             }
         }
 

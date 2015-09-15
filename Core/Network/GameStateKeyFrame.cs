@@ -28,6 +28,9 @@ namespace DXGame.Core.Network
         [DataMember]
         public GameElementCollection RemovedGameEleemnts { get; set; }
 
+        [DataMember]
+        public List<Model> Models { get; set; }
+
         public GameStateKeyFrame()
         {
             MessageType = MessageType.SERVER_DATA_KEYFRAME;
@@ -40,7 +43,8 @@ namespace DXGame.Core.Network
                 GameTime = gameTime,
                 GameElements = new GameElementCollection(game.DxGameElements),
                 NewGameElements = new GameElementCollection(game.NewGameElements),
-                RemovedGameEleemnts = new GameElementCollection(game.RemovedGameElements)
+                RemovedGameEleemnts = new GameElementCollection(game.RemovedGameElements),
+                Models = new List<Model>(game.Models)
             };
             Predicate<object> shouldSerialize = entity =>
             {
@@ -50,6 +54,7 @@ namespace DXGame.Core.Network
             keyFrame.GameElements.Remove(shouldSerialize);
             keyFrame.NewGameElements.Remove(shouldSerialize);
             keyFrame.RemovedGameEleemnts.Remove(shouldSerialize);
+            keyFrame.Models.RemoveAll(shouldSerialize);
             return keyFrame;
         }
     }

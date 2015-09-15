@@ -14,7 +14,7 @@ namespace DXGame.Core.Utils
 
         public static string GetString(byte[] bytes)
         {
-            char[] characters = new char[bytes.Length / sizeof (char)];
+            char[] characters = new char[(int)Math.Ceiling((double)bytes.Length / sizeof (char))];
             Buffer.BlockCopy(bytes, 0, characters, 0, bytes.Length);
             return new string(characters);
         }

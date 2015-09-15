@@ -19,7 +19,11 @@ namespace DXGame.Core.Components.Network
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         public NetServer ServerConnection => Connection as NetServer;
-        public Dictionary<NetConnection, FrameModel> ClientFrameStates { get; }
+        public Dictionary<NetConnection, FrameModel> ClientFrameStates { get; private set; }
+
+        private static readonly TimeSpan KEY_FRAME_DELAY = TimeSpan.FromSeconds(1.0 / 30); // 30 FPS
+
+        private TimeSpan lastSent_ = TimeSpan.Zero;
 
         public NetworkServer(DxGame game)
             : base(game)
@@ -69,12 +73,16 @@ namespace DXGame.Core.Components.Network
 
         public override void SendData(DxGameTime gameTime)
         {
-            foreach (NetConnection connection in ClientFrameStates.Keys)
+            if (lastSent_ + KEY_FRAME_DELAY < gameTime.TotalGameTime)
             {
                 // Quick and dirty for now - do some nice differentials later
                 var message = GameStateKeyFrame.FromGame(DxGame, gameTime);
                 var outgoingMessage = message.ToNetOutgoingMessage(ServerConnection);
-                ServerConnection.SendMessage(outgoingMessage, connection, NetDeliveryMethod.ReliableOrdered, 0);
+                foreach (NetConnection connection in ClientFrameStates.Keys)
+                {
+                    ServerConnection.SendMessage(outgoingMessage, connection, NetDeliveryMethod.ReliableOrdered, 0);
+                }
+                lastSent_ = gameTime.TotalGameTime;
             }
         }
 

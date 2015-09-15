@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using Lidgren.Network;
@@ -8,8 +6,6 @@ using NLog;
 
 namespace DXGame.Core.Network
 {
-
-
     /*
         TODO: Enumerate these as need be. These represent the individual "kinds" of message that
         can be received over the network and will generally have classes associated with them.
@@ -31,6 +27,7 @@ namespace DXGame.Core.Network
         These classes serve as a sort of "ORM"-ey style thing to generate and parse NetIncomingMessages
         and NetOutgoingMessages.
     */
+
     [Serializable]
     [DataContract]
     public class NetworkMessage
@@ -42,11 +39,10 @@ namespace DXGame.Core.Network
 
         public static NetworkMessage FromNetIncomingMessage(NetIncomingMessage message)
         {
-            Validate.IsNotNull(message, $"Cannot create a {typeof (NetworkMessage)} from a null {typeof(NetIncomingMessage)}!");
-            var typeString = message.ReadString();
+            Validate.IsNotNull(message,
+                $"Cannot create a {typeof (NetworkMessage)} from a null {typeof (NetIncomingMessage)}!");
             try
             {
-                var type = Type.GetType(typeString);
                 return Serializer<NetworkMessage>.BinaryDeserialize(message.PeekDataBuffer());
             }
             catch (Exception e)

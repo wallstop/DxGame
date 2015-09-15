@@ -69,7 +69,7 @@ namespace DXGame.Core.Components.Network
                     break;
                 default:
                     LOG.Info(
-                        $"Received NetMessage of type {message.MessageType}. Currently not handling this. ({StringUtils.GetString(message.PeekDataBuffer())})");
+                        $"Received NetMessage of type {message.MessageType}. Currently not handling this. ({message.MessageContents()})");
                     break;
             }
         }
@@ -104,7 +104,7 @@ namespace DXGame.Core.Components.Network
                     break;
                 default:
                     LOG.Info(
-                        $"Received NetMessage of type {message.MessageType}. Currently not handling this. ({StringUtils.GetString(message.PeekDataBuffer())})");
+                        $"Received NetMessage of type {message.MessageType}. Currently not handling this. ({message.MessageContents()})");
                     break;
             }
         }
@@ -133,6 +133,11 @@ namespace DXGame.Core.Components.Network
             foreach (var element in serverDataKeyFrame.RemovedGameEleemnts)
             {
                 DxGame.RemovedGameElements.Add(element);
+            }
+            DxGame.Models.RemoveAll(shouldSerialize);
+            foreach (var model in serverDataKeyFrame.Models)
+            {
+                DxGame.Models.Add(model);
             }
         }
 

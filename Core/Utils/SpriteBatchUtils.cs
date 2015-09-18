@@ -48,7 +48,7 @@ namespace DXGame.Core.Utils
                         copy.Width = borderThickness;
                         break;
                     case 3:
-                        copy.Y = copy.Y + copy.Width - borderThickness;
+                        copy.Y = copy.Y + copy.Height - borderThickness;
                         copy.Height = borderThickness;
                         break;
                 }

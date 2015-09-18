@@ -57,6 +57,7 @@ namespace DXGame.Main
 
         public UpdateMode UpdateMode { get; set; } = UpdateMode.Active;
 
+        /* TODO: Remove public access to this, this was made public for network testing */
         public List<Model> Models => models_;
 
         public DxRectangle ScreenRegion

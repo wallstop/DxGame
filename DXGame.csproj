@@ -112,10 +112,11 @@
     <Compile Include="Core\Components\Advanced\Map\MapCollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\Player\PlayerInputListener.cs" />
     <Compile Include="Core\Components\Advanced\SkillComponent.cs" />
-    <Compile Include="Core\Components\Utils\DeveloperSwitch.cs" />
+    <Compile Include="Core\Components\Developer\BoundingBoxWidget.cs" />
+    <Compile Include="Core\Components\Developer\DeveloperSwitch.cs" />
     <Compile Include="Core\Generators\PlayerGenerator.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\FpsWidget.cs" />
-    <Compile Include="Core\GraphicsWidgets\Utils\CollisionTreeWidget.cs" />
+    <Compile Include="Core\Components\Developer\CollisionTreeWidget.cs" />
     <Compile Include="Core\IDrawable.cs" />
     <Compile Include="Core\IProcessable.cs" />
     <Compile Include="Core\JsonPersistable.cs" />
@@ -446,6 +447,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\Behavior\" />
+    <Folder Include="Core\GraphicsWidgets\Utils\" />
     <Folder Include="Core\Skills\" />
     <Folder Include="Network\" />
     <Folder Include="TowerGame\Buffs\" />

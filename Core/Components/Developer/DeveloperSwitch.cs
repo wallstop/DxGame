@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Models;
 using DXGame.Core.Utils;
@@ -10,7 +6,7 @@ using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Input;
 
-namespace DXGame.Core.Components.Utils
+namespace DXGame.Core.Components.Developer
 {
     public enum DeveloperMode
     {

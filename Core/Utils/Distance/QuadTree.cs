@@ -46,6 +46,8 @@ namespace DXGame.Core.Utils.Distance
         private readonly Coordinate<T> coordinate_;
         private readonly QuadTreeNode<T> head_;
 
+        public List<DxRectangle> Nodes => Divisions; 
+
         public List<DxRectangle> Divisions
         {
             get

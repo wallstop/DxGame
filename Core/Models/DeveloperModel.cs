@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Components.Developer;
 using DXGame.Core.Components.Utils;
 using DXGame.Core.GraphicsWidgets.HUD;
 using DXGame.Core.Utils;
@@ -31,6 +33,10 @@ namespace DXGame.Core.Models
             components_.Add(fpsTracker);
             devSwitch_ = new DeveloperSwitch(DxGame);
             components_.Add(devSwitch_);
+            var mapTreeWidget = new CollisionTreeWidget<MapCollidableComponent>(game, () => DxGame.Model<MapModel>().Map.Collidables);
+            components_.Add(mapTreeWidget);
+            var boundingBoxWidget = new BoundingBoxWidget(game);
+            components_.Add(boundingBoxWidget);
         }
 
         public override bool ShouldSerialize => false;

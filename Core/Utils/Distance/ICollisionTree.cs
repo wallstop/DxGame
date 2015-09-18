@@ -10,6 +10,7 @@ namespace DXGame.Core.Utils.Distance
 {
     public interface ICollisionTree<T>
     {
+        List<DxRectangle> Nodes { get; }
         List<DxRectangle> Divisions { get; }
         List<T> InRange(DxRectangle range);
     }

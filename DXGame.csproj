@@ -112,7 +112,9 @@
     <Compile Include="Core\Components\Advanced\Map\MapCollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\Player\PlayerInputListener.cs" />
     <Compile Include="Core\Components\Advanced\SkillComponent.cs" />
+    <Compile Include="Core\Components\Utils\DeveloperSwitch.cs" />
     <Compile Include="Core\Generators\PlayerGenerator.cs" />
+    <Compile Include="Core\GraphicsWidgets\HUD\FpsWidget.cs" />
     <Compile Include="Core\GraphicsWidgets\Utils\CollisionTreeWidget.cs" />
     <Compile Include="Core\IDrawable.cs" />
     <Compile Include="Core\IProcessable.cs" />
@@ -123,6 +125,7 @@
     <Compile Include="Core\Messaging\DropThroughPlatformRequest.cs" />
     <Compile Include="Core\Messaging\MovementRequest.cs" />
     <Compile Include="Core\Models\CollisionModel.cs" />
+    <Compile Include="Core\Models\DeveloperModel.cs" />
     <Compile Include="Core\Models\MapModel.cs" />
     <Compile Include="Core\State\Action.cs" />
     <Compile Include="Core\State\StateMachine.cs" />
@@ -149,6 +152,7 @@
     <Compile Include="Core\Utils\Distance\Distance.cs" />
     <Compile Include="Core\Utils\Distance\KDTree.cs" />
     <Compile Include="Core\Utils\Distance\RTree.cs" />
+    <Compile Include="Core\Utils\EnumUtils.cs" />
     <Compile Include="Core\Utils\GameElementCollection.cs" />
     <Compile Include="Core\Components\Basic\DrawableComponent.cs" />
     <Compile Include="Core\Components\Basic\NetworkComponent.cs" />

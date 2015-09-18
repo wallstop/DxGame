@@ -38,6 +38,8 @@ namespace DXGame.Core.Models
         {
             var mapModel = new MapModel(DxGame);
             DxGame.AttachModel(mapModel);
+            var developerModel = new DeveloperModel(DxGame);
+            DxGame.AttachModel(developerModel);
             PlayerGenerator playerGenerator = new PlayerGenerator(DxGame, mapModel.PlayerSpawn,
                 mapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;
@@ -49,10 +51,7 @@ namespace DXGame.Core.Models
             var playerModel = new PlayerModel(DxGame).WithActivePlayer(activePlayer);
             DxGame.AttachModel(playerModel);
 
-            var fpsTracker = new FpsTracker(DxGame);
-            DxGame.AddAndInitializeComponent(fpsTracker);
             var physicsComponents = player.ComponentsOfType<PhysicsComponent>();
-
 
             foreach (var physicsComponent in physicsComponents)
             {

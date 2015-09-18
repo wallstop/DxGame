@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
-using DXGame.Core.Utils;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,15 +14,14 @@ namespace DXGame.Core.GraphicsWidgets.HUD
         private static readonly TimeSpan ONE_SECOND = TimeSpan.FromSeconds(1);
         private readonly SortedList<TimeSpan> frameTimes_ = new SortedList<TimeSpan>();
         private readonly Stopwatch stopWatch_;
-        public TimeSpan lastUpdated_ = TimeSpan.FromSeconds(0);
+        private TimeSpan lastUpdated_ = TimeSpan.FromSeconds(0);
         public int FramesPerSecond => frameTimes_.Count;
+        public override bool ShouldSerialize => false;
 
         public FpsTracker(DxGame game) : base(game)
         {
             stopWatch_ = Stopwatch.StartNew();
         }
-
-        public override bool ShouldSerialize => false;
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
@@ -35,7 +32,6 @@ namespace DXGame.Core.GraphicsWidgets.HUD
             {
                 // TODO: Have a widget draw this instead of logging it
                 lastUpdated_ = timeStamp;
-                LOG.Info($"FPS: {FramesPerSecond}");
             }
         }
 

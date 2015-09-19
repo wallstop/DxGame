@@ -36,13 +36,14 @@ namespace DXGame.Core.Menus
 
             // Ports have a range of 0 - 65536 (2 ^ 16 - 1) -> max length of 5
             PortBox =
-                new TextBox(DxGame).WithSpatialComponent(portBoxSpatial)
-                    .WithBackGroundColor(Color.White)
+                TextBox.Builder()
+                    .WithSpatialComponent(portBoxSpatial)
+                    .WithBackgroundColor(Color.White)
                     .WithTextColor(Color.Black)
                     .WithMaxLength(5)
-                    // Only allow numeric values for ports
                     .WithValidKeys(KeyboardEvent.NumericKeys)
-                    .WithSpriteFont(spriteFont);
+                    .WithSpriteFont(spriteFont)
+                    .Build();
 
             var portLabel =
                 new MenuItem().WithSpriteFont(spriteFont)

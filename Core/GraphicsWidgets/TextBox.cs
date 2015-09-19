@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
@@ -16,17 +17,19 @@ namespace DXGame.Core.GraphicsWidgets
 {
     public class TextBox : DrawableComponent
     {
-        private readonly BlinkingCursor blinkingCursor_;
         private int cursorPosition_;
-        private List<Keys> validKeys_;
+        private ImmutableHashSet<Keys> validKeys_ = ImmutableHashSet<Keys>.Empty;
         public string Text { get; protected set; }
-        public SpatialComponent SpatialComponent { get; protected set; }
+        public SpatialComponent SpatialComponent { get; }
 
         public IEnumerable<Keys> ValidKeys
         {
             get { return validKeys_; }
             // Make sure we can use the arrow keys to move, regardless of input
-            protected set { validKeys_ = value.Concat(new[] {Keys.Back, Keys.Delete, Keys.Left, Keys.Right}).ToList(); }
+            protected set
+            {
+                validKeys_ = value.Concat(new[] {Keys.Back, Keys.Delete, Keys.Left, Keys.Right}).ToImmutableHashSet();
+            }
         }
 
         protected int CursorPosition
@@ -44,11 +47,11 @@ namespace DXGame.Core.GraphicsWidgets
         }
 
         public override bool ShouldSerialize => false;
-
-        protected SpriteFont SpriteFont { get; set; }
-        protected Texture2D Texture { get; set; }
-        protected Color TextColor { get; set; }
-        protected int MaxLength { get; set; }
+        protected BlinkingCursor BlinkingCursor { get; }
+        protected SpriteFont SpriteFont { get; }
+        protected Texture2D Background { get; }
+        protected Color TextColor { get; }
+        protected int MaxLength { get; }
 
         protected bool InFocus
         {
@@ -60,81 +63,35 @@ namespace DXGame.Core.GraphicsWidgets
             }
         }
 
-        public TextBox(DxGame game)
+        private TextBox(DxGame game, BlinkingCursor blinkingCursor, List<Keys> validKeys, Texture2D background,
+            Color textColor, SpatialComponent spatial, SpriteFont spriteFont, int maxLength)
             : base(game)
         {
             Text = "";
             CursorPosition = 0;
-            MaxLength = 0;
-            blinkingCursor_ = new BlinkingCursor(DxGame).WithHeight(1); // 1-pixel blinking cursor by default
-            ValidKeys = KeyboardEvent.KeyCharacters.Keys;
-        }
-
-        public TextBox WithSpriteFont(SpriteFont spriteFont)
-        {
-            Validate.IsNotNullOrDefault(spriteFont,
-                $"Cannot initialize a {GetType()} with a null/default {nameof(spriteFont)}!");
+            SpatialComponent = spatial;
             SpriteFont = spriteFont;
-
-            const string testString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            var stringMeasurement = SpriteFont.MeasureString(testString);
-            // Take an average width over the alphabet
-            blinkingCursor_.WithWidth(stringMeasurement.X / testString.Length);
-            return this;
+            MaxLength = maxLength;
+            ValidKeys = validKeys;
+            TextColor = textColor;
+            Background = background;
+            BlinkingCursor = blinkingCursor;
         }
 
-        public TextBox WithSpatialComponent(SpatialComponent spatialComponent)
+        public static TextBoxBuilder Builder()
         {
-            Validate.IsNotNullOrDefault(spatialComponent,
-                $"Cannot initialize a {GetType()} with a null/default {typeof (SpatialComponent)} !");
-            SpatialComponent = spatialComponent;
-            return WithBackGroundColor(Color.White);
-        }
-
-        public TextBox WithBackGroundColor(Color color)
-        {
-            Texture = TextureFactory.TextureForColor(color);
-            return this;
-        }
-
-        public TextBox WithTextColor(Color color)
-        {
-            TextColor = color;
-            blinkingCursor_.WithColor(color);
-            return this;
-        }
-
-        public TextBox WithMaxLength(int length)
-        {
-            Validate.IsTrue(length > 0,
-                $"It's pointless to create a TextBox that can't have any text in it (length {length})");
-            MaxLength = length;
-            return this;
-        }
-
-        public TextBox WithValidKeys(IEnumerable<Keys> validKeys)
-        {
-            var validKeysEnumerated = validKeys as Keys[] ?? validKeys.ToArray();
-            Validate.IsNotNullOrDefault(validKeysEnumerated,
-                "Cannot initialize a TextBox with an empty set of valid keys");
-            ValidKeys = validKeysEnumerated;
-            return this;
+            return new TextBoxBuilder();
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            // TODO: Come up with a better validation scheme. Do a boolean check?
-            Validate.IsNotNullOrDefault(SpatialComponent, "Can't use a TextBox without a spatial component!");
-            Validate.IsNotNullOrDefault(SpriteFont, "Can't use a TextBox without a sprite font!");
-            Validate.IsNotNullOrDefault(Texture, "Can't use a TextBox without a Texture!");
-
-            spriteBatch.Draw(Texture, destinationRectangle: SpatialComponent.Space.ToRectangle());
+            spriteBatch.Draw(Background, destinationRectangle: SpatialComponent.Space.ToRectangle());
             spriteBatch.DrawString(SpriteFont, Text, SpatialComponent.Position.ToVector2(), TextColor);
 
             // TODO: Change this to some kind of focused-style state, possible set via the owner
             if (InFocus)
             {
-                blinkingCursor_.Draw(spriteBatch, gameTime);
+                BlinkingCursor.Draw(spriteBatch, gameTime);
             }
         }
 
@@ -155,13 +112,15 @@ namespace DXGame.Core.GraphicsWidgets
             }
 
             var textSubstring = Text.Substring(0, CursorPosition);
-            blinkingCursor_.WithOrigin(new Vector2(
-                SpatialComponent.Position.X + SpriteFont.MeasureString(textSubstring).X,
-                SpatialComponent.Position.Y +
-                // TODO: Find some better way of determining string height when the string is empty than hard-coded "a"
-                SpriteFont.MeasureString(textSubstring.Length == 0 ? "a" : textSubstring).Y));
-            blinkingCursor_.Process(gameTime);
+            var cursorPosition = BlinkingCursor.Space;
 
+            var textDimensions = SpriteFont.MeasureString(textSubstring);
+
+            cursorPosition.X = SpatialComponent.Position.X + textDimensions.X;
+            /* TODO: Find a better way of doing this than hard-coding "a" */
+            cursorPosition.Y = SpatialComponent.Position.Y + (textDimensions.Y == 0 ? SpriteFont.MeasureString("a").Y : textDimensions.Y);
+            BlinkingCursor.Space = cursorPosition;
+            BlinkingCursor.Process(gameTime);
             base.Update(gameTime);
         }
 
@@ -179,6 +138,7 @@ namespace DXGame.Core.GraphicsWidgets
 
         protected void HandleKeyboardEvents(IEnumerable<KeyboardEvent> events)
         {
+            // TODO: Stringbuilder?
             string preCursor = Text.Substring(0, CursorPosition);
             string postCursor = Text.Substring(CursorPosition);
             string typedText = "";
@@ -223,6 +183,92 @@ namespace DXGame.Core.GraphicsWidgets
         protected bool IsMaxLengthSet()
         {
             return MaxLength != 0;
+        }
+
+        public class TextBoxBuilder : IBuilder<TextBox>
+        {
+            private Texture2D backgroundTexture_ = TextureFactory.TextureForColor(Color.White);
+            private Color cursorColor_ = Color.Black;
+            private DxGame game_;
+            private int maxLength_;
+            private SpatialComponent spatial_;
+            private SpriteFont spriteFont_;
+            private Color textColor_ = Color.Black;
+            private List<Keys> validKeys_ = new List<Keys>(KeyboardEvent.KeyCharacters.Keys);
+
+            public TextBox Build()
+            {
+                Validate.IsNotNullOrDefault(spriteFont_, StringUtils.GetFormattedNullOrDefaultMessage(this, spriteFont_));
+                Validate.IsTrue(maxLength_ > 0, $"Cannot create a {typeof (TextBox)} with a MaxLength of {maxLength_}");
+                Validate.IsNotNullOrDefault(spatial_, StringUtils.GetFormattedNullOrDefaultMessage(this, spatial_));
+
+                const string testString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+                var stringMeasurement = spriteFont_.MeasureString(testString);
+                var textWidth = stringMeasurement.X / testString.Length;
+                if (Check.IsNullOrDefault(game_))
+                {
+                    game_ = DxGame.Instance;
+                }
+                var blinkingCursor =
+                    BlinkingCursor.Builder().WithWidth(textWidth).WithColor(cursorColor_).WithGame(game_).Build();
+
+                return new TextBox(game_, blinkingCursor, validKeys_, backgroundTexture_, textColor_, spatial_,
+                    spriteFont_, maxLength_);
+            }
+
+            public TextBoxBuilder WithGame(DxGame game)
+            {
+                game_ = game;
+                return this;
+            }
+
+            public TextBoxBuilder WithValidKeys(IEnumerable<Keys> validKeys)
+            {
+                validKeys_ = new List<Keys>(validKeys);
+                return this;
+            }
+
+            public TextBoxBuilder WithCursorColor(Color color)
+            {
+                cursorColor_ = color;
+                return this;
+            }
+
+            public TextBoxBuilder WithBackgroundTexture(Texture2D texture)
+            {
+                backgroundTexture_ = texture;
+                return this;
+            }
+
+            public TextBoxBuilder WithBackgroundColor(Color color)
+            {
+                backgroundTexture_ = TextureFactory.TextureForColor(color);
+                return this;
+            }
+
+            public TextBoxBuilder WithTextColor(Color color)
+            {
+                textColor_ = color;
+                return this;
+            }
+
+            public TextBoxBuilder WithSpatialComponent(SpatialComponent spatial)
+            {
+                spatial_ = spatial;
+                return this;
+            }
+
+            public TextBoxBuilder WithSpriteFont(SpriteFont spriteFont)
+            {
+                spriteFont_ = spriteFont;
+                return this;
+            }
+
+            public TextBoxBuilder WithMaxLength(int maxLength)
+            {
+                maxLength_ = maxLength;
+                return this;
+            }
         }
     }
 }

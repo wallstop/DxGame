@@ -114,10 +114,8 @@ namespace DXGame.Core.Components.Advanced
 
         public override void LoadContent()
         {
-            foregroundTexture_ = new Texture2D(DxGame.GraphicsDevice, 1, 1);
-            foregroundTexture_.SetData(new[] { ForegroundColor });
-            backgroundTexture_ = new Texture2D(DxGame.GraphicsDevice, 1, 1);
-            backgroundTexture_.SetData(new[] { BackgroundColor });
+            foregroundTexture_ = TextureFactory.TextureForColor(ForegroundColor);
+            backgroundTexture_ = TextureFactory.TextureForColor(BackgroundColor);
             base.LoadContent();
         }
 

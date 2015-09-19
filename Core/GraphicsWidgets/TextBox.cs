@@ -88,21 +88,12 @@ namespace DXGame.Core.GraphicsWidgets
             Validate.IsNotNullOrDefault(spatialComponent,
                 $"Cannot initialize a {GetType()} with a null/default {typeof (SpatialComponent)} !");
             SpatialComponent = spatialComponent;
-            var width = (int) SpatialComponent.Width;
-            var height = (int) SpatialComponent.Height;
-            Texture = new Texture2D(DxGame.GraphicsDevice, width, height);
             return WithBackGroundColor(Color.White);
         }
 
         public TextBox WithBackGroundColor(Color color)
         {
-            // TODO: Come up with a better check
-            Validate.IsNotNullOrDefault(Texture,
-                $"Cannot initialize a {GetType()} with color {color} without a valid {typeof (Texture)}");
-            var width = (int) SpatialComponent.Width;
-            var height = (int) SpatialComponent.Height;
-            // Enumerable.Repeat is very slow - might want to use for loop
-            Texture.SetData(Enumerable.Repeat(color, width * height).ToArray());
+            Texture = TextureFactory.TextureForColor(color);
             return this;
         }
 
@@ -137,7 +128,7 @@ namespace DXGame.Core.GraphicsWidgets
             Validate.IsNotNullOrDefault(SpriteFont, "Can't use a TextBox without a sprite font!");
             Validate.IsNotNullOrDefault(Texture, "Can't use a TextBox without a Texture!");
 
-            spriteBatch.Draw(Texture, SpatialComponent.Position.ToVector2());
+            spriteBatch.Draw(Texture, destinationRectangle: SpatialComponent.Space.ToRectangle());
             spriteBatch.DrawString(SpriteFont, Text, SpatialComponent.Position.ToVector2(), TextColor);
 
             // TODO: Change this to some kind of focused-style state, possible set via the owner

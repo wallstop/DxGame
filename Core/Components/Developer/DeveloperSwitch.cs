@@ -14,11 +14,15 @@ namespace DXGame.Core.Components.Developer
         NotSoOn
     }
 
+    /**
+
+        <summary> Simple Component that keeps track of the current "DeveloperMode" state </summary>
+    */
     public class DeveloperSwitch : Component
     {
         private static readonly Keys DEV_KEY = Keys.F7;
 
-        public DeveloperMode DeveloperMode { get; private set; } = DeveloperMode.FullOn;
+        public DeveloperMode DeveloperMode { get; private set; } = DeveloperMode.NotSoOn;
 
         public DeveloperSwitch(DxGame game) 
             : base(game)

@@ -89,13 +89,12 @@ namespace DXGame.Core.GraphicsWidgets
             // Only draw ourselves if we're in our "Drawn" state
             if (Check.IsNullOrDefault(Texture))
             {
-                Texture = new Texture2D(DxGame.GraphicsDevice, (int) Width, (int) Height);
-                Texture.SetData(Enumerable.Repeat(Color, (int) (Width * Height)).ToArray());
+                Texture = TextureFactory.TextureForColor(Color);
             }
 
             if (Drawn)
             {
-                spriteBatch.Draw(Texture, Origin);
+                spriteBatch.Draw(Texture, destinationRectangle: new Rectangle((int)Origin.X, (int)Origin.Y, (int)Width, (int)Height));
             }
         }
     }

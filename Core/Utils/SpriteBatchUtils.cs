@@ -3,14 +3,11 @@ using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using NLog;
 
 namespace DXGame.Core.Utils
 {
     public static class SpriteBatchUtils
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-
         public static void DrawBorder(DxGame game, DxRectangle rectangle, int borderThickness, Color borderColor)
         {
             DrawBorder(game, rectangle.ToRectangle(), borderThickness, borderColor);
@@ -18,13 +15,12 @@ namespace DXGame.Core.Utils
 
         public static void DrawBorder(DxGame game, Rectangle rectangle, int borderThickness, Color borderColor)
         {
-            Texture2D pixel = new Texture2D(game.GraphicsDevice, 1, 1);
-            pixel.SetData(new[] {borderColor});
+            var coloredPixel = TextureFactory.TextureForColor(borderColor);
             var spriteBatch = game.SpriteBatch;
             IEnumerable<Rectangle> borderRectangles = GenerateBorderRectangles(rectangle, borderThickness);
             foreach (Rectangle borderRectangle in borderRectangles)
             {
-                spriteBatch.Draw(pixel, destinationRectangle: borderRectangle);
+                spriteBatch.Draw(coloredPixel, destinationRectangle: borderRectangle);
             }
         }
 
@@ -37,16 +33,20 @@ namespace DXGame.Core.Utils
                 Rectangle copy = rectangle;
                 switch (i)
                 {
+                    /* Left edge */
                     case 0:
                         copy.Width = borderThickness;
                         break;
+                    /* Top edge */
                     case 1:
                         copy.Height = borderThickness;
                         break;
+                    /* Right edge */
                     case 2:
                         copy.X = copy.X + copy.Width - borderThickness;
                         copy.Width = borderThickness;
                         break;
+                    /* Bottom edge */
                     case 3:
                         copy.Y = copy.Y + copy.Height - borderThickness;
                         copy.Height = borderThickness;

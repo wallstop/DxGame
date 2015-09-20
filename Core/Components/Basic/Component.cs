@@ -55,9 +55,6 @@ namespace DXGame.Core.Components.Basic
     </summary>            
     */
 
-
-    public delegate void MessageHandler(Message message);
-
     public delegate void Updater(DxGameTime gameTime);
 
     [Serializable]
@@ -65,16 +62,18 @@ namespace DXGame.Core.Components.Basic
     public abstract class Component : IIdentifiable, IComparable<Component>, IProcessable
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        [DataMember] private readonly List<Updater> postProcessors_ = new List<Updater>();
-        [DataMember] private readonly List<Updater> preProcessors_ = new List<Updater>();
+        [DataMember] protected readonly List<Updater> postProcessors_ = new List<Updater>();
+        [DataMember] protected readonly List<Updater> preProcessors_ = new List<Updater>();
         [NonSerialized] [IgnoreDataMember] public DxGame DxGame;
-        [DataMember] private bool initialized_;
+        [DataMember] protected bool initialized_;
 
-        [DataMember] private Dictionary<Type, List<MessageHandler>> typesToMessageHandlers_ =
-            new Dictionary<Type, List<MessageHandler>>();
+        [DataMember]
+        public MessageHandler MessageHandler { get; protected set; } = new MessageHandler();
 
         [DataMember]
         public GameObject Parent { get; set; }
+
+        public virtual bool ShouldSerialize => true;
 
         protected Component(DxGame game)
         {
@@ -126,21 +125,6 @@ namespace DXGame.Core.Components.Basic
             return rhs != null && Id.Equals(rhs.Id);
         }
 
-        public void HandleMessage(Message message)
-        {
-            // If we don't know about the type, we can't continue, so just bail.
-            if (!typesToMessageHandlers_.ContainsKey(message.GetType()))
-            {
-                return;
-            }
-
-            IEnumerable<MessageHandler> messageHandlers = typesToMessageHandlers_[message.GetType()];
-            foreach (var messageHandler in messageHandlers)
-            {
-                messageHandler(message);
-            }
-        }
-
         public void AddPreUpdater(Updater updater)
         {
             Validate.IsNotNull(updater, StringUtils.GetFormattedNullOrDefaultMessage(this, "pre-updater"));
@@ -155,38 +139,6 @@ namespace DXGame.Core.Components.Basic
             Validate.IsFalse(postProcessors_.Contains(updater),
                 StringUtils.GetFormattedAlreadyContainsMessage(this, updater, postProcessors_));
             postProcessors_.Add(updater);
-        }
-
-        public void RegisterMessageHandler(Type type, MessageHandler handler)
-        {
-            Validate.IsNotNull(type, StringUtils.GetFormattedNullOrDefaultMessage(this, type));
-            List<MessageHandler> existingHandlers = ExistingMessageHandlers(type);
-            Validate.IsFalse(existingHandlers.Contains(handler),
-                StringUtils.GetFormattedAlreadyContainsMessage(this, handler, existingHandlers));
-            existingHandlers.Add(handler);
-            typesToMessageHandlers_[type] = existingHandlers;
-        }
-
-        private List<MessageHandler> ExistingMessageHandlers(Type type)
-        {
-            return (typesToMessageHandlers_.ContainsKey(type)
-                ? typesToMessageHandlers_[type]
-                : new List<MessageHandler>());
-        }
-
-        public void DeregisterMessageHandlers(Type type)
-        {
-            List<MessageHandler> existingHandlers = ExistingMessageHandlers(type);
-            existingHandlers.Clear();
-        }
-
-        public void DeregisterMessageHandler(Type type, MessageHandler handler)
-        {
-            Validate.IsNotNull(type, StringUtils.GetFormattedNullOrDefaultMessage(this, type));
-            List<MessageHandler> existingMessageHandlers = ExistingMessageHandlers(type);
-            Validate.IsTrue(existingMessageHandlers.Contains(handler),
-                $"Cannot remove {typeof (MessageHandler)} {handler}, as it is not associated with the provided type");
-            existingMessageHandlers.Remove(handler);
         }
 
         public virtual void Remove()
@@ -214,8 +166,6 @@ namespace DXGame.Core.Components.Basic
                 LOG.Debug(logMessage);
             }
         }
-
-        public virtual bool ShouldSerialize => true;
 
         public virtual void LoadContent()
         {

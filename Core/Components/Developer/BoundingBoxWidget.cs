@@ -29,7 +29,7 @@ namespace DXGame.Core.Components.Developer
         {
             foreach (var spatial in DxGame.DxGameElements.OfType<SpatialComponent>())
             {
-                SpriteBatchUtils.DrawBorder(DxGame, spatial.Space, 1, Color.Red);
+                SpriteBatchUtils.DrawBorder(spriteBatch, spatial.Space, 1, Color.Red);
             }
         }
     }

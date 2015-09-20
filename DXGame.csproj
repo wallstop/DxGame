@@ -114,6 +114,7 @@
     <Compile Include="Core\Components\Advanced\SkillComponent.cs" />
     <Compile Include="Core\Components\Developer\BoundingBoxWidget.cs" />
     <Compile Include="Core\Components\Developer\DeveloperSwitch.cs" />
+    <Compile Include="Core\EventSystem.cs" />
     <Compile Include="Core\Generators\PlayerGenerator.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\FpsWidget.cs" />
     <Compile Include="Core\Components\Developer\CollisionTreeWidget.cs" />
@@ -124,10 +125,12 @@
     <Compile Include="Core\Map\MapDescriptor.cs" />
     <Compile Include="Core\Map\Platform.cs" />
     <Compile Include="Core\Messaging\DropThroughPlatformRequest.cs" />
+    <Compile Include="Core\Messaging\MessageHandler.cs" />
     <Compile Include="Core\Messaging\MovementRequest.cs" />
     <Compile Include="Core\Models\CollisionModel.cs" />
     <Compile Include="Core\Models\DeveloperModel.cs" />
     <Compile Include="Core\Models\MapModel.cs" />
+    <Compile Include="Core\Skills\Skill.cs" />
     <Compile Include="Core\State\Action.cs" />
     <Compile Include="Core\State\StateMachine.cs" />
     <Compile Include="Core\State\Presentation.cs" />
@@ -202,7 +205,7 @@
     <Compile Include="Core\Models\PlayerModel.cs" />
     <Compile Include="Core\Utils\LidgrenUtils.cs" />
     <Compile Include="Core\Utils\TextureFactory.cs" />
-    <Compile Include="Core\Utils\WorldGravity.cs" />
+    <Compile Include="Core\Utils\GravityApplier.cs" />
     <Compile Include="Core\Network\ClientConnectionRequest.cs" />
     <Compile Include="Core\Network\GameStateDiff.cs" />
     <Compile Include="Core\Network\GameStateKeyFrame.cs" />
@@ -242,6 +245,7 @@
     <Compile Include="TowerGame\Enemies\EnemyFactory.cs" />
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />
     <Compile Include="TowerGame\PropertyMutators\InheritedHatred.cs" />
+    <Compile Include="TowerGame\Skills\Gevurah.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GeoAPI, Version=1.7.3.0, Culture=neutral, PublicKeyToken=a1a0da7def465678, processorArchitecture=MSIL">
@@ -286,6 +290,10 @@
     <Content Include="Content\MousePointer.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Player\AbilityPlaceholders\First.png" />
+    <Content Include="Content\Player\AbilityPlaceholders\Fourth.png" />
+    <Content Include="Content\Player\AbilityPlaceholders\Second.png" />
+    <Content Include="Content\Player\AbilityPlaceholders\Third.png" />
     <Content Include="Content\Player\Blown Away.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -449,7 +457,6 @@
   <ItemGroup>
     <Folder Include="Core\Behavior\" />
     <Folder Include="Core\GraphicsWidgets\Utils\" />
-    <Folder Include="Core\Skills\" />
     <Folder Include="Network\" />
     <Folder Include="TowerGame\Buffs\" />
   </ItemGroup>

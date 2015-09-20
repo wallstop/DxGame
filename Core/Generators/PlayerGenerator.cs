@@ -34,7 +34,7 @@ namespace DXGame.Core.Generators
                     .WithDimensions(new DxVector2(50, 50)) // TODO: un-hard code these
                     .WithPosition(playerPosition);
             physics_ =
-                new MapCollideablePhysicsComponent(game).WithMaxVelocity(MAX_VELOCITY)
+                new MapCollideablePhysicsComponent(game)
                     .WithPositionalComponent(PlayerSpace);
 
             playerProperties_ = PlayerPropertiesComponent.DefaultPlayerProperties;

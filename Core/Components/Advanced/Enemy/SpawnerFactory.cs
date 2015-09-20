@@ -12,6 +12,7 @@ using DXGame.Core.Wrappers;
 using DXGame.Main;
 using DXGame.TowerGame.Components;
 using DXGame.TowerGame.Enemies;
+using NLog;
 
 namespace DXGame.Core.Components.Advanced.Enemy
 {
@@ -25,34 +26,35 @@ namespace DXGame.Core.Components.Advanced.Enemy
         [Serializable]
         private class SimpleBoxSpawnFunction
         {
-            private bool hasSpawned_ = false;
-            private GameObject enemyObject_;
-
-            public SimpleBoxSpawnFunction(GameObject enemyObject)
-            {
-                enemyObject_ = enemyObject;
-            }
+            private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+            private static readonly TimeSpan SPAWN_DELAY = TimeSpan.FromSeconds(1 / 10.0);
+            private static readonly int MAX_BOXES_TO_SPAWN = 1000;
+            private int numSpawned_;
+            private TimeSpan lastSpawned_ = TimeSpan.Zero;
 
             public Tuple<bool, GameObject> Spawn(DxGameTime gameTime)
             {
-                if (!hasSpawned_)
+                var totalTime = gameTime.TotalGameTime;
+                if (lastSpawned_ + SPAWN_DELAY < totalTime && numSpawned_ < MAX_BOXES_TO_SPAWN)
                 {
-                    hasSpawned_ = true;
-                    return Tuple.Create(hasSpawned_, enemyObject_);
+                    lastSpawned_ = totalTime;
+                    ++numSpawned_;
+                    LOG.Info($"Spawned {numSpawned_} boxes");
+                    return Tuple.Create(true, SimpleBoxSpawnLogic());
                 }
                 return Tuple.Create<bool, GameObject>(false, null);
             }
         }
 
-        public static Spawner SimpleBoxSpawner()
+        private static GameObject SimpleBoxSpawnLogic()
         {
             // Acquire a reference to the singleton instance of DxGame
-            var game =  DxGame.Instance;
+            var game = DxGame.Instance;
             // Extract the map model and bounds
             var mapModel = game.Model<MapModel>();
             var bounds = mapModel.MapBounds;
             // Build spatial component from bounds
-            var enemySpatial = (BoundedSpatialComponent) new BoundedSpatialComponent(game).WithXMin(bounds.X)
+            var enemySpatial = (BoundedSpatialComponent)new BoundedSpatialComponent(game).WithXMin(bounds.X)
                 .WithXMax(bounds.Width)
                 .WithXMin(bounds.Y)
                 .WithYMax(bounds.Height)
@@ -72,7 +74,16 @@ namespace DXGame.Core.Components.Advanced.Enemy
             enemyObject.AttachComponent(simpleAi);
             enemyObject.AttachComponent(stateMachine);
 
-            var spawnFunction = new SimpleBoxSpawnFunction(enemyObject);
+            return enemyObject;
+        }
+
+        public static Spawner SimpleBoxSpawner()
+        {
+            // Acquire a reference to the singleton instance of DxGame
+            var game = DxGame.Instance;
+            // Extract the map model and bounds
+            var mapModel = game.Model<MapModel>();
+            var spawnFunction = new SimpleBoxSpawnFunction();
 
             var spawnLocation = mapModel.PlayerSpawn;
             var spawnArea = new DxRectangle(spawnLocation, new DxVector2(50, 50));

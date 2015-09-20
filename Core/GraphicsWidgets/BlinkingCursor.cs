@@ -64,6 +64,8 @@ namespace DXGame.Core.GraphicsWidgets
                     StringUtils.GetFormattedNullOrDefaultMessage(this, "CursorTexture"));
                 Validate.IsTrue(blinkRate_ > TimeSpan.Zero,
                     $"Cannot create a {typeof (BlinkingCursor)} with a BlinkRate of {blinkRate_}");
+                Validate.IsTrue(space_.Height > 0, $"Cannot create a {typeof(BlinkingCursor)} with a negative height ({space_.Height})!");
+                Validate.IsTrue(space_.Width > 0, $"Cannot create a {typeof(BlinkingCursor)} with a negative width ({space_.Width})!");
                 if (Check.IsNullOrDefault(game_))
                 {
                     game_ = DxGame.Instance;

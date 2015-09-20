@@ -8,8 +8,7 @@ namespace DXGame.Core.Utils
     [Serializable]
     public class GravityApplier
     {
-        private const float Gravity = 0.7f;
-        private static readonly DxVector2 GRAVITY_VECTOR = new DxVector2 { X = 0.0f, Y = Gravity };
+        private const float Gravity = 0.6f;
 
         private readonly PhysicsComponent physics_;
 
@@ -21,8 +20,10 @@ namespace DXGame.Core.Utils
 
         public void ApplyGravityToPhysics(DxGameTime gameTime)
         {
-            var scaleFactor = gameTime.DetermineScaleFactor(DxGame.Instance);
-            physics_.Acceleration += (GRAVITY_VECTOR * scaleFactor);
+            // TODO: Concept of disparate acceleration sources (this way we can simply add everything together)
+            var acceleration = physics_.Acceleration;
+            acceleration.Y = Math.Max(Gravity, acceleration.Y);
+            physics_.Acceleration = acceleration;
         }
 
         public static void ApplyGravityToPhysics(PhysicsComponent physics)

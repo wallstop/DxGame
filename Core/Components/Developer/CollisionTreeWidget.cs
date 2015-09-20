@@ -11,18 +11,25 @@ namespace DXGame.Core.Components.Developer
 {
     public delegate ICollisionTree<T> CollisionTreeProducer<T>();
 
+    /**
+        <summary>
+            Draws all of the bounding boxes & spatial divisions of the CollisionTree that is produced with the specified function.
+            Useful for debugging.        
+        </summary>
+    */
+
     public class CollisionTreeWidget<T> : DrawableComponent
     {
         private readonly CollisionTreeProducer<T> producer_;
+        public override bool ShouldSerialize => false;
 
-        public CollisionTreeWidget(DxGame game, CollisionTreeProducer<T> collisionTreeProducer) : base(game)
+        public CollisionTreeWidget(DxGame game, CollisionTreeProducer<T> collisionTreeProducer)
+            : base(game)
         {
             Validate.IsNotNullOrDefault(collisionTreeProducer,
                 StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(collisionTreeProducer)));
             producer_ = collisionTreeProducer;
         }
-
-        public override bool ShouldSerialize => false;
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
@@ -31,13 +38,13 @@ namespace DXGame.Core.Components.Developer
             List<DxRectangle> divisions = collisionTree.Divisions;
             foreach (var division in divisions)
             {
-                SpriteBatchUtils.DrawBorder(DxGame, division, 1, Color.DarkSlateBlue);
+                SpriteBatchUtils.DrawBorder(spriteBatch, division, 1, Color.DarkSlateBlue);
             }
             /* ...as well as each Node in the tree */
             List<DxRectangle> nodes = collisionTree.Nodes;
             foreach (var nodeBoundary in nodes)
             {
-                SpriteBatchUtils.DrawBorder(DxGame, nodeBoundary, 1, Color.Black);
+                SpriteBatchUtils.DrawBorder(spriteBatch, nodeBoundary, 1, Color.Black);
             }
         }
     }

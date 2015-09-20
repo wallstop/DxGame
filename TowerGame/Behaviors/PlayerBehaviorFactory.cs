@@ -189,7 +189,7 @@ namespace DXGame.TowerGame.Behaviors
 
             public void BeginningJumpAction(DxGameTime gameTime)
             {
-                player_.Physics.Velocity = new DxVector2(player_.Physics.Velocity.X, 0);
+                player_.Physics.Velocity = new DxVector2(player_.Physics.Velocity.X, - player_.Properties.JumpSpeed.CurrentValue);
                 player_.Physics.Acceleration = new DxVector2(player_.Physics.Acceleration.X,
                     -player_.Properties.JumpSpeed.CurrentValue);
             }

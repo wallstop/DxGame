@@ -109,12 +109,12 @@ namespace DXGame.Core
             return new GameObjectBuilder();
         }
 
-        public void BroadcastMessage(Message message)
+        public void BroadcastMessage<T>(T message) where T : Message
         {
             FutureMessages.Add(message);
             foreach (var component in components_)
             {
-                component.HandleMessage(message);
+                component.MessageHandler.HandleMessage(message);
             }
         }
 
@@ -141,8 +141,9 @@ namespace DXGame.Core
 
             public GameObjectBuilder WithComponents(IEnumerable<Component> components)
             {
-                Validate.IsNotNull(components, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(components)));
-                foreach (var component in components)
+                var enumerable = components as Component[] ?? components.ToArray();
+                Validate.IsNotNull(enumerable, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(components)));
+                foreach (var component in enumerable)
                 {
                     WithComponent(component);
                 }

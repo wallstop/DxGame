@@ -35,14 +35,11 @@ namespace DXGame.Core.Components.Advanced.Physics
         public MapCollideablePhysicsComponent(DxGame game)
             : base(game)
         {
-            RegisterMessageHandler(typeof(DropThroughPlatformRequest), HandleDropThroughPlatformRequest);
+            MessageHandler.RegisterMessageHandler<DropThroughPlatformRequest>(HandleDropThroughPlatformRequest);
         }
 
-        private void HandleDropThroughPlatformRequest(Message message)
+        private void HandleDropThroughPlatformRequest(DropThroughPlatformRequest message)
         {
-            /* Make sure it's our message type */
-            GenericUtils.CheckedCast<DropThroughPlatformRequest>(message);
-            
             var map = DxGame.Model<MapModel>();
             var mapQueryRegion = MapQueryRegion;
             /* Give the region a little bit of buffer room to check for platforms we may be standing on */

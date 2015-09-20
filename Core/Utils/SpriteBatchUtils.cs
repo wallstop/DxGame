@@ -8,15 +8,20 @@ namespace DXGame.Core.Utils
 {
     public static class SpriteBatchUtils
     {
-        public static void DrawBorder(DxGame game, DxRectangle rectangle, int borderThickness, Color borderColor)
+        public static void DrawBorder(SpriteBatch spriteBatch, DxRectangle rectangle, int borderThickness, Color borderColor)
         {
-            DrawBorder(game, rectangle.ToRectangle(), borderThickness, borderColor);
+            DrawBorder(spriteBatch, rectangle.ToRectangle(), borderThickness, borderColor);
         }
 
-        public static void DrawBorder(DxGame game, Rectangle rectangle, int borderThickness, Color borderColor)
+        /**
+            <summary>
+                Utilizing an already-initialized SpriteBatch, this will draw a border of the specified thickness around
+                the provided rectangle of the specified color.
+            </summary>
+        */
+        public static void DrawBorder(SpriteBatch spriteBatch, Rectangle rectangle, int borderThickness, Color borderColor)
         {
             var coloredPixel = TextureFactory.TextureForColor(borderColor);
-            var spriteBatch = game.SpriteBatch;
             IEnumerable<Rectangle> borderRectangles = GenerateBorderRectangles(rectangle, borderThickness);
             foreach (Rectangle borderRectangle in borderRectangles)
             {
@@ -24,6 +29,12 @@ namespace DXGame.Core.Utils
             }
         }
 
+        /**
+            <summary> 
+                Creates 4 rectangles with the specified thickness around the provided rectangle. 
+                This has the effect of thick-ifying the provided rectangle's edges. 
+            </summary>
+        */
         private static IEnumerable<Rectangle> GenerateBorderRectangles(Rectangle rectangle, int borderThickness)
         {
             int numRectangles = 4;

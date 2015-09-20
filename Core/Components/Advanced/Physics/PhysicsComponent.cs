@@ -50,10 +50,10 @@ namespace DXGame.Core.Components.Advanced.Physics
         public PhysicsComponent(DxGame game)
             : base(game)
         {
-            RegisterMessageHandler(typeof (CollisionMessage), HandleCollisionMessage);
+            MessageHandler.RegisterMessageHandler<CollisionMessage>(HandleCollisionMessage);
             // TODO: Un-hardcode these
-            maxVelocity_ = new DxVector2(7.5f, 7.5f);
-            maxAcceleration_ = new DxVector2(7.5f, 7.5f);
+            maxVelocity_ = new DxVector2(100.5f, 100.5f);
+            maxAcceleration_ = new DxVector2(100.5f, 100.5f);
             UpdatePriority = UpdatePriority.PHYSICS;
         }
 
@@ -109,10 +109,9 @@ namespace DXGame.Core.Components.Advanced.Physics
             Position += velocity * scaleAmount;
         }
 
-        protected void HandleCollisionMessage(Message message)
+        protected void HandleCollisionMessage(CollisionMessage message)
         {
-            var messageAsCollision = GenericUtils.CheckedCast<CollisionMessage>(message);
-            var collisionDirections = messageAsCollision.CollisionDirections;
+            var collisionDirections = message.CollisionDirections;
             var velocity = Velocity;
             // Check for x-wise collisions 
             var acceleration = Acceleration;

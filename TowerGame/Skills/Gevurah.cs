@@ -39,9 +39,15 @@ namespace DXGame.TowerGame.Skills
             {
                 return;
             }
+
             difference.X = difference.X / totalDifferenceMagnitude * totalForce;
             difference.Y = difference.Y / totalDifferenceMagnitude * totalForce;
-            /* Throw in some variance just because */
+            /* 
+                TODO: Find 'similar' vectors to these. Treat the difference as the normal vector for a plane in R2 (a line)
+                and find vectors that are in the "same direction" 
+
+                How the fuck do I do that?
+            */
             difference.X += RGEN.Next(-totalForce, totalForce);
             difference.Y += RGEN.Next(-totalForce, totalForce);
 

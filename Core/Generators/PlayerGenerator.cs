@@ -8,7 +8,7 @@ using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Models;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using DXGame.TowerGame.Behaviors;
+using DXGame.TowerGame.Actions;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Generators
@@ -33,9 +33,7 @@ namespace DXGame.Core.Generators
                     .WithYMax(bounds.Height)
                     .WithDimensions(new DxVector2(50, 50)) // TODO: un-hard code these
                     .WithPosition(playerPosition);
-            physics_ =
-                new MapCollideablePhysicsComponent(game)
-                    .WithPositionalComponent(PlayerSpace);
+            physics_ = MapCollidablePhysicsComponent.Builder().WithWorldForces().WithPositionalComponent(PlayerSpace).Build();
 
             playerProperties_ = PlayerPropertiesComponent.DefaultPlayerProperties;
             /* Fuck with the health so we can check if the hp bar works */
@@ -63,7 +61,7 @@ namespace DXGame.Core.Generators
             var player = Player.PlayerFrom(playerObject, "Gevurah");
 
             var animationBuilder = AnimationComponent.Builder().WithDxGame(game_).WithPosition(PlayerSpace);
-            var playerStateMachine = PlayerBehaviorFactory.GevurahBehavior(game_, animationBuilder,
+            var playerStateMachine = PlayerActionFactory.GevurahBehavior(game_, animationBuilder,
                 Player.PlayerFrom(playerObject, "Gevurah"));
             animationBuilder.WithStateMachine(playerStateMachine);
             playerObject.AttachComponent(playerStateMachine);

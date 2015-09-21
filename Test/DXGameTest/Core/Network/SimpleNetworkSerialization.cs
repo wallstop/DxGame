@@ -17,7 +17,7 @@ namespace DXGameTest.Core.Network
     {
         private DxGame game_;
         private GameObject gameObject_;
-        private MapCollideablePhysicsComponent physics_;
+        private MapCollidablePhysicsComponent physics_;
         private PositionalComponent spatial_;
         private SimpleSpriteComponent sprite_;
         // TODO
@@ -32,7 +32,7 @@ namespace DXGameTest.Core.Network
                     .WithPosition(new DxVector2(200, 400));
             sprite_ = new SimpleSpriteComponent(game_).WithAsset("Orb").WithPosition(spatial_);
             physics_ =
-                new MapCollideablePhysicsComponent(game_).WithSpatialComponent(
+                new MapCollidablePhysicsComponent(game_).WithSpatialComponent(
                     (SpatialComponent) spatial_);
             gameObject_ = GameObject.Builder().WithComponents(spatial_, sprite_, physics_).Build();
         }

@@ -53,6 +53,9 @@ namespace DXGame.Core.State
 
         protected override void Update(DxGameTime gameTime)
         {
+            /*
+                Find the first transition that has had it's trigger activated. 
+            */
             CurrentState = CurrentState.Transitions.FirstOrDefault(
                 transition => transition.ShouldTransition(Parent, gameTime))
                 ?.State ?? CurrentState;

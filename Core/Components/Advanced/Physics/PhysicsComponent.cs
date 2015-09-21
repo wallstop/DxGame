@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
+using DXGame.Core.Physics;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
 using DXGame.Core.Wrappers;
@@ -10,29 +12,33 @@ using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Physics
 {
+    /**
+        <summary>
+            Basic component that is responsible for managing "Physics" type stuff. Anything that wants to respond to physical interactions
+            with other objects needs to have a Physics Component (bullets, map collisions, etc)
+        </summary>
+    */
     [Serializable]
     [DataContract]
     public class PhysicsComponent : Component
     {
-        /* When colliding with an object, we reverse the velocity vector and apply some decay to it */
-        protected static readonly float VELOCITY_DECAY = 0.4f;
-
         [DataMember] protected DxVector2 acceleration_;
-        [DataMember] protected DxVector2 maxAcceleration_;
-        [DataMember] protected DxVector2 maxVelocity_;
         [DataMember] protected PositionalComponent position_;
         [DataMember] protected DxVector2 velocity_;
+
+        /* Currently acting forces on this object. This will typically include gravity & air resistance */
+        [DataMember] protected readonly List<Force> forces_ = new List<Force>();
 
         public virtual DxVector2 Velocity
         {
             get { return velocity_; }
-            set { velocity_ = VectorUtils.ClampVector(value, maxVelocity_); }
+            set { velocity_ = value; }
         }
 
         public virtual DxVector2 Acceleration
         {
             get { return acceleration_; }
-            set { acceleration_ = VectorUtils.ClampVector(value, maxAcceleration_); }
+            set { acceleration_ = value; }
         }
 
         public virtual DxVector2 Position
@@ -41,72 +47,134 @@ namespace DXGame.Core.Components.Advanced.Physics
             set { position_.Position = value; }
         }
 
-        public virtual PositionalComponent PositionalComponent
-        {
-            get { return position_; }
-            set { WithPositionalComponent(value); }
-        }
+        public virtual PositionalComponent PositionalComponent => position_;
 
-        public PhysicsComponent(DxGame game)
+        protected PhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration, PositionalComponent position, UpdatePriority updatePriority)
             : base(game)
         {
             MessageHandler.RegisterMessageHandler<CollisionMessage>(HandleCollisionMessage);
-            // TODO: Un-hardcode these
-            maxVelocity_ = new DxVector2(100.5f, 100.5f);
-            maxAcceleration_ = new DxVector2(100.5f, 100.5f);
-            UpdatePriority = UpdatePriority.PHYSICS;
-        }
-
-        public PhysicsComponent WithVelocity(DxVector2 velocity)
-        {
-            Validate.IsNotNullOrDefault(velocity,
-                $"Cannot initialize {GetType()} with a null/default {nameof(velocity)}");
             velocity_ = velocity;
-            return this;
-        }
-
-        public PhysicsComponent WithAcceleration(DxVector2 acceleration)
-        {
-            Validate.IsNotNullOrDefault(acceleration,
-                $"Cannot initialize {GetType()} with a null/default {nameof(acceleration)}");
             acceleration_ = acceleration;
-            return this;
-        }
-
-        public PhysicsComponent WithPositionalComponent(PositionalComponent position)
-        {
-            Validate.IsNotNullOrDefault(position,
-                $"Cannot initialize {GetType()} with a null/default {nameof(position)}");
             position_ = position;
-            return this;
+            UpdatePriority = updatePriority;
         }
 
-        public PhysicsComponent WithMaxVelocity(DxVector2 maxVelocity)
+        public void AttachForce(Force force)
         {
-            Validate.IsNotNullOrDefault(maxVelocity,
-                $"Cannot initialize {GetType()} with a null/default {nameof(maxVelocity)}");
-            maxVelocity_ = maxVelocity;
-            return this;
+            Validate.IsNotNull(force, StringUtils.GetFormattedNullOrDefaultMessage(this, force));
+            forces_.Add(force);
+            Velocity += force.InitialVelocity;
         }
 
-        public PhysicsComponent WithMaxAcceleration(DxVector2 maxAcceleration)
+        public static PhysicsComponentBuilder Builder()
         {
-            Validate.IsNotNullOrDefault(maxAcceleration,
-                $"Cannot initialize {GetType()} with a null/default maximum {nameof(maxAcceleration)}");
-            maxAcceleration_ = maxAcceleration;
-            return this;
+            return new PhysicsComponentBuilder();
+        }
+
+        public class PhysicsComponentBuilder : IBuilder<PhysicsComponent>
+        {
+            protected DxVector2 velocity_;
+            protected DxVector2 acceleration_;
+            protected PositionalComponent position_;
+            protected UpdatePriority updatePriority_ = UpdatePriority.PHYSICS;
+            protected readonly HashSet<Force> forces_ = new HashSet<Force>();
+            protected DxGame game_;
+
+            public virtual PhysicsComponentBuilder WithForce(Force force)
+            {
+                Validate.IsNotNull(force, StringUtils.GetFormattedNullOrDefaultMessage(this, force));
+                forces_.Add(force);
+                return this;
+            }
+
+            public virtual PhysicsComponentBuilder WithUpdatePriority(UpdatePriority updatePriority)
+            {
+                updatePriority_ = updatePriority;
+                return this;
+            }
+
+            public virtual PhysicsComponentBuilder WithPositionalComponent(PositionalComponent position)
+            {
+                position_ = position;
+                return this;
+            }
+
+            public virtual PhysicsComponentBuilder WithAcceleration(DxVector2 acceleration)
+            {
+                acceleration_ = acceleration;
+                return this;
+            }
+
+            public virtual PhysicsComponentBuilder WithVelocity(DxVector2 velocity)
+            {
+                velocity_ = velocity;
+                return this;
+            }
+
+            public virtual PhysicsComponentBuilder WithAirResistance()
+            {
+                forces_.Add(WorldForces.AirResistance);
+                return this;
+            }
+
+            public virtual PhysicsComponentBuilder WithWorldForces()
+            {
+                WithAirResistance();
+                WithGravity();
+                return this;
+            }
+
+            public virtual PhysicsComponentBuilder WithGame(DxGame game)
+            {
+                game_ = game;
+                return this;
+            }
+
+            public virtual PhysicsComponentBuilder WithGravity()
+            {
+                forces_.Add(WorldForces.Gravity);
+                return this;
+            }
+
+            protected void CheckParameters()
+            {
+                Validate.IsNotNull(position_, StringUtils.GetFormattedNullOrDefaultMessage(this, position_));
+                if (game_ == null)
+                {
+                    game_ = DxGame.Instance;
+                }
+            }
+
+            public virtual PhysicsComponent Build()
+            {
+                CheckParameters();
+                var physics = new PhysicsComponent(game_, velocity_, acceleration_, position_, updatePriority_);
+                foreach (var force in forces_)
+                {
+                    physics.AttachForce(force);
+                }
+                return physics;
+            }
         }
 
         protected override void Update(DxGameTime gameTime)
         {
             var scaleAmount = gameTime.DetermineScaleFactor(DxGame);
-            DxVector2 velocity = VectorUtils.ClampVector(Velocity + (acceleration_ * scaleAmount), maxVelocity_);
-            Velocity = velocity;
-            /* 
-                We need to update our Position before we update our velocity. Updating position may cause things like map-bumping/clamping, which will update our velocity from under us.
-                So, simply updating velocity first, instead of after, will avoid double-writes.
-            */
-            Position += velocity * scaleAmount;
+            var acceleration = Acceleration;
+            foreach (var force in forces_)
+            {
+                force.Update(Velocity, Acceleration, gameTime);
+                /* 
+                    Make sure to modify a temporary - we don't want to cumulatively update these things, 
+                    we simply want to aggregate their results on velocity 
+                */
+                acceleration += force.Acceleration;
+            }
+            /* Scale our acceleration to the elapsed time for the current frame - we don't want the game running at hyperspeed */
+            Velocity += (acceleration * scaleAmount);
+            /* If our forces are gone, remove them */
+            forces_.RemoveAll(force => force.Dissipated);
+            Position += Velocity * scaleAmount;
         }
 
         protected void HandleCollisionMessage(CollisionMessage message)

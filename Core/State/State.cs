@@ -15,6 +15,7 @@ namespace DXGame.Core.State
 
         [DataMember]
         public ICollection<Transition> Transitions { get; private set; }
+
         [DataMember]
         public string Name { get; private set; }
         [DataMember]
@@ -49,7 +50,7 @@ namespace DXGame.Core.State
 
         public override int GetHashCode()
         {
-            return Name.GetHashCode() ^ LambdaUtils.DelegateHashCode(Action);
+            return Objects.HashCode(Name, LambdaUtils.DelegateHashCode(Action));
         }
 
         public override string ToString()

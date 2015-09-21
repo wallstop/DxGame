@@ -6,18 +6,35 @@ using DXGame.Core.Animation;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
+using DXGame.Core.Physics;
 using DXGame.Core.State;
+using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
 using DXGame.Core.Wrappers;
 using DXGame.Main;
-using Action = DXGame.Core.State.Action;
 
-namespace DXGame.TowerGame.Behaviors
+namespace DXGame.TowerGame.Actions
 {
     [Serializable]
-    public static class PlayerBehaviorFactory
+    public static class PlayerActionFactory
     {
         private static readonly float INITIAL_MOVEMENT_BOOST = 1.1f;
+
+        private static readonly DxVector2 INITIAL_JUMP_ACCELERATION = new DxVector2(0, -1.98f);
+
+        private static readonly DissipationFunction INITIAL_JUMP_DISSIPATION =
+            (externalVelocity, externalAcceleration, acceleration, gameTime) =>
+            {
+                /* If our jumping force is applying a (down into the ground) acceleration, we're done! */
+                var done = acceleration.Y > 0 || externalVelocity.Y > 0;
+                if (done)
+                {
+                    return Tuple.Create(true, new DxVector2());
+                }
+                var scale = gameTime.DetermineScaleFactor(DxGame.Instance);
+                acceleration += (WorldForces.GRAVITY_ACCELERATION * scale);
+                return Tuple.Create(false, acceleration);
+            };
 
         public static StateMachine BasicPlayerBehavior(DxGame game)
         {
@@ -189,9 +206,7 @@ namespace DXGame.TowerGame.Behaviors
 
             public void BeginningJumpAction(DxGameTime gameTime)
             {
-                player_.Physics.Velocity = new DxVector2(player_.Physics.Velocity.X, - player_.Properties.JumpSpeed.CurrentValue);
-                player_.Physics.Acceleration = new DxVector2(player_.Physics.Acceleration.X,
-                    -player_.Properties.JumpSpeed.CurrentValue);
+                player_.Physics.AttachForce(new Force( new DxVector2(0, - player_.Properties.JumpSpeed.CurrentValue), INITIAL_JUMP_ACCELERATION, INITIAL_JUMP_DISSIPATION, "PlayerJump"));
             }
 
             public void JumpAction(DxGameTime gameTime)

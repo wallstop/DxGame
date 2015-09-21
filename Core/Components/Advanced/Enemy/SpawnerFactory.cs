@@ -59,8 +59,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
                 .WithXMin(bounds.Y)
                 .WithYMax(bounds.Height)
                 .WithDimensions(new DxVector2(50, 50)); // TODO: un-hard code these
-            var enemyPhysics = new MapCollideablePhysicsComponent(game).WithSpatialComponent(enemySpatial);
-            GravityApplier.ApplyGravityToPhysics(enemyPhysics);
+            var enemyPhysics = MapCollidablePhysicsComponent.Builder().WithWorldForces().WithPositionalComponent(enemySpatial).Build();
             var animationBuilder = AnimationComponent.Builder().WithDxGame(game).WithPosition(enemySpatial);
             var enemyObject = GameObject.Builder().WithComponents(enemySpatial, enemyPhysics).Build();
             // Create a state machine for the enemy in question

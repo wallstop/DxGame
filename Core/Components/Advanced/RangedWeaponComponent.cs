@@ -88,7 +88,7 @@ namespace DXGame.Core.Components.Advanced
             var shootLeft = Direction.X < 0;
             DxVector2 velocity = new DxVector2(shootLeft ? -velocity_ : velocity_, 0);
             PhysicsComponent physics =
-                new MapCollideablePhysicsComponent(DxGame).WithVelocity(velocity)
+                new MapCollidablePhysicsComponent(DxGame).WithVelocity(velocity)
                     .WithPositionalComponent(space);
             SimpleSpriteComponent sprite =
                 new SimpleSpriteComponent(DxGame).WithPosition(space).WithAsset("Orb");

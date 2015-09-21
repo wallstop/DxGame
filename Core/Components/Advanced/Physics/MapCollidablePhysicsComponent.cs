@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Map;
@@ -18,7 +19,7 @@ namespace DXGame.Core.Components.Advanced.Physics
 {
     [Serializable]
     [DataContract]
-    public class MapCollideablePhysicsComponent : PhysicsComponent
+    public class MapCollidablePhysicsComponent : PhysicsComponent
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private static readonly DxRectangleAreaComparer DXRECTANGLE_AREA_COMPARER = new DxRectangleAreaComparer();
@@ -32,10 +33,29 @@ namespace DXGame.Core.Components.Advanced.Physics
 
         private DxRectangle MapQueryRegion => Space;
 
-        public MapCollideablePhysicsComponent(DxGame game)
-            : base(game)
+        private MapCollidablePhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration, PositionalComponent position, UpdatePriority updatePriority)
+            : base(game, velocity, acceleration, position, updatePriority)
         {
             MessageHandler.RegisterMessageHandler<DropThroughPlatformRequest>(HandleDropThroughPlatformRequest);
+        }
+
+        public new static MapCollidablePhysicsComponentBuilder Builder()
+        {
+            return new MapCollidablePhysicsComponentBuilder();
+        }
+
+        public class MapCollidablePhysicsComponentBuilder : PhysicsComponentBuilder
+        {
+            public override PhysicsComponent Build()
+            {
+                CheckParameters();
+                var physics = new MapCollidablePhysicsComponent(game_, velocity_, acceleration_, position_, updatePriority_);
+                foreach (var force in forces_)
+                {
+                    physics.AttachForce(force);
+                }
+                return physics;
+            }
         }
 
         private void HandleDropThroughPlatformRequest(DropThroughPlatformRequest message)
@@ -47,13 +67,6 @@ namespace DXGame.Core.Components.Advanced.Physics
             List<MapCollidableComponent> mapTiles = map.Map.Collidables.InRange(mapQueryRegion);
             /* TODO: Either find or implement an LRU cache */
             mapTilesToIgnore_.AddRange(mapTiles.Where(tile => tile.PlatformType == PlatformType.Platform).Select(tile => Tuple.Create(tile, DxGame.CurrentTime.TotalGameTime)));
-        }
-
-        public MapCollideablePhysicsComponent WithSpatialComponent(SpatialComponent space)
-        {
-            Validate.IsNotNull(space, StringUtils.GetFormattedNullOrDefaultMessage(this, space));
-            position_ = space;
-            return this;
         }
 
         protected override void Update(DxGameTime gameTime)

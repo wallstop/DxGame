@@ -50,14 +50,7 @@ namespace DXGame.Core.Models
             // TODO
             var playerModel = new PlayerModel(DxGame).WithActivePlayer(activePlayer);
             DxGame.AttachModel(playerModel);
-
-            var physicsComponents = player.ComponentsOfType<PhysicsComponent>();
-
-            foreach (var physicsComponent in physicsComponents)
-            {
-                GravityApplier.ApplyGravityToPhysics(physicsComponent);
-            }
-
+            
             // TODO: Split these out into some kind of unified loading... thing
             DxGame.AddAndInitializeGameObjects(generatedObjects);
             base.Initialize();

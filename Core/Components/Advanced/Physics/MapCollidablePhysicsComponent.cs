@@ -23,8 +23,7 @@ namespace DXGame.Core.Components.Advanced.Physics
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private static readonly DxRectangleAreaComparer DXRECTANGLE_AREA_COMPARER = new DxRectangleAreaComparer();
-        private DxRectangle Space => ((SpatialComponent) position_).Space;
-        private DxVector2 Dimensions => ((SpatialComponent) position_).Dimensions;
+        private DxVector2 Dimensions => space_.Dimensions;
 
         [DataMember]
         private readonly List<Tuple<MapCollidableComponent, TimeSpan>> mapTilesToIgnore_ = new List<Tuple<MapCollidableComponent, TimeSpan>>();
@@ -33,8 +32,8 @@ namespace DXGame.Core.Components.Advanced.Physics
 
         private DxRectangle MapQueryRegion => Space;
 
-        private MapCollidablePhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration, PositionalComponent position, UpdatePriority updatePriority)
-            : base(game, velocity, acceleration, position, updatePriority)
+        private MapCollidablePhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration, SpatialComponent space, UpdatePriority updatePriority)
+            : base(game, velocity, acceleration, space, updatePriority)
         {
             MessageHandler.RegisterMessageHandler<DropThroughPlatformRequest>(HandleDropThroughPlatformRequest);
         }
@@ -49,7 +48,7 @@ namespace DXGame.Core.Components.Advanced.Physics
             public override PhysicsComponent Build()
             {
                 CheckParameters();
-                var physics = new MapCollidablePhysicsComponent(game_, velocity_, acceleration_, position_, updatePriority_);
+                var physics = new MapCollidablePhysicsComponent(game_, velocity_, acceleration_, space_, updatePriority_);
                 foreach (var force in forces_)
                 {
                     physics.AttachForce(force);

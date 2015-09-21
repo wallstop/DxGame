@@ -116,8 +116,6 @@ namespace DXGame.TowerGame.Enemies
 
             private void IdleAction(DxGameTime gameTime)
             {
-                var existingVelocity = enemy_.ComponentOfType<PhysicsComponent>().Velocity;
-                enemy_.ComponentOfType<PhysicsComponent>().Velocity = new DxVector2(0, existingVelocity.Y);
             }
 
             public void MoveLeftAction(DxGameTime gameTime)

@@ -28,7 +28,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
         {
             private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
             private static readonly TimeSpan SPAWN_DELAY = TimeSpan.FromSeconds(1 / 10.0);
-            private static readonly int MAX_BOXES_TO_SPAWN = 1000;
+            private static readonly int MAX_BOXES_TO_SPAWN = 20;
             private int numSpawned_;
             private TimeSpan lastSpawned_ = TimeSpan.Zero;
 
@@ -59,7 +59,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
                 .WithXMin(bounds.Y)
                 .WithYMax(bounds.Height)
                 .WithDimensions(new DxVector2(50, 50)); // TODO: un-hard code these
-            var enemyPhysics = MapCollidablePhysicsComponent.Builder().WithWorldForces().WithPositionalComponent(enemySpatial).Build();
+            var enemyPhysics = MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(enemySpatial).Build();
             var animationBuilder = AnimationComponent.Builder().WithDxGame(game).WithPosition(enemySpatial);
             var enemyObject = GameObject.Builder().WithComponents(enemySpatial, enemyPhysics).Build();
             // Create a state machine for the enemy in question

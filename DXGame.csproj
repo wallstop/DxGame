@@ -127,10 +127,13 @@
     <Compile Include="Core\Messaging\DropThroughPlatformRequest.cs" />
     <Compile Include="Core\Messaging\MessageHandler.cs" />
     <Compile Include="Core\Messaging\MovementRequest.cs" />
+    <Compile Include="Core\Messaging\PhysicsMessage.cs" />
     <Compile Include="Core\Models\CollisionModel.cs" />
     <Compile Include="Core\Models\DeveloperModel.cs" />
     <Compile Include="Core\Models\MapModel.cs" />
+    <Compile Include="Core\Models\PhysicsModel.cs" />
     <Compile Include="Core\Physics\Force.cs" />
+    <Compile Include="Core\Physics\Interaction.cs" />
     <Compile Include="Core\Physics\WorldForces.cs" />
     <Compile Include="Core\Skills\Skill.cs" />
     <Compile Include="Core\State\Action.cs" />

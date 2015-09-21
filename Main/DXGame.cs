@@ -7,6 +7,7 @@ using System.Threading;
 using DXGame.Core;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Menus;
+using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Settings;
 using DXGame.Core.Utils;
@@ -112,6 +113,14 @@ namespace DXGame.Main
 
             DxGameElements = new GameElementCollection();
             Content.RootDirectory = "Content";
+        }
+
+        public void BroadcastMessage<T>(T message) where T: Message
+        {
+            foreach (var model in models_)
+            {
+                model.MessageHandler.HandleMessage(message);
+            }
         }
 
         public T Model<T>() where T : Model

@@ -11,6 +11,12 @@ namespace DXGame.Core.Wrappers
         [DataMember] public float X;
         [DataMember] public float Y;
 
+        public DxVector2(Point point)
+        {
+            X = point.X;
+            Y = point.Y;
+        }
+
         public DxVector2(Vector2 vector)
         {
             X = vector.X;

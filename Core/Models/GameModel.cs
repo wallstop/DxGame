@@ -40,6 +40,8 @@ namespace DXGame.Core.Models
             DxGame.AttachModel(mapModel);
             var developerModel = new DeveloperModel(DxGame);
             DxGame.AttachModel(developerModel);
+            var collisionModel = new CollisionModel(DxGame);
+            DxGame.AttachModel(collisionModel);
             PlayerGenerator playerGenerator = new PlayerGenerator(DxGame, mapModel.PlayerSpawn,
                 mapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;

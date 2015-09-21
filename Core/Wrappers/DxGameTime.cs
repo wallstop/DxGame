@@ -58,7 +58,7 @@ namespace DXGame.Core.Wrappers
 
         public double DetermineScaleFactor(DxGame dxGame)
         {
-            return ElapsedGameTime.TotalMilliseconds * dxGame.TargetFps / DateTimeConstants.MILLISECONDS_PER_SECOND;
+            return (ElapsedGameTime.TotalMilliseconds * dxGame.TargetFps / DateTimeConstants.MILLISECONDS_PER_SECOND);
         }
     }
 }

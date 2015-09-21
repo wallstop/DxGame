@@ -22,8 +22,10 @@ namespace DXGame.Core.Components.Advanced.Physics
     [DataContract]
     public class PhysicsComponent : Component
     {
+        protected static readonly float VELOCITY_FLOOR = 0.5f;
+
         [DataMember] protected DxVector2 acceleration_;
-        [DataMember] protected PositionalComponent position_;
+        [DataMember] protected SpatialComponent space_;
         [DataMember] protected DxVector2 velocity_;
 
         /* Currently acting forces on this object. This will typically include gravity & air resistance */
@@ -32,7 +34,12 @@ namespace DXGame.Core.Components.Advanced.Physics
         public virtual DxVector2 Velocity
         {
             get { return velocity_; }
-            set { velocity_ = value; }
+            set
+            {
+                velocity_ = value;
+                //velocity_.X = (Math.Abs(value.X) < VELOCITY_FLOOR && Acceleration.X != 0) ? 0 : value.X;
+                //velocity_.Y = (Math.Abs(value.Y) < VELOCITY_FLOOR && Acceleration.Y != 0) ? 0 : value.Y;
+            }
         }
 
         public virtual DxVector2 Acceleration
@@ -43,19 +50,21 @@ namespace DXGame.Core.Components.Advanced.Physics
 
         public virtual DxVector2 Position
         {
-            get { return position_.Position; }
-            set { position_.Position = value; }
+            get { return space_.Position; }
+            set { space_.Position = value; }
         }
 
-        public virtual PositionalComponent PositionalComponent => position_;
+        public DxRectangle Space => space_.Space;
 
-        protected PhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration, PositionalComponent position, UpdatePriority updatePriority)
+        public virtual SpatialComponent SpatialComponent => space_;
+
+        protected PhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration, SpatialComponent position, UpdatePriority updatePriority)
             : base(game)
         {
             MessageHandler.RegisterMessageHandler<CollisionMessage>(HandleCollisionMessage);
             velocity_ = velocity;
             acceleration_ = acceleration;
-            position_ = position;
+            space_ = position;
             UpdatePriority = updatePriority;
         }
 
@@ -75,7 +84,7 @@ namespace DXGame.Core.Components.Advanced.Physics
         {
             protected DxVector2 velocity_;
             protected DxVector2 acceleration_;
-            protected PositionalComponent position_;
+            protected SpatialComponent space_;
             protected UpdatePriority updatePriority_ = UpdatePriority.PHYSICS;
             protected readonly HashSet<Force> forces_ = new HashSet<Force>();
             protected DxGame game_;
@@ -93,9 +102,9 @@ namespace DXGame.Core.Components.Advanced.Physics
                 return this;
             }
 
-            public virtual PhysicsComponentBuilder WithPositionalComponent(PositionalComponent position)
+            public virtual PhysicsComponentBuilder WithSpatialComponent(SpatialComponent space)
             {
-                position_ = position;
+                space_ = space;
                 return this;
             }
 
@@ -138,7 +147,7 @@ namespace DXGame.Core.Components.Advanced.Physics
 
             protected void CheckParameters()
             {
-                Validate.IsNotNull(position_, StringUtils.GetFormattedNullOrDefaultMessage(this, position_));
+                Validate.IsNotNull(space_, StringUtils.GetFormattedNullOrDefaultMessage(this, space_));
                 if (game_ == null)
                 {
                     game_ = DxGame.Instance;
@@ -148,7 +157,7 @@ namespace DXGame.Core.Components.Advanced.Physics
             public virtual PhysicsComponent Build()
             {
                 CheckParameters();
-                var physics = new PhysicsComponent(game_, velocity_, acceleration_, position_, updatePriority_);
+                var physics = new PhysicsComponent(game_, velocity_, acceleration_, space_, updatePriority_);
                 foreach (var force in forces_)
                 {
                     physics.AttachForce(force);
@@ -168,7 +177,10 @@ namespace DXGame.Core.Components.Advanced.Physics
                     Make sure to modify a temporary - we don't want to cumulatively update these things, 
                     we simply want to aggregate their results on velocity 
                 */
-                acceleration += force.Acceleration;
+                if (!force.Dissipated)
+                {
+                    acceleration += force.Acceleration;
+                }
             }
             /* Scale our acceleration to the elapsed time for the current frame - we don't want the game running at hyperspeed */
             Velocity += (acceleration * scaleAmount);

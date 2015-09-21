@@ -93,6 +93,11 @@ namespace DXGame.Core.Wrappers
             return new Rectangle((int) X, (int) Y, (int) Width, (int) Height);
         }
 
+        public static DxRectangle FromRange(DxVector2 source, float radius)
+        {
+            return new DxRectangle(source.X - radius, source.Y - radius, radius * 2, radius * 2);
+        }
+
         public static DxRectangle FromRectangle(Rectangle rectangle)
         {
             return new DxRectangle(rectangle);

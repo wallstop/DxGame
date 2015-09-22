@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 
@@ -14,11 +15,16 @@ namespace DXGame.Core.Skills
         </summary>
     */
 
+    [Serializable]
+    [DataContract]
     public class Skill
     {
+        [DataMember]
         private readonly SkillFunction skillFunction_;
+        [DataMember]
         private TimeSpan lastActivated_;
-        public TimeSpan Cooldown { get; }
+        [DataMember]
+        public TimeSpan Cooldown { get; private set; }
 
         private Skill(SkillFunction skillFunction, TimeSpan cooldown)
         {

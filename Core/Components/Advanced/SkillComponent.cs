@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
 using DXGame.Core.Skills;
@@ -20,9 +21,13 @@ namespace DXGame.Core.Components.Advanced
             Simple component wrapper around skills.
         </summary>
     */
+    [Serializable]
+    [DataContract]
     public class SkillComponent : Component
     {
-        public Skill Skill { get; }
+        [DataMember]
+        public Skill Skill { get; private set; }
+        [DataMember]
         private readonly SkillActivater skillActivator_;
 
         public SkillComponent(DxGame game, Skill skill, SkillActivater skillActivator) 

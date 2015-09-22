@@ -18,6 +18,8 @@ namespace DXGame.Core.Models
             MessageHandler.RegisterMessageHandler<PhysicsMessage>(HandlePhysicsMessage);
         }
 
+        public override bool ShouldSerialize => false;
+
         protected override void Update(DxGameTime gameTime)
         {
             var physics = DxGame.DxGameElements.OfType<PhysicsComponent>().ToList();

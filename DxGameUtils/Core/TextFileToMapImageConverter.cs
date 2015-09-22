@@ -8,7 +8,7 @@ using System.Linq;
 using DXGame.Core;
 using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Map;
-using DXGame.Core.Wrappers;
+using DXGame.Core.Primitives;
 
 namespace DxGameUtils.Core
 {

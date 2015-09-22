@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
-namespace DXGame.Core.Wrappers
+namespace DXGame.Core.Primitives
 {
     [Serializable]
     [DataContract]

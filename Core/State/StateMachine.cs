@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Core.Wrappers;
 using DXGame.Main;
 
 namespace DXGame.Core.State

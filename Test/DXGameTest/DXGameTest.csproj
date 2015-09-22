@@ -107,6 +107,7 @@
     <Compile Include="Core\Network\ComplexNetworkSerialization.cs" />
     <Compile Include="Core\Network\NetworkMessageMarshalling.cs" />
     <Compile Include="Core\Network\SimpleNetworkSerialization.cs" />
+    <Compile Include="Core\Primitives\DxRadianTest.cs" />
     <Compile Include="Core\Property\PropertyMutatationChain.cs" />
     <Compile Include="Core\Property\PropertyMutation.cs" />
     <Compile Include="Core\Property\PropertyMutatorComparer.cs" />

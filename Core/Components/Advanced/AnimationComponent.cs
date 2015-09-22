@@ -4,9 +4,9 @@ using System.Runtime.Serialization;
 using DXGame.Core.Animation;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Primitives;
 using DXGame.Core.State;
 using DXGame.Core.Utils;
-using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
 

@@ -12,6 +12,10 @@
     <AssemblyName>DXGame</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -26,10 +30,6 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -135,6 +135,8 @@
     <Compile Include="Core\Physics\Force.cs" />
     <Compile Include="Core\Physics\Interaction.cs" />
     <Compile Include="Core\Physics\WorldForces.cs" />
+    <Compile Include="Core\Primitives\DxDegree.cs" />
+    <Compile Include="Core\Primitives\DxRadian.cs" />
     <Compile Include="Core\Skills\Skill.cs" />
     <Compile Include="Core\State\Action.cs" />
     <Compile Include="Core\State\StateMachine.cs" />
@@ -209,6 +211,7 @@
     <Compile Include="Core\Models\NetworkModel.cs" />
     <Compile Include="Core\Models\PlayerModel.cs" />
     <Compile Include="Core\Utils\LidgrenUtils.cs" />
+    <Compile Include="Core\Utils\RandomUtils.cs" />
     <Compile Include="Core\Utils\TextureFactory.cs" />
     <Compile Include="Core\Network\ClientConnectionRequest.cs" />
     <Compile Include="Core\Network\GameStateDiff.cs" />
@@ -235,10 +238,10 @@
     <Compile Include="Core\Utils\StringUtils.cs" />
     <Compile Include="Core\Utils\UintUtils.cs" />
     <Compile Include="Core\Utils\Validate.cs" />
-    <Compile Include="Core\Wrappers\DxGameTime.cs" />
-    <Compile Include="Core\Wrappers\DxRectangle.cs" />
+    <Compile Include="Core\Primitives\DxGameTime.cs" />
+    <Compile Include="Core\Primitives\DxRectangle.cs" />
     <Compile Include="Core\Utils\VectorUtils.cs" />
-    <Compile Include="Core\Wrappers\DxVector2.cs" />
+    <Compile Include="Core\Primitives\DxVector2.cs" />
     <Compile Include="Main\DxGame.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

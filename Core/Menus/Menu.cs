@@ -2,7 +2,7 @@
 using System.Linq;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
-using DXGame.Core.Wrappers;
+using DXGame.Core.Primitives;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using DXGame.Core.Wrappers;
+using DXGame.Core.Primitives;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

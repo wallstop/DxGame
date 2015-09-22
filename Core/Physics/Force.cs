@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Core.Wrappers;
 
 namespace DXGame.Core.Physics
 {

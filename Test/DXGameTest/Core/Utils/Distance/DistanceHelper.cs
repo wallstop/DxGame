@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DXGame.Core;
-using DXGame.Core.Wrappers;
+using DXGame.Core.Primitives;
 
 namespace DXGameTest.Core.Utils.Distance
 {

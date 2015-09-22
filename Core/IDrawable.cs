@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Core.Wrappers;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core

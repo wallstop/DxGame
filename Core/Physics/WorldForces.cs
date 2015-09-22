@@ -1,5 +1,5 @@
 ﻿using System;
-using DXGame.Core.Wrappers;
+using DXGame.Core.Primitives;
 
 namespace DXGame.Core.Physics
 {

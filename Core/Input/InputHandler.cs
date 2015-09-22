@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
-using DXGame.Core.Wrappers;
+using DXGame.Core.Primitives;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Input;
 

@@ -5,9 +5,9 @@ using DXGame.Core.Animation;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Messaging;
+using DXGame.Core.Primitives;
 using DXGame.Core.State;
 using DXGame.Core.Utils.Distance;
-using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Action = DXGame.Core.State.Action;
 

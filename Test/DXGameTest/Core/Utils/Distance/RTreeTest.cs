@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils.Distance;
-using DXGame.Core.Wrappers;
 using NUnit.Framework;
 
 namespace DXGameTest.Core.Utils.Distance

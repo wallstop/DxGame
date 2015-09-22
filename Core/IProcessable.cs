@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
-using DXGame.Core.Wrappers;
 
 namespace DXGame.Core
 {

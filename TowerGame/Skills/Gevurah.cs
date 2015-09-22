@@ -4,7 +4,8 @@ using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Messaging;
 using DXGame.Core.Physics;
-using DXGame.Core.Wrappers;
+using DXGame.Core.Primitives;
+using DXGame.Core.Utils;
 using DXGame.Main;
 
 namespace DXGame.TowerGame.Skills
@@ -25,33 +26,22 @@ namespace DXGame.TowerGame.Skills
         private static void ShockwaveInteraction(GameObject source, PhysicsComponent destination)
         {
             var sourcePhysics = source.ComponentOfType<PhysicsComponent>();
-            if (ReferenceEquals(sourcePhysics, destination))
-            {
-                /* Don't interact with yourself */
-                return;
-            }
             var difference = new DxVector2(destination.Space.Center) - new DxVector2(sourcePhysics.Space.Center);
-            var totalForce = 20;
-            var totalDifferenceMagnitude = Math.Abs(difference.X) + Math.Abs(difference.Y);
 
-            /* We only care about exactly equal to 0 to avoid NaN issues (division by 0) */
-            if (totalDifferenceMagnitude == 0)
+            /* If there is no difference in physics' positions (exact), we can't enact force on it :( This also prevents us from interacting with ourself */
+            if (difference.X == 0 && difference.Y == 0)
             {
                 return;
             }
 
-            difference.X = difference.X / totalDifferenceMagnitude * totalForce;
-            difference.Y = difference.Y / totalDifferenceMagnitude * totalForce;
-            /* 
-                TODO: Find 'similar' vectors to these. Treat the difference as the normal vector for a plane in R2 (a line)
-                and find vectors that are in the "same direction" 
+            var minForce = 20;
+            var maxForce = 37;
 
-                How the fuck do I do that?
-            */
-            difference.X += RGEN.Next(-totalForce, totalForce);
-            difference.Y += RGEN.Next(-totalForce, totalForce);
+            var radians = difference.Radian;
+            var targetRadian = new DxRadian(RGEN.NextDouble(radians.Value - (Math.PI / 4), radians.Value + (Math.PI / 4)));
+            var targetVelocityVector = targetRadian.UnitVector * RGEN.Next(minForce, maxForce);
 
-            var force = new Force(difference, new DxVector2(), ShockwaveDissipation, "Shockwave");
+            var force = new Force(targetVelocityVector, new DxVector2(), ShockwaveDissipation, "Shockwave");
             destination.AttachForce(force);
         }
 

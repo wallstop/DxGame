@@ -4,7 +4,7 @@ using DXGame.Core.Components.Network;
 using DXGame.Core.GraphicsWidgets;
 using DXGame.Core.Input;
 using DXGame.Core.Models;
-using DXGame.Core.Wrappers;
+using DXGame.Core.Primitives;
 using DXGame.Main;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;

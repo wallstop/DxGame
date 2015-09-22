@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Physics;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Core.Wrappers;
 using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced

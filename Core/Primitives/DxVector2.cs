@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using Microsoft.Xna.Framework;
 
-namespace DXGame.Core.Wrappers
+namespace DXGame.Core.Primitives
 {
     [Serializable]
     [DataContract]
@@ -10,6 +10,19 @@ namespace DXGame.Core.Wrappers
     {
         [DataMember] public float X;
         [DataMember] public float Y;
+
+        public float MagnitudeSquared => (X * X) + (Y * Y);
+        public float Magnitude => (float)Math.Sqrt(MagnitudeSquared);
+        public DxRadian Radian => new DxRadian(this);
+        public DxDegree Degree => new DxDegree(this);
+
+        /**
+            <summary> Dot product (https://en.wikipedia.org/wiki/Dot_product) </summary>
+        */
+        public float Dot(DxVector2 other)
+        {
+            return X * other.X + Y * other.Y;
+        }
 
         public DxVector2(Point point)
         {

@@ -1,5 +1,5 @@
-﻿using DXGame.Core.Utils;
-using DXGame.Core.Wrappers;
+﻿using DXGame.Core.Primitives;
+using DXGame.Core.Utils;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
 

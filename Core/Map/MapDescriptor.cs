@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using DXGame.Core.Wrappers;
+using DXGame.Core.Primitives;
 
 namespace DXGame.Core.Map
 {

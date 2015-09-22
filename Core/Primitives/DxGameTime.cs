@@ -4,7 +4,7 @@ using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 
-namespace DXGame.Core.Wrappers
+namespace DXGame.Core.Primitives
 {
     /**
         Serializable wrapper for XNA GameTime 

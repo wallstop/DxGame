@@ -1,6 +1,6 @@
 ﻿using System;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Core.Wrappers;
 
 namespace DXGame.Core.Skills
 {

@@ -5,8 +5,8 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Map;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Core.Wrappers;
 
 namespace DXGame.Core.Map
 {

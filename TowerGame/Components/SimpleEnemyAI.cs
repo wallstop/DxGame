@@ -4,10 +4,10 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils.Distance;
-using DXGame.Core.Wrappers;
 using DXGame.Main;
 using System.Linq;
 using System.Runtime.Serialization;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 
 namespace DXGame.TowerGame.Components

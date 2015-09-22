@@ -5,9 +5,9 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using DXGame.Core.Map;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
-using DXGame.Core.Wrappers;
 
 namespace MapEditor.Core
 {

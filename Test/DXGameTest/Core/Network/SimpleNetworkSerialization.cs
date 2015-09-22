@@ -7,7 +7,7 @@ using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
-using DXGame.Core.Wrappers;
+using DXGame.Core.Primitives;
 using DXGame.Main;
 using NUnit.Framework;
 

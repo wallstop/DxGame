@@ -2,8 +2,8 @@
 using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Network;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Core.Wrappers;
 using DXGame.Main;
 
 namespace DXGame.Core.Models

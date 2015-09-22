@@ -1,8 +1,8 @@
 ﻿using System;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Primitives;
 using DXGame.Core.Skills;
 using DXGame.Core.Utils;
-using DXGame.Core.Wrappers;
 using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced

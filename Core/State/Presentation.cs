@@ -1,4 +1,4 @@
-﻿using DXGame.Core.Wrappers;
+﻿using DXGame.Core.Primitives;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.State

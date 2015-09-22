@@ -8,8 +8,8 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Developer;
 using DXGame.Core.Components.Utils;
 using DXGame.Core.GraphicsWidgets.HUD;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
 

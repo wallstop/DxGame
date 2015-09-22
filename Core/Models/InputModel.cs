@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DXGame.Core.Input;
-using DXGame.Core.Wrappers;
+using DXGame.Core.Primitives;
 using DXGame.Main;
 
 namespace DXGame.Core.Models

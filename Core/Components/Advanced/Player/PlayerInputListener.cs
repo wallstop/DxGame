@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
-using DXGame.Core.Wrappers;
+using DXGame.Core.Primitives;
 using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Player

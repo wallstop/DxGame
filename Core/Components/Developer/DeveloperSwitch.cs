@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Models;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Core.Wrappers;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Input;
 

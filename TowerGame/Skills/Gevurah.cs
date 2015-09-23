@@ -12,7 +12,7 @@ namespace DXGame.TowerGame.Skills
 {
     public static class Gevurah
     {
-        private static Random RGEN = new Random();
+        //private static Random RGEN = new Random();
         public static void Shockwave(GameObject parent, DxGameTime gameTime)
         {
             var position = parent.ComponentOfType<SpatialComponent>().Center;
@@ -38,8 +38,8 @@ namespace DXGame.TowerGame.Skills
             var maxForce = 37;
 
             var radians = difference.Radian;
-            var targetRadian = new DxRadian(RGEN.NextDouble(radians.Value - (Math.PI / 4), radians.Value + (Math.PI / 4)));
-            var targetVelocityVector = targetRadian.UnitVector * RGEN.Next(minForce, maxForce);
+            var targetRadian = new DxRadian(ThreadLocalRandom.Current.NextFloat(radians.Value - (float)(Math.PI / 4), radians.Value + (float)(Math.PI / 4)));
+            var targetVelocityVector = targetRadian.UnitVector * ThreadLocalRandom.Current.Next(minForce, maxForce);
 
             var force = new Force(targetVelocityVector, new DxVector2(), ShockwaveDissipation, "Shockwave");
             destination.AttachForce(force);

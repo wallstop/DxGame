@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
-using DXGame.Core.Utils;
 using DXGame.Main;
 using DXGame.TowerGame.Components;
 using DXGame.TowerGame.Enemies;
@@ -18,34 +12,6 @@ namespace DXGame.Core.Components.Advanced.Enemy
 {
     public static class SpawnerFactory
     {
-        /*
-            Instead of using a lambda, we create a special class to hold the state of our SimpleBox spawn dude.
-            This way, we're able to serialize over the network. We could easily close over a boolean on the stack,
-            but then we could not serialize the state.
-        */
-        [Serializable]
-        private class SimpleBoxSpawnFunction
-        {
-            private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-            private static readonly TimeSpan SPAWN_DELAY = TimeSpan.FromSeconds(1 / 10.0);
-            private static readonly int MAX_BOXES_TO_SPAWN = 20;
-            private int numSpawned_;
-            private TimeSpan lastSpawned_ = TimeSpan.Zero;
-
-            public Tuple<bool, GameObject> Spawn(DxGameTime gameTime)
-            {
-                var totalTime = gameTime.TotalGameTime;
-                if (lastSpawned_ + SPAWN_DELAY < totalTime && numSpawned_ < MAX_BOXES_TO_SPAWN)
-                {
-                    lastSpawned_ = totalTime;
-                    ++numSpawned_;
-                    LOG.Info($"Spawned {numSpawned_} boxes");
-                    return Tuple.Create(true, SimpleBoxSpawnLogic());
-                }
-                return Tuple.Create<bool, GameObject>(false, null);
-            }
-        }
-
         private static GameObject SimpleBoxSpawnLogic()
         {
             // Acquire a reference to the singleton instance of DxGame
@@ -54,12 +20,13 @@ namespace DXGame.Core.Components.Advanced.Enemy
             var mapModel = game.Model<MapModel>();
             var bounds = mapModel.MapBounds;
             // Build spatial component from bounds
-            var enemySpatial = (BoundedSpatialComponent)new BoundedSpatialComponent(game).WithXMin(bounds.X)
+            var enemySpatial = (BoundedSpatialComponent) new BoundedSpatialComponent(game).WithXMin(bounds.X)
                 .WithXMax(bounds.Width)
                 .WithXMin(bounds.Y)
                 .WithYMax(bounds.Height)
                 .WithDimensions(new DxVector2(50, 50)); // TODO: un-hard code these
-            var enemyPhysics = MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(enemySpatial).Build();
+            var enemyPhysics =
+                MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(enemySpatial).Build();
             var animationBuilder = AnimationComponent.Builder().WithDxGame(game).WithPosition(enemySpatial);
             var enemyObject = GameObject.Builder().WithComponents(enemySpatial, enemyPhysics).Build();
             // Create a state machine for the enemy in question
@@ -86,7 +53,42 @@ namespace DXGame.Core.Components.Advanced.Enemy
 
             var spawnLocation = mapModel.PlayerSpawn;
             var spawnArea = new DxRectangle(spawnLocation, new DxVector2(50, 50));
-            return Spawner.Builder().WithPosition(spawnLocation).WithGame(game).WithSpawnArea(spawnArea).WithSpawnTrigger(spawnFunction.Spawn).Build();
+            return
+                Spawner.Builder()
+                    .WithPosition(spawnLocation)
+                    .WithGame(game)
+                    .WithSpawnArea(spawnArea)
+                    .WithSpawnTrigger(spawnFunction.Spawn)
+                    .Build();
+        }
+
+        /*
+            Instead of using a lambda, we create a special class to hold the state of our SimpleBox spawn dude.
+            This way, we're able to serialize over the network. We could easily close over a boolean on the stack,
+            but then we could not serialize the state.
+        */
+
+        [Serializable]
+        private class SimpleBoxSpawnFunction
+        {
+            private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+            private static readonly TimeSpan SPAWN_DELAY = TimeSpan.FromSeconds(1 / 100.0);
+            private static readonly int MAX_BOXES_TO_SPAWN = 750;
+            private TimeSpan lastSpawned_ = TimeSpan.Zero;
+            private int numSpawned_;
+
+            public Tuple<bool, GameObject> Spawn(DxGameTime gameTime)
+            {
+                var totalTime = gameTime.TotalGameTime;
+                if (lastSpawned_ + SPAWN_DELAY < totalTime && numSpawned_ < MAX_BOXES_TO_SPAWN)
+                {
+                    lastSpawned_ = totalTime;
+                    ++numSpawned_;
+                    LOG.Info($"Spawned {numSpawned_} boxes");
+                    return Tuple.Create(true, SimpleBoxSpawnLogic());
+                }
+                return Tuple.Create<bool, GameObject>(false, null);
+            }
         }
     }
 }

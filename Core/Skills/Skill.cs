@@ -44,7 +44,6 @@ namespace DXGame.Core.Skills
         /**
             <summary> Attempts to activate the skill. This will silently do nothing if the skill is on cooldown. </summary>
         */
-
         public void Activate(GameObject parent, DxGameTime gameTime)
         {
             var totalGameTime = gameTime.TotalGameTime;

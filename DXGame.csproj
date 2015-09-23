@@ -236,6 +236,7 @@
     <Compile Include="Core\Utils\Objects.cs" />
     <Compile Include="Core\Utils\SpriteBatchUtils.cs" />
     <Compile Include="Core\Utils\StringUtils.cs" />
+    <Compile Include="Core\Utils\ThreadLocalRandom.cs" />
     <Compile Include="Core\Utils\UintUtils.cs" />
     <Compile Include="Core\Utils\Validate.cs" />
     <Compile Include="Core\Primitives\DxGameTime.cs" />

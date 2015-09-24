@@ -108,6 +108,7 @@
     <Compile Include="Core\Network\NetworkMessageMarshalling.cs" />
     <Compile Include="Core\Network\SimpleNetworkSerialization.cs" />
     <Compile Include="Core\Primitives\DxRadianTest.cs" />
+    <Compile Include="Core\Primitives\DxVector2Test.cs" />
     <Compile Include="Core\Property\PropertyMutatationChain.cs" />
     <Compile Include="Core\Property\PropertyMutation.cs" />
     <Compile Include="Core\Property\PropertyMutatorComparer.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="Core\Utils\Distance\QuadTreeTest.cs" />
     <Compile Include="Core\Utils\Distance\RTreeTest.cs" />
     <Compile Include="Core\Utils\MathUtilsTest.cs" />
+    <Compile Include="Core\Utils\ThreadLocalRandomTest.cs" />
     <Compile Include="Core\Utils\VectorUtilsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

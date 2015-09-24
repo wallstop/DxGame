@@ -110,8 +110,10 @@
     <Compile Include="Core\Components\Advanced\Enemy\Spawner.cs" />
     <Compile Include="Core\Components\Advanced\Enemy\SpawnerFactory.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapCollidableComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
     <Compile Include="Core\Components\Advanced\Player\PlayerInputListener.cs" />
     <Compile Include="Core\Components\Advanced\SkillComponent.cs" />
+    <Compile Include="Core\Components\Advanced\TeamComponent.cs" />
     <Compile Include="Core\Components\Developer\BoundingBoxWidget.cs" />
     <Compile Include="Core\Components\Developer\DeveloperSwitch.cs" />
     <Compile Include="Core\EventSystem.cs" />

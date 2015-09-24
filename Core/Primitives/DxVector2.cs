@@ -10,18 +10,19 @@ namespace DXGame.Core.Primitives
     {
         [DataMember] public float X;
         [DataMember] public float Y;
-
         public float MagnitudeSquared => (X * X) + (Y * Y);
-        public float Magnitude => (float)Math.Sqrt(MagnitudeSquared);
+        public float Magnitude => unchecked((float) Math.Sqrt(MagnitudeSquared));
         public DxRadian Radian => new DxRadian(this);
         public DxDegree Degree => new DxDegree(this);
+        public DxVector2 EmptyVector => new DxVector2();
 
-        /**
-            <summary> Dot product (https://en.wikipedia.org/wiki/Dot_product) </summary>
-        */
-        public float Dot(DxVector2 other)
+        public DxVector2 UnitVector
         {
-            return X * other.X + Y * other.Y;
+            get
+            {
+                var magnitude = Magnitude;
+                return new DxVector2(X / magnitude, Y / magnitude);
+            }
         }
 
         public DxVector2(Point point)
@@ -62,6 +63,15 @@ namespace DXGame.Core.Primitives
         public bool Equals(Vector2 other)
         {
             return X.Equals(other.X) && Y.Equals(other.Y);
+        }
+
+        /**
+            <summary> Dot product (https://en.wikipedia.org/wiki/Dot_product) </summary>
+        */
+
+        public float Dot(DxVector2 other)
+        {
+            return X * other.X + Y * other.Y;
         }
 
         public static DxVector2 operator +(DxVector2 lhs, DxVector2 rhs)

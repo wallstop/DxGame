@@ -38,13 +38,13 @@ namespace DXGame.Core.Components.Developer
             List<DxRectangle> divisions = collisionTree.Divisions;
             foreach (var division in divisions)
             {
-                SpriteBatchUtils.DrawBorder(spriteBatch, division, 1, Color.DarkSlateBlue);
+                spriteBatch.DrawBorder(division, 1, Color.DarkSlateBlue);
             }
             /* ...as well as each Node in the tree */
             List<DxRectangle> nodes = collisionTree.Nodes;
             foreach (var nodeBoundary in nodes)
             {
-                SpriteBatchUtils.DrawBorder(spriteBatch, nodeBoundary, 1, Color.Black);
+                spriteBatch.DrawBorder(nodeBoundary, 1, Color.Black);
             }
         }
     }

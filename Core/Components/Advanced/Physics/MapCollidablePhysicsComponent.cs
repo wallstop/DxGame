@@ -21,6 +21,7 @@ namespace DXGame.Core.Components.Advanced.Physics
     [DataContract]
     public class MapCollidablePhysicsComponent : PhysicsComponent
     {
+        private const int MAX_COLLISION_CHECKS = 10;
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private static readonly DxRectangleAreaComparer DXRECTANGLE_AREA_COMPARER = new DxRectangleAreaComparer();
         private DxVector2 Dimensions => space_.Dimensions;
@@ -85,7 +86,7 @@ namespace DXGame.Core.Components.Advanced.Physics
 
             CollisionMessage collision = new CollisionMessage();
 
-            while (true)
+            for(int i =0; i < MAX_COLLISION_CHECKS; ++i)
             {
                 var largestIntersectionTuple = FindLargestIntersection(mapTiles, Space);
                 if (largestIntersectionTuple == null)

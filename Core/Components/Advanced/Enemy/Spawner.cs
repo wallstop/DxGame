@@ -24,7 +24,6 @@ namespace DXGame.Core.Components.Advanced.Enemy
         protected DxVector2 Position { get; }
         protected DxRectangle SpawnArea { get; }
         protected SpawnTrigger SpawnTrigger { get; }
-        protected readonly Random rGen_ = new Random();
 
         protected Spawner(DxGame game, DxVector2 position, DxRectangle spawnArea, SpawnTrigger spawnTrigger) 
             : base(game)
@@ -54,8 +53,8 @@ namespace DXGame.Core.Components.Advanced.Enemy
             var minY = SpawnArea.Y;
             var maxY = SpawnArea.Y + SpawnArea.Height;
 
-            var xCoordinate = rGen_.Next((int) minX, (int) maxX);
-            var yCoordinate = rGen_.Next((int) minY, (int) maxY);
+            var xCoordinate = ThreadLocalRandom.Current.Next((int) minX, (int) maxX);
+            var yCoordinate = ThreadLocalRandom.Current.Next((int) minY, (int) maxY);
             return new DxVector2(xCoordinate, yCoordinate);
         }
 

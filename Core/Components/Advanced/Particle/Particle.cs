@@ -1,25 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using NLog.Time;
 
 namespace DXGame.Core.Components.Advanced.Particle
 {
+    /**
+        Particles are simply colored orbs, nothing more, nothing less. They can shrink or grow in regards to time, have a TTL, radius, position, velocity, and acceleration.
+        <summary> 
+            Simple "Particle" class. Operates on its own Physics system (for now) to avoid Physics components picking up / interacting with them. 
+        </summary>
+    */
+
     [Serializable]
     [DataContract]
     public class Particle : DrawableComponent
     {
         protected Color Color { get; }
-        protected float Radius { get; set; }
+        protected float Radius { get; }
+        /* The "current" radius. */
         protected float AccumulatedRadius { get; set; }
         protected float GrowRate { get; }
         protected DxVector2 Position { get; set; }
@@ -27,9 +30,11 @@ namespace DXGame.Core.Components.Advanced.Particle
         protected DxVector2 Acceleration { get; }
         protected TimeSpan TimeToLive { get; set; }
 
-        protected Particle(DxGame game, Color color, float radius, float growRate, DxVector2 position, DxVector2 velocity, DxVector2 acceleration, TimeSpan timeToLive) 
+        protected Particle(DxGame game, Color color, float radius, float growRate, DxVector2 position,
+            DxVector2 velocity, DxVector2 acceleration, TimeSpan timeToLive)
             : base(game)
         {
+            // TODO: Only draw / make particles if like "hefty" graphics options are specified.
             Color = color;
             Radius = radius;
             GrowRate = growRate;
@@ -45,21 +50,32 @@ namespace DXGame.Core.Components.Advanced.Particle
             TimeToLive -= gameTime.ElapsedGameTime;
             if (TimeToLive <= TimeSpan.Zero)
             {
+                /* Is our TTL up? If so, die */
                 Remove();
                 return;
             }
 
-            var scaleFactor = (float)gameTime.ElapsedGameTime.TotalMilliseconds / DateTimeConstants.MILLISECONDS_PER_SECOND;
-            AccumulatedRadius += (Radius * scaleFactor* GrowRate);
+            /* 
+                We want to scale our radius with regards to time. 
+                The scale factor returned from DetermineScaleFactor on DxGameTime operates in the concept of FPS (should 
+                be something like a target 60FPS for the game) instead of straight wallclock time 
+            */
+            var growthScaleFactor = (float) gameTime.ElapsedGameTime.TotalMilliseconds /
+                                    DateTimeConstants.MILLISECONDS_PER_SECOND;
+            AccumulatedRadius += (Radius * growthScaleFactor * GrowRate);
             if (AccumulatedRadius < 0)
             {
+                /* Have we shrunk to 0? If so, die */
                 Remove();
                 return;
             }
+            /* Othwerise, do our own physics computations (scale to FPS like normal physics components) */
+            var scaleFactor = gameTime.DetermineScaleFactor(DxGame);
+
             Velocity += (Acceleration * scaleFactor);
             Position += (Velocity * scaleFactor);
-            
-            var destination = new DxRectangle(Position.X - AccumulatedRadius, Position.Y - AccumulatedRadius, AccumulatedRadius * 2, AccumulatedRadius * 2);
+            var destination = new DxRectangle(Position.X - AccumulatedRadius, Position.Y - AccumulatedRadius,
+                AccumulatedRadius * 2, AccumulatedRadius * 2);
             spriteBatch.DrawCircle(destination.ToRectangle(), Color);
         }
 
@@ -70,14 +86,30 @@ namespace DXGame.Core.Components.Advanced.Particle
 
         public class ParticleBuilder : IBuilder<Particle>
         {
-            private Color color_ = Color.Gray;
-            private float radius_ = 1.0f;
-            private float growRate_;
-            private DxVector2 velocity_;
-            private DxVector2 position_;
             private DxVector2 acceleration_;
+            private Color color_ = Color.Gray;
             private DxGame game_;
+            private float growRate_;
+            private DxVector2 position_;
+            private float radius_ = 1.0f;
             private TimeSpan timeToLive_ = TimeSpan.FromSeconds(1.0);
+            private DxVector2 velocity_;
+
+            public Particle Build()
+            {
+                if (ReferenceEquals(game_, null))
+                {
+                    game_ = DxGame.Instance;
+                }
+                Validate.IsTrue(radius_ > 0, $"Cannot create {typeof (Particle)}s with a negative radius ({radius_})");
+                return new Particle(game_, color_, radius_, growRate_, position_, velocity_, acceleration_, timeToLive_);
+            }
+
+            /* 
+                GrowRate > 0 : Enlarge radius
+                GrowRate < 0 : Shrink radius
+                GrowRate == 0: Maintain Radius
+            */
 
             public ParticleBuilder WithGrowRate(float growRate)
             {
@@ -125,16 +157,6 @@ namespace DXGame.Core.Components.Advanced.Particle
             {
                 radius_ = radius;
                 return this;
-            }
-
-            public Particle Build()
-            {
-                if (ReferenceEquals(game_, null))
-                {
-                    game_ = DxGame.Instance;
-                }
-                Validate.IsTrue(radius_ > 0, $"Cannot create {typeof(Particle)}s with a negative radius ({radius_})");
-                return new Particle(game_, color_, radius_, growRate_, position_, velocity_, acceleration_, timeToLive_);
             }
         }
     }

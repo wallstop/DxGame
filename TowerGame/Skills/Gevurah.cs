@@ -40,8 +40,8 @@ namespace DXGame.TowerGame.Skills
             var numParticles = 10;
             for (int i = 0; i < numParticles; ++i)
             {
-                var minForce = 250;
-                var maxForce = 578;
+                var minForce = 0.5f;
+                var maxForce = 5;
 
                 var radians = difference.Radian;
                 var targetRadian =
@@ -51,7 +51,7 @@ namespace DXGame.TowerGame.Skills
 
                 var force = new Force(targetVelocityVector, new DxVector2(), ShockwaveDissipation, "Shockwave");
 
-                var acceleration = targetVelocityVector.UnitVector * (ThreadLocalRandom.Current.NextFloat(0.4f) + 1);
+                var acceleration = targetVelocityVector.UnitVector * (ThreadLocalRandom.Current.NextFloat(-0.99f, 0.4f) + 1);
 
                 var particle =
                     Particle.Builder()

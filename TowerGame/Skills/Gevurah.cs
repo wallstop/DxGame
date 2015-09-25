@@ -60,7 +60,7 @@ namespace DXGame.TowerGame.Skills
                         .WithVelocity(targetVelocityVector)
                         .WithTimeToLive(TimeSpan.FromSeconds(1.3))
                         .WithGrowRate(ThreadLocalRandom.Current.NextFloat(-0.9f, -0.2f))
-                        .WithRadius(ThreadLocalRandom.Current.NextFloat(4, 17f))
+                        .WithRadius(ThreadLocalRandom.Current.NextFloat(3, 9f))
                         .WithColor(Color.Orange)
                         .Build();
                 DxGame.Instance.AddAndInitializeComponents(particle);

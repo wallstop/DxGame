@@ -86,6 +86,7 @@ namespace DXGame.Core.Components.Advanced.Physics
 
             CollisionMessage collision = new CollisionMessage();
 
+            // TODO: Properly check & remove "buggy" mapTiles that don't get resolved instead of max-capping this loop
             for(int i =0; i < MAX_COLLISION_CHECKS; ++i)
             {
                 var largestIntersectionTuple = FindLargestIntersection(mapTiles, Space);

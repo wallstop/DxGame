@@ -187,6 +187,12 @@ namespace DXGame.Main
 
         public void RemoveGameObject(GameObject gameObject)
         {
+            if (ReferenceEquals(gameObject, null))
+            {
+                LOG.Warn($"{nameof(RemoveGameObject)} called with null {typeof(GameObject)}");
+                return;
+            }
+
             foreach (var component in gameObject.Components)
             {
                 RemovedGameElements.Add(component);

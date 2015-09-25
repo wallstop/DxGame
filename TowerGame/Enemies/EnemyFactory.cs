@@ -111,7 +111,6 @@ namespace DXGame.TowerGame.Enemies
             public SimpleBoxActionResolver(GameObject enemy)
             {
                 enemy_ = enemy;
-
                 IdleState = State.Builder().WithName("Idle").WithAction(IdleAction).Build();
             }
 

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
@@ -16,6 +12,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
         along with the GameObject that should be spawned. If the first element in the tuple is false,
         the GameObject reference is undefined.
     */
+
     public delegate Tuple<bool, GameObject> SpawnTrigger(DxGameTime gameTime);
 
     [Serializable]
@@ -25,7 +22,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
         protected DxRectangle SpawnArea { get; }
         protected SpawnTrigger SpawnTrigger { get; }
 
-        protected Spawner(DxGame game, DxVector2 position, DxRectangle spawnArea, SpawnTrigger spawnTrigger) 
+        protected Spawner(DxGame game, DxVector2 position, DxRectangle spawnArea, SpawnTrigger spawnTrigger)
             : base(game)
         {
             Position = position;
@@ -65,10 +62,17 @@ namespace DXGame.Core.Components.Advanced.Enemy
 
         public class SpawnerBuilder : IBuilder<Spawner>
         {
+            private DxGame game_;
             private DxVector2 position_;
             private DxRectangle spawnArea_;
             private SpawnTrigger spawnTrigger_;
-            private DxGame game_;
+
+            public Spawner Build()
+            {
+                Validate.IsNotNullOrDefault(spawnTrigger_,
+                    StringUtils.GetFormattedNullOrDefaultMessage(this, "SpawnTrigger"));
+                return new Spawner(game_, position_, spawnArea_, spawnTrigger_);
+            }
 
             public SpawnerBuilder WithPosition(DxVector2 position)
             {
@@ -93,12 +97,6 @@ namespace DXGame.Core.Components.Advanced.Enemy
                 Validate.IsNotNullOrDefault(game, StringUtils.GetFormattedNullOrDefaultMessage(this, game));
                 game_ = game;
                 return this;
-            }
-
-            public Spawner Build()
-            {
-                Validate.IsNotNullOrDefault(spawnTrigger_, StringUtils.GetFormattedNullOrDefaultMessage(this, "SpawnTrigger"));
-                return new Spawner(game_, position_, spawnArea_, spawnTrigger_);
             }
         }
     }

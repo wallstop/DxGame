@@ -80,7 +80,7 @@ namespace DXGame.Core.Utils
             </code>
         */
 
-        public static int FuzzyCompare(float lhs, float rhs, float epsilon = floatTolerance_)
+        public static int FuzzyCompare(this float lhs, float rhs, float epsilon = floatTolerance_)
         {
             if (Math.Abs(lhs - rhs) <= epsilon)
             {
@@ -104,7 +104,7 @@ namespace DXGame.Core.Utils
             </code>
         */
 
-        public static int FuzzyCompare(double lhs, double rhs, double epsilon = doubleTolerance_)
+        public static int FuzzyCompare(this double lhs, double rhs, double epsilon = doubleTolerance_)
         {
             if (Math.Max(lhs, rhs) - Math.Min(lhs, rhs) <= epsilon)
             {

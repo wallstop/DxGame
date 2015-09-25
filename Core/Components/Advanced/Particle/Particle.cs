@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using System.Security.Policy;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
@@ -29,9 +30,10 @@ namespace DXGame.Core.Components.Advanced.Particle
         protected DxVector2 Velocity { get; set; }
         protected DxVector2 Acceleration { get; }
         protected TimeSpan TimeToLive { get; set; }
+        protected float MaxDistance { get; set; }
 
         protected Particle(DxGame game, Color color, float radius, float growRate, DxVector2 position,
-            DxVector2 velocity, DxVector2 acceleration, TimeSpan timeToLive)
+            DxVector2 velocity, DxVector2 acceleration, TimeSpan timeToLive, float maxDistance)
             : base(game)
         {
             // TODO: Only draw / make particles if like "hefty" graphics options are specified.
@@ -43,6 +45,7 @@ namespace DXGame.Core.Components.Advanced.Particle
             Acceleration = acceleration;
             TimeToLive = timeToLive;
             AccumulatedRadius = Radius;
+            MaxDistance = maxDistance;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
@@ -63,9 +66,9 @@ namespace DXGame.Core.Components.Advanced.Particle
             var growthScaleFactor = (float) gameTime.ElapsedGameTime.TotalMilliseconds /
                                     DateTimeConstants.MILLISECONDS_PER_SECOND;
             AccumulatedRadius += (Radius * growthScaleFactor * GrowRate);
-            if (AccumulatedRadius < 0)
+            if (AccumulatedRadius < 0 || MaxDistance <= 0)
             {
-                /* Have we shrunk to 0? If so, die */
+                /* Have we shrunk to 0 or traveled farther than we should have? If so, die */
                 Remove();
                 return;
             }
@@ -73,7 +76,9 @@ namespace DXGame.Core.Components.Advanced.Particle
             var scaleFactor = gameTime.DetermineScaleFactor(DxGame);
 
             Velocity += (Acceleration * scaleFactor);
-            Position += (Velocity * scaleFactor);
+            var scaledVelocity = (Velocity * scaleFactor);
+            Position += scaledVelocity;
+            MaxDistance -= scaledVelocity.Magnitude;
             var destination = new DxRectangle(Position.X - AccumulatedRadius, Position.Y - AccumulatedRadius,
                 AccumulatedRadius * 2, AccumulatedRadius * 2);
             spriteBatch.DrawCircle(destination.ToRectangle(), Color);
@@ -94,6 +99,7 @@ namespace DXGame.Core.Components.Advanced.Particle
             private float radius_ = 1.0f;
             private TimeSpan timeToLive_ = TimeSpan.FromSeconds(1.0);
             private DxVector2 velocity_;
+            private float maxDistance_ = float.MaxValue;
 
             public Particle Build()
             {
@@ -102,7 +108,14 @@ namespace DXGame.Core.Components.Advanced.Particle
                     game_ = DxGame.Instance;
                 }
                 Validate.IsTrue(radius_ > 0, $"Cannot create {typeof (Particle)}s with a negative radius ({radius_})");
-                return new Particle(game_, color_, radius_, growRate_, position_, velocity_, acceleration_, timeToLive_);
+                Validate.IsTrue(maxDistance_ >= 0, $"Cannot create {typeof(Particle)}s with a negative maxDistance ({maxDistance_})");
+                return new Particle(game_, color_, radius_, growRate_, position_, velocity_, acceleration_, timeToLive_, maxDistance_);
+            }
+
+            public ParticleBuilder WithMaxDistance(float maxDistance)
+            {
+                maxDistance_ = maxDistance;
+                return this;
             }
 
             /* 

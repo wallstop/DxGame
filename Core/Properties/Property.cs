@@ -2,32 +2,90 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using DXGame.Core.Utils;
 using NLog;
 
 namespace DXGame.Core.Properties
 {
+    /**
+        <summary> 
+            "Listens" to changes in a property, possibly reacting if so.
+            A simple example would be to check if Health has dropped below 0 (and do something, like die)
+        </summary>
+
+        Example:
+        <code>
+            private void DeathListener(int previousHealth, int currentHealth)
+            {
+                if(currentHealth <= 0 && previousHealth > 0) 
+                {
+                    Console.WriteLine("Health has reached 0! Oh no!");
+                    Environment.Exit(Int.MaxValue); // We simply cannot continue, the end is neigh
+                }
+            }
+        </code>
+    */
+
+    public delegate void PropertyListener<in T>(T previous, T current);
+
+    /**
+        <summary>
+            Represents a Property on an entity. This is typically imagined to be something along the lines of Health, Runspeed, Damage, Defense, etc.
+
+            This is a nice encapsulation around the concept of "PropertyMutators", or modifiers. 
+            This class handles the logic of adding & removing "buffs", so values will be able to change fluently with the addition & subtraction of buff-based values
+        </summary>
+    */
+
     [Serializable]
     [DataContract]
     public sealed class Property<T>
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        // TODO: Figure out how to properly serialize / hide name
-        [DataMember] public readonly string Name;
+        [DataMember] private readonly List<PropertyListener<T>> listeners_ = new List<PropertyListener<T>>();
 
-        [DataMember] private SortedDictionary<PropertyMutator<T>, int> mutatorCounts_ =
+        [DataMember] private readonly SortedDictionary<PropertyMutator<T>, int> mutatorCounts_ =
             new SortedDictionary<PropertyMutator<T>, int>(new PropertyMutatorPriorityComparer<T>());
+
+        // TODO: Figure out how to properly serialize / hide name (why?)
+        [DataMember] public readonly string Name;
+        [DataMember] private T currentValue_;
 
         [DataMember]
         public T BaseValue { get; private set; }
 
         [DataMember]
-        public T CurrentValue { get; set; }
+        public T CurrentValue
+        {
+            get { return currentValue_; }
+            set
+            {
+                var previous = currentValue_;
+                currentValue_ = value;
+                foreach (var listener in listeners_)
+                {
+                    listener.Invoke(previous, currentValue_);
+                }
+            }
+        }
 
         public Property(T value, string name)
         {
             BaseValue = value;
             CurrentValue = value;
             Name = name;
+        }
+
+        public void AttachListener(PropertyListener<T> listener)
+        {
+            Validate.IsNotNullOrDefault(listener,
+                $"Cannot attach a null {typeof (PropertyListener<T>)} to a {typeof (Property<T>)} ({Name})");
+            listeners_.Add(listener);
+        }
+
+        public bool RemoveListener(PropertyListener<T> listener)
+        {
+            return listeners_.Remove(listener);
         }
 
         public void AddMutator(PropertyMutator<T> mutator)

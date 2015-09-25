@@ -49,8 +49,7 @@ namespace DXGame.Core.Generators
             weapon_ = new RangedWeaponComponent(game).WithPhysicsComponent(physics_).WithDamage(50);
 
             // TODO make these colors not shit and/or blend into the current biome
-            healthBar_ = new FloatingHealthIndicator(game, new DxVector2(-10, -10), Color.Green,
-                Color.Aquamarine, playerProperties_, PlayerSpace);
+            healthBar_ = FloatingHealthIndicator.Builder().WithForegroundColor(Color.Green).WithEntityProperties(playerProperties_).WithPosition(PlayerSpace).Build();
             healthBar_.LoadContent();
             game_ = game;
         }

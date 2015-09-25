@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Messaging;
 using DXGame.Core.Properties;
 using DXGame.Main;
 
@@ -35,6 +36,27 @@ namespace DXGame.Core.Components.Advanced.Properties
         public Property<TimeSpan> AttackSpeed { get; protected set; }
 
         public EntityPropertiesComponent(DxGame game)
-            : base(game) { }
+            : base(game)
+        {
+        }
+
+        public override void Initialize()
+        {
+            /* Assume base class has dealt with actually creating the Properties */
+            Health.AttachListener(EntityDeathListener);
+        }
+
+        protected virtual void EntityDeathListener(int previousHealth, int currentHealth)
+        {
+            /* Have we received lethal damage? */
+            if (currentHealth <= 0 && previousHealth > 0)
+            {
+                /* If so, tell everyone that we've died. */
+                var entityDeathMessage = new EntityDeathMessage() {Entity = Parent};
+                /* The world deserves to know. We were important. */
+                DxGame.BroadcastMessage(entityDeathMessage);
+                Parent?.BroadcastMessage(entityDeathMessage);
+            }
+        }
     }
 }

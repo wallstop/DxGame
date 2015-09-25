@@ -49,9 +49,6 @@ namespace DXGame.Core.Physics
         //    var accelerationResult = new DxVector2();
         //    if(Math.Abs(externalVelocity.X) < )
         //    if(externalVelocity
-
         //}
-
-
     }
 }

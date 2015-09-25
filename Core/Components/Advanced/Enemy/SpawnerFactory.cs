@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Linq;
+using DXGame.Core.Components.Advanced.Damage;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
+using DXGame.Core.Components.Advanced.Properties;
+using DXGame.Core.Components.Developer;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
+using DXGame.Core.Utils;
 using DXGame.Main;
 using DXGame.TowerGame.Components;
 using DXGame.TowerGame.Enemies;
@@ -28,8 +32,21 @@ namespace DXGame.Core.Components.Advanced.Enemy
                 .WithDimensions(new DxVector2(50, 50)); // TODO: un-hard code these
             var enemyPhysics =
                 MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(enemySpatial).Build();
+
+            /* TODO: Configure properties */
+            var enemyProperties = PlayerPropertiesComponent.DefaultPlayerProperties;
+            var floatingHealthBar =
+                FloatingHealthIndicator.Builder()
+                    .WithEntityProperties(enemyProperties)
+                    .WithPosition(enemySpatial)
+                    .Build();
+
+            var damageComponent = DamageComponent.Builder().WithEntityProprerties(enemyProperties).Build();
+
+            var deathExploder = new DeathEffectComponent(game, DeathEffectComponent.SimpleEnemyBloodParticles);
+
             var animationBuilder = AnimationComponent.Builder().WithDxGame(game).WithPosition(enemySpatial);
-            var enemyObject = GameObject.Builder().WithComponents(enemySpatial, enemyPhysics).Build();
+            var enemyObject = GameObject.Builder().WithComponents(enemySpatial, enemyPhysics, enemyProperties, floatingHealthBar, deathExploder, damageComponent).Build();
             // Create a state machine for the enemy in question
             // Horrifically complex; weep, gnash teeth
             var stateMachine = EnemyFactory.SimpleBoxBehavior(game, animationBuilder, enemyObject);
@@ -40,7 +57,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
             var simpleAi = SimpleEnemyAI.Builder().WithDxGame(game).WithSpatialComponent(enemySpatial).Build();
             enemyObject.AttachComponent(simpleAi);
             enemyObject.AttachComponent(stateMachine);
-
+            
             return enemyObject;
         }
 

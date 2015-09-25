@@ -82,7 +82,7 @@ namespace DXGame.Core.Components.Advanced
         public virtual int MaxHealth => entityProperties_.MaxHealth.CurrentValue;
         public virtual double PercentHealthRemaining => (double) Health / MaxHealth;
 
-        public FloatingHealthIndicator(DxGame game, DxVector2 floatDistance, Color foregroundColor,
+        protected FloatingHealthIndicator(DxGame game, DxVector2 floatDistance, Color foregroundColor,
             Color backgroundColor, EntityPropertiesComponent properties,
             PositionalComponent position)
             : base(game)
@@ -102,6 +102,59 @@ namespace DXGame.Core.Components.Advanced
         public void Dispose()
         {
             backgroundTexture_?.Dispose();
+        }
+
+        public static FloatingHealthIndicatorBuilder Builder()
+        {
+            return new FloatingHealthIndicatorBuilder();
+        }
+
+        public class FloatingHealthIndicatorBuilder : IBuilder<FloatingHealthIndicator>
+        {
+            private DxVector2 floatDistance_ = new DxVector2(-10, -10);
+            private Color foregroundColor_ = Color.IndianRed;
+            private Color backgroundColor_ = Color.DarkSlateGray;
+            private EntityPropertiesComponent entityProperties_;
+            private PositionalComponent position_;
+
+            public FloatingHealthIndicatorBuilder WithEntityProperties(EntityPropertiesComponent properties)
+            {
+                entityProperties_ = properties;
+                return this;
+            }
+
+            public FloatingHealthIndicatorBuilder WithBackgroundColor(Color backgroundColor)
+            {
+                backgroundColor_ = backgroundColor;
+                return this;
+            }
+
+            public FloatingHealthIndicatorBuilder WithForegroundColor(Color foregroundColor)
+            {
+                foregroundColor_ = foregroundColor;
+                return this;
+            }
+
+            public FloatingHealthIndicatorBuilder WithPosition(PositionalComponent position)
+            {
+                position_ = position;
+                return this;
+            }
+
+            public FloatingHealthIndicatorBuilder WithFloatDistance(DxVector2 floatDistance)
+            {
+                floatDistance_ = floatDistance;
+                return this;
+            }
+
+            public FloatingHealthIndicator Build()
+            {
+                Validate.IsNotNullOrDefault(position_, StringUtils.GetFormattedNullOrDefaultMessage(typeof(FloatingHealthIndicator), position_));
+                Validate.IsNotNullOrDefault(entityProperties_,
+                    StringUtils.GetFormattedNullOrDefaultMessage(typeof (FloatingHealthIndicator), entityProperties_));
+
+                return new FloatingHealthIndicator(Main.DxGame.Instance, floatDistance_, foregroundColor_, backgroundColor_, entityProperties_, position_);
+            }
         }
 
         private static void ValidateFloatDistance(DxVector2 floatDistance)

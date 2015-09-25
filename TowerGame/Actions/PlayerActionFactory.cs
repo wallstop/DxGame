@@ -151,7 +151,6 @@ namespace DXGame.TowerGame.Actions
 
             [DataMember]
             public StateMachine StateMachine { get; set; }
-            
 
             public SimplePlayerActionResolver(Core.Player player)
             {
@@ -212,7 +211,6 @@ namespace DXGame.TowerGame.Actions
             public void JumpAction(DxGameTime gameTime)
             {
             }
-
         }
 
         private static State IdleState(SimplePlayerActionResolver actionResolver)

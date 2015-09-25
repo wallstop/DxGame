@@ -1,8 +1,10 @@
 ﻿using System;
 using DXGame.Core;
+using DXGame.Core.Components.Advanced.Damage;
 using DXGame.Core.Components.Advanced.Particle;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
+using DXGame.Core.Components.Developer;
 using DXGame.Core.Messaging;
 using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
@@ -35,37 +37,39 @@ namespace DXGame.TowerGame.Skills
             {
                 return;
             }
+            var minForce = 25;
+            var maxForce = 37;
 
+            var radians = difference.Radian;
+            var targetRadian =
+                new DxRadian(ThreadLocalRandom.Current.NextFloat(radians.Value - (float) (Math.PI / 4),
+                    radians.Value + (float) (Math.PI / 4)));
+            var targetVelocityVector = targetRadian.UnitVector * ThreadLocalRandom.Current.NextFloat(minForce, maxForce);
 
-            var numParticles = 10;
-            for (int i = 0; i < numParticles; ++i)
+            /* Apply force... */
+            var force = new Force(targetVelocityVector, new DxVector2(), ShockwaveDissipation, "Shockwave");
+            destination.AttachForce(force);
+
+            /* ...and then damage (if we can) */
+            var damageDealt = new DamageMessage() {Source = source, DamageCheck = ShockwaveDamage};
+            destination.Parent?.BroadcastMessage(damageDealt);
+
+            /* ... and attach a life sucker (just to be evil) */
+            var lifeSucker = new LifeSuckerComponent(DxGame.Instance);
+            if (!ReferenceEquals(destination.Parent, null))
             {
-                var minForce = 0.5f;
-                var maxForce = 5;
-
-                var radians = difference.Radian;
-                var targetRadian =
-                    new DxRadian(ThreadLocalRandom.Current.NextFloat(radians.Value - (float) (Math.PI / 4),
-                        radians.Value + (float) (Math.PI / 4)));
-                var targetVelocityVector = targetRadian.UnitVector * ThreadLocalRandom.Current.NextFloat(minForce, maxForce);
-
-                var force = new Force(targetVelocityVector, new DxVector2(), ShockwaveDissipation, "Shockwave");
-
-                var acceleration = targetVelocityVector.UnitVector * (ThreadLocalRandom.Current.NextFloat(-0.99f, 0.4f) + 1);
-
-                var particle =
-                    Particle.Builder()
-                        .WithAcceleration(acceleration)
-                        .WithPosition(destination.Position)
-                        .WithVelocity(targetVelocityVector)
-                        .WithTimeToLive(TimeSpan.FromSeconds(1.3))
-                        .WithGrowRate(ThreadLocalRandom.Current.NextFloat(-0.9f, -0.2f))
-                        .WithRadius(ThreadLocalRandom.Current.NextFloat(3, 9f))
-                        .WithColor(Color.Orange)
-                        .Build();
-                DxGame.Instance.AddAndInitializeComponents(particle);
+                destination.Parent.AttachComponent(lifeSucker);
+                DxGame.Instance.AddAndInitializeComponents(lifeSucker);
             }
-            destination.Parent?.Remove();
+        }
+
+        private static Tuple<bool, double> ShockwaveDamage(GameObject source, GameObject destination)
+        {
+            if (source == destination)
+            {
+                return Tuple.Create(false, 0.0);
+            }
+            return Tuple.Create(true, 3.0);
         }
 
         private static Tuple<bool, DxVector2> ShockwaveDissipation(DxVector2 externalVelocity,

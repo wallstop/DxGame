@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DXGame.Core;
 using DXGame.Core.Primitives;
+using DXGame.Core.Utils;
 
 namespace DXGameTest.Core.Utils.Distance
 {
@@ -44,15 +45,14 @@ namespace DXGameTest.Core.Utils.Distance
             float yMin = range.Top;
             float xMax = range.Right;
             float yMax = range.Bottom;
-
-            var rGen = new Random();
+            
             List<DxRectangle> generatedRectangles = new List<DxRectangle>(numPoints);
             for (int i = 0; i < numPoints; ++i)
             {
-                float x = (float)rGen.NextDouble(xMin, xMax);
-                float y = (float)rGen.NextDouble(yMin, yMax);
-                float width = (float) rGen.NextDouble(0, xMax - x);
-                float height = (float) rGen.NextDouble(0, yMax - y);
+                float x = ThreadLocalRandom.Current.NextFloat(xMin, xMax);
+                float y = ThreadLocalRandom.Current.NextFloat(yMin, yMax);
+                float width = ThreadLocalRandom.Current.NextFloat(0, xMax - x);
+                float height = ThreadLocalRandom.Current.NextFloat(0, yMax - y);
                 DxRectangle rectangle = new DxRectangle(x, y, width, height);
                 generatedRectangles.Add(rectangle);
             }
@@ -65,13 +65,12 @@ namespace DXGameTest.Core.Utils.Distance
             float yMin = range.Top;
             float xMax = range.Right;
             float yMax = range.Bottom;
-
-            var rGen = new Random();
+            
             List<DxVector2> generatedPoints = new List<DxVector2>(numPoints);
             for (int i = 0; i < numPoints; ++i)
             {
-                float x = (float)rGen.NextDouble(xMin, xMax);
-                float y = (float)rGen.NextDouble(yMin, yMax);
+                float x = ThreadLocalRandom.Current.NextFloat(xMin, xMax);
+                float y = ThreadLocalRandom.Current.NextFloat(yMin, yMax);
                 DxVector2 point = new DxVector2(x, y);
                 generatedPoints.Add(point);
             }

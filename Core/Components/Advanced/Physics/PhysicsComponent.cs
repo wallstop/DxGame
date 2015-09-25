@@ -31,6 +31,8 @@ namespace DXGame.Core.Components.Advanced.Physics
         /* Currently acting forces on this object. This will typically include gravity & air resistance */
         [DataMember] protected readonly List<Force> forces_ = new List<Force>();
 
+        public IEnumerable<Force> Forces => forces_; 
+
         public virtual DxVector2 Velocity
         {
             get { return velocity_; }

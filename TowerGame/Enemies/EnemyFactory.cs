@@ -5,8 +5,10 @@ using DXGame.Core.Animation;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Messaging;
+using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
 using DXGame.Core.State;
+using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
 using DXGame.Main;
 using Action = DXGame.Core.State.Action;
@@ -16,7 +18,6 @@ namespace DXGame.TowerGame.Enemies
     [Serializable]
     public static class EnemyFactory
     {
-        private static readonly float INITIAL_MOVEMENT_BOOST = 1.1f;
 
         public static StateMachine SimpleBoxBehavior(DxGame game,
             AnimationComponent.AnimationComponentBuilder animationBuilder, GameObject enemy)
@@ -120,32 +121,50 @@ namespace DXGame.TowerGame.Enemies
 
             public void MoveLeftAction(DxGameTime gameTime)
             {
-                if (enemy_.ComponentOfType<PhysicsComponent>().Velocity.X < 0)
-                {
-                    enemy_.ComponentOfType<PhysicsComponent>().Velocity =
-                        new DxVector2(INITIAL_MOVEMENT_BOOST * -5,
-                            enemy_.ComponentOfType<PhysicsComponent>().Velocity.Y);
-                }
-                else
-                {
-                    enemy_.ComponentOfType<PhysicsComponent>().Velocity = new DxVector2(-5,
-                        enemy_.ComponentOfType<PhysicsComponent>().Velocity.Y);
-                }
+                var moveLeftForce = "moveLeftForce";
+                var moveLeftVelocityVector = new DxVector2(-5, 0);
+                var movement = new Movement(moveLeftVelocityVector, moveLeftForce);
+                enemy_.ComponentOfType<PhysicsComponent>().AttachForce(movement.Force);
             }
 
             public void MoveRightAction(DxGameTime gameTime)
             {
-                if (enemy_.ComponentOfType<PhysicsComponent>().Velocity.X < 0)
-                {
-                    enemy_.ComponentOfType<PhysicsComponent>().Velocity =
-                        new DxVector2(INITIAL_MOVEMENT_BOOST * 5,
-                            enemy_.ComponentOfType<PhysicsComponent>().Velocity.Y);
-                }
-                else
-                {
-                    enemy_.ComponentOfType<PhysicsComponent>().Velocity = new DxVector2(5,
-                        enemy_.ComponentOfType<PhysicsComponent>().Velocity.Y);
-                }
+                var moveRightForce = "moveRightForce";
+                var moveRightVelocityVector = new DxVector2(5, 0);
+                var movement = new Movement(moveRightVelocityVector, moveRightForce);
+                enemy_.ComponentOfType<PhysicsComponent>().AttachForce(movement.Force);
+            }
+        }
+
+        [Serializable]
+        private class Movement
+        {
+            public Force Force { get; }
+            private bool dissipated_ = false;
+            private DxVector2 Direction { get; }
+
+            public Movement( DxVector2 directionalForceVector, string forceName)
+            {
+                Direction = directionalForceVector;
+                Force = new Force(new DxVector2(), directionalForceVector, DissipationFunction, forceName);
+            }
+
+            private Tuple<bool, DxVector2> DissipationFunction(DxVector2 externalVelocity,
+                DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime)
+            {
+                var xDirectionSign = Math.Sign(Direction.X);
+                var xIsNegative = xDirectionSign == -1;
+                DxVector2 accelerationVector = new DxVector2 {X = xIsNegative ? Math.Min(Direction.X - externalVelocity.X, 0) : Math.Max(Direction.X - externalVelocity.X, 0)};
+                accelerationVector.X = xIsNegative ? Math.Max(accelerationVector.X, Direction.X) : Math.Min(accelerationVector.X, Direction.X);
+
+                var yDirectionSign = Math.Sign(Direction.Y);
+                var yIsNegative = yDirectionSign == -1;
+
+                accelerationVector.Y = yIsNegative ? Math.Min(Direction.Y - externalVelocity.Y, 0) : Math.Max(Direction.Y - externalVelocity.Y, 0);
+                accelerationVector.Y = yIsNegative ? Math.Max(accelerationVector.Y, Direction.Y) : Math.Min(accelerationVector.Y, Direction.Y);
+                var hasDissipated = dissipated_; // Dissipate after one frame always (we need continual move left requests to actually move)
+                dissipated_ = true;
+                return Tuple.Create(hasDissipated, accelerationVector);
             }
         }
     }

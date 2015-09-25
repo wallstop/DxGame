@@ -6,6 +6,7 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
+using DXGame.Main;
 
 namespace DXGame.Core
 {
@@ -80,6 +81,11 @@ namespace DXGame.Core
                 components_.Remove(component);
                 component.Parent = null;
             }
+        }
+
+        public void Remove()
+        {
+            DxGame.Instance.RemoveGameObject(this);
         }
 
         /**

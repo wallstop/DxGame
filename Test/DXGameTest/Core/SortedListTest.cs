@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using DXGame.Core;
+using DXGame.Core.Utils;
 using NUnit.Framework;
+using Assert = NUnit.Framework.Assert;
 
 namespace DXGameTest.Core
 {
@@ -14,10 +16,9 @@ namespace DXGameTest.Core
             SortedList<int> intList = new SortedList<int>();
             Assert.NotNull(intList);
             Assert.AreEqual(0, intList.Count);
-            Random rGen = new Random();
             for (int i = 0; i < 100; ++i)
             {
-                int arbitraryValue = rGen.Next();
+                int arbitraryValue = ThreadLocalRandom.Current.Next();
                 Assert.IsFalse(intList.Contains(arbitraryValue));
             }
             Assert.False(intList.IsReadOnly);
@@ -29,10 +30,9 @@ namespace DXGameTest.Core
             SortedList<int> intList = new SortedList<int>(10);
             Assert.NotNull(intList);
             Assert.AreEqual(0, intList.Count);
-            Random rGen = new Random();
             for (int i = 0; i < 100; ++i)
             {
-                int arbitraryValue = rGen.Next();
+                int arbitraryValue = ThreadLocalRandom.Current.Next();
                 Assert.IsFalse(intList.Contains(arbitraryValue));
             }
             Assert.False(intList.IsReadOnly);
@@ -42,11 +42,10 @@ namespace DXGameTest.Core
         public void TestCopyConstructor()
         {
             List<int> originalList = new List<int>();
-            Random rGen = new Random();
             int numElements = 2000;
             for (int i = 0; i < numElements; ++i)
             {
-                int arbitraryValue = rGen.Next();
+                int arbitraryValue = ThreadLocalRandom.Current.Next();
                 originalList.Add(arbitraryValue);
             }
 
@@ -90,10 +89,9 @@ namespace DXGameTest.Core
         {
             int numElements = 2000;
             SortedList<int> sortedList = new SortedList<int>(numElements);
-            Random rGen = new Random();
             for (int i = 0; i < numElements; ++i)
             {
-                int arbitraryValue = rGen.Next();
+                int arbitraryValue = ThreadLocalRandom.Current.Next();
                 sortedList.Add(arbitraryValue);
                 Assert.IsTrue(IsSorted(sortedList));
             }
@@ -104,12 +102,11 @@ namespace DXGameTest.Core
         {
             int numCopies = 3;
             int numElements = 20000;
-            Random rGen = new Random();
             SortedList<int> sortedList = new SortedList<int>(numElements*numCopies);
             Assert.AreEqual(0, sortedList.Count);
             for (int i = 0; i < numElements; ++i)
             {
-                int value = rGen.Next();
+                int value = ThreadLocalRandom.Current.Next();
                 for (int j = 0; j < numCopies; ++j)
                 {
                     sortedList.Add(value);
@@ -126,7 +123,6 @@ namespace DXGameTest.Core
             int numElements = 20000;
             SortedList<int> sortedList = new SortedList<int>(numElements);
             HashSet<int> uniqueValues = new HashSet<int>(sortedList);
-            Random rGen = new Random();
             foreach (int value in sortedList)
             {
                 Assert.IsTrue(sortedList.Contains(value));
@@ -140,7 +136,7 @@ namespace DXGameTest.Core
                 int value;
                 do
                 {
-                    value = rGen.Next();
+                    value = ThreadLocalRandom.Current.Next();
                 } while (!uniqueValues.Add(value));
 
                 Assert.IsFalse(sortedList.Contains(value));
@@ -152,11 +148,10 @@ namespace DXGameTest.Core
         {
             int numElements = 20000;
             SortedList<int> sortedList = GenerateRandomSortedList(numElements);
-            Random rGen = new Random();
             do
             {
                 int originalCount = sortedList.Count;
-                int index = rGen.Next(originalCount);
+                int index = ThreadLocalRandom.Current.Next(originalCount);
                 int value = sortedList[index];
                 Assert.True(sortedList.Contains(value));
                 bool removedOk = sortedList.Remove(value);
@@ -176,10 +171,7 @@ namespace DXGameTest.Core
         [Test]
         public void TestIndex()
         {
-            SortedList<int> sortedList = new SortedList<int>();
-            sortedList.Add(1);
-            sortedList.Add(5);
-            sortedList.Add(3);
+            SortedList<int> sortedList = new SortedList<int> {1, 5, 3};
 
             Assert.AreEqual(1, sortedList[0]);
             Assert.AreEqual(3, sortedList[1]);
@@ -203,11 +195,10 @@ namespace DXGameTest.Core
         private static SortedList<int> GenerateRandomSortedList(int numElements)
         {
             Assert.IsTrue(numElements > 0);
-            Random rGen = new Random();
             SortedList<int> sortedList = new SortedList<int>(numElements);
             for (int i = 0; i < numElements; ++i)
             {
-                int arbitraryValue = rGen.Next();
+                int arbitraryValue = ThreadLocalRandom.Current.Next();
                 sortedList.Add(arbitraryValue);
             }
 

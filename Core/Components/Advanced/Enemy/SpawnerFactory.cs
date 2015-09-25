@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Models;
@@ -72,15 +73,17 @@ namespace DXGame.Core.Components.Advanced.Enemy
         private class SimpleBoxSpawnFunction
         {
             private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-            private static readonly TimeSpan SPAWN_DELAY = TimeSpan.FromSeconds(1 / 100.0);
-            private static readonly int MAX_BOXES_TO_SPAWN = 750;
+            private static readonly TimeSpan SPAWN_DELAY = TimeSpan.FromSeconds(1 / 10.0);
+            private static readonly int MAX_BOXES_IN_PLAY = 100;
             private TimeSpan lastSpawned_ = TimeSpan.Zero;
             private int numSpawned_;
 
             public Tuple<bool, GameObject> Spawn(DxGameTime gameTime)
             {
+                var numBoxesInPlay = DxGame.Instance.DxGameElements.OfType<SimpleEnemyAI>().Count();
+
                 var totalTime = gameTime.TotalGameTime;
-                if (lastSpawned_ + SPAWN_DELAY < totalTime && numSpawned_ < MAX_BOXES_TO_SPAWN)
+                if (lastSpawned_ + SPAWN_DELAY < totalTime && numBoxesInPlay < MAX_BOXES_IN_PLAY)
                 {
                     lastSpawned_ = totalTime;
                     ++numSpawned_;

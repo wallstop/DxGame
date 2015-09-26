@@ -3,22 +3,45 @@ using DXGame.Core.Primitives;
 
 namespace DXGame.Core.Physics
 {
+    /**
+        <summary> 
+            A collection of worldly forces that will interact with physical entities. 
+            Gravity, drag, etc
+        </summary>
+    */
+
     public static class WorldForces
     {
         public static readonly DxVector2 GRAVITY_ACCELERATION = new DxVector2(0, 0.63f);
-        //private static readonly float SLOW_DOWN_PER_FRAME = 5f;
-        //private static readonly float NO_MOVEMENT_FLOOR
         private static readonly float DRAG_COEFFICIENT = 0.05f;
-        //private static readonly float DRAG_FLOOR = 1f;
+        private static readonly float SLOWDOWN_COEFFICIENT = 0.3f;
 
         private static readonly Tuple<bool, DxVector2> GRAVITY_DISSIPATION_RESULT = Tuple.Create(false,
             GRAVITY_ACCELERATION);
 
-        public static readonly Force Gravity = new Force(new DxVector2(), GRAVITY_ACCELERATION, GravityDissipation, "Gravity");
-        public static readonly Force AirResistance = new Force(new DxVector2(), new DxVector2(), AirResistanceDissipation, "AirResistance");
-        //public static readonly Force SlowingDown = new Force(new DxVector2(), new DxVector2(), ,  );
+        /* Applies a constant downwards force (down is -y, in terms of graphic space) to an object */
 
-        private static Tuple<bool, DxVector2> GravityDissipation(DxVector2 externalVelocity, DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime)
+        public static readonly Force Gravity = new Force(new DxVector2(), GRAVITY_ACCELERATION, GravityDissipation,
+            "Gravity");
+
+        /* 
+            Applies a constant "deceleration in all directions" force to an object, 
+            which will gradually slow them down if they are not actively generating velocity 
+        */
+
+        public static readonly Force AirResistance = new Force(new DxVector2(), new DxVector2(),
+            AirResistanceDissipation, "AirResistance");
+
+        /* 
+            Applies a more aggressive version of AirResistance, but only in the X direction. 
+            This is meant to be used as a conscious force that entities exert upon themselves in an attempt to stop.
+        */
+
+        public static readonly Force Deceleration = new Force(new DxVector2(), new DxVector2(),
+            HorizontalVelocityDissipation, "Deceleration");
+
+        public static Tuple<bool, DxVector2> GravityDissipation(DxVector2 externalVelocity,
+            DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime)
         {
             return GRAVITY_DISSIPATION_RESULT;
         }
@@ -31,7 +54,8 @@ namespace DXGame.Core.Physics
                 we do some horrible other stuff instead (simply modify the velocity)
             </summary>
         */
-        private static Tuple<bool, DxVector2> AirResistanceDissipation(DxVector2 externalVelocity,
+
+        public static Tuple<bool, DxVector2> AirResistanceDissipation(DxVector2 externalVelocity,
             DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime)
         {
             var modifiedVelocity = externalVelocity;
@@ -43,12 +67,19 @@ namespace DXGame.Core.Physics
             return Tuple.Create(false, modifiedVelocity);
         }
 
-        //private static Tuple<bool, DxVector2> SlowingDownDissipation(DxVector2 externalVelocity,
-        //    DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime)
-        //{
-        //    var accelerationResult = new DxVector2();
-        //    if(Math.Abs(externalVelocity.X) < )
-        //    if(externalVelocity
-        //}
+        /**
+            <summary>
+                A force that applies a stopping force towards an object, slowing them down gradually, where gradually is loosely defined as "by 1/3 of the velocity each frame".
+
+                This force is only applied in the x direction (horizontally)
+            </summary>
+        */
+
+        public static Tuple<bool, DxVector2> HorizontalVelocityDissipation(DxVector2 externalVelocity,
+            DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime)
+        {
+            return Tuple.Create(Math.Abs(externalVelocity.X) > 0,
+                new DxVector2 {X = -externalVelocity.X * SLOWDOWN_COEFFICIENT});
+        }
     }
 }

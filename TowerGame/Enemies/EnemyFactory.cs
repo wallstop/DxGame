@@ -116,6 +116,9 @@ namespace DXGame.TowerGame.Enemies
 
             private void IdleAction(DxGameTime gameTime)
             {
+                var decelerationForce = "deceleration";
+                var movement = new Movement(decelerationForce);
+                enemy_.ComponentOfType<PhysicsComponent>().AttachForce(movement.Force);
             }
 
             public void MoveLeftAction(DxGameTime gameTime)
@@ -146,6 +149,23 @@ namespace DXGame.TowerGame.Enemies
             {
                 Direction = directionalForceVector;
                 Force = new Force(new DxVector2(), directionalForceVector, DissipationFunction, forceName);
+            }
+
+            public Movement(string forceName)
+            {
+                Direction = new DxVector2();
+                Force = new Force(new DxVector2(), new DxVector2(), DecelerationFunction, forceName);
+            }
+
+            private Tuple<bool, DxVector2> DecelerationFunction(DxVector2 externalVelocity,
+                DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime)
+            {
+                var hasDissipated = dissipated_;
+                dissipated_ = true;
+                /* Special expire-after-one-frame deceleration force */
+                return Tuple.Create(hasDissipated,
+                    WorldForces.HorizontalVelocityDissipation(externalVelocity, externalAcceleration,
+                        currentAcceleration, gameTime).Item2);
             }
 
             private Tuple<bool, DxVector2> DissipationFunction(DxVector2 externalVelocity,

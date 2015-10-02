@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NLog.LayoutRenderers;
 
 namespace DXGame.Core.Utils
 {
@@ -103,5 +104,15 @@ namespace DXGame.Core.Utils
         {
             FailIfTrue(EqualityComparer<T>.Default.Equals(value, default(T)), message);
         }
+
+        public static void NoNullElements<T>(IEnumerable<T> collection, string message)
+        {
+            FailIfTrue(collection.Any(value => value == null), message);
+        }
+
+        public static void AreEqual<T>(T first, T second, string message) where T : IEquatable<T>
+        {
+            FailIfTrue(!first.Equals(second), message);
+        } 
     }
 }

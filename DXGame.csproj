@@ -106,10 +106,13 @@
     <Compile Include="Core\Animation\Animation.cs" />
     <Compile Include="Core\Animation\AnimationDescriptor.cs" />
     <Compile Include="Core\Animation\AnimationFactory.cs" />
+    <Compile Include="Core\Components\Advanced\Behavior\BehaviorComponent.cs" />
     <Compile Include="Core\Components\Advanced\CollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\Damage\DamageComponent.cs" />
     <Compile Include="Core\Components\Advanced\Enemy\Spawner.cs" />
     <Compile Include="Core\Components\Advanced\Enemy\SpawnerFactory.cs" />
+    <Compile Include="Core\Components\Advanced\Impulse\StandardActionComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Impulse\StandardMovementComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapCollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
     <Compile Include="Core\Components\Advanced\Player\PlayerInputListener.cs" />

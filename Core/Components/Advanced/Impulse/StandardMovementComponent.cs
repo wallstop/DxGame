@@ -23,6 +23,7 @@ namespace DXGame.Core.Components.Advanced.Impulse
     public class StandardMovementComponent : Component
     {
         [DataMember]
+        // TODO: What if a direction sends multiple forces?
         public ReadOnlyDictionary<Direction, Force> Impulses { get; }
 
         protected StandardMovementComponent(DxGame game, IDictionary<Direction, Force> impulses)

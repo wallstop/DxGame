@@ -1,5 +1,6 @@
 ﻿using System;
 using DXGame.Core.Primitives;
+using DXGame.Core.Utils;
 
 namespace DXGame.Core.Physics
 {
@@ -14,7 +15,7 @@ namespace DXGame.Core.Physics
     {
         public static readonly DxVector2 GRAVITY_ACCELERATION = new DxVector2(0, 0.63f);
         private static readonly float DRAG_COEFFICIENT = 0.05f;
-        private static readonly float SLOWDOWN_COEFFICIENT = 0.3f;
+        private static readonly float SLOWDOWN_COEFFICIENT = 0.1f;
 
         private static readonly Tuple<bool, DxVector2> GRAVITY_DISSIPATION_RESULT = Tuple.Create(false,
             GRAVITY_ACCELERATION);
@@ -37,8 +38,10 @@ namespace DXGame.Core.Physics
             This is meant to be used as a conscious force that entities exert upon themselves in an attempt to stop.
         */
 
+        /*
         public static readonly Force Deceleration = new Force(new DxVector2(), new DxVector2(),
             HorizontalVelocityDissipation, "Deceleration");
+        */
 
         public static Tuple<bool, DxVector2> GravityDissipation(DxVector2 externalVelocity,
             DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime)
@@ -74,7 +77,7 @@ namespace DXGame.Core.Physics
                 This force is only applied in the x direction (horizontally)
             </summary>
         */
-
+        [Obsolete("This is not a good way to decelerate things, please come up with something better")]
         public static Tuple<bool, DxVector2> HorizontalVelocityDissipation(DxVector2 externalVelocity,
             DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime)
         {

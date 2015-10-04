@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using System.Threading;
 using DXGame.Core.Utils;
 
-namespace DXGame.Core.Team
+namespace DXGame.Core
 {
     /**
         Defines the affiliation of an entity. For example, players will generally be on one "team" v enemies, who are on another "team".

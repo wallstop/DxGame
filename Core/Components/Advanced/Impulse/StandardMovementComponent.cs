@@ -32,6 +32,11 @@ namespace DXGame.Core.Components.Advanced.Impulse
             Impulses = new ReadOnlyDictionary<Direction, Force>(impulses);
         }
 
+        public static StandardMovementComponentBuilder Builder()
+        {
+            return new StandardMovementComponentBuilder();
+        }
+
         public class StandardMovementComponentBuilder : IBuilder<StandardMovementComponent>
         {
             private readonly Dictionary<Direction, Force> impulses_ = new Dictionary<Direction, Force>();

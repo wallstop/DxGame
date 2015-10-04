@@ -43,8 +43,8 @@ namespace DXGame.TowerGame.Enemies
             Trigger moveLeftTrigger = (enemyInstance, gameTime) =>
             {
                 var moveRequests = enemyInstance.CurrentMessages
-                    .OfType<MovementRequest>();
-                return moveRequests.Any(request => request.Direction == Direction.West);
+                    .OfType<CommandMessage>();
+                return moveRequests.Any(request => request.Commandment == Commandment.MoveLeft);
             };
             var moveLeftTransition = new Transition(moveLeftTrigger, moveLeftState);
 
@@ -55,8 +55,8 @@ namespace DXGame.TowerGame.Enemies
             Trigger moveRightTrigger = (enemyInstance, gameTime) =>
             {
                 var moveRequests = enemyInstance.CurrentMessages
-                    .OfType<MovementRequest>();
-                return moveRequests.Any(request => request.Direction == Direction.East);
+                    .OfType<CommandMessage>();
+                return moveRequests.Any(request => request.Commandment == Commandment.MoveRight);
             };
             var moveRightTransition = new Transition(moveRightTrigger, moveRightState);
             idleState.Transitions.Add(moveRightTransition);
@@ -66,10 +66,10 @@ namespace DXGame.TowerGame.Enemies
             Trigger returnToIdleTrigger = (enemyInstance, gameTime) =>
             {
                 var moveRequests = enemyInstance.CurrentMessages
-                    .OfType<MovementRequest>();
+                    .OfType<CommandMessage>();
                 return
                     moveRequests.All(
-                        request => request.Direction != Direction.West && request.Direction != Direction.East);
+                        request => request.Commandment != Commandment.MoveLeft && request.Commandment != Commandment.MoveRight);
             };
 
             var returnToIdleTransition = new Transition(returnToIdleTrigger, idleState, Priority.LOW);
@@ -163,9 +163,12 @@ namespace DXGame.TowerGame.Enemies
                 var hasDissipated = dissipated_;
                 dissipated_ = true;
                 /* Special expire-after-one-frame deceleration force */
+                return Tuple.Create(true, new DxVector2());
+                /*
                 return Tuple.Create(hasDissipated,
                     WorldForces.HorizontalVelocityDissipation(externalVelocity, externalAcceleration,
                         currentAcceleration, gameTime).Item2);
+                        */
             }
 
             private Tuple<bool, DxVector2> DissipationFunction(DxVector2 externalVelocity,

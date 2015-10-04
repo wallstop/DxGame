@@ -59,7 +59,7 @@ namespace DXGame.TowerGame.Components
             {
                 Direction d = (player.Position.Position.X > spatialComponent_.Position.X) 
                     ? Direction.East : Direction.West;
-                Parent.BroadcastMessage(new MovementRequest { Direction = d });
+                Parent.BroadcastMessage(new CommandMessage {Commandment = CommandMessage.CommandmentForDirection(d)});
             }
 
             base.Update(gameTime);

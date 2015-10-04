@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NLog.LayoutRenderers;
 
 namespace DXGame.Core.Utils
 {
@@ -110,9 +109,14 @@ namespace DXGame.Core.Utils
             FailIfTrue(collection.Any(value => value == null), message);
         }
 
+        public static void AreEqual<T>(T first, T second) where T : IEquatable<T>
+        {
+            AreEqual(first, second, $"{first} was not equal to {second}");
+        }
+
         public static void AreEqual<T>(T first, T second, string message) where T : IEquatable<T>
         {
             FailIfTrue(!first.Equals(second), message);
-        } 
+        }
     }
 }

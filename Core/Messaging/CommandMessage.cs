@@ -31,7 +31,6 @@ namespace DXGame.Core.Messaging
         <summary>
             Encapsulates a command from one component to the entity as a whole.
         </summary>
-
     */
 
     [Serializable]

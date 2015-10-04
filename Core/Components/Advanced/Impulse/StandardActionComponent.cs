@@ -2,7 +2,8 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using DXGame.Core.Components.Basic;
-using DXGame.Core.Primitives;
+using DXGame.Core.Messaging;
+using DXGame.Core.Physics;
 using DXGame.Core.Utils;
 using DXGame.Main;
 
@@ -25,29 +26,21 @@ namespace DXGame.Core.Components.Advanced.Impulse
         Help /* And one that provides aid (buffs?) to an entity */
     }
 
-    /**
-        Note: For now, we have made the design decision that abilities / attacks will all be un-targeted. 
-        This allows us to encapsulate all possible abilities in the below function signature
-
-        <summary>
-            Encapsulates "stuff that entities can do". This will generally take the form of attacks & abilities.
-        </summary>
-    */
-
-    public delegate void ActionFunction(DxGameTime gameTime);
-
     public class StandardActionComponent : Component
     {
         /* TODO: Create a multimap class */
-        public ReadOnlyDictionary<ActionType, ReadOnlyCollection<ActionFunction>> ActionMapping { get; }
+        /* Answers the question of "What available commands to I have to 'do' the ActionType?" */
+        public ReadOnlyDictionary<ActionType, ReadOnlyCollection<Commandment>> Actions { get; }
+        /* Answers the question of "How does a Commandment affect my position?" */
+        public ReadOnlyDictionary<Commandment, Force> MovementForces { get; }
 
         protected StandardActionComponent(DxGame game,
-            IDictionary<ActionType, ReadOnlyCollection<ActionFunction>> actionMapping)
+            IDictionary<ActionType, ReadOnlyCollection<Commandment>> actionMapping,
+            IDictionary<Commandment, Force> movementForces)
             : base(game)
         {
-            var mapping = actionMapping as ReadOnlyDictionary<ActionType, ReadOnlyCollection<ActionFunction>>;
-            ActionMapping = mapping ??
-                            new ReadOnlyDictionary<ActionType, ReadOnlyCollection<ActionFunction>>(actionMapping);
+            Actions = new ReadOnlyDictionary<ActionType, ReadOnlyCollection<Commandment>>(actionMapping);
+            MovementForces = new ReadOnlyDictionary<Commandment, Force>(movementForces);
         }
 
         public static StandardActionComponentBuilder Builder()
@@ -57,25 +50,46 @@ namespace DXGame.Core.Components.Advanced.Impulse
 
         public class StandardActionComponentBuilder : IBuilder<StandardActionComponent>
         {
-            private readonly Dictionary<ActionType, HashSet<ActionFunction>> actionMapping_ =
-                new Dictionary<ActionType, HashSet<ActionFunction>>();
+            private readonly Dictionary<ActionType, HashSet<Commandment>> actionsByType_ =
+                new Dictionary<ActionType, HashSet<Commandment>>();
+
+            private readonly Dictionary<Commandment, Force> movementForces_ = new Dictionary<Commandment, Force>();
 
             public StandardActionComponent Build()
             {
+                Validate.NoNullElements(actionsByType_.Keys,
+                    $"Cannot create a {typeof (StandardActionComponent)} with null {typeof (ActionType)}s for Actions");
+                Validate.NoNullElements(actionsByType_.Values,
+                    $"Cannot create a {typeof (StandardActionComponent)} with null {typeof (Commandment)}s for Actions");
+                Validate.NoNullElements(movementForces_.Keys,
+                    $"Cannot create a {typeof (StandardActionComponent)} with null {typeof (Commandment)}s for Movements");
+                Validate.NoNullElements(movementForces_.Keys,
+                    $"Cannot create a {typeof (StandardActionComponent)} with null {typeof (Force)}s for Movements");
                 var game = DxGame.Instance;
-                var mapping = new Dictionary<ActionType, ReadOnlyCollection<ActionFunction>>();
-                foreach (var actionMapping in actionMapping_)
+                var actions = new Dictionary<ActionType, ReadOnlyCollection<Commandment>>();
+
+                foreach (var actionMapping in actionsByType_)
                 {
-                    mapping[actionMapping.Key] = new ReadOnlyCollection<ActionFunction>(actionMapping.Value.ToList());
+                    actions[actionMapping.Key] = new ReadOnlyCollection<Commandment>(actionMapping.Value.ToList());
                 }
-                return new StandardActionComponent(game, mapping);
+
+                var movementCommandments = CommandmentsForType(ActionType.Movement);
+                Validate.AreEqual(movementCommandments.Count, movementForces_.Count);
+
+                return new StandardActionComponent(game, actions, movementForces_);
             }
 
-            public StandardActionComponentBuilder WithAction(ActionType actionType, ActionFunction actionFunction)
+            public StandardActionComponentBuilder WithMovementForce(Commandment commandment, Force force)
             {
-                Validate.IsNotNull(actionFunction, StringUtils.GetFormattedNullOrDefaultMessage(this, actionFunction));
-                var existingActions = FunctionsForType(actionType);
-                existingActions.Add(actionFunction);
+                movementForces_[commandment] = force;
+                return this;
+            }
+
+            public StandardActionComponentBuilder WithAction(ActionType actionType, Commandment commandment)
+            {
+                Validate.IsNotNull(commandment, StringUtils.GetFormattedNullOrDefaultMessage(this, commandment));
+                var existingCommandments = CommandmentsForType(actionType);
+                existingCommandments.Add(commandment);
                 return this;
             }
 
@@ -84,13 +98,13 @@ namespace DXGame.Core.Components.Advanced.Impulse
                 list (value) for the key. Otherwise, it returns the existing key
             */
 
-            private HashSet<ActionFunction> FunctionsForType(ActionType actionType)
+            private HashSet<Commandment> CommandmentsForType(ActionType actionType)
             {
-                if (!actionMapping_.ContainsKey(actionType))
+                if (!actionsByType_.ContainsKey(actionType))
                 {
-                    actionMapping_[actionType] = new HashSet<ActionFunction>();
+                    actionsByType_[actionType] = new HashSet<Commandment>();
                 }
-                return actionMapping_[actionType];
+                return actionsByType_[actionType];
             }
         }
     }

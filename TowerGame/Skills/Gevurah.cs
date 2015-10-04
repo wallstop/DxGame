@@ -37,8 +37,8 @@ namespace DXGame.TowerGame.Skills
             {
                 return;
             }
-            var minForce = 25;
-            var maxForce = 37;
+            var minForce = 2;
+            var maxForce = 6;
 
             var radians = difference.Radian;
             var targetRadian =
@@ -47,7 +47,7 @@ namespace DXGame.TowerGame.Skills
             var targetVelocityVector = targetRadian.UnitVector * ThreadLocalRandom.Current.NextFloat(minForce, maxForce);
 
             /* Apply force... */
-            var force = new Force(targetVelocityVector, new DxVector2(), ShockwaveDissipation, "Shockwave");
+            var force = new Force(targetVelocityVector, targetVelocityVector, ShockwaveDissipation, "Shockwave");
             destination.AttachForce(force);
 
             /* ...and then damage (if we can) */
@@ -75,7 +75,14 @@ namespace DXGame.TowerGame.Skills
         private static Tuple<bool, DxVector2> ShockwaveDissipation(DxVector2 externalVelocity,
             DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime)
         {
-            return Tuple.Create(true, new DxVector2());
+            var scaleFactor = gameTime.DetermineScaleFactor(DxGame.Instance);
+            var negativeAcceleration = currentAcceleration * (float) scaleFactor / (float)DxGame.Instance.TargetFps / 4;
+            var finalAcceleration = currentAcceleration - negativeAcceleration;
+            if(Math.Abs(finalAcceleration.X) < 1 && Math.Abs(finalAcceleration.Y) < 1)
+            {
+                return Tuple.Create(true, new DxVector2());
+            }
+            return Tuple.Create(false, finalAcceleration);
         }
     }
 }

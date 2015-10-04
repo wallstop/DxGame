@@ -4,20 +4,19 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
-using DXGame.Core.Components.Basic;
 using DXGame.Main;
 
-namespace DXGame.Core.Components.Advanced
+namespace DXGame.Core.Models
 {
     [Serializable]
     [DataContract]
-    public class TeamComponent : Component
+    public class BehaviorModel : Model
     {
-
-
-        public TeamComponent(DxGame game) 
+        public BehaviorModel(DxGame game) 
             : base(game)
         {
         }
+
+
     }
 }

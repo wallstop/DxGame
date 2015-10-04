@@ -138,6 +138,7 @@
     <Compile Include="Core\Messaging\MessageHandler.cs" />
     <Compile Include="Core\Messaging\MovementRequest.cs" />
     <Compile Include="Core\Messaging\PhysicsMessage.cs" />
+    <Compile Include="Core\Models\BehaviorModel.cs" />
     <Compile Include="Core\Models\CollisionModel.cs" />
     <Compile Include="Core\Models\DeveloperModel.cs" />
     <Compile Include="Core\Models\MapModel.cs" />
@@ -168,6 +169,8 @@
     <Compile Include="Core\Components\Advanced\Position\SpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\Position\PositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
+    <Compile Include="Core\Team\Team.cs" />
+    <Compile Include="Core\Utils\CriticalRegion.cs" />
     <Compile Include="Core\Utils\Distance\Directions.cs" />
     <Compile Include="Core\Utils\Distance\ICollisionTree.cs" />
     <Compile Include="Core\Utils\Distance\Distance.cs" />

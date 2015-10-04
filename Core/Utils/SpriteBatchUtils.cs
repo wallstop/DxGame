@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DXGame.Core.Primitives;
-using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Utils
 {
-
     public static class SpriteBatchUtils
     {
-        public static void DrawBorder(this SpriteBatch spriteBatch, DxRectangle rectangle, int borderThickness, Color borderColor)
+        public static void DrawBorder(this SpriteBatch spriteBatch, DxRectangle rectangle, int borderThickness,
+            Color borderColor)
         {
             DrawBorder(spriteBatch, rectangle.ToRectangle(), borderThickness, borderColor);
         }
@@ -21,7 +19,9 @@ namespace DXGame.Core.Utils
                 the provided rectangle of the specified color.
             </summary>
         */
-        public static void DrawBorder(this SpriteBatch spriteBatch, Rectangle rectangle, int borderThickness, Color borderColor)
+
+        public static void DrawBorder(this SpriteBatch spriteBatch, Rectangle rectangle, int borderThickness,
+            Color borderColor)
         {
             var coloredPixel = TextureFactory.TextureForColor(borderColor);
             IEnumerable<Rectangle> borderRectangles = GenerateBorderRectangles(rectangle, borderThickness);
@@ -34,7 +34,7 @@ namespace DXGame.Core.Utils
         public static void DrawCircle(this SpriteBatch spriteBatch, Rectangle destination, Color color)
         {
             var filledCircle = TextureFactory.FilledCircleForColor(color);
-            spriteBatch.Draw(filledCircle, destinationRectangle:destination);
+            spriteBatch.Draw(filledCircle, destinationRectangle: destination);
         }
 
         /**
@@ -43,6 +43,7 @@ namespace DXGame.Core.Utils
                 This has the effect of thick-ifying the provided rectangle's edges. 
             </summary>
         */
+
         private static IEnumerable<Rectangle> GenerateBorderRectangles(Rectangle rectangle, int borderThickness)
         {
             int numRectangles = 4;

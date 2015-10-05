@@ -96,8 +96,8 @@ namespace DXGame.Core.Components.Advanced.Physics
                 }
                 var largestIntersection = largestIntersectionTuple.Item1;
                 var mapSpatial = largestIntersectionTuple.Item2;
-                var mapBlockPosition = mapSpatial.Position;
-                var mapBlockDimensions = mapSpatial.Dimensions;
+                var mapBlockPosition = mapSpatial.Spatial.Position;
+                var mapBlockDimensions = mapSpatial.Spatial.Dimensions;
 
                 if (mapSpatial.CollidesWith(Velocity) && !mapTilesToIgnore_.Any(spatial => Equals(spatial.Item1, mapSpatial)))
                 {
@@ -165,12 +165,12 @@ namespace DXGame.Core.Components.Advanced.Physics
             Tuple<DxRectangle, MapCollidableComponent> largestIntersection = null;
             foreach (var mapTile in mapTiles)
             {
-                if (!currentSpace.Intersects(mapTile.Space))
+                if (!currentSpace.Intersects(mapTile.Spatial.Space))
                 {
                     continue;
                 }
                 // There's a bug here that causes like infinite collision detection, fix pls
-                var intersection = DxRectangle.Intersect(mapTile.Space, currentSpace);
+                var intersection = DxRectangle.Intersect(mapTile.Spatial.Space, currentSpace);
                 if (largestIntersection == null || DXRECTANGLE_AREA_COMPARER.Compare(intersection,
                     largestIntersection.Item1) <= 0)
                 {

@@ -4,7 +4,6 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using NLog;
 
 namespace DXGame.Core.Components.Advanced.Position
 {
@@ -31,7 +30,6 @@ namespace DXGame.Core.Components.Advanced.Position
     [DataContract]
     public class PositionalComponent : Component
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         [DataMember] protected DxVector2 position_;
         /**
         <summary>
@@ -56,23 +54,37 @@ namespace DXGame.Core.Components.Advanced.Position
             set { position_ = value; }
         }
 
-        public PositionalComponent(DxGame game)
+        protected PositionalComponent(DxGame game, DxVector2 position)
             : base(game)
         {
-        }
-
-        public virtual PositionalComponent WithPosition(float x, float y)
-        {
-            position_.X = x;
-            position_.Y = y;
-            return this;
-        }
-
-        public virtual PositionalComponent WithPosition(DxVector2 position)
-        {
-            Validate.IsNotNullOrDefault(position, $"Cannot initialize {GetType()} with a null/default position");
             position_ = position;
-            return this;
+        }
+
+        public override Component Copy()
+        {
+            return new PositionalComponent(DxGame, Position);
+        }
+
+        public static PositionalComponentBuilder Builder()
+        {
+            return new PositionalComponentBuilder();
+        }
+
+        public class PositionalComponentBuilder : IBuilder<PositionalComponent>
+        {
+            protected DxVector2 position_;
+
+            public virtual PositionalComponent Build()
+            {
+                var game = DxGame.Instance;
+                return new PositionalComponent(game, position_);
+            }
+
+            public PositionalComponentBuilder WithPosition(DxVector2 position)
+            {
+                position_ = position;
+                return this;
+            }
         }
     }
 }

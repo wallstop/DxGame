@@ -76,6 +76,19 @@ namespace DXGame.Core.Properties
             Name = name;
         }
 
+        public Property(Property<T> copy)
+        {
+            Validate.IsNotNull(copy, StringUtils.GetFormattedNullOrDefaultMessage(this, copy));
+            CurrentValue = copy.CurrentValue;
+            BaseValue = copy.BaseValue;
+            Name = copy.Name;
+            listeners_.AddRange(copy.listeners_);
+            foreach (var entry in copy.mutatorCounts_)
+            {
+                mutatorCounts_[entry.Key] = entry.Value;
+            }
+        }
+
         public void AttachListener(PropertyListener<T> listener)
         {
             Validate.IsNotNullOrDefault(listener,

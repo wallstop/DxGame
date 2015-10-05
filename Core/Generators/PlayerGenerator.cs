@@ -20,8 +20,6 @@ namespace DXGame.Core.Generators
 {
     public class PlayerGenerator
     {
-        // TODO: Make player sprites scalable
-        private static readonly DxVector2 MAX_VELOCITY = new DxVector2(5.0f, 20.0f);
         private readonly DxGame game_;
         private readonly FloatingHealthIndicator healthBar_;
         private readonly PhysicsComponent physics_;
@@ -31,14 +29,13 @@ namespace DXGame.Core.Generators
 
         public PlayerGenerator(DxGame game, DxVector2 playerPosition, DxRectangle bounds)
         {
-            PlayerSpace =
-                (BoundedSpatialComponent) new BoundedSpatialComponent(game).WithXMin(bounds.X)
-                    .WithXMax(bounds.Width)
-                    .WithXMin(bounds.Y)
-                    .WithYMax(bounds.Height)
-                    .WithDimensions(new DxVector2(50, 50)) // TODO: un-hard code these
-                    .WithPosition(playerPosition);
-            physics_ = MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(PlayerSpace).Build();
+            PlayerSpace = (BoundedSpatialComponent)
+                BoundedSpatialComponent.Builder().WithBounds(bounds)
+                    .WithDimensions(new DxVector2(50, 50))
+                    .WithPosition(playerPosition)
+                    .Build();
+            physics_ =
+                MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(PlayerSpace).Build();
 
             playerProperties_ = PlayerPropertiesComponent.DefaultPlayerProperties;
             /* Fuck with the health so we can check if the hp bar works */
@@ -49,7 +46,12 @@ namespace DXGame.Core.Generators
             weapon_ = new RangedWeaponComponent(game).WithPhysicsComponent(physics_).WithDamage(50);
 
             // TODO make these colors not shit and/or blend into the current biome
-            healthBar_ = FloatingHealthIndicator.Builder().WithForegroundColor(Color.Green).WithEntityProperties(playerProperties_).WithPosition(PlayerSpace).Build();
+            healthBar_ =
+                FloatingHealthIndicator.Builder()
+                    .WithForegroundColor(Color.Green)
+                    .WithEntityProperties(playerProperties_)
+                    .WithPosition(PlayerSpace)
+                    .Build();
             healthBar_.LoadContent();
             game_ = game;
         }
@@ -65,10 +67,11 @@ namespace DXGame.Core.Generators
             var player = Player.PlayerFrom(playerObject, "Gevurah");
             var shockwaveSkill =
                 Skill.Builder().WithCooldown(TimeSpan.FromSeconds(1)).WithSkillFunction(Gevurah.Shockwave).Build();
-            SkillActivater shockwaveActivator = (game, component, remainingCooldown) =>
-            {
-                return game.Model<InputModel>().FinishedEvents.Any(finishedEvent => finishedEvent.Key == Keys.E);
-            };
+            SkillActivater shockwaveActivator =
+                (game, component, remainingCooldown) =>
+                {
+                    return game.Model<InputModel>().FinishedEvents.Any(finishedEvent => finishedEvent.Key == Keys.E);
+                };
             var skillComponent = new SkillComponent(game_, shockwaveSkill, shockwaveActivator);
             playerObject.AttachComponent(skillComponent);
 

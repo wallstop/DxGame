@@ -15,18 +15,24 @@ namespace DXGame.Core.Components.Developer
     }
 
     /**
-
-        <summary> Simple Component that keeps track of the current "DeveloperMode" state </summary>
+        <summary> 
+            Simple Component that keeps track of the current "DeveloperMode" state 
+        </summary>
     */
+
     public class DeveloperSwitch : Component
     {
         private static readonly Keys DEV_KEY = Keys.F7;
-
         public DeveloperMode DeveloperMode { get; private set; } = DeveloperMode.NotSoOn;
 
-        public DeveloperSwitch(DxGame game) 
+        public DeveloperSwitch(DxGame game)
             : base(game)
         {
+        }
+
+        public override Component Copy()
+        {
+            return new DeveloperSwitch(DxGame) {DeveloperMode = DeveloperMode};
         }
 
         protected override void Update(DxGameTime gameTime)

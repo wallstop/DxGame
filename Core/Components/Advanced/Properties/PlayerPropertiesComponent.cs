@@ -5,6 +5,10 @@ using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Properties
 {
+
+    /*
+        TODO: Turn this into a factory somewhere. That way simply go to some kind of "EntityPropertiesFactory" to get properties for all kinds of named types
+    */
     [Serializable]
     [DataContract]
     public class PlayerPropertiesComponent : EntityPropertiesComponent

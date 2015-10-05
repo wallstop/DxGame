@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
@@ -14,13 +10,14 @@ using Microsoft.Xna.Framework.Graphics;
 namespace DXGame.Core.Components.Developer
 {
     /**
-
-        <summary> Simple developer tool that aims to draw red boxes around every single SpatialComponent attached to the game.</summary>
-
+        <summary> 
+            Simple developer tool that aims to draw red boxes around every single SpatialComponent attached to the game.
+        </summary>
     */
+
     public class BoundingBoxWidget : DrawableComponent
     {
-        public BoundingBoxWidget(DxGame game) 
+        public BoundingBoxWidget(DxGame game)
             : base(game)
         {
         }

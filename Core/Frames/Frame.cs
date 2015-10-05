@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using DXGame.Core.Primitives;
+using DXGame.Core.Utils;
 using NLog;
 
 namespace DXGame.Core.Frames
@@ -10,38 +12,49 @@ namespace DXGame.Core.Frames
     [DataContract]
     public class Frame
     {
-        // TODO: Make this a thing
-
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-
-        [DataMember] private readonly Dictionary<UniqueId, IIdentifiable> frameObjects_ =
-            new Dictionary<UniqueId, IIdentifiable>();
-
         [DataMember] public readonly DxGameTime GameTime;
 
-        public Frame(DxGameTime gameTime)
+        [DataMember]
+        public ReadOnlyDictionary<UniqueId, GameObject> ObjectMaping { get; }
+
+        protected Frame(DxGameTime gameTime, IDictionary<UniqueId, GameObject> gameObjects)
         {
+            ObjectMaping = new ReadOnlyDictionary<UniqueId, GameObject>(gameObjects);
             GameTime = gameTime;
         }
 
-        public void AddToFrame<T>(T identifiableObject) where T : IIdentifiable
+        public static FrameBuilder Builder()
         {
-            var id = identifiableObject.Id;
-            if (frameObjects_.ContainsKey(id))
+            return new FrameBuilder();
+        }
+
+        public class FrameBuilder : IBuilder<Frame>
+        {
+            private readonly Dictionary<UniqueId, GameObject> gameObjects_ = new Dictionary<UniqueId, GameObject>();
+            private DxGameTime gameTime_;
+
+            public virtual Frame Build()
             {
-                var existingObject = frameObjects_[id];
-                if (existingObject.Equals(identifiableObject))
-                {
-                    var logMessage =
-                        $"Could not insert {identifiableObject} into frame; a different object" +
-                        $" already exists with that Id {existingObject}";
-                    LOG.Error(logMessage);
-                    throw new ArgumentException(logMessage);
-                }
+                Validate.IsNotNull(gameTime_, StringUtils.GetFormattedNullOrDefaultMessage(this, gameTime_));
+                Validate.NoNullElements(gameObjects_.Keys,
+                    $"Cannot create a {typeof (Frame)} that has a null {typeof (UniqueId)} in it's object mapping");
+                Validate.NoNullElements(gameObjects_.Values,
+                    $"Cannot create a {typeof (Frame)} that has a null {typeof (GameObject)} in it's object mapping");
+
+                return new Frame(gameTime_, gameObjects_);
             }
-            else
+
+            public FrameBuilder WithGameTime(DxGameTime gameTime)
             {
-                frameObjects_[id] = identifiableObject;
+                gameTime_ = gameTime;
+                return this;
+            }
+
+            public FrameBuilder WithGameObject(GameObject gameObject)
+            {
+                Validate.IsNotNull(gameObject);
+                gameObjects_[gameObject.Id] = gameObject;
+                return this;
             }
         }
     }

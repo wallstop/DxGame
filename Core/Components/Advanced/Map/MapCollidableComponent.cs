@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Map;
+using DXGame.Core.Utils;
 using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Map
@@ -14,12 +13,36 @@ namespace DXGame.Core.Components.Advanced.Map
     public class MapCollidableComponent : CollidableComponent
     {
         [DataMember]
-        public PlatformType PlatformType { get; private set; }
+        public PlatformType PlatformType { get; }
 
-        public MapCollidableComponent(DxGame game, PlatformType type) 
-            : base(game)
+        protected MapCollidableComponent(DxGame game, IList<CollidableDirection> collidableDirections,
+            SpatialComponent spatial, PlatformType type)
+            : base(game, collidableDirections, spatial)
         {
             PlatformType = type;
+        }
+
+        public new static MapCollidableComponentBuilder Builder()
+        {
+            return new MapCollidableComponentBuilder();
+        }
+
+        public class MapCollidableComponentBuilder : CollidableComponentBuilder
+        {
+            protected PlatformType type_;
+
+            public MapCollidableComponentBuilder WithPlatformType(PlatformType type)
+            {
+                type_ = type;
+                return this;
+            }
+
+            public override CollidableComponent Build()
+            {
+                Validate.IsNotNull(spatial_, StringUtils.GetFormattedNullOrDefaultMessage(this, spatial_));
+                var game = DxGame.Instance;
+                return new MapCollidableComponent(game, collidableDirections_, spatial_, type_);
+            }
         }
     }
 }

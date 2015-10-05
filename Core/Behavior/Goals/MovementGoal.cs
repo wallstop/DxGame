@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using DXGame.Core.Components.Advanced.Physics;
+using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Frames;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
@@ -24,6 +25,7 @@ namespace DXGame.Core.Behavior.Goals
 
         public override Frame Result(GameObject entity)
         {
+
             throw new NotImplementedException();
         }
 
@@ -42,8 +44,9 @@ namespace DXGame.Core.Behavior.Goals
         {
             var mapModel = DxGame.Instance.Model<MapModel>();
             Validate.IsTrue(mapModel.MapBounds.Contains(target), $"{target} was not found to be within {mapModel.MapBounds}");
-            var physicsComponent = goalChaser.ComponentOfType<PhysicsComponent>();
-            Validate.IsNotNull(physicsComponent, StringUtils.GetFormattedNullOrDefaultMessage(this, physicsComponent));
+            /* We need a position if we're going to move somewhere (and probably a physics) */
+            var positionalComponent = goalChaser.ComponentOfType<PositionalComponent>();
+            Validate.IsNotNull(positionalComponent, StringUtils.GetFormattedNullOrDefaultMessage(this, positionalComponent));
             Target = target;
         }
     }

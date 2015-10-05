@@ -10,12 +10,12 @@ namespace DXGame.Core.Models
     public class FrameModel : Model
     {
         public TimeSpan FrameRetention { get; protected set; }
-        protected List<GameTimeFrame> Frames { get; set; }
+        protected List<Frame> Frames { get; set; }
 
         public FrameModel(DxGame game)
             : base(game)
         {
-            Frames = new List<GameTimeFrame>();
+            Frames = new List<Frame>();
         }
 
         public FrameModel WithFrameRetention(TimeSpan timespan)
@@ -27,14 +27,14 @@ namespace DXGame.Core.Models
 
         public override bool ShouldSerialize => false;
 
-        public void AttachFrame(GameTimeFrame frame)
+        public void AttachFrame(Frame frame)
         {
             Validate.IsTrue(!Frames.Contains(frame),
                 $"Cannot attach frame {frame} to {GetType()}. This frame already exists in {Frames}");
             Frames.Add(frame);
         }
 
-        public GameTimeFrame LatestFrame()
+        public Frame LatestFrame()
         {
             return Frames.LastOrDefault();
         }
@@ -54,7 +54,7 @@ namespace DXGame.Core.Models
 
                 Need to make sure we don't cull things if FrameRetention = 0
             */
-            foreach (GameTimeFrame frame in Frames)
+            foreach (Frame frame in Frames)
             {
                 // TODO
             }

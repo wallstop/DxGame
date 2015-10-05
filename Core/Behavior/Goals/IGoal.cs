@@ -67,7 +67,7 @@ namespace DXGame.Core.Behavior.Goals
         bool IsComplete(Frame reference);
         /**
             <summary>
-                Given a frame (assumed "potential future state that an entity's action has caused the world to be), 
+                Given a frame (assumed "potential future state that an entity's action has caused the world to be"), 
                 determines the Score that that action's result represents. This should be useful for things like
                 pathfinding, as-much-damage-as-possible goals, and the like.
             </summary>

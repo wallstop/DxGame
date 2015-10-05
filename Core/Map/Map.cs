@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Map;
+using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
@@ -57,13 +58,16 @@ namespace DXGame.Core.Map
             List<MapCollidableComponent> mapSpatials =
                 MapDescriptor.Platforms.Select(
                     platform =>
-                        (MapCollidableComponent)
-                            new MapCollidableComponent(DxGame, platform.Type).WithCollidableDirections(platform.CollidableDirections)
-                                .WithDimensions(new DxVector2(platform.BoundingBox.Width,
-                                    platform.BoundingBox.Height)).WithPosition(new DxVector2(platform.BoundingBox.XY())))
+                    {
+                        var spatial = (SpatialComponent) SpatialComponent.Builder().WithDimensions(new DxVector2(platform.BoundingBox.Width,
+                                    platform.BoundingBox.Height)).WithPosition(new DxVector2(platform.BoundingBox.XY())).Build();
+                        return (MapCollidableComponent)
+                            MapCollidableComponent.Builder().WithPlatformType(platform.Type).
+                                WithCollidableDirections(platform.CollidableDirections).WithSpatial(spatial).Build();
+                    })
                     .ToList();
 
-            Collidables = new RTree<MapCollidableComponent>((spatial => spatial.Space), mapSpatials);
+            Collidables = new RTree<MapCollidableComponent>((spatial => spatial.Spatial.Space), mapSpatials);
             DeterminePlayerSpawn();
             base.Initialize();
         }
@@ -98,7 +102,7 @@ namespace DXGame.Core.Map
         private bool CollidesWithMap(DxRectangle region)
         {
             List<MapCollidableComponent> collisions = Collidables.InRange(region);
-            return collisions.Any(collidable => collidable.Space.Intersects(region));
+            return collisions.Any(collidable => collidable.Spatial.Space.Intersects(region));
         }
     }
 }

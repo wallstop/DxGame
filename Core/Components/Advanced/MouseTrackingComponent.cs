@@ -17,7 +17,7 @@ namespace DXGame.Core.Components.Advanced
         [DataMember]
         private bool ClickInProgress { get; set; }
 
-        public MouseTrackingComponent(DxGame game) : base(game)
+        public MouseTrackingComponent(DxGame game) : base(game, new DxVector2())
         {
             Clicked = false;
             ClickInProgress = false;

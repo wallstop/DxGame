@@ -27,12 +27,11 @@ namespace DXGame.Core.Menus
         {
             var spriteFont = DxGame.Content.Load<SpriteFont>("Fonts/ComicSans");
 
-            var portBoxSpatial = (SpatialComponent)
-                new SpatialComponent(DxGame).WithDimensions(new DxVector2
-                {
-                    X = 200.0f,
-                    Y = spriteFont.LineSpacing + 2 /* wiggle room for cursor */ // TODO: Fix this
-                }).WithPosition(600, 500);
+            var portBoxSpatial = (SpatialComponent) SpatialComponent.Builder().WithDimensions(new DxVector2
+            {
+                X = 200.0f,
+                Y = spriteFont.LineSpacing + 2 /* wiggle room for cursor */ // TODO: Fix this
+            }).WithPosition(new DxVector2(600, 500)).Build();
 
             // Ports have a range of 0 - 65536 (2 ^ 16 - 1) -> max length of 5
             PortBox =

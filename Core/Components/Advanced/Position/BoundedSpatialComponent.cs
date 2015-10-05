@@ -1,29 +1,34 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
-using NLog;
 
 namespace DXGame.Core.Components.Advanced.Position
 {
+    /**
+
+        <summary>
+            A SpatialComponent that is, surprise surprise, bounded! By what? Who knows! Something!
+            It's position cannot be set outside of these bounds. This is extremely helpful for 
+            binding entities to the map region
+        </summary>
+    */
+
     [Serializable]
     [DataContract]
     public class BoundedSpatialComponent : SpatialComponent
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        [DataMember] protected DxVector2 xBounds_;
-        [DataMember] protected DxVector2 yBounds_;
-        public DxVector2 XBounds => xBounds_;
-        public DxVector2 YBounds => yBounds_;
+        [DataMember]
+        public DxVector2 XBounds { get; }
+
+        [DataMember]
+        public DxVector2 YBounds { get; }
+
         public DxRectangle Bounds => new DxRectangle(XBounds, YBounds);
-        /**
-        <summary>
-            The Position property on a BoundedSpatialComponent
-        </summary>
-        */
 
         [IgnoreDataMember]
         public override DxVector2 Position
@@ -31,10 +36,10 @@ namespace DXGame.Core.Components.Advanced.Position
             get { return position_; }
             set
             {
-                float width = dimensions_.X;
-                float height = dimensions_.Y;
-                float x = MathHelper.Clamp(value.X, xBounds_.X, xBounds_.Y - width);
-                float y = MathHelper.Clamp(value.Y, yBounds_.X, yBounds_.Y - height);
+                float width = Dimensions.X;
+                float height = Dimensions.Y;
+                float x = MathHelper.Clamp(value.X, XBounds.X, XBounds.Y - width);
+                float y = MathHelper.Clamp(value.Y, YBounds.X, YBounds.Y - height);
                 var newPosition = new DxVector2(x, y);
                 position_ = newPosition;
                 if (newPosition != value)
@@ -44,58 +49,55 @@ namespace DXGame.Core.Components.Advanced.Position
             }
         }
 
-        public BoundedSpatialComponent(DxGame game)
-            : base(game)
+        protected BoundedSpatialComponent(DxGame game, DxVector2 position, DxVector2 dimensions, DxVector2 xBounds,
+            DxVector2 yBounds)
+            : base(game, position, dimensions)
         {
+            XBounds = xBounds;
+            YBounds = yBounds;
         }
 
-        public BoundedSpatialComponent WithXMin(float xMin)
+        public override Component Copy()
         {
-            xBounds_ = new DxVector2(xMin, xBounds_.Y);
-            return this;
+            return new BoundedSpatialComponent(DxGame, Position, Dimensions, XBounds, YBounds);
         }
 
-        public BoundedSpatialComponent WithXMax(float xMax)
+        public new static BoundedSpatialComponentBuilder Builder()
         {
-            xBounds_ = new DxVector2(xBounds_.X, xMax);
-            return this;
+            return new BoundedSpatialComponentBuilder();
         }
 
-        public BoundedSpatialComponent WithYMin(float yMin)
+        public class BoundedSpatialComponentBuilder : SpatialComponentBuilder
         {
-            yBounds_ = new DxVector2(yMin, yBounds_.Y);
-            return this;
-        }
+            protected DxVector2 xBounds_;
+            protected DxVector2 yBounds_;
 
-        public BoundedSpatialComponent WithYMax(float yMax)
-        {
-            yBounds_ = new DxVector2(yBounds_.X, yMax);
-            return this;
-        }
+            public BoundedSpatialComponentBuilder WithBounds(DxRectangle bounds)
+            {
+                xBounds_ = new DxVector2(bounds.X, bounds.Width);
+                yBounds_ = new DxVector2(bounds.Y, bounds.Height);
+                return this;
+            }
 
-        public BoundedSpatialComponent WithXBounds(DxVector2 xBounds)
-        {
-            Validate.IsTrue(xBounds.X <= xBounds.Y);
-            xBounds_ = xBounds;
-            return this;
-        }
+            public BoundedSpatialComponentBuilder WithXBounds(DxVector2 xBounds)
+            {
+                xBounds_ = xBounds;
+                return this;
+            }
 
-        public BoundedSpatialComponent WithYBounds(DxVector2 yBounds)
-        {
-            Validate.IsTrue(yBounds.X <= yBounds.Y);
-            yBounds_ = yBounds;
-            return this;
-        }
+            public BoundedSpatialComponentBuilder WithYBounds(DxVector2 yBounds)
+            {
+                yBounds_ = yBounds;
+                return this;
+            }
 
-        public BoundedSpatialComponent WithBounds(DxRectangle bounds)
-        {
-            // To ensure that we don't have any weird Rectangles with negative heights / widths, take the Max/Min
-
-            Validate.IsTrue(bounds.Width >= 0);
-            Validate.IsTrue(bounds.Height >= 0);
-            yBounds_ = new DxVector2(bounds.Y, bounds.Y + bounds.Height);
-            xBounds_ = new DxVector2(bounds.X, bounds.X + bounds.Width);
-            return this;
+            public override PositionalComponent Build()
+            {
+                Validate.IsTrue(xBounds_.Magnitude > 0);
+                Validate.IsTrue(yBounds_.Magnitude > 0);
+                var game = DxGame.Instance;
+                return new BoundedSpatialComponent(game, position_, dimensions_, xBounds_, yBounds_);
+            }
         }
     }
 }

@@ -10,6 +10,8 @@ namespace DXGame.Core.Frames
     [DataContract]
     public class Frame
     {
+        // TODO: Make this a thing
+
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
         [DataMember] private readonly Dictionary<UniqueId, IIdentifiable> frameObjects_ =

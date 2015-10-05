@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 
-namespace DXGame.Core
+namespace DXGame.Core.DataStructures
 {
     [Serializable]
     [DataContract]

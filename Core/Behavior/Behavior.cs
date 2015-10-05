@@ -9,7 +9,7 @@ namespace DXGame.Core.Behavior
 {
     [Serializable]
     [DataContract]
-    public class GoalInterpreter
+    public class Behavior
     {
     }
 }

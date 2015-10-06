@@ -28,8 +28,6 @@ namespace DXGame.Core.Components.Advanced
             Dictionary<State.State, Animation.Animation> animationsForStates, PositionalComponent position)
             : base(game)
         {
-            Validate.IsNotNullOrDefault(stateMachine, StringUtils.GetFormattedNullOrDefaultMessage(this, stateMachine));
-            Validate.IsNotNullOrDefault(position, StringUtils.GetFormattedNullOrDefaultMessage(this, position));
             StateMachine = stateMachine;
             Position = position;
             animationsForStates_ = animationsForStates;
@@ -82,6 +80,12 @@ namespace DXGame.Core.Components.Advanced
 
             public AnimationComponent Build()
             {
+                if (ReferenceEquals(null, game_))
+                {
+                    game_ = Main.DxGame.Instance;
+                }
+                Validate.IsNotNull(position_, StringUtils.GetFormattedNullOrDefaultMessage(this, position_));
+                Validate.IsNotNull(stateMachine_, StringUtils.GetFormattedNullOrDefaultMessage(this, stateMachine_));
                 return new AnimationComponent(game_, stateMachine_, animationsForStates_, position_);
             }
 

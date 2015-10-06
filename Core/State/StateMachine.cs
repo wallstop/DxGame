@@ -15,8 +15,10 @@ namespace DXGame.Core.State
     {
         [DataMember]
         public State InitialState { get; private set; }
+
         [DataMember]
         public State CurrentState { get; private set; }
+
         // TODO: Verify this is correct
         [IgnoreDataMember]
         public int States
@@ -44,9 +46,8 @@ namespace DXGame.Core.State
             }
         }
 
-        public StateMachine(DxGame game, State initialState) : base(game)
+        protected StateMachine(DxGame game, State initialState) : base(game)
         {
-            Validate.IsNotNullOrDefault(initialState, StringUtils.GetFormattedNullOrDefaultMessage(this, initialState));
             InitialState = initialState;
             Reset();
         }
@@ -56,9 +57,16 @@ namespace DXGame.Core.State
             /*
                 Find the first transition that has had it's trigger activated. 
             */
-            CurrentState = CurrentState.Transitions.FirstOrDefault(
+            var nextState = CurrentState.Transitions.FirstOrDefault(
                 transition => transition.ShouldTransition(Parent, gameTime))
                 ?.State ?? CurrentState;
+            /* Are we transitioning? Fire the enter and exit functions, boys! Land ho! */
+            if (!ReferenceEquals(nextState, CurrentState))
+            {
+                CurrentState.OnExit?.Invoke(gameTime);
+                nextState.OnEnter?.Invoke(gameTime);
+                CurrentState = nextState;
+            }
             CurrentState.Action(gameTime);
         }
 
@@ -80,6 +88,13 @@ namespace DXGame.Core.State
             public StateMachine Build()
             {
                 /* Rely on validation inside StateMachine to null-check inputs */
+                if (ReferenceEquals(null, game_))
+                {
+                    game_ = DxGame.Instance;
+                }
+
+                Validate.IsNotNullOrDefault(initialState_,
+                    StringUtils.GetFormattedNullOrDefaultMessage(this, "InitialState"));
                 return new StateMachine(game_, initialState_);
             }
 

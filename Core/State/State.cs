@@ -3,31 +3,54 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.DataStructures;
 using DXGame.Core.Utils;
-using DXGame.Core.Utils.Distance;
 using NLog;
 
 namespace DXGame.Core.State
 {
+    /**
+        <summary>
+            Encapsulates a single State that an enemy can be in, as part of a StateMachine.
+            This is envisioned to be encapsulate movement states, attacking states, etc 
+            (hopefully with distinct state machines for each!)
+        </summary>
+    */
+
     [Serializable]
     [DataContract]
-    public class State
+    public sealed class State
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
         [DataMember]
         public ICollection<Transition> Transitions { get; private set; }
 
-        [DataMember]
-        public string Name { get; private set; }
-        [DataMember]
-        public Action Action { get; private set; }
+        /* Simple descriptor of what the state is. "Jumping", "Moving Right", that kind of thing */
 
-        private State(ICollection<Transition> transitions, string name, Action action)
+        [DataMember]
+        public string Name { get; }
+
+        /* Action that should be performed each and every Update cycle that this State is "current". Should never be null. */
+
+        [DataMember]
+        public Action Action { get; }
+
+        /* Action that should only be performed once, on state entrance. Can be null. */
+
+        [DataMember]
+        public Action OnEnter { get; }
+
+        /* Action that should only be performed once, on state exit. Can be null. */
+
+        [DataMember]
+        public Action OnExit { get; }
+
+        private State(ICollection<Transition> transitions, string name, Action action, Action onEnter, Action onExit)
         {
-            Validate.IsNotNullOrDefault(name, $"Cannot create a {nameof(State)} with a null name");
             Name = name;
             Transitions = new SortedList<Transition>(transitions);
             Action = action;
+            OnEnter = onEnter;
+            OnExit = onExit;
         }
 
         public State WithTransition(Transition transition)
@@ -64,6 +87,8 @@ namespace DXGame.Core.State
             private readonly List<Transition> transitions_ = new List<Transition>();
             private Action action_;
             private string name_;
+            private Action onEnter_;
+            private Action onExit_;
 
             public State Build()
             {
@@ -77,7 +102,19 @@ namespace DXGame.Core.State
                     LOG.Debug($"Creating {nameof(State)} ({name_}) without any transitions");
                 }
 
-                return new State(transitions_, name_, action_);
+                return new State(transitions_, name_, action_, onEnter_, onExit_);
+            }
+
+            public StateBuilder WithOnEnter(Action onEnter)
+            {
+                onEnter_ = onEnter;
+                return this;
+            }
+
+            public StateBuilder WithOnExit(Action onExit)
+            {
+                onExit_ = onExit;
+                return this;
             }
 
             public StateBuilder WithTransition(Transition transition)

@@ -11,6 +11,7 @@ namespace DXGame.Core.Animation
         Idle,
         WalkingLeft,
         WalkingRight,
+        IdleJump,
         JumpLeft,
         JumpRight
     }
@@ -27,6 +28,7 @@ namespace DXGame.Core.Animation
             {
                 {StandardAnimationType.Idle, "Idle"},
                 {StandardAnimationType.WalkingLeft, "Walk_Left"},
+                {StandardAnimationType.IdleJump, "Idle_Jump"},
                 {StandardAnimationType.JumpLeft, "Jump_Left"},
                 {StandardAnimationType.JumpRight, "Jump_Right"},
                 {StandardAnimationType.WalkingRight, "Walk_Right"}

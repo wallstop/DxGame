@@ -166,6 +166,7 @@
     <Compile Include="Core\State\StateMachine.cs" />
     <Compile Include="Core\State\Presentation.cs" />
     <Compile Include="Core\State\State.cs" />
+    <Compile Include="Core\State\StateMachineFactory.cs" />
     <Compile Include="Core\State\Transition.cs" />
     <Compile Include="Core\State\Trigger.cs" />
     <Compile Include="Core\Components\Advanced\AnimationComponent.cs" />
@@ -477,7 +478,28 @@
     <Content Include="Content\Player\Walk_Right.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Content\Player\Idle_Jump.adtr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Sprites\SimpleBox.adtr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Sprites\SimpleBoxIdle.adtr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Sprites\SimpleBoxIdle_Jump.adtr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Sprites\SimpleBoxJump_Left.adtr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Sprites\SimpleBoxJump_Right.adtr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Sprites\SimpleBoxWalk_Left.adtr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Sprites\SimpleBoxWalk_Right.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="NLog.xsd">

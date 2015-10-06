@@ -40,19 +40,6 @@ namespace DXGame.Core.Components.Advanced.Properties
         {
         }
 
-        public override Component Copy()
-        {
-            return new EntityPropertiesComponent(DxGame)
-            {
-                Health = new Property<int>(Health),
-                MaxHealth = new Property<int>(MaxHealth),
-                Defense = new Property<int>(Defense),
-                MoveSpeed = new Property<float>(MoveSpeed),
-                JumpSpeed = new Property<float>(JumpSpeed),
-                AttackSpeed = new Property<TimeSpan>(AttackSpeed)
-            };
-        }
-
         public override void Initialize()
         {
             /* Assume base class has dealt with actually creating the Properties */

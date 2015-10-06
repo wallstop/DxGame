@@ -28,8 +28,7 @@ namespace DXGameTest.Core.Network
             game_.RunOneFrame();
             var bounds = new DxRectangle(0, 0, 5000, 5000);
             spatial_ = (SpatialComponent)
-                new BoundedSpatialComponent(game_).WithBounds(bounds)
-                    .WithPosition(new DxVector2(200, 400));
+                    BoundedSpatialComponent.Builder().WithBounds(bounds).WithPosition(new DxVector2(200, 400)).Build();
             sprite_ = new SimpleSpriteComponent(game_).WithAsset("Orb").WithPosition(spatial_);
             physics_ = (MapCollidablePhysicsComponent)MapCollidablePhysicsComponent.Builder().WithSpatialComponent(spatial_).Build();
             gameObject_ = GameObject.Builder().WithComponents(spatial_, sprite_, physics_).Build();

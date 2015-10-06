@@ -60,11 +60,6 @@ namespace DXGame.Core.Components.Advanced.Position
             position_ = position;
         }
 
-        public override Component Copy()
-        {
-            return new PositionalComponent(DxGame, Position);
-        }
-
         public static PositionalComponentBuilder Builder()
         {
             return new PositionalComponentBuilder();

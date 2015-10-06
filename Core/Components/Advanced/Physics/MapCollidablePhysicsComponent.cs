@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Components.Advanced.Position;
+using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Utils;
 using DXGame.Core.Map;
 using DXGame.Core.Messaging;
@@ -24,16 +24,16 @@ namespace DXGame.Core.Components.Advanced.Physics
         private const int MAX_COLLISION_CHECKS = 10;
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private static readonly DxRectangleAreaComparer DXRECTANGLE_AREA_COMPARER = new DxRectangleAreaComparer();
-        private DxVector2 Dimensions => space_.Dimensions;
-
-        [DataMember]
-        private readonly List<Tuple<MapCollidableComponent, TimeSpan>> mapTilesToIgnore_ = new List<Tuple<MapCollidableComponent, TimeSpan>>();
-        
         private static readonly TimeSpan IGNORE_EXPIRY = TimeSpan.FromMilliseconds(30);
 
+        [DataMember] private readonly List<Tuple<MapCollidableComponent, TimeSpan>> mapTilesToIgnore_ =
+            new List<Tuple<MapCollidableComponent, TimeSpan>>();
+
+        private DxVector2 Dimensions => space_.Dimensions;
         private DxRectangle MapQueryRegion => Space;
 
-        private MapCollidablePhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration, SpatialComponent space, UpdatePriority updatePriority)
+        private MapCollidablePhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration,
+            SpatialComponent space, UpdatePriority updatePriority)
             : base(game, velocity, acceleration, space, updatePriority)
         {
             MessageHandler.RegisterMessageHandler<DropThroughPlatformRequest>(HandleDropThroughPlatformRequest);
@@ -44,20 +44,6 @@ namespace DXGame.Core.Components.Advanced.Physics
             return new MapCollidablePhysicsComponentBuilder();
         }
 
-        public class MapCollidablePhysicsComponentBuilder : PhysicsComponentBuilder
-        {
-            public override PhysicsComponent Build()
-            {
-                CheckParameters();
-                var physics = new MapCollidablePhysicsComponent(game_, velocity_, acceleration_, space_, updatePriority_);
-                foreach (var force in forces_)
-                {
-                    physics.AttachForce(force);
-                }
-                return physics;
-            }
-        }
-
         private void HandleDropThroughPlatformRequest(DropThroughPlatformRequest message)
         {
             var map = DxGame.Model<MapModel>();
@@ -66,7 +52,9 @@ namespace DXGame.Core.Components.Advanced.Physics
             mapQueryRegion.Height += 3;
             List<MapCollidableComponent> mapTiles = map.Map.Collidables.InRange(mapQueryRegion);
             /* TODO: Either find or implement an LRU cache */
-            mapTilesToIgnore_.AddRange(mapTiles.Where(tile => tile.PlatformType == PlatformType.Platform).Select(tile => Tuple.Create(tile, DxGame.CurrentTime.TotalGameTime)));
+            mapTilesToIgnore_.AddRange(
+                mapTiles.Where(tile => tile.PlatformType == PlatformType.Platform)
+                    .Select(tile => Tuple.Create(tile, DxGame.CurrentTime.TotalGameTime)));
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -82,12 +70,13 @@ namespace DXGame.Core.Components.Advanced.Physics
             var mapQueryRegion = MapQueryRegion;
 
             List<MapCollidableComponent> mapTiles = map.Map.Collidables.InRange(mapQueryRegion);
-            mapTilesToIgnore_.RemoveAll(mapTile => !mapTiles.Contains(mapTile.Item1) && (mapTile.Item2 + IGNORE_EXPIRY) < gameTime.TotalGameTime);
+            mapTilesToIgnore_.RemoveAll(
+                mapTile => !mapTiles.Contains(mapTile.Item1) && (mapTile.Item2 + IGNORE_EXPIRY) < gameTime.TotalGameTime);
 
             CollisionMessage collision = new CollisionMessage();
 
             // TODO: Properly handle buggy collisions (failsafe for now)
-            for(int i = 0; i < MAX_COLLISION_CHECKS; ++i)
+            for (int i = 0; i < MAX_COLLISION_CHECKS; ++i)
             {
                 var largestIntersectionTuple = FindLargestIntersection(mapTiles, Space);
                 if (largestIntersectionTuple == null)
@@ -99,7 +88,8 @@ namespace DXGame.Core.Components.Advanced.Physics
                 var mapBlockPosition = mapSpatial.Spatial.Position;
                 var mapBlockDimensions = mapSpatial.Spatial.Dimensions;
 
-                if (mapSpatial.CollidesWith(Velocity) && !mapTilesToIgnore_.Any(spatial => Equals(spatial.Item1, mapSpatial)))
+                if (mapSpatial.CollidesWith(Velocity) &&
+                    !mapTilesToIgnore_.Any(spatial => Equals(spatial.Item1, mapSpatial)))
                 {
                     /*
                         Wrap to the Y axis if the collision area was greater along the X axis (implies the collision occured either up or down,
@@ -111,7 +101,7 @@ namespace DXGame.Core.Components.Advanced.Physics
                         Since the acceleration from gravity is always going to throw us downward, we check this first.
                     */
                     if (largestIntersection.Width >= largestIntersection.Height ||
-                        MathUtils.FuzzyCompare(Velocity.X, 0.0f) == 0)
+                        Velocity.X.FuzzyCompare(0.0f) == 0)
                     {
                         // below collision
                         if (Position.Y + Dimensions.Y >= mapBlockPosition.Y && mapBlockPosition.Y > Position.Y)
@@ -178,6 +168,20 @@ namespace DXGame.Core.Components.Advanced.Physics
                 }
             }
             return largestIntersection;
+        }
+
+        public class MapCollidablePhysicsComponentBuilder : PhysicsComponentBuilder
+        {
+            public override PhysicsComponent Build()
+            {
+                CheckParameters();
+                var physics = new MapCollidablePhysicsComponent(game_, velocity_, acceleration_, space_, updatePriority_);
+                foreach (var force in forces_)
+                {
+                    physics.AttachForce(force);
+                }
+                return physics;
+            }
         }
     }
 }

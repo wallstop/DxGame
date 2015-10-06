@@ -106,14 +106,24 @@
     <Compile Include="Core\Animation\Animation.cs" />
     <Compile Include="Core\Animation\AnimationDescriptor.cs" />
     <Compile Include="Core\Animation\AnimationFactory.cs" />
+    <Compile Include="Core\Behavior\Behavior.cs" />
+    <Compile Include="Core\Behavior\Goals\AbstractGoal.cs" />
+    <Compile Include="Core\Behavior\Goals\BuffGoal.cs" />
+    <Compile Include="Core\Behavior\Goals\DebuffGoal.cs" />
+    <Compile Include="Core\Behavior\Goals\IGoal.cs" />
     <Compile Include="Core\Behavior\GoalInterpreter.cs" />
+    <Compile Include="Core\Behavior\Goals\MovementGoal.cs" />
+    <Compile Include="Core\Behavior\Goals\PainGoal.cs" />
+    <Compile Include="Core\Behavior\Goals\ProtectionGoal.cs" />
+    <Compile Include="Core\Behavior\Goals\SlayerGoal.cs" />
+    <Compile Include="Core\Behavior\Score.cs" />
+    <Compile Include="Core\Behavior\Utility.cs" />
     <Compile Include="Core\Components\Advanced\Behavior\BehaviorComponent.cs" />
     <Compile Include="Core\Components\Advanced\CollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\Damage\DamageComponent.cs" />
     <Compile Include="Core\Components\Advanced\Enemy\Spawner.cs" />
     <Compile Include="Core\Components\Advanced\Enemy\SpawnerFactory.cs" />
     <Compile Include="Core\Components\Advanced\Impulse\StandardActionComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Impulse\StandardMovementComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapCollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
     <Compile Include="Core\Components\Advanced\Player\PlayerInputListener.cs" />
@@ -123,7 +133,9 @@
     <Compile Include="Core\Components\Developer\BoundingBoxWidget.cs" />
     <Compile Include="Core\Components\Developer\DeveloperSwitch.cs" />
     <Compile Include="Core\Components\Developer\LifeSuckerComponent.cs" />
+    <Compile Include="Core\DataStructures\Tree.cs" />
     <Compile Include="Core\EventSystem.cs" />
+    <Compile Include="Core\Frames\SingleElementFrame.cs" />
     <Compile Include="Core\Generators\PlayerGenerator.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\FpsWidget.cs" />
     <Compile Include="Core\Components\Developer\CollisionTreeWidget.cs" />
@@ -199,7 +211,6 @@
     <Compile Include="Core\Components\Network\NetworkServer.cs" />
     <Compile Include="Core\Components\Utils\RectangleAreaComparer.cs" />
     <Compile Include="Core\Frames\Frame.cs" />
-    <Compile Include="Core\Frames\GameTimeFrame.cs" />
     <Compile Include="Core\GameObject.cs" />
     <Compile Include="Core\GraphicsWidgets\BlinkingCursor.cs" />
     <Compile Include="Core\Input\InputEvent.cs" />
@@ -236,7 +247,7 @@
     <Compile Include="Core\Serializer.cs" />
     <Compile Include="Core\Settings\GameSettings.cs" />
     <Compile Include="Core\Settings\Scale.cs" />
-    <Compile Include="Core\SortedList.cs" />
+    <Compile Include="Core\DataStructures\SortedList.cs" />
     <Compile Include="Core\UniqueId.cs" />
     <Compile Include="Core\Utils\Assert.cs" />
     <Compile Include="Core\Utils\Check.cs" />
@@ -262,6 +273,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Properties\PropertyMutator.cs" />
     <Compile Include="TowerGame\Actions\PlayerActionFactory.cs" />
+    <Compile Include="TowerGame\Behavior\SimpleAttackPlayerBehavior.cs" />
     <Compile Include="TowerGame\Components\SimpleEnemyAI.cs" />
     <Compile Include="TowerGame\Enemies\EnemyFactory.cs" />
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />
@@ -476,6 +488,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Content\Behaviors\" />
     <Folder Include="Core\GraphicsWidgets\Utils\" />
     <Folder Include="Network\" />
     <Folder Include="TowerGame\Buffs\" />

@@ -75,11 +75,6 @@ namespace DXGame.Core.Components.Basic
 
         public virtual bool ShouldSerialize => true;
 
-        public virtual Component Copy()
-        {
-            return this;
-        }
-
         protected Component(DxGame game)
         {
             Validate.IsNotNullOrDefault(game, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(game)));

@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using NLog;
 
 namespace DXGame.Core.Frames
 {
@@ -13,13 +12,14 @@ namespace DXGame.Core.Frames
     public class Frame
     {
         [DataMember] public readonly DxGameTime GameTime;
+        public static Frame EmptyFrame { get; } = new Frame(null, new Dictionary<UniqueId, GameObject>());
 
         [DataMember]
-        public ReadOnlyDictionary<UniqueId, GameObject> ObjectMaping { get; }
+        public ReadOnlyDictionary<UniqueId, GameObject> ObjectMapping { get; }
 
         protected Frame(DxGameTime gameTime, IDictionary<UniqueId, GameObject> gameObjects)
         {
-            ObjectMaping = new ReadOnlyDictionary<UniqueId, GameObject>(gameObjects);
+            ObjectMapping = new ReadOnlyDictionary<UniqueId, GameObject>(gameObjects);
             GameTime = gameTime;
         }
 

@@ -27,11 +27,6 @@ namespace DXGame.Core.Components.Developer
         {
         }
 
-        public override Component Copy()
-        {
-            return new LifeSuckerComponent(DxGame) {lastSucked_ = lastSucked_};
-        }
-
         protected override void Update(DxGameTime gameTime)
         {
             if (lastSucked_ + LIFE_SUCK_TICK_FREQUENCY <= gameTime.TotalGameTime)

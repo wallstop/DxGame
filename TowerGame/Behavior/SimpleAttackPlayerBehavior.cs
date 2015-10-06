@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DXGame.TowerGame.Behavior
 {
-    class SimpleAttackPlayerBehavior
+    public class SimpleAttackPlayerBehavior
     {
     }
 }

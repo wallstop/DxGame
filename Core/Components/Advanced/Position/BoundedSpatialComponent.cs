@@ -57,11 +57,6 @@ namespace DXGame.Core.Components.Advanced.Position
             YBounds = yBounds;
         }
 
-        public override Component Copy()
-        {
-            return new BoundedSpatialComponent(DxGame, Position, Dimensions, XBounds, YBounds);
-        }
-
         public new static BoundedSpatialComponentBuilder Builder()
         {
             return new BoundedSpatialComponentBuilder();

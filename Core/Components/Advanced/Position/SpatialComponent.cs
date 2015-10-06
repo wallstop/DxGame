@@ -45,11 +45,6 @@ namespace DXGame.Core.Components.Advanced.Position
             Dimensions = dimensions;
         }
 
-        public override Component Copy()
-        {
-            return new SpatialComponent(DxGame, Position, Dimensions);
-        }
-
         public new static SpatialComponentBuilder Builder()
         {
             return new SpatialComponentBuilder();

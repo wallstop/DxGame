@@ -30,11 +30,6 @@ namespace DXGame.Core.Components.Developer
         {
         }
 
-        public override Component Copy()
-        {
-            return new DeveloperSwitch(DxGame) {DeveloperMode = DeveloperMode};
-        }
-
         protected override void Update(DxGameTime gameTime)
         {
             var inputModel = DxGame.Model<InputModel>();

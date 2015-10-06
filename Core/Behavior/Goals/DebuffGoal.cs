@@ -8,6 +8,7 @@ using DXGame.Core.Frames;
 
 namespace DXGame.Core.Behavior.Goals
 {
+    // TODO (just an idea)
     [Serializable]
     [DataContract]
     public class DebuffGoal : IGoal
@@ -15,6 +16,7 @@ namespace DXGame.Core.Behavior.Goals
         public ActionType ActionType => ActionType.Help;
 
         public TimeSpan Timeout { get; }
+        public Frame Reference { get; }
 
         //public DebuffGoal()
 

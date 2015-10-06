@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using DXGame.Core.DataStructures;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
 using NLog;

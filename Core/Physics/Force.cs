@@ -28,12 +28,12 @@ namespace DXGame.Core.Physics
         protected DissipationFunction Dissipation { get; }
         public string Name { get; }
 
-        public Force(DxVector2 initialVelocity, DxVector2 acceleration, DissipationFunction dissipationFunction, string name)
+        public Force(DxVector2 initialVelocity, DxVector2 acceleration, DissipationFunction dissipationFunction, string name, bool dissipated = false)
         {
             Validate.IsNotNull(dissipationFunction,
                 StringUtils.GetFormattedNullOrDefaultMessage(this, dissipationFunction));
             Dissipation = dissipationFunction;
-            Dissipated = false;
+            Dissipated = dissipated;
             InitialVelocity = initialVelocity;
             Acceleration = acceleration;
             Name = name;

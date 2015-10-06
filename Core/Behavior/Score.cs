@@ -18,6 +18,12 @@ namespace DXGame.Core.Behavior
     [DataContract]
     public class Score : IComparable<Score>, IEquatable<Score>
     {
+        private static readonly Score MIN = new Score(float.MinValue);
+        private static readonly Score MAX = new Score(float.MaxValue);
+
+        public static Score Min => MIN;
+        public static Score Max => MAX;
+
         [DataMember]
         private float Value { get; }
 

@@ -20,6 +20,11 @@ namespace DXGame.Core.Frames
         {
         }
 
+        public new static SingleElementFrameBuilder Builder()
+        {
+            return new SingleElementFrameBuilder();
+        }
+
         public class SingleElementFrameBuilder : FrameBuilder
         {
             private GameObject gameObject_;

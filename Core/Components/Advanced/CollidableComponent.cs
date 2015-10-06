@@ -29,7 +29,8 @@ namespace DXGame.Core.Components.Advanced
         [DataMember]
         public SpatialComponent Spatial { get; }
 
-        protected CollidableComponent(DxGame game, IList<CollidableDirection> collidableDirections, SpatialComponent spatial)
+        protected CollidableComponent(DxGame game, IList<CollidableDirection> collidableDirections,
+            SpatialComponent spatial)
             : base(game)
         {
             CollidableDirections = new ReadOnlyCollection<CollidableDirection>(collidableDirections);
@@ -41,34 +42,6 @@ namespace DXGame.Core.Components.Advanced
             return new CollidableComponentBuilder();
         }
 
-        public class CollidableComponentBuilder : IBuilder<CollidableComponent>
-        {
-            protected readonly List<CollidableDirection> collidableDirections_ = new List<CollidableDirection>();
-            protected SpatialComponent spatial_;
-
-            public CollidableComponentBuilder WithCollidableDirections(IEnumerable<CollidableDirection> directions)
-            {
-                var collidableDirections = directions as IList<CollidableDirection> ?? directions.ToList();
-                Validate.IsNotNull(collidableDirections, StringUtils.GetFormattedNullOrDefaultMessage(this, collidableDirections));
-                collidableDirections_.Clear();
-                collidableDirections_.AddRange(collidableDirections.Distinct());
-                return this;
-            }
-
-            public CollidableComponentBuilder WithSpatial(SpatialComponent spatial)
-            {
-                spatial_ = spatial;
-                return this;
-            }
-
-            public virtual CollidableComponent Build()
-            {
-                Validate.IsNotNull(spatial_, StringUtils.GetFormattedNullOrDefaultMessage(this, spatial_));
-                var game = Main.DxGame.Instance;
-                return new CollidableComponent(game, collidableDirections_, spatial_);
-            }
-        }
-        
         public bool CollidesWith(DxVector2 velocity)
         {
             return (velocity.X > 0 && CollidableDirections.Contains(CollidableDirection.Left)) ||
@@ -80,7 +53,8 @@ namespace DXGame.Core.Components.Advanced
         /**
             Given a velocity, determines the collision directions (if any) that this object would present
         */
-        public List<CollidableDirection> CollisionDirections(DxVector2 velocity)                                                                                       
+
+        public List<CollidableDirection> CollisionDirections(DxVector2 velocity)
         {
             /* Should only be able to collide a max of two directions at once */
             int maxCollisionDirections = 2;
@@ -88,7 +62,8 @@ namespace DXGame.Core.Components.Advanced
             if (velocity.X > 0 && CollidableDirections.Contains(CollidableDirection.Left))
             {
                 collisions.Add(CollidableDirection.Left);
-            } else if (velocity.X < 0 && CollidableDirections.Contains(CollidableDirection.Right))
+            }
+            else if (velocity.X < 0 && CollidableDirections.Contains(CollidableDirection.Right))
             {
                 collisions.Add(CollidableDirection.Right);
             }
@@ -96,11 +71,41 @@ namespace DXGame.Core.Components.Advanced
             if (velocity.Y < 0 && CollidableDirections.Contains(CollidableDirection.Up))
             {
                 collisions.Add(CollidableDirection.Up);
-            } else if (velocity.Y > 0 && CollidableDirections.Contains(CollidableDirection.Down))
+            }
+            else if (velocity.Y > 0 && CollidableDirections.Contains(CollidableDirection.Down))
             {
                 collisions.Add(CollidableDirection.Down);
             }
             return collisions;
+        }
+
+        public class CollidableComponentBuilder : IBuilder<CollidableComponent>
+        {
+            protected readonly List<CollidableDirection> collidableDirections_ = new List<CollidableDirection>();
+            protected SpatialComponent spatial_;
+
+            public virtual CollidableComponent Build()
+            {
+                Validate.IsNotNull(spatial_, StringUtils.GetFormattedNullOrDefaultMessage(this, spatial_));
+                var game = DxGame.Instance;
+                return new CollidableComponent(game, collidableDirections_, spatial_);
+            }
+
+            public CollidableComponentBuilder WithCollidableDirections(IEnumerable<CollidableDirection> directions)
+            {
+                var collidableDirections = directions as IList<CollidableDirection> ?? directions.ToList();
+                Validate.IsNotNull(collidableDirections,
+                    StringUtils.GetFormattedNullOrDefaultMessage(this, collidableDirections));
+                collidableDirections_.Clear();
+                collidableDirections_.AddRange(collidableDirections.Distinct());
+                return this;
+            }
+
+            public CollidableComponentBuilder WithSpatial(SpatialComponent spatial)
+            {
+                spatial_ = spatial;
+                return this;
+            }
         }
     }
 }

@@ -34,12 +34,17 @@ namespace DXGame.Core.Animation
                 {StandardAnimationType.WalkingRight, "Walk_Right"}
             });
 
-        private readonly List<AnimationDescriptor> animations_;
+        private readonly Dictionary<string, AnimationDescriptor> animations_ =
+            new Dictionary<string, AnimationDescriptor>();
+
         public static AnimationFactory Instance => SINGLETON.Value;
 
         private AnimationFactory()
         {
-            animations_ = AnimationDescriptors(CONTENT_PATH).Select(AnimationDescriptor.StaticLoad).ToList();
+            foreach (var animationFile in AnimationDescriptors(CONTENT_PATH))
+            {
+                animations_[animationFile] = AnimationDescriptor.StaticLoad(animationFile);
+            }
         }
 
         public static AnimationDescriptor AnimationFor(string category, StandardAnimationType animationType)
@@ -51,8 +56,15 @@ namespace DXGame.Core.Animation
         {
             return
                 Instance.animations_
-                    .First(descriptor => descriptor.Asset.Contains(category) && descriptor.Asset.Contains(animation));
+                    .First(
+                        entry =>
+                            (entry.Value.Asset.Contains(category) || entry.Key.Contains(category)) &&
+                            (entry.Value.Asset.Contains(animation) || entry.Key.Contains(animation))).Value;
         }
+
+        /**
+            Recursively walk through all Content subdirectories looking for .adtr files
+        */
 
         private static IEnumerable<string> AnimationDescriptors(string folder)
         {

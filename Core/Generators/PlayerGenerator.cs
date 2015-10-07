@@ -10,6 +10,7 @@ using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Skills;
+using DXGame.Core.State;
 using DXGame.Main;
 using DXGame.TowerGame.Actions;
 using DXGame.TowerGame.Skills;
@@ -64,7 +65,6 @@ namespace DXGame.Core.Generators
             playerBuilder.WithComponents(PlayerSpace, physics_, weapon_,
                 playerProperties_, healthBar_, inputListener);
             var playerObject = playerBuilder.Build();
-            var player = Player.PlayerFrom(playerObject, "Gevurah");
             var shockwaveSkill =
                 Skill.Builder().WithCooldown(TimeSpan.FromSeconds(1)).WithSkillFunction(Gevurah.Shockwave).Build();
             SkillActivater shockwaveActivator =
@@ -75,12 +75,7 @@ namespace DXGame.Core.Generators
             var skillComponent = new SkillComponent(game_, shockwaveSkill, shockwaveActivator);
             playerObject.AttachComponent(skillComponent);
 
-            var animationBuilder = AnimationComponent.Builder().WithDxGame(game_).WithPosition(PlayerSpace);
-            var playerStateMachine = PlayerActionFactory.GevurahBehavior(game_, animationBuilder,
-                Player.PlayerFrom(playerObject, "Gevurah"));
-            animationBuilder.WithStateMachine(playerStateMachine);
-            playerObject.AttachComponent(playerStateMachine);
-            playerObject.AttachComponent(animationBuilder.Build());
+            StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(playerObject, "Player");
             objects.Add(playerObject);
 
             var simpleSpawner = SpawnerFactory.SimpleBoxSpawner();

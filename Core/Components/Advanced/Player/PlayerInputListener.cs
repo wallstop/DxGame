@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -31,6 +32,7 @@ namespace DXGame.Core.Components.Advanced.Player
             /* TODO: Change state transitions to simply be event handlers based off the events emitted from here */
             var inputModel = DxGame.Model<InputModel>();
             CheckDropThroughPlatform(inputModel, gameTime);
+            CheckMovementCommands(inputModel, gameTime);
             base.Update(gameTime);
         }
 
@@ -41,6 +43,23 @@ namespace DXGame.Core.Components.Advanced.Player
             {
                 Parent?.BroadcastMessage(new DropThroughPlatformRequest());
                 lastDroppedThroughPlatform_ = gameTime.TotalGameTime;
+            }
+        }
+
+        private void CheckMovementCommands(InputModel inputModel, DxGameTime gameTime)
+        {
+            var inputEvents = inputModel.Events.ToList();
+            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Controls.Left))
+            {
+                Parent?.BroadcastMessage(new CommandMessage() {Commandment = Commandment.MoveLeft});
+            }
+            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Controls.Right))
+            {
+                Parent?.BroadcastMessage(new CommandMessage() { Commandment = Commandment.MoveRight });
+            }
+            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Controls.Jump))
+            {
+                Parent?.BroadcastMessage(new CommandMessage() { Commandment = Commandment.MoveUp });
             }
         }
     }

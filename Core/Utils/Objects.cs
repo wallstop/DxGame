@@ -15,7 +15,7 @@ namespace DXGame.Core.Utils
         {
             unchecked
             {
-                /* Borrowed from http://stackoverflow.com/questions/5183929/comparing-two-objects, ez */
+                /* Borrowed from http://stackoverflow.com/questions/263400/what-is-the-best-algorithm-for-an-overridden-system-object-gethashcode, ez */
                 return args.Aggregate((int) 2166136261, (current, arg) => current * 16777619 ^ arg.GetHashCode());
             }
         }

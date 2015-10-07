@@ -17,10 +17,7 @@ namespace DXGame.Core.State
 {
     public class StateMachineFactory
     {
-        private static readonly Lazy<StateMachineFactory> SINGLETON =
-            new Lazy<StateMachineFactory>(() => new StateMachineFactory());
-
-        private static readonly DxVector2 INITIAL_JUMP_ACCELERATION = new DxVector2(0, -1.98f);
+        private static readonly DxVector2 INITIAL_JUMP_ACCELERATION = new DxVector2(0, -0f);
 
         private static readonly DissipationFunction INITIAL_JUMP_DISSIPATION =
             (externalVelocity, externalAcceleration, acceleration, gameTime) =>
@@ -35,10 +32,6 @@ namespace DXGame.Core.State
                 acceleration += (WorldForces.GRAVITY_ACCELERATION * scale);
                 return Tuple.Create(false, acceleration);
             };
-
-        private StateMachineFactory()
-        {
-        }
 
         public static void BuildAndAttachBasicMovementStateMachineAndAnimations(GameObject entity, string entityName)
         {
@@ -92,10 +85,7 @@ namespace DXGame.Core.State
                     AnimationFactory.AnimationFor(entityName, StandardAnimationType.JumpLeft));
 
             Trigger moveLeftTrigger = AnyMoveLeftCommands;
-            Trigger notMovingLeftTrigger = (entityInstance, gameTime) => !AnyMoveLeftCommands(entityInstance, gameTime);
             Trigger moveRightTrigger = AnyMoveRightCommands;
-            Trigger notMovingRightTrigger =
-                (entityInstance, gameTime) => !AnyMoveRightCommands(entityInstance, gameTime);
             Trigger jumpTrigger = AnyJumpCommands;
 
             Trigger returnToIdleTrigger =
@@ -107,8 +97,33 @@ namespace DXGame.Core.State
             var moveRightTransition = new Transition(moveRightTrigger, moveRightState);
             var jumpRightTransition = new Transition(moveRightTrigger, jumpRightState);
             var jumpTransition = new Transition(jumpTrigger, jumpState, Priority.HIGH);
+            var returnToIdleTransition = new Transition(returnToIdleTrigger, idleState, Priority.LOW);
+            var jumpToIdleTransition = new Transition(BelowCollisionTrigger, idleState, Priority.HIGH);
 
-            // TODO: FINISH
+            idleState.Transitions.Add(moveLeftTransition);
+            idleState.Transitions.Add(moveRightTransition);
+            idleState.Transitions.Add(jumpTransition);
+            moveLeftState.Transitions.Add(moveLeftTransition);
+            moveLeftState.Transitions.Add(moveRightTransition);
+            moveLeftState.Transitions.Add(jumpTransition);
+            moveLeftState.Transitions.Add(returnToIdleTransition);
+            moveRightState.Transitions.Add(moveLeftTransition);
+            moveRightState.Transitions.Add(moveRightTransition);
+            moveRightState.Transitions.Add(jumpTransition);
+            moveRightState.Transitions.Add(returnToIdleTransition);
+            jumpState.Transitions.Add(jumpRightTransition);
+            jumpState.Transitions.Add(jumpLeftTransition);
+            jumpState.Transitions.Add(jumpToIdleTransition);
+            jumpLeftState.Transitions.Add(jumpRightTransition);
+            jumpLeftState.Transitions.Add(jumpToIdleTransition);
+            jumpLeftState.Transitions.Add(jumpLeftTransition);
+            jumpRightState.Transitions.Add(jumpLeftTransition);
+            jumpRightState.Transitions.Add(jumpToIdleTransition);
+            jumpRightState.Transitions.Add(jumpRightTransition);
+            var stateMachine = stateMachineBuilder.WithInitialState(idleState).Build();
+            entity.AttachComponent(stateMachine);
+            var animationComponent = animationBuilder.WithStateMachine(stateMachine).Build();
+            entity.AttachComponent(animationComponent);
         }
 
         private static bool AnyJumpCommands(GameObject entity, DxGameTime gameTime)

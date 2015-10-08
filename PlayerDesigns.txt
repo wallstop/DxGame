@@ -1,0 +1,4 @@
+* Rain of arrows
+* Charge shot (more damage longer held down)
+* Homing missiles
+* Dodge + bear trap

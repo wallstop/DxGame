@@ -14,6 +14,7 @@ using DXGame.Core.State;
 using DXGame.Main;
 using DXGame.TowerGame.Actions;
 using DXGame.TowerGame.Skills;
+using DXGame.TowerGame.Skills.Gevurah;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -73,9 +74,17 @@ namespace DXGame.Core.Generators
                 {
                     return game.Model<InputModel>().FinishedEvents.Any(finishedEvent => finishedEvent.Key == Keys.E);
                 };
-            var skillComponent = new SkillComponent(game_, shockwaveSkill, shockwaveActivator);
-            playerObject.AttachComponent(skillComponent);
 
+            var arrowRainSkill =
+                Skill.Builder().WithCooldown(TimeSpan.FromSeconds(1)).WithSkillFunction(Gevurah.RainOfArrows).Build();
+            SkillActivater arrowRainActivator = (game, component, remainingCooldown) =>
+            {
+                return game.Model<InputModel>().FinishedEvents.Any(finishedEvent => finishedEvent.Key == Keys.F);
+            };
+            var shockwaveSkillComponent = new SkillComponent(game_, shockwaveSkill, shockwaveActivator);
+            var arrowRainSkillComponent = new SkillComponent(game_, arrowRainSkill, arrowRainActivator);
+            playerObject.AttachComponent(shockwaveSkillComponent);
+            playerObject.AttachComponent(arrowRainSkillComponent);
             StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(playerObject, "Player");
             objects.Add(playerObject);
 

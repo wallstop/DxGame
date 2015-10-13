@@ -123,11 +123,14 @@
     <Compile Include="Core\Components\Advanced\Damage\DamageComponent.cs" />
     <Compile Include="Core\Components\Advanced\Enemy\Spawner.cs" />
     <Compile Include="Core\Components\Advanced\Enemy\SpawnerFactory.cs" />
+    <Compile Include="Core\Components\Advanced\FacingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Impulse\StandardActionComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapCollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
+    <Compile Include="Core\Components\Advanced\Physics\UnforcableMapCollidablePhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\Player\PlayerInputListener.cs" />
     <Compile Include="Core\Components\Advanced\Damage\DeathEffectComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Position\MapCollidablePositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SkillComponent.cs" />
     <Compile Include="Core\Components\Advanced\TeamComponent.cs" />
     <Compile Include="Core\Components\Developer\BoundingBoxWidget.cs" />
@@ -263,6 +266,7 @@
     <Compile Include="Core\Utils\SpriteBatchUtils.cs" />
     <Compile Include="Core\Utils\StringUtils.cs" />
     <Compile Include="Core\Utils\ThreadLocalRandom.cs" />
+    <Compile Include="Core\Utils\TimeSpanUtils.cs" />
     <Compile Include="Core\Utils\UintUtils.cs" />
     <Compile Include="Core\Utils\Validate.cs" />
     <Compile Include="Core\Primitives\DxGameTime.cs" />
@@ -279,7 +283,8 @@
     <Compile Include="TowerGame\Enemies\EnemyFactory.cs" />
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />
     <Compile Include="TowerGame\PropertyMutators\InheritedHatred.cs" />
-    <Compile Include="TowerGame\Skills\Gevurah.cs" />
+    <Compile Include="TowerGame\Skills\Gevurah\ArrowRainComponent.cs" />
+    <Compile Include="TowerGame\Skills\Gevurah\Gevurah.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GeoAPI, Version=1.7.3.0, Culture=neutral, PublicKeyToken=a1a0da7def465678, processorArchitecture=MSIL">
@@ -328,6 +333,15 @@
     <Content Include="Content\Player\AbilityPlaceholders\Fourth.png" />
     <Content Include="Content\Player\AbilityPlaceholders\Second.png" />
     <Content Include="Content\Player\AbilityPlaceholders\Third.png" />
+    <Content Include="Content\Player\Archer\ArrowRain.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Archer\ArrowRainLaunchLeft.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Archer\ArrowRainLaunchRight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Player\Blown Away.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -478,6 +492,12 @@
     <Content Include="Content\Player\Walk_Right.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Content\Player\Archer\ArrowRainLaunchLeft.adtr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Player\Archer\ArrowRainLaunchRight.adtr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Player\Idle_Jump.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

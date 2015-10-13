@@ -18,7 +18,7 @@ namespace DXGame.Core.Components.Advanced
     public class FacingComponent : Component
     {
         [DataMember]
-        public Direction Facing { get; private set; }
+        public Direction Facing { get; private set; } = Direction.East;
 
         public FacingComponent(DxGame game)
             : base(game)

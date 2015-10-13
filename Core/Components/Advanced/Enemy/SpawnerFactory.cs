@@ -91,7 +91,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
         {
             private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
             private static readonly TimeSpan SPAWN_DELAY = TimeSpan.FromSeconds(1 / 50.0);
-            private static readonly int MAX_BOXES_IN_PLAY = 2;
+            private static readonly int MAX_BOXES_IN_PLAY = 200;
             private TimeSpan lastSpawned_ = TimeSpan.Zero;
             private int numSpawned_;
 

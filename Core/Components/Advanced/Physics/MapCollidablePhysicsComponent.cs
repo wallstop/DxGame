@@ -32,7 +32,7 @@ namespace DXGame.Core.Components.Advanced.Physics
         private DxVector2 Dimensions => space_.Dimensions;
         private DxRectangle MapQueryRegion => Space;
 
-        private MapCollidablePhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration,
+        protected MapCollidablePhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration,
             SpatialComponent space, UpdatePriority updatePriority)
             : base(game, velocity, acceleration, space, updatePriority)
         {
@@ -65,6 +65,9 @@ namespace DXGame.Core.Components.Advanced.Physics
                 we're colliding with the map, so we need to handle that.
             */
             base.Update(gameTime);
+
+
+            // TODO: Vector-based collision
 
             var map = DxGame.Model<MapModel>();
             var mapQueryRegion = MapQueryRegion;

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using static System.Int32;
 
@@ -13,10 +15,10 @@ namespace DXGame.Core.Utils
     {
         private const int HalfwayInt = MaxValue / 2;
 
-        private static readonly ThreadLocal<ThreadLocalRandom> random_ =
+        private static readonly ThreadLocal<ThreadLocalRandom> RANDOM =
             new ThreadLocal<ThreadLocalRandom>(() => new ThreadLocalRandom());
 
-        public static ThreadLocalRandom Current => random_.Value;
+        public static ThreadLocalRandom Current => RANDOM.Value;
 
         private ThreadLocalRandom()
             : base(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0))
@@ -91,6 +93,21 @@ namespace DXGame.Core.Utils
         private static double BoundedDouble(double max, double value)
         {
             return (value < max) ? value : (BitConverter.Int64BitsToDouble(BitConverter.DoubleToInt64Bits(value) - 1));
+        }
+
+        public T FromEnum<T>() where T : struct
+        {
+            Validate.IsTrue(typeof(T).IsEnum, "Cannot generate a random enum for a non-enum type");
+            T[] enumValues = (T[])Enum.GetValues(typeof(T));
+            int nextIndex = (Array.IndexOf(enumValues, Next(0, enumValues.Length)));
+            return enumValues[nextIndex];
+        }
+
+        public T FromCollection<T>(ICollection<T> collection)
+        {
+            Validate.IsNotEmpty(collection, "Cannot pick a random element from an empty collection");
+            int randomIndex = Next(0, collection.Count);
+            return collection.ElementAt(randomIndex);
         }
 
         public bool NextBool()

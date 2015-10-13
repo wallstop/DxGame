@@ -71,7 +71,7 @@ namespace DXGame.Core.Components.Advanced.Physics
             UpdatePriority = updatePriority;
         }
 
-        public void AttachForce(Force force)
+        public virtual void AttachForce(Force force)
         {
             Validate.IsNotNull(force, StringUtils.GetFormattedNullOrDefaultMessage(this, force));
             forces_.Add(force);

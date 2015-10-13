@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 
@@ -60,6 +61,16 @@ namespace DXGame.Core.Primitives
         public DxRadian(DxVector2 vector)
         {
             Value = (float) Math.Atan2(vector.X, -vector.Y);
+        }
+
+        public static DxRadian operator*(DxRadian radian, double scalar)
+        {
+            return new DxRadian(radian.Value * scalar);
+        }
+
+        public static DxRadian operator *(DxRadian radian, float scalar)
+        {
+            return new DxRadian(radian.Value * scalar);
         }
 
         public override int GetHashCode()

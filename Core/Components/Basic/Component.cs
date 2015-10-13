@@ -77,7 +77,10 @@ namespace DXGame.Core.Components.Basic
 
         protected Component(DxGame game)
         {
-            Validate.IsNotNullOrDefault(game, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(game)));
+            if (ReferenceEquals(null, game))
+            {
+                game = DxGame.Instance;
+            }
             DxGame = game;
             UpdatePriority = UpdatePriority.NORMAL;
             initialized_ = false;

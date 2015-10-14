@@ -17,19 +17,17 @@ namespace DXGame.Core.State
 {
     public class StateMachineFactory
     {
-        private static readonly DxVector2 INITIAL_JUMP_ACCELERATION = new DxVector2(0, -0f);
+        private static readonly DxVector2 INITIAL_JUMP_ACCELERATION = new DxVector2(0, -0.0f);
 
         private static readonly DissipationFunction INITIAL_JUMP_DISSIPATION =
             (externalVelocity, externalAcceleration, acceleration, gameTime) =>
             {
                 /* If our jumping force is applying a (down into the ground) acceleration, we're done! */
-                var done = acceleration.Y > 0 || externalVelocity.Y > 0;
+                var done = externalVelocity.Y > 0;
                 if (done)
                 {
                     return Tuple.Create(true, new DxVector2());
                 }
-                var scale = gameTime.DetermineScaleFactor(DxGame.Instance);
-                acceleration += (WorldForces.GRAVITY_ACCELERATION * scale);
                 return Tuple.Create(false, acceleration);
             };
 
@@ -193,7 +191,7 @@ namespace DXGame.Core.State
             public void OnJumpEnterAction(DxGameTime gameTime)
             {
                 var forceName = "Jump";
-                var force = new Force(new DxVector2(0, -JumpSpeed(Entity)), INITIAL_JUMP_ACCELERATION,
+                var force = new Force(new DxVector2(0, -JumpSpeed(Entity) * 0.8f), INITIAL_JUMP_ACCELERATION,
                     INITIAL_JUMP_DISSIPATION, forceName);
                 AttachForce(Entity, force);
             }

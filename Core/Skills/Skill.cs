@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using DXGame.Core.GraphicsWidgets.HUD;
+using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 
@@ -26,10 +28,14 @@ namespace DXGame.Core.Skills
         [DataMember]
         public TimeSpan Cooldown { get; private set; }
 
-        private Skill(SkillFunction skillFunction, TimeSpan cooldown)
+        [DataMember]
+        public Commandment Ability { get; }
+
+        private Skill(SkillFunction skillFunction, TimeSpan cooldown, Commandment ability)
         {
             skillFunction_ = skillFunction;
             Cooldown = cooldown;
+            Ability = ability;
         }
 
         /**
@@ -63,12 +69,20 @@ namespace DXGame.Core.Skills
         {
             private TimeSpan cooldown_;
             private SkillFunction skillFunction_;
+            private Commandment ability_;
 
             public Skill Build()
             {
                 Validate.IsNotNullOrDefault(cooldown_, StringUtils.GetFormattedNullOrDefaultMessage(this, "Cooldown"));
                 Validate.IsNotNull(skillFunction_, StringUtils.GetFormattedNullOrDefaultMessage(this, skillFunction_));
-                return new Skill(skillFunction_, cooldown_);
+                Validate.IsTrue(Commandments.ABILITY_COMMANDMENTS.Contains(ability_), $"{ability_ } was expected to be an ability-type {typeof(Commandment)}, but was not.");
+                return new Skill(skillFunction_, cooldown_, ability_);
+            }
+
+            public SkillBuilder WithCommandment(Commandment ability)
+            {
+                ability_ = ability;
+                return this;
             }
 
             public SkillBuilder WithSkillFunction(SkillFunction skillFunction)

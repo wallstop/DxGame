@@ -7,6 +7,7 @@ using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Player;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
+using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Skills;
@@ -68,23 +69,11 @@ namespace DXGame.Core.Generators
                 playerProperties_, healthBar_, inputListener, facingComponent);
             var playerObject = playerBuilder.Build();
             var shockwaveSkill =
-                Skill.Builder().WithCooldown(TimeSpan.FromSeconds(1)).WithSkillFunction(Gevurah.Shockwave).Build();
-            SkillActivater shockwaveActivator =
-                (game, component, remainingCooldown) =>
-                {
-                    return game.Model<InputModel>().FinishedEvents.Any(finishedEvent => finishedEvent.Key == Keys.E);
-                };
-
+                Skill.Builder().WithCooldown(TimeSpan.FromSeconds(1)).WithSkillFunction(Gevurah.Shockwave).WithCommandment(Commandment.Ability1).Build();
             var arrowRainSkill =
-                Skill.Builder().WithCooldown(TimeSpan.FromSeconds(5)).WithSkillFunction(Gevurah.RainOfArrows).Build();
-            SkillActivater arrowRainActivator = (game, component, remainingCooldown) =>
-            {
-                return game.Model<InputModel>().FinishedEvents.Any(finishedEvent => finishedEvent.Key == Keys.F);
-            };
-            var shockwaveSkillComponent = new SkillComponent(game_, shockwaveSkill, shockwaveActivator);
-            var arrowRainSkillComponent = new SkillComponent(game_, arrowRainSkill, arrowRainActivator);
-            playerObject.AttachComponent(shockwaveSkillComponent);
-            playerObject.AttachComponent(arrowRainSkillComponent);
+                Skill.Builder().WithCooldown(TimeSpan.FromSeconds(5)).WithSkillFunction(Gevurah.RainOfArrows).WithCommandment(Commandment.Ability2).Build();
+            var playerSkillComponent = new SkillComponent(game_, shockwaveSkill, arrowRainSkill);
+            playerObject.AttachComponent(playerSkillComponent);
             StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(playerObject, "Player");
             objects.Add(playerObject);
 

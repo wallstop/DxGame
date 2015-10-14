@@ -9,6 +9,12 @@ using DXGame.Core.Utils;
 
 namespace DXGame.Core
 {
+    /**
+        <summary>
+            Simple Player-specific abstraction around GameObjects. 
+            Useful for getting known components out of Players in a standardized fashion.
+        </summary>
+    */
     [Serializable]
     [DataContract]
     public class Player
@@ -18,11 +24,10 @@ namespace DXGame.Core
         public PlayerPropertiesComponent Properties => player_.ComponentOfType<PlayerPropertiesComponent>();
         public PhysicsComponent Physics => player_.ComponentOfType<PhysicsComponent>();
         public AnimationComponent Animation => player_.ComponentOfType<AnimationComponent>();
+        public SkillComponent Abilities => player_.ComponentOfType<SkillComponent>();
 
         [DataMember]
         public string Name { get; private set; }
-
-        public IEnumerable<SkillComponent> Skills => player_.ComponentsOfType<SkillComponent>();
 
         private Player(GameObject gameObject)
         {

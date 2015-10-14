@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Skills;
 using DXGame.Core.Utils;
@@ -8,46 +12,54 @@ using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced
 {
-
-    /**
-        <summary>
-            Provides an answer to the question "Should this skill be activated?"
-        </summary>
-    */
-    public delegate bool SkillActivater(DxGame game, DxGameTime gameTime, TimeSpan remainingCooldown);
-
     /**
         <summary>
             Simple component wrapper around skills.
         </summary>
     */
+
     [Serializable]
     [DataContract]
     public class SkillComponent : Component
     {
         [DataMember]
-        public Skill Skill { get; private set; }
-        [DataMember]
-        private readonly SkillActivater skillActivator_;
+        public ReadOnlyDictionary<Commandment, Skill> Skills { get; }
 
-        public SkillComponent(DxGame game, Skill skill, SkillActivater skillActivator) 
+        [DataMember]
+        private DxGameTime LatestGameTime { get; set; }
+
+        public SkillComponent(DxGame game, params Skill[] skills)
+            : this(game, skills.ToList())
+        {
+        }
+
+        public SkillComponent(DxGame game, List<Skill> skills)
             : base(game)
         {
-            Validate.IsNotNull(skill, StringUtils.GetFormattedNullOrDefaultMessage(this, skill));
-            Validate.IsNotNull(skillActivator, StringUtils.GetFormattedNullOrDefaultMessage(this, skillActivator));
-            Skill = skill;
-            skillActivator_ = skillActivator;
+            Validate.IsNotNull(skills, StringUtils.GetFormattedNullOrDefaultMessage(this, skills));
+            Validate.NoNullElements(skills, StringUtils.GetFormattedNullOrDefaultMessage(this, typeof (Skill)));
+            Skills =
+                new ReadOnlyDictionary<Commandment, Skill>(skills.ToDictionary(skill => skill.Ability, skill => skill));
+            MessageHandler.RegisterMessageHandler<CommandMessage>(HandleSkillMessage);
+        }
+
+        private void HandleSkillMessage(CommandMessage abilityCommand)
+        {
+            var commandment = abilityCommand.Commandment;
+            if(!Commandments.ABILITY_COMMANDMENTS.Contains(commandment))
+            {
+                return;
+            }
+
+            if (Skills.ContainsKey(commandment))
+            {
+                Skills[commandment].Activate(Parent, LatestGameTime);
+            }
         }
 
         protected override void Update(DxGameTime gameTime)
         {
-            TimeSpan remainingCooldown = Skill.RemainingCooldown(gameTime);
-            bool shouldActivate = skillActivator_(DxGame, gameTime, remainingCooldown);
-            if (shouldActivate)
-            {
-                Skill.Activate(Parent, gameTime);
-            }
-            base.Update(gameTime);
+            LatestGameTime = gameTime;
         }
     }
 }

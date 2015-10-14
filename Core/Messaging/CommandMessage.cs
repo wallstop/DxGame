@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils.Distance;
@@ -17,12 +19,26 @@ namespace DXGame.Core.Messaging
         MoveUp,
         MoveDown,
         Attack,
+        Movement,
         Ability1,
         Ability2,
         Ability3,
         Ability4,
         InteractWithEnvironment
     }
+
+    public static class Commandments
+    {
+        public static readonly ReadOnlyCollection<Commandment> ABILITY_COMMANDMENTS =
+            new ReadOnlyCollection<Commandment>(new List<Commandment>
+            {
+                Commandment.Ability1,
+                Commandment.Ability2,
+                Commandment.Ability3,
+                Commandment.Ability4
+            });
+    }
+
 
     /**
         What "commands" components send to other components. These are packaged up & enumerated

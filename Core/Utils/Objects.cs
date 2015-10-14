@@ -122,6 +122,7 @@ namespace DXGame.Core.Utils
 
         /**
             Borrowed from http://stackoverflow.com/questions/8113570/c-set-a-member-object-value-using-reflection/8113612 
+            and http://stackoverflow.com/questions/1198886/c-sharp-using-reflection-to-copy-base-class-properties
 
             <summary>
                 Uses reflection to copy all fields from the non-null "source" object into "this".
@@ -129,8 +130,10 @@ namespace DXGame.Core.Utils
                 Usage: this.MapAllFieldsFrom($KnownGoodObjectThatYouWantFieldsCopiedFrom)
             </summary>
         */
+
         public static void MapAllFieldsFrom(this object destination, object source)
         {
+            /* Copy over all fields */
             FieldInfo[] ps = source.GetType().GetFields();
             foreach (var item in ps)
             {
@@ -141,6 +144,19 @@ namespace DXGame.Core.Utils
                     Type t = Nullable.GetUnderlyingType(p.FieldType) ?? p.FieldType;
                     object safeValue = (o == null) ? null : Convert.ChangeType(o, t);
                     p.SetValue(destination, safeValue);
+                }
+            }
+            /* ... and properties */
+            PropertyInfo[] sourceProperties = source.GetType().GetProperties(
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
+            PropertyInfo[] destinationProperties = destination.GetType().GetProperties(
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty);
+            foreach (var property in sourceProperties)
+            {
+                var dest = destinationProperties.FirstOrDefault(x => x.Name == property.Name);
+                if (dest != null && dest.CanWrite)
+                {
+                    dest.SetValue(destination, property.GetValue(source, null), null);
                 }
             }
         }
@@ -212,4 +228,3 @@ namespace DXGame.Core.Utils
         }
     }
 }
- 

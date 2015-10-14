@@ -119,6 +119,31 @@ namespace DXGame.Core.Utils
         {
             return (T) Copy((object) original);
         }
+
+        /**
+            Borrowed from http://stackoverflow.com/questions/8113570/c-set-a-member-object-value-using-reflection/8113612 
+
+            <summary>
+                Uses reflection to copy all fields from the non-null "source" object into "this".
+
+                Usage: this.MapAllFieldsFrom($KnownGoodObjectThatYouWantFieldsCopiedFrom)
+            </summary>
+        */
+        public static void MapAllFieldsFrom(this object destination, object source)
+        {
+            FieldInfo[] ps = source.GetType().GetFields();
+            foreach (var item in ps)
+            {
+                var o = item.GetValue(source);
+                var p = destination.GetType().GetField(item.Name);
+                if (p != null)
+                {
+                    Type t = Nullable.GetUnderlyingType(p.FieldType) ?? p.FieldType;
+                    object safeValue = (o == null) ? null : Convert.ChangeType(o, t);
+                    p.SetValue(destination, safeValue);
+                }
+            }
+        }
     }
 
     public class ReferenceEqualityComparer : EqualityComparer<object>
@@ -187,3 +212,4 @@ namespace DXGame.Core.Utils
         }
     }
 }
+ 

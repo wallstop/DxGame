@@ -16,7 +16,6 @@ namespace DXGame.Core.Settings
     [Serializable]
     public class GameSettings : AbstractSettings<GameSettings>
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private static readonly double HUD_HEIGHT_SCALE = 0.3;
         private static readonly double HUD_WIDTH_SCALE = 1.0;
         [DataMember] public Scale HudScale;
@@ -44,14 +43,6 @@ namespace DXGame.Core.Settings
         public override GameSettings CurrentSettings => this;
         public override string Path => GameSettingsPath;
         public static string GameSettingsPath => "Settings.json";
-
-        protected override void CopySettings(GameSettings other)
-        {
-            Validate.IsNotNullOrDefault(other, $"Cannot copy Settings for a null {nameof(GameSettings)}");
-            ScreenHeight = other.ScreenHeight;
-            ScreenWidth = other.ScreenWidth;
-            HudScale = other.HudScale;
-        }
 
         private static double ScalarForHud(Scale scaleFactor)
         {

@@ -59,6 +59,10 @@ namespace DXGame.Core.Settings
             return Load(Path);
         }
 
-        protected abstract void CopySettings(T other);
+        protected virtual void CopySettings(T other)
+        {
+            Validate.IsNotNull(other, $"Cannot copy Settings for a null {GetType()}");
+            this.MapAllFieldsFrom(other);
+        }
     }
 }

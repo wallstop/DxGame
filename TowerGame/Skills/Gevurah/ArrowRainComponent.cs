@@ -21,26 +21,19 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.TowerGame.Skills.Gevurah
 {
-    /* TODO: We need to launch the arrow away from the player & have it draw it's own boxes & do damage over time to entity's within it's bounding boxes */
+    /**
 
-
-    [Serializable]
-    [DataContract]
-    public class ArrowRainComponent : Component
-    {
-        public ArrowRainComponent(DxGame game)
-            : base(game)
-        {
-        }
-    }
-
+        <summary>
+            
+        </summary>
+    */
     [Serializable]
     [DataContract]
     public class ArrowRainLauncher : DrawableComponent
     {
         private static readonly double TARGET_RADIAN = Math.PI / 3;
-        private static readonly double FORCE = 5;
-        [DataMember] private TimeSpan timeToLaunch_ = TimeSpan.FromSeconds(1.0f);
+        private static readonly double FORCE = 8;
+        [DataMember] private TimeSpan timeToLaunch_ = TimeSpan.FromSeconds(0.3f);
 
         [DataMember]
         private AnimationComponent Animation { get; }
@@ -68,7 +61,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             // TODO: Un-hardcode bounding box
             Spatial =
                 (SpatialComponent)
-                    SpatialComponent.Builder().WithDimensions(new DxVector2(75, 75)).WithPosition(position).Build();
+                    SpatialComponent.Builder().WithDimensions(new DxVector2(15f, 15f)).WithPosition(position).Build();
             var doNothingStateMachine = CreateIdleStateMachine();
 
             var animationName = direction == Direction.East ? "ArrowRainLaunchRight" : "ArrowRainLaunchLeft";
@@ -92,6 +85,14 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
         protected override void Update(DxGameTime gameTime)
         {
+            if(ReferenceEquals(null, (Physics.Parent)))
+            {
+                Physics.Parent = Parent;
+            }
+            if (ReferenceEquals(null, Spatial.Parent))
+            {
+                Spatial.Parent = Parent;
+            }
             var currentMessages = Parent?.CurrentMessages;
             /* If our launch TTL has expired OR we've collided with the map, launch! */
             if (timeToLaunch_ < gameTime.ElapsedGameTime ||
@@ -106,7 +107,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             Spatial.Process(gameTime);
             Physics.Process(gameTime);
         }
-
+        
         public override void LoadContent()
         {
             Spatial.LoadContent();
@@ -151,13 +152,14 @@ namespace DXGame.TowerGame.Skills.Gevurah
         private static readonly int ARROW_RAIN_WIDTH = 300;
         private static readonly int ARROW_RAIN_DEPTH = 500;
 
+        /* Position & Velocity for each arrow */
         private readonly List<Tuple<DxVector2, DxVector2>> arrowSpritePositionsAndVelocities_ =
             new List<Tuple<DxVector2, DxVector2>>(MAX_ARROW_SPRITES);
 
         private TimeSpan elapsed_ = TimeSpan.Zero;
         private int pulses_;
         private TimeSpan PulseDelay { get; } = TimeSpan.FromSeconds(1 / 5.0);
-        private TimeSpan Duration { get; } = TimeSpan.FromSeconds(7);
+        private TimeSpan Duration { get; } = TimeSpan.FromSeconds(3);
         private Texture2D ArrowSprite { get; set; }
         private DxVector2 Position { get; }
         private GameObject Source { get; }
@@ -227,10 +229,10 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
         private void SpawnArrow()
         {
-            var chosenArea = ThreadLocalRandom.Current.FromCollection(AffectedAreas());
-            var xCoordinate = ThreadLocalRandom.Current.Next((int) chosenArea.X, (int) (chosenArea.X + chosenArea.Width));
+            var chosenY = ThreadLocalRandom.Current.NextFloat(Position.Y, Position.Y + 5);
+            var xCoordinate = ThreadLocalRandom.Current.Next((int)Position.X, (int)(Position.X + ARROW_RAIN_WIDTH));
             var randomVelocityBoost = ThreadLocalRandom.Current.NextFloat(1.0f, 2.0f);
-            arrowSpritePositionsAndVelocities_.Add(Tuple.Create(new DxVector2(xCoordinate, chosenArea.Y),
+            arrowSpritePositionsAndVelocities_.Add(Tuple.Create(new DxVector2(xCoordinate, chosenY),
                 BASE_ARROW_VELOCITY * randomVelocityBoost));
         }
 
@@ -304,7 +306,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
                 {
                     /* If so, great, that means we're at a new rectangular bound, so cap the old one off & ship it */
                     affectedAreas.Add(new DxRectangle(rectangleBegin, Position.Y, (i - rectangleBegin),
-                        (depth - Position.Y)));
+                        (lastDepth - Position.Y)));
                     rectangleBegin = i;
                     lastDepth = depth;
                 }

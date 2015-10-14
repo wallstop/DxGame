@@ -30,7 +30,6 @@ namespace DXGame.Core.Components.Advanced.Physics
             new List<Tuple<MapCollidableComponent, TimeSpan>>();
 
         private DxVector2 Dimensions => space_.Dimensions;
-        private DxRectangle MapQueryRegion => Space;
 
         protected MapCollidablePhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration,
             SpatialComponent space, UpdatePriority updatePriority)
@@ -47,7 +46,7 @@ namespace DXGame.Core.Components.Advanced.Physics
         private void HandleDropThroughPlatformRequest(DropThroughPlatformRequest message)
         {
             var map = DxGame.Model<MapModel>();
-            var mapQueryRegion = MapQueryRegion;
+            var mapQueryRegion = Space;
             /* Give the region a little bit of buffer room to check for platforms we may be standing on */
             mapQueryRegion.Height += 3;
             List<MapCollidableComponent> mapTiles = map.Map.Collidables.InRange(mapQueryRegion);
@@ -57,31 +56,47 @@ namespace DXGame.Core.Components.Advanced.Physics
                     .Select(tile => Tuple.Create(tile, DxGame.CurrentTime.TotalGameTime)));
         }
 
+        /**
+            Given a line segment that represents "the arc that was traveled" (should be a straight line),
+            determines the "full bounding box" that we occupied while traveling. While this is kind of hacky,
+            this allows us the freedom of "fuzzier" collision detection. IE, the case when we have a REALLY
+            long frame that we end up traveling VERY far in, like, through the map.
+        */
+        private DxRectangle CollisionSpace(DxLine travelArc)
+        {
+            var startX = Math.Min(travelArc.Start.X, travelArc.End.X);
+            var stopX = Math.Max(travelArc.Start.X, travelArc.End.X) + Space.Width;
+            var startY = Math.Min(travelArc.Start.Y, travelArc.End.Y);
+            var stopY = Math.Max(travelArc.Start.Y, travelArc.End.Y) + Space.Height;
+            return new DxRectangle(startX, startY, stopX - startX, stopY - startY);
+        }
+
         protected override void Update(DxGameTime gameTime)
         {
+            var previousPosition = Position;
             /*
                 Perform the normal PhysicsComponent's update first. We assume that at the end of our last update cycle,
                 we are collision free. The PhysicsComponent's update cycle may place us into some kind of state where
                 we're colliding with the map, so we need to handle that.
             */
             base.Update(gameTime);
-
+            var traveledLine = new DxLine(previousPosition, Position);
 
             // TODO: Vector-based collision
 
             var map = DxGame.Model<MapModel>();
-            var mapQueryRegion = MapQueryRegion;
+            var collisionSpace = CollisionSpace(traveledLine);
 
-            List<MapCollidableComponent> mapTiles = map.Map.Collidables.InRange(mapQueryRegion);
+            List<MapCollidableComponent> mapTiles = map.Map.Collidables.InRange(collisionSpace);
             mapTilesToIgnore_.RemoveAll(
                 mapTile => !mapTiles.Contains(mapTile.Item1) && (mapTile.Item2 + IGNORE_EXPIRY) < gameTime.TotalGameTime);
 
-            CollisionMessage collision = new CollisionMessage();
+            var collision = new CollisionMessage();
 
             // TODO: Properly handle buggy collisions (failsafe for now)
             for (int i = 0; i < MAX_COLLISION_CHECKS; ++i)
             {
-                var largestIntersectionTuple = FindLargestIntersection(mapTiles, Space);
+                var largestIntersectionTuple = FindLargestIntersection(mapTiles, collisionSpace);
                 if (largestIntersectionTuple == null)
                 {
                     break;
@@ -91,7 +106,8 @@ namespace DXGame.Core.Components.Advanced.Physics
                 var mapBlockPosition = mapSpatial.Spatial.Position;
                 var mapBlockDimensions = mapSpatial.Spatial.Dimensions;
 
-                if (mapSpatial.CollidesWith(Velocity) &&
+                var direction = traveledLine.Vector;
+                if (mapSpatial.CollidesWith(direction) &&
                     !mapTilesToIgnore_.Any(spatial => Equals(spatial.Item1, mapSpatial)))
                 {
                     /*
@@ -107,12 +123,13 @@ namespace DXGame.Core.Components.Advanced.Physics
                         Velocity.X.FuzzyCompare(0.0f) == 0)
                     {
                         // below collision
-                        if (Position.Y + Dimensions.Y >= mapBlockPosition.Y && mapBlockPosition.Y > Position.Y)
+                        if (collisionSpace.Y + collisionSpace.Height >= mapBlockPosition.Y && mapBlockPosition.Y > collisionSpace.Height && previousPosition.Y + Dimensions.Y <= mapBlockPosition.Y && mapSpatial.CollidableDirections.Contains(CollidableDirection.Up))
                         {
                             Position = new DxVector2(Position.X, mapBlockPosition.Y - Dimensions.Y);
                             collision.CollisionDirections.Add(Direction.South);
                         }
-                        else // above collision
+                        // above collision
+                        else if (mapSpatial.CollidableDirections.Contains(CollidableDirection.Down)) 
                         {
                             Position = new DxVector2(Position.X, mapBlockPosition.Y + mapBlockDimensions.Y);
                             collision.CollisionDirections.Add(Direction.North);
@@ -125,18 +142,21 @@ namespace DXGame.Core.Components.Advanced.Physics
                     // if (intersection.Height > intersection.Width || MathUtils.FuzzyCompare(Velocity.Y, 0.0, MathUtils.DoubleTolerance) == 0)
                     {
                         // left collision 
-                        if (Position.X < mapBlockPosition.X + mapBlockDimensions.X && mapBlockPosition.X < Position.X)
+                        if (collisionSpace.X < mapBlockPosition.X + mapBlockDimensions.X && mapBlockPosition.X < collisionSpace.X && mapSpatial.CollidableDirections.Contains(CollidableDirection.Right))
                         {
                             Position = new DxVector2(Position.X + largestIntersection.Width, Position.Y);
                             collision.CollisionDirections.Add(Direction.West);
                         }
                         // right collision
-                        else
+                        else if(mapSpatial.CollidableDirections.Contains(CollidableDirection.Left))
                         {
                             Position = new DxVector2(Position.X - largestIntersection.Width, Position.Y);
                             collision.CollisionDirections.Add(Direction.East);
                         }
                     }
+                    /* Since we just collided, recalculate our "collision space" */
+                    traveledLine = new DxLine(previousPosition, Position);
+                    collisionSpace = CollisionSpace(traveledLine);
                 }
                 else
                 {
@@ -147,7 +167,7 @@ namespace DXGame.Core.Components.Advanced.Physics
             // Let everyone else know we collided (only if we collided with anything)
             if (collision.CollisionDirections.Any())
             {
-                Parent.BroadcastMessage(collision);
+                Parent?.BroadcastMessage(collision);
             }
         }
 

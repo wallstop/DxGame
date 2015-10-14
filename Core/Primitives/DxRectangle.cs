@@ -38,6 +38,22 @@ namespace DXGame.Core.Primitives
         public DxRectangle QuadrantThree => new DxRectangle(X, Y + (Height / 2), Width / 2, Height / 2);
         public DxRectangle QuadrantFour => new DxRectangle(X + (Width / 2), Y + (Height / 2), Width / 2, Height / 2);
 
+        public DxLine LeftBorder => new DxLine(X, Y, X, Y + Height);
+        public DxLine RightBorder => new DxLine(X + Width, Y, X + Width, Y + Height);
+        public DxLine BottomBorder => new DxLine(X, Y + Height, X + Width, Y + Height);
+        public DxLine UpperBorder => new DxLine(X, Y, X + Width, Y);
+
+
+        public List<DxLine> Lines
+        {
+            get
+            {
+                const int numLines = 4;
+                var lines = new List<DxLine>(numLines) {UpperBorder, BottomBorder, LeftBorder, RightBorder};
+                return lines;
+            }
+        }
+
         public DxRectangle(Point upperLeftCorner, Point lowerRightCorner)
         {
             X = upperLeftCorner.X;
@@ -110,10 +126,10 @@ namespace DXGame.Core.Primitives
 
         public static bool operator ==(DxRectangle lhs, DxRectangle rhs)
         {
-            return MathUtils.FuzzyCompare(lhs.X, rhs.X, TOLERANCE) == 0
-                   && MathUtils.FuzzyCompare(lhs.Y, rhs.Y, TOLERANCE) == 0
-                   && MathUtils.FuzzyCompare(lhs.Width, rhs.Width, TOLERANCE) == 0
-                   && MathUtils.FuzzyCompare(lhs.Height, rhs.Height, TOLERANCE) == 0;
+            return lhs.X.FuzzyCompare(rhs.X, TOLERANCE) == 0
+                   && lhs.Y.FuzzyCompare(rhs.Y, TOLERANCE) == 0
+                   && lhs.Width.FuzzyCompare(rhs.Width, TOLERANCE) == 0
+                   && lhs.Height.FuzzyCompare(rhs.Height, TOLERANCE) == 0;
         }
 
         public static bool operator !=(DxRectangle lhs, DxRectangle rhs)

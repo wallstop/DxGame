@@ -26,6 +26,35 @@ namespace DXGame.Core.Components.Advanced
         [DataMember]
         public ReadOnlyCollection<CollidableDirection> CollidableDirections { get; }
 
+        [IgnoreDataMember]
+        public IEnumerable<DxLine> CollisionLines
+        {
+            get
+            {
+                var collisionLines = new List<DxLine>(CollidableDirections.Count);
+                foreach (var collisionDirection in CollidableDirections)
+                {
+                    switch (collisionDirection)
+
+                    {
+                        case CollidableDirection.Down:
+                            collisionLines.Add(Spatial.Space.BottomBorder);
+                            break;
+                        case CollidableDirection.Left:
+                            collisionLines.Add(Spatial.Space.LeftBorder);
+                            break;
+                        case CollidableDirection.Right:
+                            collisionLines.Add(Spatial.Space.RightBorder);
+                            break;
+                        case CollidableDirection.Up:
+                            collisionLines.Add(Spatial.Space.UpperBorder);
+                            break;
+                    }
+                }
+                return collisionLines;
+            }
+        }
+
         [DataMember]
         public SpatialComponent Spatial { get; }
 
@@ -56,23 +85,30 @@ namespace DXGame.Core.Components.Advanced
 
         public List<CollidableDirection> CollisionDirections(DxVector2 velocity)
         {
+            List<CollidableDirection> collidableDirections = CollisionDirectionsFrom(velocity);
+            collidableDirections.RemoveAll(direction => !CollidableDirections.Contains(direction));
+            return collidableDirections;
+        }
+
+        public static List<CollidableDirection> CollisionDirectionsFrom(DxVector2 velocity)
+        {
             /* Should only be able to collide a max of two directions at once */
             int maxCollisionDirections = 2;
             List<CollidableDirection> collisions = new List<CollidableDirection>(maxCollisionDirections);
-            if (velocity.X > 0 && CollidableDirections.Contains(CollidableDirection.Left))
+            if (velocity.X > 0)
             {
                 collisions.Add(CollidableDirection.Left);
             }
-            else if (velocity.X < 0 && CollidableDirections.Contains(CollidableDirection.Right))
+            else if (velocity.X < 0)
             {
                 collisions.Add(CollidableDirection.Right);
             }
 
-            if (velocity.Y < 0 && CollidableDirections.Contains(CollidableDirection.Up))
+            if (velocity.Y < 0)
             {
                 collisions.Add(CollidableDirection.Up);
             }
-            else if (velocity.Y > 0 && CollidableDirections.Contains(CollidableDirection.Down))
+            else if (velocity.Y > 0)
             {
                 collisions.Add(CollidableDirection.Down);
             }

@@ -76,7 +76,7 @@ namespace DXGame.Core.Generators
                 };
 
             var arrowRainSkill =
-                Skill.Builder().WithCooldown(TimeSpan.FromSeconds(1)).WithSkillFunction(Gevurah.RainOfArrows).Build();
+                Skill.Builder().WithCooldown(TimeSpan.FromSeconds(5)).WithSkillFunction(Gevurah.RainOfArrows).Build();
             SkillActivater arrowRainActivator = (game, component, remainingCooldown) =>
             {
                 return game.Model<InputModel>().FinishedEvents.Any(finishedEvent => finishedEvent.Key == Keys.F);

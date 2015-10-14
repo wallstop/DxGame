@@ -4,6 +4,14 @@ using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Primitives
 {
+
+    public enum Orientation
+    {
+        Colinear,
+        Clockwise,
+        CounterClockwise
+    }
+
     [Serializable]
     [DataContract]
     public struct DxVector2 : IEquatable<DxVector2>, IEquatable<Vector2>
@@ -119,6 +127,17 @@ namespace DXGame.Core.Primitives
             lhs.X /= divisor;
             lhs.Y /= divisor;
             return lhs;
+        }
+
+        public static Orientation Orientation(DxVector2 point1, DxVector2 point2, DxVector2 point3)
+        {
+            int orientation = (int) ((point2.Y - point1.Y) * (point3.X - point2.X) -
+                                     (point2.X - point1.X) * (point3.Y - point2.Y));
+            if (orientation == 0)
+            {
+                return Primitives.Orientation.Colinear;
+            }
+            return orientation > 0 ? Primitives.Orientation.Clockwise : Primitives.Orientation.CounterClockwise;
         }
 
         public static double DistanceBetween(DxVector2 lhs, DxVector2 rhs)

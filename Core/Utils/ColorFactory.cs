@@ -35,17 +35,17 @@ namespace DXGame.Core.Utils
             </summary>
         */
 
-        public static Color Transparency(float alphaBlend)
+        public static Color Transparency(float transparencyWeight)
         {
-            /* Wrap to nearest 0.01 so we don't get infinite keys */
-            alphaBlend = (float) Math.Round(alphaBlend, NUM_PRECISION_DIGITS);
-            if (Instance.transparencies_.ContainsKey(alphaBlend))
+            /* transparencyWeight to nearest 0.01 so we don't get infinite keys */
+            transparencyWeight = (float) Math.Round(transparencyWeight, NUM_PRECISION_DIGITS);
+            if (Instance.transparencies_.ContainsKey(transparencyWeight))
             {
-                return Instance.transparencies_[alphaBlend];
+                return Instance.transparencies_[transparencyWeight];
             }
-            Validate.IsTrue(alphaBlend >= 0.0f && alphaBlend <= 1.0f, $"Cannot create a transparency of {alphaBlend}");
-            var color = new Color(Color.White.ToVector4() * alphaBlend);
-            Instance.transparencies_[alphaBlend] = color;
+            Validate.IsTrue(transparencyWeight >= 0.0f && transparencyWeight <= 1.0f, $"Cannot create a transparency of {transparencyWeight}");
+            var color = new Color(Color.White.ToVector4() * transparencyWeight);
+            Instance.transparencies_[transparencyWeight] = color;
             return color;
         }
     }

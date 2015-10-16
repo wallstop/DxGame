@@ -21,7 +21,7 @@ namespace DXGame.Core.Components.Developer
     public class TeamCounterWidget : DrawableComponent
     {
         private static readonly int PIXEL_OFFSET = 5;
-        private static readonly TimeSpan UPDATE_INTERVAL = TimeSpan.FromSeconds(1.0 / 10);
+        private static readonly TimeSpan UPDATE_INTERVAL = TimeSpan.FromSeconds(1.0);
         protected readonly Dictionary<Team, int> teamCounts_ = new Dictionary<Team, int>();
         private TimeSpan lastUpdated_ = TimeSpan.Zero;
         protected SpriteFont spriteFont_;

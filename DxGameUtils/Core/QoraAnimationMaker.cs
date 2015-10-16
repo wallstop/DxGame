@@ -66,7 +66,7 @@ namespace DxGameUtils.Core
 
         private static void CreateAnimation(List<string> animationFiles, string animationName)
         {
-            var output = System.IO.Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "Output" +
+            var output = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "Output" +
                          Path.DirectorySeparatorChar;
 
             /* Bitmaps have a weird issue with transparency, so just grab the "pixel format" from the first loaded qora image and use that throughout */

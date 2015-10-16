@@ -18,6 +18,7 @@ namespace DXGame.Core.Models
         private static readonly string MAP_PATH = "Content/Map/";
         private readonly List<Map.Map> maps_ = new List<Map.Map>();
 
+        public DxRectangle RandomSpawnLocation => Map.RandomSpawnLocation;
         public DxVector2 PlayerSpawn => Map.PlayerSpawn;
         public DxRectangle MapBounds => Map.MapDescriptor.Size * Map.MapDescriptor.Scale;
         public Map.Map Map { get; private set; }

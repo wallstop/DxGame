@@ -31,10 +31,11 @@ namespace DXGame.Core.Utils
             }
         }
 
-        public static void DrawCircle(this SpriteBatch spriteBatch, Rectangle destination, Color color)
+        public static void DrawCircle(this SpriteBatch spriteBatch, Rectangle destination, Color color, float alphaBlend = 1.0f)
         {
             var filledCircle = TextureFactory.FilledCircleForColor(color);
-            spriteBatch.Draw(filledCircle, destinationRectangle: destination);
+            var transparency = ColorFactory.Transparency(alphaBlend);
+            spriteBatch.Draw(filledCircle, destinationRectangle: destination, color: transparency);
         }
 
         /**

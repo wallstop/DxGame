@@ -37,6 +37,25 @@ namespace DXGame.Core.Map
         [DataMember]
         public DxVector2 PlayerSpawn { get; private set; }
 
+        public DxRectangle RandomSpawnLocation
+        {
+            get
+            {
+                var boundary = MapDescriptor.Size * MapDescriptor.Scale;
+                DxRectangle spawnLocation;
+                do
+                {
+                    /* Pick a random place that has at least a 500x500 area of "no map collidables" */
+                    /* TODO: Have this be some kind of chooseable algorithm or something (bundled in map descriptor? ) */
+                    spawnLocation =
+                        new DxRectangle(
+                            ThreadLocalRandom.Current.NextFloat(boundary.X, (boundary.X + boundary.Width)),
+                            ThreadLocalRandom.Current.NextFloat(boundary.Y, (boundary.Y + boundary.Height)), 250, 250);
+                } while (CollidesWithMap(spawnLocation));
+                return spawnLocation;
+            }
+        }
+
         public Map(DxGame game, MapDescriptor descriptor)
             : base(game)
         {
@@ -71,7 +90,7 @@ namespace DXGame.Core.Map
                     .ToList();
 
             Collidables = new RTree<MapCollidableComponent>((spatial => spatial.Spatial.Space), mapSpatials);
-            DeterminePlayerSpawn();
+            PlayerSpawn = new DxVector2(RandomSpawnLocation.XY());
             base.Initialize();
         }
 
@@ -87,22 +106,6 @@ namespace DXGame.Core.Map
             target.Y = -target.Y;
             spriteBatch.Draw(MapTexture, (target).ToRectangle(), (target / MapDescriptor.Scale).ToRectangle(),
                 Color.White);
-        }
-
-        public void DeterminePlayerSpawn()
-        {
-            var boundary = MapDescriptor.Size * MapDescriptor.Scale;
-            DxRectangle playerSpawn;
-            do
-            {
-                /* Pick a random place that has at least a 500x500 area of "no map collidables" */
-                /* TODO: Have this be some kind of chooseable algorithm or something (bundled in map descriptor? ) */
-                playerSpawn =
-                    new DxRectangle(
-                        ThreadLocalRandom.Current.Next((int) boundary.X, (int) (boundary.X + boundary.Width)),
-                        ThreadLocalRandom.Current.Next((int) boundary.Y, (int) (boundary.Y + boundary.Height)), 500, 500);
-            } while (CollidesWithMap(playerSpawn));
-            PlayerSpawn = new DxVector2(playerSpawn.XY());
         }
 
         private bool CollidesWithMap(DxRectangle region)

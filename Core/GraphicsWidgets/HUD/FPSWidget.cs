@@ -1,14 +1,21 @@
 ﻿using System;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
+using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.GraphicsWidgets.HUD
 {
+    /**
+        <summary>
+            Calculates and draws the current FPS of the game in the upper right-hand corner of the screen
+        </summary>
+    */
     public class FpsWidget : DrawableComponent
     {
+        /* X and Y offset from upper-right corner to draw this widget */
         private static readonly int PIXEL_OFFSET = 5;
         private static readonly TimeSpan UPDATE_INTERVAL = TimeSpan.FromSeconds(1.0 / 10);
         private TimeSpan lastUpdated_ = TimeSpan.Zero;
@@ -39,7 +46,6 @@ namespace DXGame.Core.GraphicsWidgets.HUD
         protected override void Update(DxGameTime gameTime)
         {
             fpsTracker_.Process(gameTime);
-            base.Update(gameTime);
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
@@ -47,7 +53,7 @@ namespace DXGame.Core.GraphicsWidgets.HUD
             fpsTracker_.Draw(spriteBatch, gameTime);
             if (lastUpdated_ + UPDATE_INTERVAL < gameTime.TotalGameTime)
             {
-                fps_ = fpsTracker_.FramesPerSecond.ToString();
+                fps_ = $"FPS: {fpsTracker_.FramesPerSecond}";
                 lastUpdated_ = gameTime.TotalGameTime;
             }
 
@@ -55,6 +61,10 @@ namespace DXGame.Core.GraphicsWidgets.HUD
             var screenRegion = DxGame.ScreenRegion;
             // TODO: Fix whatever weird math is being done with the screen region to make drawing things "sane"
             var drawLocation = new Vector2(Math.Abs(screenRegion.X) + screenRegion.Width - size.X - PIXEL_OFFSET, Math.Abs(screenRegion.Y) + PIXEL_OFFSET);
+            const float transparencyWeight = 0.8f;
+            var transparency = ColorFactory.Transparency(transparencyWeight);
+            var blackTexture = TextureFactory.TextureForColor(Color.Black);
+            spriteBatch.Draw(blackTexture, color: transparency, destinationRectangle: new DxRectangle(drawLocation.X, drawLocation.Y, size.X, size.Y).ToRectangle());
             spriteBatch.DrawString(spriteFont_, fps_, drawLocation, Color.White);
         }
     }

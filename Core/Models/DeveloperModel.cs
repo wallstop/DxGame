@@ -37,6 +37,8 @@ namespace DXGame.Core.Models
             components_.Add(mapTreeWidget);
             var boundingBoxWidget = new BoundingBoxWidget(game);
             components_.Add(boundingBoxWidget);
+            var teamCounterWidget = new TeamCounterWidget(game);
+            components_.Add(teamCounterWidget);
         }
 
         public override bool ShouldSerialize => false;

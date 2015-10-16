@@ -22,6 +22,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
             // Extract the map model and bounds
             var mapModel = game.Model<MapModel>();
             var bounds = mapModel.MapBounds;
+            var teamComponent = new TeamComponent(game, Team.EnemyTeam);
             // Build spatial component from bounds
             var enemySpatial =
                 (BoundedSpatialComponent)
@@ -45,7 +46,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
             var enemyObject =
                 GameObject.Builder()
                     .WithComponents(enemySpatial, enemyPhysics, enemyProperties, floatingHealthBar, deathExploder,
-                        damageComponent)
+                        damageComponent, teamComponent)
                     .Build();
             // Create a state machine for the enemy in question
             // Horrifically complex; weep, gnash teeth
@@ -68,14 +69,9 @@ namespace DXGame.Core.Components.Advanced.Enemy
             // Extract the map model and bounds
             var mapModel = game.Model<MapModel>();
             var spawnFunction = new SimpleBoxSpawnFunction();
-
-            var spawnLocation = mapModel.PlayerSpawn;
-            var spawnArea = new DxRectangle(spawnLocation, new DxVector2(50, 50));
             return
                 Spawner.Builder()
-                    .WithPosition(spawnLocation)
                     .WithGame(game)
-                    .WithSpawnArea(spawnArea)
                     .WithSpawnTrigger(spawnFunction.Spawn)
                     .Build();
         }
@@ -90,8 +86,8 @@ namespace DXGame.Core.Components.Advanced.Enemy
         private class SimpleBoxSpawnFunction
         {
             private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-            private static readonly TimeSpan SPAWN_DELAY = TimeSpan.FromSeconds(1 / 50.0);
-            private static readonly int MAX_BOXES_IN_PLAY = 200;
+            private static readonly TimeSpan SPAWN_DELAY = TimeSpan.FromSeconds(1 / 10.0);
+            private static readonly int MAX_BOXES_IN_PLAY = 250;
             private TimeSpan lastSpawned_ = TimeSpan.Zero;
             private int numSpawned_;
 

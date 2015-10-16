@@ -136,6 +136,7 @@
     <Compile Include="Core\Components\Developer\BoundingBoxWidget.cs" />
     <Compile Include="Core\Components\Developer\DeveloperSwitch.cs" />
     <Compile Include="Core\Components\Developer\LifeSuckerComponent.cs" />
+    <Compile Include="Core\Components\Developer\TeamCounterWidget.cs" />
     <Compile Include="Core\DataStructures\Tree.cs" />
     <Compile Include="Core\EventSystem.cs" />
     <Compile Include="Core\Frames\SingleElementFrame.cs" />
@@ -188,6 +189,8 @@
     <Compile Include="Core\Components\Advanced\Position\PositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
     <Compile Include="Core\Team.cs" />
+    <Compile Include="Core\Utils\ColorFactory.cs" />
+    <Compile Include="Core\Utils\ColorUtils.cs" />
     <Compile Include="Core\Utils\CriticalRegion.cs" />
     <Compile Include="Core\Utils\Distance\Directions.cs" />
     <Compile Include="Core\Utils\Distance\ICollisionTree.cs" />

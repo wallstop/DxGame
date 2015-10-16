@@ -27,6 +27,11 @@ namespace DXGame.Core.Messaging
         InteractWithEnvironment
     }
 
+    /**
+        <summary>
+            Simple handy-dandy wrapper around Commandment-specific util methods (since methods cannot be global namespaced)
+        </summary>
+    */
     public static class Commandments
     {
         public static readonly ReadOnlyCollection<Commandment> ABILITY_COMMANDMENTS =
@@ -36,6 +41,16 @@ namespace DXGame.Core.Messaging
                 Commandment.Ability2,
                 Commandment.Ability3,
                 Commandment.Ability4
+            });
+
+        public static readonly ReadOnlyCollection<Commandment> MOVEMENT_COMMANDMENTS =
+            new ReadOnlyCollection<Commandment>(new List<Commandment>
+            {
+                Commandment.MoveLeft,
+                Commandment.MoveRight,
+                Commandment.MoveDown,
+                Commandment.MoveUp,
+                Commandment.Movement
             });
     }
 

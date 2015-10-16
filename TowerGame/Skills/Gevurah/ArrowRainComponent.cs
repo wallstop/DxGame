@@ -211,8 +211,8 @@ namespace DXGame.TowerGame.Skills.Gevurah
             {
                 var arrowSpritePosition = arrowSpritePositionAndVelocity.Item1;
                 var transparencyWeight = ThreadLocalRandom.Current.NextFloat(0.1f, 0.7f);
-                var color = new Color(Color.White.ToVector4() * transparencyWeight);
-                spriteBatch.Draw(ArrowSprite, arrowSpritePosition.ToVector2(), color);
+                var transparency = ColorFactory.Transparency(transparencyWeight);
+                spriteBatch.Draw(ArrowSprite, arrowSpritePosition.ToVector2(), transparency);
             }
         }
 

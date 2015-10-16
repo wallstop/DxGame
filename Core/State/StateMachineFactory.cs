@@ -65,6 +65,8 @@ namespace DXGame.Core.State
                     .WithAction(actionResolver.JumpAction)
                     .WithOnEnter(actionResolver.OnJumpEnterAction)
                     .Build();
+            var jumpNormalState =
+                State.Builder().WithName("NormalJumping").WithAction(actionResolver.IdleAction).Build();
             var jumpLeftState =
                 State.Builder().WithName("JumpingLeft").WithAction(actionResolver.MoveLeftAction).Build();
             var jumpRightState =
@@ -80,7 +82,8 @@ namespace DXGame.Core.State
                 .WithStateAndAsset(jumpLeftState,
                     AnimationFactory.AnimationFor(entityName, StandardAnimationType.JumpLeft))
                 .WithStateAndAsset(jumpRightState,
-                    AnimationFactory.AnimationFor(entityName, StandardAnimationType.JumpLeft));
+                    AnimationFactory.AnimationFor(entityName, StandardAnimationType.JumpLeft))
+                .WithStateAndAsset(jumpNormalState, AnimationFactory.AnimationFor(entityName, StandardAnimationType.JumpLeft));
 
             Trigger moveLeftTrigger = AnyMoveLeftCommands;
             Trigger moveRightTrigger = AnyMoveRightCommands;
@@ -89,6 +92,7 @@ namespace DXGame.Core.State
             Trigger returnToIdleTrigger =
                 (entityInstance, gameTime) =>
                     !AnyMoveLeftCommands(entityInstance, gameTime) && !AnyMoveRightCommands(entityInstance, gameTime);
+            Trigger movingBothDirectionsIsReallyIdleTrigger = OnlyMoveLeftAndRightCommands;
 
             var moveLeftTransition = new Transition(moveLeftTrigger, moveLeftState);
             var jumpLeftTransition = new Transition(moveLeftTrigger, jumpLeftState);
@@ -96,28 +100,40 @@ namespace DXGame.Core.State
             var jumpRightTransition = new Transition(moveRightTrigger, jumpRightState);
             var jumpTransition = new Transition(jumpTrigger, jumpState, Priority.HIGH);
             var returnToIdleTransition = new Transition(returnToIdleTrigger, idleState, Priority.LOW);
+            var movingBothDirectionsIsReallyIdleTransition = new Transition(movingBothDirectionsIsReallyIdleTrigger, idleState, Priority.HIGH);
+            var movingBothDirectionsIsReallyNormalJumpingTransition =
+                new Transition(movingBothDirectionsIsReallyIdleTrigger, jumpNormalState, Priority.HIGH);
             var jumpToIdleTransition = new Transition(BelowCollisionTrigger, idleState, Priority.HIGH);
 
             idleState.Transitions.Add(moveLeftTransition);
             idleState.Transitions.Add(moveRightTransition);
             idleState.Transitions.Add(jumpTransition);
+            idleState.Transitions.Add(movingBothDirectionsIsReallyIdleTransition);
             moveLeftState.Transitions.Add(moveLeftTransition);
             moveLeftState.Transitions.Add(moveRightTransition);
             moveLeftState.Transitions.Add(jumpTransition);
             moveLeftState.Transitions.Add(returnToIdleTransition);
+            moveLeftState.Transitions.Add(movingBothDirectionsIsReallyIdleTransition);
             moveRightState.Transitions.Add(moveLeftTransition);
             moveRightState.Transitions.Add(moveRightTransition);
             moveRightState.Transitions.Add(jumpTransition);
             moveRightState.Transitions.Add(returnToIdleTransition);
+            moveRightState.Transitions.Add(movingBothDirectionsIsReallyIdleTransition);
             jumpState.Transitions.Add(jumpRightTransition);
             jumpState.Transitions.Add(jumpLeftTransition);
             jumpState.Transitions.Add(jumpToIdleTransition);
             jumpLeftState.Transitions.Add(jumpRightTransition);
             jumpLeftState.Transitions.Add(jumpToIdleTransition);
             jumpLeftState.Transitions.Add(jumpLeftTransition);
+            jumpLeftState.Transitions.Add(movingBothDirectionsIsReallyNormalJumpingTransition);
             jumpRightState.Transitions.Add(jumpLeftTransition);
             jumpRightState.Transitions.Add(jumpToIdleTransition);
             jumpRightState.Transitions.Add(jumpRightTransition);
+            jumpRightState.Transitions.Add(movingBothDirectionsIsReallyNormalJumpingTransition);
+            jumpNormalState.Transitions.Add(movingBothDirectionsIsReallyNormalJumpingTransition);
+            jumpNormalState.Transitions.Add(jumpRightTransition);
+            jumpNormalState.Transitions.Add(jumpLeftTransition);
+            jumpNormalState.Transitions.Add(jumpToIdleTransition);
             var stateMachine = stateMachineBuilder.WithInitialState(idleState).Build();
             entity.AttachComponent(stateMachine);
             var animationComponent = animationBuilder.WithStateMachine(stateMachine).Build();
@@ -148,6 +164,32 @@ namespace DXGame.Core.State
         {
             var collisionMessages = entity.CurrentMessages.OfType<CollisionMessage>();
             return collisionMessages.Any(collision => collision.CollisionDirections.Contains(Direction.South));
+        }
+
+        /* 
+            TODO: Tweak this for jumping & falling (right now it only prevents you from moving left/right, 
+            but not while jumping or falling through platforms) 
+        */
+        private static bool OnlyMoveLeftAndRightCommands(GameObject entity, DxGameTime gameTime)
+        {
+            var commands = entity.CurrentMessages.OfType<CommandMessage>();
+            var seenLeft = false;
+            var seenRight = false;
+            foreach (var commandment in commands.Select(command => command.Commandment))
+            {
+                switch (commandment)
+                {
+                    case Commandment.MoveLeft:
+                        seenLeft = true;
+                        break;
+                    case Commandment.MoveRight:
+                        seenRight = true;
+                        break;
+                    default:
+                        return false;
+                }
+            }
+            return seenLeft && seenRight;
         }
 
         [Serializable]

@@ -1,6 +1,7 @@
 ﻿using System;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -18,15 +19,11 @@ namespace DXGame.Core.Components.Advanced.Enemy
     [Serializable]
     public class Spawner : Component
     {
-        protected DxVector2 Position { get; }
-        protected DxRectangle SpawnArea { get; }
         protected SpawnTrigger SpawnTrigger { get; }
 
         protected Spawner(DxGame game, DxVector2 position, DxRectangle spawnArea, SpawnTrigger spawnTrigger)
             : base(game)
         {
-            Position = position;
-            SpawnArea = spawnArea;
             SpawnTrigger = spawnTrigger;
         }
 
@@ -45,13 +42,15 @@ namespace DXGame.Core.Components.Advanced.Enemy
 
         private DxVector2 RandomPositionInSpawnArea()
         {
-            var minX = SpawnArea.X;
-            var maxX = SpawnArea.X + SpawnArea.Width;
-            var minY = SpawnArea.Y;
-            var maxY = SpawnArea.Y + SpawnArea.Height;
+            var map = DxGame.Model<MapModel>();
+            var spawnArea = map.RandomSpawnLocation;
+            var minX = spawnArea.X;
+            var maxX = spawnArea.X + spawnArea.Width;
+            var minY = spawnArea.Y;
+            var maxY = spawnArea.Y + spawnArea.Height;
 
-            var xCoordinate = ThreadLocalRandom.Current.Next((int) minX, (int) maxX);
-            var yCoordinate = ThreadLocalRandom.Current.Next((int) minY, (int) maxY);
+            var xCoordinate = ThreadLocalRandom.Current.NextFloat(minX, maxX);
+            var yCoordinate = ThreadLocalRandom.Current.NextFloat( minY, maxY);
             return new DxVector2(xCoordinate, yCoordinate);
         }
 

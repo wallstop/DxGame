@@ -65,8 +65,9 @@ namespace DXGame.Core.Generators
             var playerBuilder = GameObject.Builder();
             var inputListener = new PlayerInputListener(game_);
             var facingComponent = new FacingComponent(game_);
+            var teamComponent = new TeamComponent(game_, Team.PlayerTeam);
             playerBuilder.WithComponents(PlayerSpace, physics_, weapon_,
-                playerProperties_, healthBar_, inputListener, facingComponent);
+                playerProperties_, healthBar_, inputListener, facingComponent, teamComponent);
             var playerObject = playerBuilder.Build();
             var shockwaveSkill =
                 Skill.Builder().WithCooldown(TimeSpan.FromSeconds(1)).WithSkillFunction(Gevurah.Shockwave).WithCommandment(Commandment.Ability1).Build();

@@ -127,6 +127,7 @@ namespace DXGame.Core.State
             var jumpRightTransition = new Transition(moveRightTrigger, jumpRightState);
             var jumpTransition = new Transition(jumpTrigger, jumpState, Priority.HIGH);
             var returnToIdleTransition = new Transition(returnToIdleTrigger, idleState, Priority.LOW);
+            var returnToNormalJumpTransition = new Transition(returnToIdleTrigger, jumpNormalState, Priority.LOW);
             var movingBothDirectionsIsReallyIdleTransition = new Transition(movingBothDirectionsIsReallyIdleTrigger, idleState, Priority.HIGH);
             var movingBothDirectionsIsReallyNormalJumpingTransition =
                 new Transition(movingBothDirectionsIsReallyIdleTrigger, jumpNormalState, Priority.HIGH);
@@ -153,14 +154,17 @@ namespace DXGame.Core.State
             jumpLeftState.Transitions.Add(jumpToIdleTransition);
             jumpLeftState.Transitions.Add(jumpLeftTransition);
             jumpLeftState.Transitions.Add(movingBothDirectionsIsReallyNormalJumpingTransition);
+            jumpLeftState.Transitions.Add(returnToNormalJumpTransition);
             jumpRightState.Transitions.Add(jumpLeftTransition);
             jumpRightState.Transitions.Add(jumpToIdleTransition);
             jumpRightState.Transitions.Add(jumpRightTransition);
             jumpRightState.Transitions.Add(movingBothDirectionsIsReallyNormalJumpingTransition);
+            jumpRightState.Transitions.Add(returnToNormalJumpTransition);
             jumpNormalState.Transitions.Add(movingBothDirectionsIsReallyNormalJumpingTransition);
             jumpNormalState.Transitions.Add(jumpRightTransition);
             jumpNormalState.Transitions.Add(jumpLeftTransition);
             jumpNormalState.Transitions.Add(jumpToIdleTransition);
+            jumpNormalState.Transitions.Add(returnToNormalJumpTransition);
             var stateMachine = stateMachineBuilder.WithInitialState(idleState).Build();
             entity.AttachComponent(stateMachine);
             var animationComponent = animationBuilder.WithStateMachine(stateMachine).Build();

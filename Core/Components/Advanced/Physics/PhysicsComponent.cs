@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
@@ -19,29 +18,22 @@ namespace DXGame.Core.Components.Advanced.Physics
             with other objects needs to have a Physics Component (bullets, map collisions, etc)
         </summary>
     */
+
     [Serializable]
     [DataContract]
     public class PhysicsComponent : Component
     {
         protected static readonly float VELOCITY_FLOOR = 0.5f;
-       
-        [DataMember] protected SpatialComponent space_;
-        [DataMember] protected DxVector2 velocity_;
-
         /* Currently acting forces on this object. This will typically include gravity & air resistance */
         [DataMember] protected readonly List<Force> forces_ = new List<Force>();
-
-        public IEnumerable<Force> Forces => forces_; 
+        [DataMember] protected SpatialComponent space_;
+        [DataMember] protected DxVector2 velocity_;
+        public IEnumerable<Force> Forces => forces_;
 
         public virtual DxVector2 Velocity
         {
             get { return velocity_; }
-            set
-            {
-                velocity_ = value;
-                //velocity_.X = (Math.Abs(value.X) < VELOCITY_FLOOR && Acceleration.X != 0) ? 0 : value.X;
-                //velocity_.Y = (Math.Abs(value.Y) < VELOCITY_FLOOR && Acceleration.Y != 0) ? 0 : value.Y;
-            }
+            set { velocity_ = value; }
         }
 
         public virtual DxVector2 Position
@@ -51,10 +43,10 @@ namespace DXGame.Core.Components.Advanced.Physics
         }
 
         public DxRectangle Space => space_.Space;
-
         public virtual SpatialComponent SpatialComponent => space_;
 
-        protected PhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration, SpatialComponent position, UpdatePriority updatePriority)
+        protected PhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration, SpatialComponent position,
+            UpdatePriority updatePriority)
             : base(game)
         {
             MessageHandler.RegisterMessageHandler<CollisionMessage>(HandleCollisionMessage);
@@ -75,14 +67,63 @@ namespace DXGame.Core.Components.Advanced.Physics
             return new PhysicsComponentBuilder();
         }
 
+        protected override void Update(DxGameTime gameTime)
+        {
+            var scaleAmount = gameTime.DetermineScaleFactor(DxGame);
+            var acceleration = new DxVector2();
+            foreach (var force in forces_)
+            {
+                force.Update(Velocity, acceleration, gameTime);
+                if (!force.Dissipated)
+                {
+                    acceleration += force.Acceleration;
+                }
+            }
+            /* If our forces are gone, remove them */
+            forces_.RemoveAll(force => force.Dissipated);
+            /* Scale our acceleration to the elapsed time for the current frame - we don't want the game running at hyperspeed */
+            Velocity += (acceleration * scaleAmount);
+            Position += (Velocity * scaleAmount);
+        }
+
+        protected void HandleCollisionMessage(CollisionMessage message)
+        {
+            var collisionDirections = message.CollisionDirections;
+            var velocity = Velocity; 
+            // Collide on against y axis (vertical)? Cease movement and acceleration in that direction
+            if (collisionDirections.Contains(Direction.East) ||
+                collisionDirections.Contains(Direction.West))
+            {
+                velocity.X = 0;
+            }
+            // Same for horizontal movement
+            if (collisionDirections.Contains(Direction.South) ||
+                collisionDirections.Contains(Direction.North))
+            {
+                velocity.Y = 0;
+            }
+            Velocity = velocity;
+        }
+
         public class PhysicsComponentBuilder : IBuilder<PhysicsComponent>
         {
-            protected DxVector2 velocity_;
+            protected readonly HashSet<Force> forces_ = new HashSet<Force>();
             protected DxVector2 acceleration_;
+            protected DxGame game_;
             protected SpatialComponent space_;
             protected UpdatePriority updatePriority_ = UpdatePriority.PHYSICS;
-            protected readonly HashSet<Force> forces_ = new HashSet<Force>();
-            protected DxGame game_;
+            protected DxVector2 velocity_;
+
+            public virtual PhysicsComponent Build()
+            {
+                CheckParameters();
+                var physics = new PhysicsComponent(game_, velocity_, acceleration_, space_, updatePriority_);
+                foreach (var force in forces_)
+                {
+                    physics.AttachForce(force);
+                }
+                return physics;
+            }
 
             public virtual PhysicsComponentBuilder WithForce(Force force)
             {
@@ -148,60 +189,6 @@ namespace DXGame.Core.Components.Advanced.Physics
                     game_ = DxGame.Instance;
                 }
             }
-
-            public virtual PhysicsComponent Build()
-            {
-                CheckParameters();
-                var physics = new PhysicsComponent(game_, velocity_, acceleration_, space_, updatePriority_);
-                foreach (var force in forces_)
-                {
-                    physics.AttachForce(force);
-                }
-                return physics;
-            }
-        }
-
-        protected override void Update(DxGameTime gameTime)
-        {
-            var scaleAmount = gameTime.DetermineScaleFactor(DxGame);
-            var acceleration = new DxVector2();
-            foreach (var force in forces_)
-            {
-                force.Update(Velocity, acceleration, gameTime);
-                /* 
-                    Make sure to modify a temporary - we don't want to cumulatively update these things, 
-                    we simply want to aggregate their results on velocity 
-                */
-                if (!force.Dissipated)
-                {
-                    acceleration += force.Acceleration;
-                }
-            }
-            /* Scale our acceleration to the elapsed time for the current frame - we don't want the game running at hyperspeed */
-            Velocity += (acceleration * scaleAmount);
-            /* If our forces are gone, remove them */
-            forces_.RemoveAll(force => force.Dissipated);
-            Position += (Velocity * scaleAmount);
-        }
-
-        protected void HandleCollisionMessage(CollisionMessage message)
-        {
-            var collisionDirections = message.CollisionDirections;
-            var velocity = Velocity;
-            // Check for x-wise collisions 
-            // Collide on against y axis (vertical)? Cease movement & acceleration in that direction
-            if (collisionDirections.Contains(Direction.East) ||
-                collisionDirections.Contains(Direction.West))
-            {
-                velocity.X = 0;
-            }
-            // Same for horizontal movement
-            if (collisionDirections.Contains(Direction.South) ||
-                collisionDirections.Contains(Direction.North))
-            {
-                velocity.Y = 0;
-            }
-            Velocity = velocity;
         }
     }
 }

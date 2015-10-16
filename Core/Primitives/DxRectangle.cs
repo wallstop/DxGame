@@ -62,22 +62,6 @@ namespace DXGame.Core.Primitives
             Height = upperLeftCorner.Y - lowerRightCorner.Y;
         }
 
-        public DxRectangle(Vector2 x, Vector2 y)
-        {
-            X = x.X;
-            Width = x.Y;
-            Y = y.X;
-            Height = y.Y;
-        }
-
-        public DxRectangle(DxVector2 x, DxVector2 y)
-        {
-            X = x.X;
-            Width = x.Y;
-            Y = y.X;
-            Height = y.Y;
-        }
-
         public DxRectangle(Rectangle rectangle)
         {
             X = rectangle.X;

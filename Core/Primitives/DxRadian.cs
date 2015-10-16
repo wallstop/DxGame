@@ -80,7 +80,7 @@ namespace DXGame.Core.Primitives
 
         public override string ToString()
         {
-            return Value.ToString("N2");
+            return $"{Value:N2}";
         }
 
         public bool Equals(DxRadian other)

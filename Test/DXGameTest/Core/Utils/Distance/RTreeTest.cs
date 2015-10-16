@@ -17,16 +17,8 @@ namespace DXGameTest.Core.Utils.Distance
             List<DxRectangle> rectangles = DistanceHelper.GenerateRectanglesInRange(range, numPoints);
 
             DxRectangle selectRange = range;
-
-            Stopwatch timer = Stopwatch.StartNew();
-
             RTree<DxRectangle> testTree = new RTree<DxRectangle>(rectangle => rectangle, rectangles);
-            TimeSpan treeBuildTime = timer.Elapsed;
             List<DxRectangle> objectsInRange = testTree.InRange(selectRange);
-            timer.Stop();
-
-            Console.WriteLine(
-                $"RTree build time {treeBuildTime}, full query time {timer.Elapsed - treeBuildTime}, total {timer.Elapsed}");
 
             Assert.AreEqual(rectangles.Count, objectsInRange.Count);
         }

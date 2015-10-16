@@ -8,5 +8,14 @@ namespace DXGameTest.Core
         {
             return rGen.NextDouble() * (max - min) + min;
         }
+
+        public static void RunMultipleTimes(Action function)
+        {
+            const int numRunTimes = 10000;
+            for (int i = 0; i < numRunTimes; ++i)
+            {
+                function();
+            }
+        }
     }
 }

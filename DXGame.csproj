@@ -163,6 +163,8 @@
     <Compile Include="Core\Physics\Force.cs" />
     <Compile Include="Core\Physics\Interaction.cs" />
     <Compile Include="Core\Physics\WorldForces.cs" />
+    <Compile Include="Core\Primitives\DxCircle.cs" />
+    <Compile Include="Core\Primitives\DxColor.cs" />
     <Compile Include="Core\Primitives\DxDegree.cs" />
     <Compile Include="Core\Primitives\DxLine.cs" />
     <Compile Include="Core\Primitives\DxRadian.cs" />

@@ -136,6 +136,16 @@ namespace DXGame.TowerGame.Skills.Gevurah
         }
     }
 
+    /**
+
+        Rains death from above.
+
+        Actually responsible for determining which areas are affected by arrow rain as well as applying Damage to enemies within
+
+        <summary>
+        
+        </summary>
+    */
     [Serializable]
     [DataContract]
     public class ArrowRainer : DrawableComponent
@@ -160,7 +170,8 @@ namespace DXGame.TowerGame.Skills.Gevurah
         private int pulses_;
         private TimeSpan PulseDelay { get; } = TimeSpan.FromSeconds(1 / 5.0);
         private TimeSpan Duration { get; } = TimeSpan.FromSeconds(3);
-        private Texture2D ArrowSprite { get; set; }
+        [NonSerialized]
+        private Texture2D arrowSprite_;
         private DxVector2 Position { get; }
         private GameObject Source { get; }
 
@@ -212,7 +223,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
                 var arrowSpritePosition = arrowSpritePositionAndVelocity.Item1;
                 var transparencyWeight = ThreadLocalRandom.Current.NextFloat(0.1f, 0.7f);
                 var transparency = ColorFactory.Transparency(transparencyWeight);
-                spriteBatch.Draw(ArrowSprite, arrowSpritePosition.ToVector2(), transparency);
+                spriteBatch.Draw(arrowSprite_, arrowSpritePosition.ToVector2(), transparency);
             }
         }
 
@@ -260,8 +271,8 @@ namespace DXGame.TowerGame.Skills.Gevurah
             foreach (var arrowSpritePositionAndVelocity in arrowSpritePositionsAndVelocities_.ToArray())
             {
                 var arrowSpritePosition = arrowSpritePositionAndVelocity.Item1;
-                var boundingBox = new DxRectangle(arrowSpritePosition.X, arrowSpritePosition.Y, ArrowSprite.Width,
-                    ArrowSprite.Height);
+                var boundingBox = new DxRectangle(arrowSpritePosition.X, arrowSpritePosition.Y, arrowSprite_.Width,
+                    arrowSprite_.Height);
                 /* Naive check for map collision (none of this is great) */
                 if (mapTilesInRange.Any(mapTileInRange => mapTileInRange.Intersects(boundingBox)))
                 {
@@ -319,7 +330,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
         public override void LoadContent()
         {
-            ArrowSprite = DxGame.Content.Load<Texture2D>(ASSET_NAME);
+            arrowSprite_ = DxGame.Content.Load<Texture2D>(ASSET_NAME);
             base.LoadContent();
         }
 

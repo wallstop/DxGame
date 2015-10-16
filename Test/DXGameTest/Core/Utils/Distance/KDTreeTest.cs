@@ -22,15 +22,8 @@ namespace DXGameTest.Core.Utils.Distance
             List<TestPoint> testObjects = points.Select(point => new TestPoint(point)).ToList();
             DxRectangle selectRange = range;
 
-            Stopwatch timer = Stopwatch.StartNew();
-
             KDTree<TestPoint> testTree = new KDTree<TestPoint>(testObject => testObject.Point, range, testObjects);
-            TimeSpan treeBuildTime = timer.Elapsed;
             List<TestPoint> objectsInRange = testTree.InRange(selectRange);
-            timer.Stop();
-
-            Console.WriteLine(
-                $"KDTree build time {treeBuildTime}, full query time {timer.Elapsed - treeBuildTime}, total {timer.Elapsed}");
 
             Assert.AreEqual(testObjects.Count, objectsInRange.Count);
         }

@@ -50,6 +50,8 @@ namespace DXGame.Core.Components.Advanced.Particle
             TransparencyWeight = transparencyWeight;
         }
 
+        public override bool ShouldSerialize => false;
+
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             TimeToLive -= gameTime.ElapsedGameTime;

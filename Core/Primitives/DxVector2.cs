@@ -185,7 +185,7 @@ namespace DXGame.Core.Primitives
 
         public override string ToString()
         {
-            return "{X:" + X + " Y: " + Y + "}";
+            return $"{{ X:{X:N2}, Y:{Y:N2} }}";
         }
     }
 }

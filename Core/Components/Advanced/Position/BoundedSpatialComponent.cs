@@ -28,7 +28,7 @@ namespace DXGame.Core.Components.Advanced.Position
         [DataMember]
         public DxVector2 YBounds { get; }
 
-        public DxRectangle Bounds => new DxRectangle(XBounds, YBounds);
+        public DxRectangle Bounds => new DxRectangle(XBounds.X, YBounds.Y, XBounds.Y - XBounds.X, YBounds.Y - YBounds.X);
 
         [IgnoreDataMember]
         public override DxVector2 Position

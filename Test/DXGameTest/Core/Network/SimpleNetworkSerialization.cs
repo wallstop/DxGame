@@ -19,7 +19,6 @@ namespace DXGameTest.Core.Network
         private GameObject gameObject_;
         private MapCollidablePhysicsComponent physics_;
         private SpatialComponent spatial_;
-        private SimpleSpriteComponent sprite_;
         // TODO
         [SetUp]
         public void SetUp()
@@ -29,9 +28,8 @@ namespace DXGameTest.Core.Network
             var bounds = new DxRectangle(0, 0, 5000, 5000);
             spatial_ = (SpatialComponent)
                     BoundedSpatialComponent.Builder().WithBounds(bounds).WithPosition(new DxVector2(200, 400)).Build();
-            sprite_ = new SimpleSpriteComponent(game_).WithAsset("Orb").WithPosition(spatial_);
             physics_ = (MapCollidablePhysicsComponent)MapCollidablePhysicsComponent.Builder().WithSpatialComponent(spatial_).Build();
-            gameObject_ = GameObject.Builder().WithComponents(spatial_, sprite_, physics_).Build();
+            gameObject_ = GameObject.Builder().WithComponents(spatial_, physics_).Build();
         }
 
         [Test]
@@ -39,7 +37,7 @@ namespace DXGameTest.Core.Network
         {
             TestSerializable serializable = new TestSerializable
             {
-                Components = new List<Component> {spatial_, sprite_, physics_},
+                Components = new List<Component> {spatial_, physics_},
                 GameTime = new DxGameTime(TimeSpan.FromSeconds(23), TimeSpan.FromSeconds(1.2)),
                 GameObjects = new List<GameObject> {gameObject_}
             };

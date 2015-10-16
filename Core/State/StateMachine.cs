@@ -63,6 +63,7 @@ namespace DXGame.Core.State
             /* Are we transitioning? Fire the enter and exit functions, boys! Land ho! */
             if (!ReferenceEquals(nextState, CurrentState))
             {
+
                 CurrentState.OnExit?.Invoke(gameTime);
                 nextState.OnEnter?.Invoke(gameTime);
                 CurrentState = nextState;

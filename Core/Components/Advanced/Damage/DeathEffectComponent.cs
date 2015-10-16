@@ -108,7 +108,7 @@ namespace DXGame.Core.Components.Advanced.Damage
                 var growRate = ThreadLocalRandom.Current.NextFloat(minGrowRate, maxGrowRate);
                 var radius = ThreadLocalRandom.Current.NextFloat(minRadius, maxRadius);
                 var maximumDistance = ThreadLocalRandom.Current.NextFloat(minDistance, maxDistance);
-                var alphaBlend = ThreadLocalRandom.Current.NextFloat(0.2f, 1.0f);
+                var transparencyWeight = ThreadLocalRandom.Current.NextFloat(0.1f, 1.0f);
                 var particle = Particle.Particle.Builder()
                     .WithPosition(position)
                     .WithVelocity(particleVelocity)
@@ -118,7 +118,7 @@ namespace DXGame.Core.Components.Advanced.Damage
                     .WithGrowRate(growRate)
                     .WithRadius(radius)
                     .WithMaxDistance(maximumDistance)
-                    .WithAlphaBlend(alphaBlend)
+                    .WithTransparencyWeight(transparencyWeight)
                     .Build();
 
                 DxGame.Instance.AddAndInitializeComponents(particle);

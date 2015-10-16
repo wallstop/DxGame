@@ -11,7 +11,7 @@ namespace DXGame.Core.Physics
             Returns a tuple [isDissipated, newAcceleration] given the current acceleration value & the gameTime
         </summary>
     */
-    public delegate Tuple<bool, DxVector2> DissipationFunction(DxVector2 externalVelocity, DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime);
+    public delegate Tuple<bool, DxVector2> DissipationFunction(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime);
 
     /**
         <summary>
@@ -43,7 +43,7 @@ namespace DXGame.Core.Physics
         {
             if (!Dissipated)
             {
-                var dissipation = Dissipation.Invoke(velocity, acceleration, Acceleration, gameTime);
+                var dissipation = Dissipation.Invoke(velocity, Acceleration, gameTime);
                 Dissipated = dissipation.Item1;
                 Acceleration = dissipation.Item2;
             }

@@ -281,10 +281,8 @@
     <Compile Include="Main\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Properties\PropertyMutator.cs" />
-    <Compile Include="TowerGame\Actions\PlayerActionFactory.cs" />
     <Compile Include="TowerGame\Behavior\SimpleAttackPlayerBehavior.cs" />
     <Compile Include="TowerGame\Components\SimpleEnemyAI.cs" />
-    <Compile Include="TowerGame\Enemies\EnemyFactory.cs" />
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />
     <Compile Include="TowerGame\PropertyMutators\InheritedHatred.cs" />
     <Compile Include="TowerGame\Skills\Gevurah\ArrowRainComponent.cs" />
@@ -546,7 +544,9 @@
     <Folder Include="Content\Behaviors\" />
     <Folder Include="Core\GraphicsWidgets\Utils\" />
     <Folder Include="Network\" />
+    <Folder Include="TowerGame\Actions\" />
     <Folder Include="TowerGame\Buffs\" />
+    <Folder Include="TowerGame\Enemies\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

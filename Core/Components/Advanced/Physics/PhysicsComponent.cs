@@ -24,8 +24,7 @@ namespace DXGame.Core.Components.Advanced.Physics
     public class PhysicsComponent : Component
     {
         protected static readonly float VELOCITY_FLOOR = 0.5f;
-
-        [DataMember] protected DxVector2 acceleration_;
+       
         [DataMember] protected SpatialComponent space_;
         [DataMember] protected DxVector2 velocity_;
 
@@ -45,12 +44,6 @@ namespace DXGame.Core.Components.Advanced.Physics
             }
         }
 
-        public virtual DxVector2 Acceleration
-        {
-            get { return acceleration_; }
-            set { acceleration_ = value; }
-        }
-
         public virtual DxVector2 Position
         {
             get { return space_.Position; }
@@ -66,7 +59,6 @@ namespace DXGame.Core.Components.Advanced.Physics
         {
             MessageHandler.RegisterMessageHandler<CollisionMessage>(HandleCollisionMessage);
             velocity_ = velocity;
-            acceleration_ = acceleration;
             space_ = position;
             UpdatePriority = updatePriority;
         }
@@ -172,10 +164,10 @@ namespace DXGame.Core.Components.Advanced.Physics
         protected override void Update(DxGameTime gameTime)
         {
             var scaleAmount = gameTime.DetermineScaleFactor(DxGame);
-            var acceleration = Acceleration;
+            var acceleration = new DxVector2();
             foreach (var force in forces_)
             {
-                force.Update(Velocity, Acceleration, gameTime);
+                force.Update(Velocity, acceleration, gameTime);
                 /* 
                     Make sure to modify a temporary - we don't want to cumulatively update these things, 
                     we simply want to aggregate their results on velocity 
@@ -189,7 +181,7 @@ namespace DXGame.Core.Components.Advanced.Physics
             Velocity += (acceleration * scaleAmount);
             /* If our forces are gone, remove them */
             forces_.RemoveAll(force => force.Dissipated);
-            Position += Velocity * scaleAmount;
+            Position += (Velocity * scaleAmount);
         }
 
         protected void HandleCollisionMessage(CollisionMessage message)
@@ -197,23 +189,19 @@ namespace DXGame.Core.Components.Advanced.Physics
             var collisionDirections = message.CollisionDirections;
             var velocity = Velocity;
             // Check for x-wise collisions 
-            var acceleration = Acceleration;
             // Collide on against y axis (vertical)? Cease movement & acceleration in that direction
             if (collisionDirections.Contains(Direction.East) ||
                 collisionDirections.Contains(Direction.West))
             {
                 velocity.X = 0;
-                acceleration.X = 0;
             }
             // Same for horizontal movement
             if (collisionDirections.Contains(Direction.South) ||
                 collisionDirections.Contains(Direction.North))
             {
                 velocity.Y = 0;
-                acceleration.Y = 0;
             }
             Velocity = velocity;
-            Acceleration = acceleration;
         }
     }
 }

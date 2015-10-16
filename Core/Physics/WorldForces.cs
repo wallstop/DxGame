@@ -1,6 +1,5 @@
 ﻿using System;
 using DXGame.Core.Primitives;
-using DXGame.Core.Utils;
 
 namespace DXGame.Core.Physics
 {
@@ -43,8 +42,7 @@ namespace DXGame.Core.Physics
             HorizontalVelocityDissipation, "Deceleration");
         */
 
-        public static Tuple<bool, DxVector2> GravityDissipation(DxVector2 externalVelocity,
-            DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime)
+        public static Tuple<bool, DxVector2> GravityDissipation(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime)
         {
             return GRAVITY_DISSIPATION_RESULT;
         }
@@ -58,8 +56,7 @@ namespace DXGame.Core.Physics
             </summary>
         */
 
-        public static Tuple<bool, DxVector2> AirResistanceDissipation(DxVector2 externalVelocity,
-            DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime)
+        public static Tuple<bool, DxVector2> AirResistanceDissipation(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime)
         {
             var modifiedVelocity = externalVelocity;
             /* Point our acceleration in the opposite direction */
@@ -77,9 +74,9 @@ namespace DXGame.Core.Physics
                 This force is only applied in the x direction (horizontally)
             </summary>
         */
+
         [Obsolete("This is not a good way to decelerate things, please come up with something better")]
-        public static Tuple<bool, DxVector2> HorizontalVelocityDissipation(DxVector2 externalVelocity,
-            DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime)
+        public static Tuple<bool, DxVector2> HorizontalVelocityDissipation(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime)
         {
             return Tuple.Create(Math.Abs(externalVelocity.X) > 0,
                 new DxVector2 {X = -externalVelocity.X * SLOWDOWN_COEFFICIENT});

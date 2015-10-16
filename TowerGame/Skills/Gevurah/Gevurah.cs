@@ -36,12 +36,6 @@ namespace DXGame.TowerGame.Skills.Gevurah
             DxGame.Instance.AddAndInitializeGameObject(arrowRainObject);
         }
 
-        private static void RainOfArrowsInteraction(GameObject source, PhysicsComponent destination)
-        {
-
-
-        }
-
         private static void ShockwaveInteraction(GameObject source, PhysicsComponent destination)
         {
             var sourcePhysics = source.ComponentOfType<PhysicsComponent>();
@@ -88,8 +82,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             return Tuple.Create(true, 3.0);
         }
 
-        private static Tuple<bool, DxVector2> ShockwaveDissipation(DxVector2 externalVelocity,
-            DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime)
+        private static Tuple<bool, DxVector2> ShockwaveDissipation(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime)
         {
             return Tuple.Create(true, new DxVector2());
         }

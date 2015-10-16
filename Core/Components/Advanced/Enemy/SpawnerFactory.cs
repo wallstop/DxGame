@@ -6,9 +6,9 @@ using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
+using DXGame.Core.State;
 using DXGame.Main;
 using DXGame.TowerGame.Components;
-using DXGame.TowerGame.Enemies;
 using NLog;
 
 namespace DXGame.Core.Components.Advanced.Enemy
@@ -41,8 +41,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
             var damageComponent = DamageComponent.Builder().WithEntityProprerties(enemyProperties).Build();
 
             var deathExploder = new DeathEffectComponent(game, DeathEffectComponent.SimpleEnemyBloodParticles);
-
-            var animationBuilder = AnimationComponent.Builder().WithDxGame(game).WithPosition(enemySpatial);
+            
             var enemyObject =
                 GameObject.Builder()
                     .WithComponents(enemySpatial, enemyPhysics, enemyProperties, floatingHealthBar, deathExploder,
@@ -50,14 +49,11 @@ namespace DXGame.Core.Components.Advanced.Enemy
                     .Build();
             // Create a state machine for the enemy in question
             // Horrifically complex; weep, gnash teeth
-            var stateMachine = EnemyFactory.SimpleBoxBehavior(game, animationBuilder, enemyObject);
-            // Incremental state update to the animation builder
-            animationBuilder.WithStateMachine(stateMachine);
-            enemyObject.AttachComponent(animationBuilder.Build());
+            StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(enemyObject,
+                "SimpleBox");
             // Build and attach AI
             var simpleAi = SimpleEnemyAI.Builder().WithDxGame(game).WithSpatialComponent(enemySpatial).Build();
             enemyObject.AttachComponent(simpleAi);
-            enemyObject.AttachComponent(stateMachine);
 
             return enemyObject;
         }
@@ -87,7 +83,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
         {
             private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
             private static readonly TimeSpan SPAWN_DELAY = TimeSpan.FromSeconds(1 / 10.0);
-            private static readonly int MAX_BOXES_IN_PLAY = 250;
+            private static readonly int MAX_BOXES_IN_PLAY = 10;
             private TimeSpan lastSpawned_ = TimeSpan.Zero;
             private int numSpawned_;
 

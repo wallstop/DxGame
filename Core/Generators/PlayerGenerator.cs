@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Enemy;
 using DXGame.Core.Components.Advanced.Physics;
@@ -8,16 +7,12 @@ using DXGame.Core.Components.Advanced.Player;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Messaging;
-using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Skills;
 using DXGame.Core.State;
 using DXGame.Main;
-using DXGame.TowerGame.Actions;
-using DXGame.TowerGame.Skills;
 using DXGame.TowerGame.Skills.Gevurah;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 
 namespace DXGame.Core.Generators
 {
@@ -70,9 +65,17 @@ namespace DXGame.Core.Generators
                 playerProperties_, healthBar_, inputListener, facingComponent, teamComponent);
             var playerObject = playerBuilder.Build();
             var shockwaveSkill =
-                Skill.Builder().WithCooldown(TimeSpan.FromSeconds(1)).WithSkillFunction(Gevurah.Shockwave).WithCommandment(Commandment.Ability1).Build();
+                Skill.Builder()
+                    .WithCooldown(TimeSpan.FromSeconds(1))
+                    .WithSkillFunction(Gevurah.Shockwave)
+                    .WithCommandment(Commandment.Ability1)
+                    .Build();
             var arrowRainSkill =
-                Skill.Builder().WithCooldown(TimeSpan.FromSeconds(5)).WithSkillFunction(Gevurah.RainOfArrows).WithCommandment(Commandment.Ability2).Build();
+                Skill.Builder()
+                    .WithCooldown(TimeSpan.FromSeconds(5))
+                    .WithSkillFunction(Gevurah.RainOfArrows)
+                    .WithCommandment(Commandment.Ability2)
+                    .Build();
             var playerSkillComponent = new SkillComponent(game_, shockwaveSkill, arrowRainSkill);
             playerObject.AttachComponent(playerSkillComponent);
             StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(playerObject, "Player");

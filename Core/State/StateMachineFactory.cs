@@ -15,12 +15,32 @@ using DXGame.Main;
 
 namespace DXGame.Core.State
 {
+    /**
+
+        Handy-dandy factory for making StateMachines & Attaching Animations for Entities that can move!
+
+        Requirements:
+
+        Entity must have a PhysicsComponent (needed for movement forces)
+        Entity must have a PositionalComponent (needed for animation)
+        Entity must have a PropertiesComponent (needed for jump / movement values)
+        Animation Files for $entityName must exist! They must adhere to the standard naming convention for 
+        Animation files (see "StandardAnimationType")
+
+        ...That's it!
+
+        <summary>
+            Generic builder of StateMachines and Animations for Entities that can move left, right, jump, 
+            and drop through platforms
+        </summary>
+    */
     public class StateMachineFactory
     {
-        private static readonly DxVector2 INITIAL_JUMP_ACCELERATION = new DxVector2(0, -0.0f);
+        /* TODO: Change this to be something else and make the dissipation smarter */
+        private static readonly DxVector2 INITIAL_JUMP_ACCELERATION = new DxVector2(0.0f, 0.0f);
 
         private static readonly DissipationFunction INITIAL_JUMP_DISSIPATION =
-            (externalVelocity, externalAcceleration, acceleration, gameTime) =>
+            (externalVelocity, acceleration, gameTime) =>
             {
                 /* If our jumping force is applying a (down into the ground) acceleration, we're done! */
                 var done = externalVelocity.Y > 0;
@@ -31,6 +51,13 @@ namespace DXGame.Core.State
                 return Tuple.Create(false, acceleration);
             };
 
+        /**
+
+            <summary>
+                Builds and Attaches a Basic State Machine that responds to movement-type Command Messages, 
+                as well as the Animations for each of those states (driven by $entityName and the StandardAnimationTypes)
+            </summary>
+        */
         public static void BuildAndAttachBasicMovementStateMachineAndAnimations(GameObject entity, string entityName)
         {
             Validate.IsNotNull(entity, $"Cannot make a {typeof (StateMachine)} for a null {typeof (GameObject)}");
@@ -162,7 +189,12 @@ namespace DXGame.Core.State
 
         private static bool BelowCollisionTrigger(GameObject entity, DxGameTime gameTime)
         {
-            var collisionMessages = entity.CurrentMessages.OfType<CollisionMessage>();
+            /* 
+                Check the future queue - if we have collided THIS FRAME, 
+                then there will bea message in the queue next frame. This was causing a bug of 
+                double-applying the jump force 
+            */
+            var collisionMessages = entity.FutureMessages.OfType<CollisionMessage>();
             return collisionMessages.Any(collision => collision.CollisionDirections.Contains(Direction.South));
         }
 
@@ -233,9 +265,17 @@ namespace DXGame.Core.State
             public void OnJumpEnterAction(DxGameTime gameTime)
             {
                 var forceName = "Jump";
-                var force = new Force(new DxVector2(0, -JumpSpeed(Entity) * 0.8f), INITIAL_JUMP_ACCELERATION,
+
+                var physicsComponent = Entity.ComponentOfType<PhysicsComponent>();
+
+                /* Null out any downwards velocity. This prevents us from doing "puny" mid-air jumps */
+                var currentVelocity = physicsComponent.Velocity;
+                currentVelocity.Y = Math.Min(0, currentVelocity.Y);
+                physicsComponent.Velocity = currentVelocity;
+                var initialVelocity = new DxVector2(0, - JumpSpeed(Entity) * 1.6f);
+                var force = new Force(initialVelocity, INITIAL_JUMP_ACCELERATION,
                     INITIAL_JUMP_DISSIPATION, forceName);
-                AttachForce(Entity, force);
+               AttachForce(Entity, force);
             }
 
             public void JumpAction(DxGameTime gameTime)
@@ -274,8 +314,7 @@ namespace DXGame.Core.State
 
             /* Honestly I do not remember wtf any of this is, seems pretty complicated & cool */
 
-            private Tuple<bool, DxVector2> DissipationFunction(DxVector2 externalVelocity,
-                DxVector2 externalAcceleration, DxVector2 currentAcceleration, DxGameTime gameTime)
+            private Tuple<bool, DxVector2> DissipationFunction(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime)
             {
                 var xDirectionSign = Math.Sign(Direction.X);
                 var xIsNegative = xDirectionSign == -1;

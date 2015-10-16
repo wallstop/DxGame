@@ -31,10 +31,10 @@ namespace DXGame.Core.Components.Advanced.Particle
         protected DxVector2 Acceleration { get; }
         protected TimeSpan TimeToLive { get; set; }
         protected float MaxDistance { get; set; }
-        protected float AlphaBlend { get; }
+        protected float TransparencyWeight { get; }
 
         protected Particle(DxGame game, Color color, float radius, float growRate, DxVector2 position,
-            DxVector2 velocity, DxVector2 acceleration, TimeSpan timeToLive, float maxDistance, float alphaBlend)
+            DxVector2 velocity, DxVector2 acceleration, TimeSpan timeToLive, float maxDistance, float transparencyWeight)
             : base(game)
         {
             // TODO: Only draw / make particles if like "hefty" graphics options are specified.
@@ -47,7 +47,7 @@ namespace DXGame.Core.Components.Advanced.Particle
             TimeToLive = timeToLive;
             AccumulatedRadius = Radius;
             MaxDistance = maxDistance;
-            AlphaBlend = alphaBlend;
+            TransparencyWeight = transparencyWeight;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
@@ -83,7 +83,7 @@ namespace DXGame.Core.Components.Advanced.Particle
             MaxDistance -= scaledVelocity.Magnitude;
             var destination = new DxRectangle(Position.X - AccumulatedRadius, Position.Y - AccumulatedRadius,
                 AccumulatedRadius * 2, AccumulatedRadius * 2);
-            spriteBatch.DrawCircle(destination.ToRectangle(), Color, AlphaBlend);
+            spriteBatch.DrawCircle(destination.ToRectangle(), Color, TransparencyWeight);
         }
 
         public static ParticleBuilder Builder()
@@ -102,7 +102,7 @@ namespace DXGame.Core.Components.Advanced.Particle
             private TimeSpan timeToLive_ = TimeSpan.FromSeconds(1.0);
             private DxVector2 velocity_;
             private float maxDistance_ = float.MaxValue;
-            private float alphaBlend_ = 1.0f;
+            private float transparencyWeight_ = 1.0f;
 
             public Particle Build()
             {
@@ -112,9 +112,8 @@ namespace DXGame.Core.Components.Advanced.Particle
                 }
                 Validate.IsTrue(radius_ > 0, $"Cannot create {typeof (Particle)}s with a negative radius ({radius_})");
                 Validate.IsTrue(maxDistance_ >= 0, $"Cannot create {typeof(Particle)}s with a negative maxDistance ({maxDistance_})");
-                Validate.IsTrue(alphaBlend_ >= 0, $"Cannot create {typeof (Particle)}s with a negative alphaBlend ({alphaBlend_})");
-                Validate.IsTrue(alphaBlend_ <= 1.0f, $"Cannot create {typeof(Particle)}s with an alphaBlend of > 1 ({alphaBlend_})");
-                return new Particle(game_, color_, radius_, growRate_, position_, velocity_, acceleration_, timeToLive_, maxDistance_, alphaBlend_);
+                Validate.IsTrue(transparencyWeight_ >= 0 && transparencyWeight_ <= 1.0f, $"Cannot create {typeof (Particle)}s with an transparencyWeight that is not [0, 1] (was {transparencyWeight_})");
+                return new Particle(game_, color_, radius_, growRate_, position_, velocity_, acceleration_, timeToLive_, maxDistance_, transparencyWeight_);
             }
 
             public ParticleBuilder WithMaxDistance(float maxDistance)
@@ -177,9 +176,9 @@ namespace DXGame.Core.Components.Advanced.Particle
                 return this;
             }
 
-            public ParticleBuilder WithAlphaBlend(float alphaBlend)
+            public ParticleBuilder WithTransparencyWeight(float transparencyWeight)
             {
-                alphaBlend_ = alphaBlend;
+                transparencyWeight_ = transparencyWeight;
                 return this;
             }
         }

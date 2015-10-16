@@ -168,6 +168,7 @@
     <Compile Include="Core\Primitives\DxDegree.cs" />
     <Compile Include="Core\Primitives\DxLine.cs" />
     <Compile Include="Core\Primitives\DxRadian.cs" />
+    <Compile Include="Core\Primitives\IShape.cs" />
     <Compile Include="Core\Skills\Skill.cs" />
     <Compile Include="Core\State\Action.cs" />
     <Compile Include="Core\State\StateMachine.cs" />

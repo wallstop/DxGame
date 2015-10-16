@@ -94,7 +94,7 @@ namespace DXGame.Core.Utils.Distance
             return InRange(new DxRectangle(point.X - radius, point.Y - radius, radius, radius));
         }
 
-        public List<T> InRange(DxRectangle range)
+        public List<T> InRange(IShape range)
         {
             if (!range.Intersects(boundary_))
             {
@@ -108,7 +108,7 @@ namespace DXGame.Core.Utils.Distance
             do
             {
                 QuadTreeNode<T> currentNode = nodesToVisit.Dequeue();
-                if (!currentNode.Boundary.Intersects(range))
+                if (!range.Intersects(currentNode.Boundary))
                 {
                     continue;
                 }

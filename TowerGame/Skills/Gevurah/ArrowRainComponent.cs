@@ -286,7 +286,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             }
         }
 
-        private List<DxRectangle> AffectedAreas()
+        private List<IShape> AffectedAreas()
         {
             /* Sort map tiles, tallest first (lowest y coordinate) */
             var mapTilesInRange =
@@ -299,7 +299,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
                 We could do some smart math, but for now just raycast downwards until we either 
                 reach (depth) or (map tile) because it's easy enough 
             */
-            var affectedAreas = new List<DxRectangle>();
+            var affectedAreas = new List<IShape>();
             var maxDepth = (int) Position.Y + ARROW_RAIN_DEPTH;
             var rectangleBegin = (int) Position.X;
             var lastDepth = maxDepth;

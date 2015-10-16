@@ -12,6 +12,6 @@ namespace DXGame.Core.Utils.Distance
     {
         List<DxRectangle> Nodes { get; }
         List<DxRectangle> Divisions { get; }
-        List<T> InRange(DxRectangle range);
+        List<T> InRange(IShape range);
     }
 }

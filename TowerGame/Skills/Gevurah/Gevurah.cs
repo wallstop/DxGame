@@ -21,7 +21,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
         {
             var position = parent.ComponentOfType<SpatialComponent>().Center;
             var physicsMessage = new PhysicsMessage();
-            physicsMessage.AffectedAreas.Add(DxRectangle.FromRange(position, 100));
+            physicsMessage.AffectedAreas.Add(new DxCircle(position, 100));
             physicsMessage.Source = parent;
             physicsMessage.Interaction = ShockwaveInteraction;
             DxGame.Instance.BroadcastMessage(physicsMessage);

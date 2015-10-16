@@ -11,7 +11,7 @@ namespace DXGame.Core.Primitives
 {
     [Serializable]
     [DataContract]
-    public struct DxCircle : IEquatable<DxCircle>
+    public struct DxCircle : IEquatable<DxCircle>, IShape
     {
 
         [DataMember]

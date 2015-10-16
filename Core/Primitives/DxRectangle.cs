@@ -8,7 +8,7 @@ namespace DXGame.Core.Primitives
 {
     [Serializable]
     [DataContract]
-    public struct DxRectangle : IEquatable<DxRectangle>, IEquatable<Rectangle>
+    public struct DxRectangle : IEquatable<DxRectangle>, IEquatable<Rectangle>, IShape
     {
         private const float TOLERANCE = 0.000001f;
         [DataMember] public float Height;

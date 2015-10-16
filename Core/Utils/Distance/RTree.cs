@@ -5,10 +5,6 @@ using DXGame.Core.Primitives;
 
 namespace DXGame.Core.Utils.Distance
 {
-    /* 
-        TODO: Refactor these trees into some kind of interface 
-    */
-
     internal class RTreeNode<T>
     {
         public DxRectangle Boundary { get; }
@@ -145,7 +141,7 @@ namespace DXGame.Core.Utils.Distance
             boundary_ = head_.Boundary;
         }
 
-        public List<T> InRange(DxRectangle range)
+        public List<T> InRange(IShape range)
         {
             if (!range.Intersects(boundary_))
             {
@@ -159,7 +155,7 @@ namespace DXGame.Core.Utils.Distance
             do
             {
                 RTreeNode<T> currentNode = nodesToVisit.Dequeue();
-                if (!currentNode.Boundary.Intersects(range))
+                if (!range.Intersects(currentNode.Boundary))
                 {
                     continue;
                 }

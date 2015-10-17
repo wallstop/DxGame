@@ -51,10 +51,10 @@ namespace DXGame.Core.Menus
             base.Update(gameTime);
         }
 
-        public override void Remove()
+        public override void Dispose()
         {
             DxGame.RemoveGameObject(mousePointer_);
-            base.Remove();
+            base.Dispose();
         }
     }
 }

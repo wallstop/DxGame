@@ -107,11 +107,11 @@ namespace DXGame.Core.Menus
             DxGame.AddAndInitializeComponent(PortBox);
         }
 
-        public override void Remove()
+        public override void Dispose()
         {
             DxGame.RemoveComponent(PortBox);
             DxGame.RemoveComponent(AddressBox);
-            base.Remove();
+            base.Dispose();
         }
 
         protected void ConnectAction()
@@ -133,7 +133,7 @@ namespace DXGame.Core.Menus
             client.EstablishConnection();
 
             var game = DxGame;
-            Remove();
+            Dispose();
             game.UpdateMode = UpdateMode.Passive;
             game.AttachModel(new GameModel(game));
         }

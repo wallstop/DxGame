@@ -24,11 +24,12 @@ namespace DXGame.Core
 
     [Serializable]
     [DataContract]
-    public sealed class GameObject : IIdentifiable, IEquatable<GameObject>, IProcessable
+    public sealed class GameObject : IIdentifiable, IEquatable<GameObject>, IProcessable, IDisposable
     {
         // DataMembers can't be readonly :(
         [DataMember] private List<Component> components_;
         [DataMember] private UniqueId id_ = new UniqueId();
+        [DataMember] public volatile bool Removed;
         public IEnumerable<Component> Components => components_;
 
         [DataMember]
@@ -67,6 +68,10 @@ namespace DXGame.Core
 
         public void AttachComponent(Component component)
         {
+            if (Removed)
+            {
+                return;
+            }
             Validate.IsNotNull(component, StringUtils.GetFormattedNullOrDefaultMessage(this, component));
             Validate.IsFalse(components_.Contains(component),
                 $"Cannot add a {typeof (Component)} that already exists to a {typeof (GameObject)} ");
@@ -83,9 +88,11 @@ namespace DXGame.Core
             }
         }
 
-        public void Remove()
+        public void Dispose()
         {
-            DxGame.Instance.RemoveGameObject(this);
+            Removed = true;
+            CurrentMessages.Clear();
+            FutureMessages.Clear();
         }
 
         /**
@@ -118,7 +125,8 @@ namespace DXGame.Core
         public void BroadcastMessage<T>(T message) where T : Message
         {
             FutureMessages.Add(message);
-            foreach (var component in components_)
+            var components = components_.ToArray();
+            foreach (var component in components)
             {
                 component.MessageHandler.HandleMessage(message);
             }

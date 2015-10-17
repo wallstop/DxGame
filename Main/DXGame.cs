@@ -193,6 +193,7 @@ namespace DXGame.Main
                 return;
             }
 
+            gameObject.Dispose();
             foreach (var component in gameObject.Components)
             {
                 RemovedGameElements.Add(component);
@@ -246,17 +247,16 @@ namespace DXGame.Main
 
         private void UpdateElements()
         {
-            foreach (var removedGameElement in RemovedGameElements)
-            {
-
-                DxGameElements.Remove(removedGameElement);
-            }
-            RemovedGameElements.Clear();
             foreach (var newGameElement in NewGameElements)
             {
                 DxGameElements.Add(newGameElement);
             }
             NewGameElements.Clear();
+            foreach (var removedGameElement in RemovedGameElements)
+            {
+                DxGameElements.Remove(removedGameElement);
+            }
+            RemovedGameElements.Clear();
         }
 
         /// <summary>

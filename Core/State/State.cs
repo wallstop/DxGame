@@ -99,7 +99,7 @@ namespace DXGame.Core.State
                     $"Cannot create a {nameof(State)} with a null/default/empty {nameof(name_)}");
                 if (transitions_.Count == 0)
                 {
-                    LOG.Debug($"Creating {nameof(State)} ({name_}) without any transitions");
+                    LOG.Trace($"Creating {nameof(State)} ({name_}) without any transitions");
                 }
 
                 return new State(transitions_, name_, action_, onEnter_, onExit_);

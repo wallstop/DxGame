@@ -65,9 +65,9 @@ namespace DXGame.TowerGame.Skills.Gevurah
             destination.Parent?.BroadcastMessage(damageDealt);
 
             /* ... and attach a life sucker (just to be evil) */
-            var lifeSucker = new LifeSuckerComponent(DxGame.Instance);
             if (!ReferenceEquals(destination.Parent, null))
             {
+                var lifeSucker = new LifeSuckerComponent(DxGame.Instance);
                 destination.Parent.AttachComponent(lifeSucker);
                 DxGame.Instance.AddAndInitializeComponents(lifeSucker);
             }

@@ -14,7 +14,7 @@ namespace DXGame.Core.Behavior
         particular entity's internal state.
 
         <summary>
-            Given both the "type" of goal and an "end goal" of gamestate as a result, 
+            Given both the "type" of goal and an "end goal" of gamestate as a result,
             determines the utility of the action as it pertains to a specific entity
         </summary>
     */

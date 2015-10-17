@@ -28,7 +28,7 @@ namespace DXGame.Core.Menus
         private void PlayAction()
         {
             DxGame.AddAndInitializeComponent(new PlayMenu(DxGame));
-            Remove();
+            Dispose();
         }
     }
 }

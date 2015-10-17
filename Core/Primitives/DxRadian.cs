@@ -23,7 +23,7 @@ namespace DXGame.Core.Primitives
 
     [Serializable]
     [DataContract]
-    public struct DxRadian
+    public struct DxRadian : IEquatable<DxRadian>
     {
         public static DxRadian East => new DxRadian(3 * Math.PI / 2);
         public static DxRadian South => new DxRadian(Math.PI);
@@ -85,7 +85,17 @@ namespace DXGame.Core.Primitives
 
         public bool Equals(DxRadian other)
         {
-            return Value.FuzzyCompare(other.Value) == 0;
+            return this == other;
+        }
+
+        public static bool operator !=(DxRadian lhs, DxRadian rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        public static bool operator ==(DxRadian lhs, DxRadian rhs)
+        {
+            return lhs.Value.FuzzyCompare(rhs.Value) == 0;
         }
 
         public override bool Equals(object other)

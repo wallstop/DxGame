@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
@@ -13,12 +9,11 @@ namespace DXGame.Core.Primitives
     [DataContract]
     public struct DxCircle : IEquatable<DxCircle>, IShape
     {
+        [DataMember]
+        public DxVector2 Center { get; }
 
         [DataMember]
-        public DxVector2 Center { get; set; }
-
-        [DataMember]
-        public float Radius { get; set; }
+        public float Radius { get; }
 
         public DxCircle(DxVector2 center, float radius)
         {
@@ -26,14 +21,9 @@ namespace DXGame.Core.Primitives
             Radius = radius;
         }
 
-        public static DxCircle operator *(DxCircle circle, float scalar)
+        public bool Equals(DxCircle other)
         {
-            return new DxCircle(circle.Center, circle.Radius * scalar);
-        }
-
-        public static DxCircle operator /(DxCircle circle, float scalar)
-        {
-            return circle * (1.0f / scalar);
+            return Center.Equals(other.Center) && Radius.FuzzyCompare(other.Radius) == 0;
         }
 
         public bool Contains(DxVector2 point)
@@ -54,14 +44,29 @@ namespace DXGame.Core.Primitives
             return Contains(closestPoint);
         }
 
-        public bool Equals(DxCircle other)
+        public static DxCircle operator *(DxCircle circle, float scalar)
         {
-            return Center.Equals(other.Center) && Radius.FuzzyCompare(other.Radius) == 0;
+            return new DxCircle(circle.Center, circle.Radius * scalar);
+        }
+
+        public static DxCircle operator /(DxCircle circle, float scalar)
+        {
+            return circle * (1.0f / scalar);
         }
 
         public override string ToString()
         {
             return $"{{ Center: {Center}, Radius: {Radius:N2} }}";
+        }
+
+        public static bool operator !=(DxCircle lhs, DxCircle rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        public static bool operator ==(DxCircle lhs, DxCircle rhs)
+        {
+            return lhs.Center == rhs.Center && lhs.Radius.FuzzyCompare(rhs.Radius) == 0;
         }
 
         public override bool Equals(object other)

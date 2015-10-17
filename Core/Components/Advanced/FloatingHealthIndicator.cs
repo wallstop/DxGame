@@ -99,9 +99,10 @@ namespace DXGame.Core.Components.Advanced
             DrawPriority = DrawPriority.HUD_LAYER;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             backgroundTexture_?.Dispose();
+            base.Dispose();
         }
 
         public static FloatingHealthIndicatorBuilder Builder()

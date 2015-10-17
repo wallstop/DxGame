@@ -120,7 +120,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             var arrowRainer = new ArrowRainer(DxGame, Source, Spatial.Position, Direction);
             Parent.AttachComponent(arrowRainer);
             DxGame.AddAndInitializeComponent(arrowRainer);
-            Remove();
+            Dispose();
         }
 
         private static StateMachine CreateIdleStateMachine()
@@ -192,7 +192,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             elapsed_ += gameTime.ElapsedGameTime;
             if (elapsed_ > Duration)
             {
-                Remove();
+                Dispose();
                 return;
             }
             if (elapsed_.Divide(PulseDelay) > pulses_)

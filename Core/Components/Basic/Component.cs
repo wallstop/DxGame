@@ -59,11 +59,9 @@ namespace DXGame.Core.Components.Basic
 
     [Serializable]
     [DataContract]
-    public abstract class Component : IIdentifiable, IComparable<Component>, IProcessable
+    public abstract class Component : IIdentifiable, IComparable<Component>, IProcessable, IDisposable
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        [DataMember] protected readonly List<Updater> postProcessors_ = new List<Updater>();
-        [DataMember] protected readonly List<Updater> preProcessors_ = new List<Updater>();
         [NonSerialized] [IgnoreDataMember] public DxGame DxGame;
         [DataMember] protected bool initialized_;
 
@@ -99,17 +97,7 @@ namespace DXGame.Core.Components.Basic
 
         public void Process(DxGameTime gameTime)
         {
-            foreach (var updater in preProcessors_)
-            {
-                updater(gameTime);
-            }
-
             Update(gameTime);
-
-            foreach (var updater in postProcessors_)
-            {
-                updater(gameTime);
-            }
         }
 
         public int CompareTo(IProcessable other)
@@ -128,23 +116,7 @@ namespace DXGame.Core.Components.Basic
             return rhs != null && Id.Equals(rhs.Id);
         }
 
-        public void AddPreUpdater(Updater updater)
-        {
-            Validate.IsNotNull(updater, StringUtils.GetFormattedNullOrDefaultMessage(this, "pre-updater"));
-            Validate.IsFalse(preProcessors_.Contains(updater),
-                StringUtils.GetFormattedAlreadyContainsMessage(this, updater, preProcessors_));
-            preProcessors_.Add(updater);
-        }
-
-        public void AddPostUpdater(Updater updater)
-        {
-            Validate.IsNotNullOrDefault(updater, StringUtils.GetFormattedNullOrDefaultMessage(this, "post-updater"));
-            Validate.IsFalse(postProcessors_.Contains(updater),
-                StringUtils.GetFormattedAlreadyContainsMessage(this, updater, postProcessors_));
-            postProcessors_.Add(updater);
-        }
-
-        public virtual void Remove()
+        public virtual void Dispose()
         {
             Parent?.RemoveComponent(this);
             Parent = null;

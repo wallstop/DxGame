@@ -61,7 +61,7 @@ namespace DXGame.Core.Utils.Distance
         }
     }
 
-    public class KDTree<T> : ICollisionTree<T>
+    public class KDTree<T> : ISpatialTree<T>
     {
         private static readonly int DEFAULT_BUCKET_SIZE = 12;
         private readonly DxRectangle boundary_;
@@ -144,6 +144,12 @@ namespace DXGame.Core.Utils.Distance
                 }
             } while (nodesToVisit.Any());
             return elementsInRange;
+        }
+
+        public Optional<T> Closest(DxVector2 position)
+        {
+            // TODO
+            throw new NotImplementedException();
         }
     }
 }

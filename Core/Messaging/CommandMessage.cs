@@ -9,6 +9,8 @@ namespace DXGame.Core.Messaging
 {
     /**
         "Do this thing or else."
+
+        TODO: Move outside of messaging folder
     */
 
     public enum Commandment
@@ -34,6 +36,28 @@ namespace DXGame.Core.Messaging
     */
     public static class Commandments
     {
+        public static readonly ReadOnlyDictionary<Direction, Commandment> DIRECTIONS_TO_MOVEMENTS = new ReadOnlyDictionary
+            <Direction, Commandment>(
+            new Dictionary<Direction, Commandment>
+            {
+                [Direction.East] = Commandment.MoveRight,
+                [Direction.West] = Commandment.MoveLeft,
+                [Direction.North] = Commandment.MoveUp,
+                [Direction.South] = Commandment.MoveDown
+            }
+            );
+
+        public static readonly ReadOnlyDictionary<Commandment, Direction> MOVEMENT_TO_DIRECTIONS = new ReadOnlyDictionary
+            <Commandment, Direction>(
+            new Dictionary<Commandment, Direction>
+            {
+                [Commandment.MoveRight] = Direction.East,
+                [Commandment.MoveLeft] = Direction.West,
+                [Commandment.MoveUp] = Direction.North,
+                [Commandment.MoveDown] = Direction.South
+            }
+            );
+
         public static readonly ReadOnlyCollection<Commandment> ABILITY_COMMANDMENTS =
             new ReadOnlyCollection<Commandment>(new List<Commandment>
             {

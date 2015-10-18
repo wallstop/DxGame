@@ -67,7 +67,7 @@ namespace DXGame.Core.Utils.Distance
         }
     }
 
-    public class RTree<T> : ICollisionTree<T>
+    public class RTree<T> : ISpatialTree<T>
     {
         private static readonly int DEFAULT_BUCKET_SIZE = 10;
         private static readonly int DEFAULT_BRANCH_FACTOR = 4;
@@ -174,6 +174,12 @@ namespace DXGame.Core.Utils.Distance
                 }
             } while (nodesToVisit.Any());
             return elementsInRange;
+        }
+
+        public Optional<T> Closest(DxVector2 position)
+        {
+            // TODO
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Messaging;
 using DXGame.Core.Primitives;
 
 namespace DXGame.Core.Utils.Distance
@@ -39,7 +41,7 @@ namespace DXGame.Core.Utils.Distance
         }
     }
 
-    public class QuadTree<T> : ICollisionTree<T>
+    public class QuadTree<T> : ISpatialTree<T>
     {
         private static readonly int DEFAULT_BUCKET_SIZE = 12;
         private readonly DxRectangle boundary_;
@@ -126,6 +128,62 @@ namespace DXGame.Core.Utils.Distance
                 }
             } while (nodesToVisit.Any());
             return elementsInRange;
+        }
+
+        /**
+
+            <summary>
+                Provides an approximate nearest-neighbor element for the specified point
+            </summary>
+        */
+        public Optional<T> Closest(DxVector2 position)
+        {
+            // wtf resharper impure method?
+            if (!boundary_.Contains(position))
+            {
+                return Optional<T>.Empty;
+            }
+
+            var currentNode = head_;
+
+            var hierarchicalParents = new Stack<QuadTreeNode<T>>();
+            /* Drill down until we're at the terminal node that contains our target */
+            while (!currentNode.Terminal)
+            {
+                var children = currentNode.Children;
+                foreach (var child in children)
+                {
+                    if (child.Boundary.Contains(position))
+                    {
+                        hierarchicalParents.Push(currentNode);
+                        currentNode = child;
+                        break;
+                    }
+                }
+                break;
+            }
+
+            /* No points? Too bad. */
+            if (!currentNode.Points.Any())
+            {
+                Assert.IsTrue(!hierarchicalParents.Any(), "Didn't find any points, expected our parent tree to be empty (but it wasn't!)");
+                return Optional<T>.Empty;
+            }
+
+            /* Points? Walk the list once to find the closest one */
+            var closest = currentNode.Points[0];
+            var smallestMagnitude = (position - coordinate_(closest)).MagnitudeSquared;
+            foreach (var point in currentNode.Points)
+            {
+                var magnitude = (position - coordinate_(point)).MagnitudeSquared;
+                if (magnitude < smallestMagnitude)
+                {
+                    closest = point;
+                    smallestMagnitude = magnitude;
+                }
+            }
+
+            return new Optional<T>(closest);
         }
     }
 }

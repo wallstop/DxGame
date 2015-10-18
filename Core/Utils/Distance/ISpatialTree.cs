@@ -8,10 +8,19 @@ using DXGame.Core.Primitives;
 
 namespace DXGame.Core.Utils.Distance
 {
-    public interface ICollisionTree<T>
+    /**
+
+        <summary>
+            TODO
+        </summary>
+    */
+    public interface ISpatialTree<T>
     {
         List<DxRectangle> Nodes { get; }
         List<DxRectangle> Divisions { get; }
         List<T> InRange(IShape range);
+
+        // TODO: Make Optional
+        Optional<T> Closest(DxVector2 position);
     }
 }

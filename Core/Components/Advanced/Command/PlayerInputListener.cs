@@ -30,33 +30,32 @@ namespace DXGame.Core.Components.Advanced.Command
 
     [Serializable]
     [DataContract]
-    public sealed class PlayerInputListener : AbstractCommandComponent
+    public class PlayerInputListener : AbstractCommandComponent
     {
         // TODO: Configify (this should be in player properties or some shit
         private static readonly TimeSpan DROP_THROUGH_PLATFORM_DELAY = TimeSpan.FromSeconds(1);
         [DataMember] private TimeSpan lastDroppedThroughPlatform_ = TimeSpan.FromSeconds(0);
 
+        [IgnoreDataMember]
+        private List<ActionCheck> cachedActionChecks_;
+
         private List<ActionCheck> ActionChecks
         {
             get
             {
-                /* Rip every function that is a ActionCheck off of the class via Reflection (what could go wrong?) */
-                var allMethods = typeof(PlayerInputListener).GetMethods(BindingFlags.NonPublic | BindingFlags.Public);
-                var actionChecks = new List<ActionCheck>(allMethods.Length);
-                foreach (var method in allMethods)
+                // This isn't threadsafe
+                if (cachedActionChecks_ != null)
                 {
-                    try
-                    {
-                        var actionCheck =
-                            (ActionCheck)Delegate.CreateDelegate(typeof(ActionCheck), method);
-                        actionChecks.Add(actionCheck);
-                    }
-                    catch (Exception)
-                    {
-                        // Lol woops, not an ActionCheck, pls ignore
-                    }
+                    return cachedActionChecks_;
                 }
-                return actionChecks;
+
+                /* Rip every function that is a ActionCheck off of the class via Reflection (what could go wrong?) */
+                var allMethods = typeof(PlayerInputListener).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance);
+                var actionChecks = new List<ActionCheck>(allMethods.Length);
+                actionChecks.AddRange(allMethods.Select(method => (ActionCheck) Delegate.CreateDelegate(typeof (ActionCheck), this, method, false)).Where(actionCheck => !ReferenceEquals(null, actionCheck)));
+                /* Cache them so this is only a one-time hit */
+                cachedActionChecks_ = actionChecks;
+                return cachedActionChecks_;
             }
         }
 

@@ -17,7 +17,7 @@ namespace DXGame.Core.Map
     [DataContract]
     public class NavigationMesh
     {
-        private static readonly int MESH_PIXEL_SPACING = 2;
+        //private static readonly int MESH_PIXEL_SPACING = 2;
 
         private static ThreadLocal<Dictionary<UniqueId, NavigationMesh>> CACHE =
             new ThreadLocal<Dictionary<UniqueId, NavigationMesh>>(() => new Dictionary<UniqueId, NavigationMesh>());
@@ -49,7 +49,7 @@ namespace DXGame.Core.Map
         }
 
         private ReadOnlyCollection<Node> Nodes { get; }
-        private ICollisionTree<Node> NodeQuery { get; }
+        private ISpatialTree<Node> NodeQuery { get; }
 
 
         public NavigationMesh(MapModel mapModel)

@@ -120,6 +120,7 @@
     <Compile Include="Core\Behavior\Utility.cs" />
     <Compile Include="Core\Components\Advanced\Behavior\BehaviorComponent.cs" />
     <Compile Include="Core\Components\Advanced\CollidableComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Command\AbstractCommandComponent.cs" />
     <Compile Include="Core\Components\Advanced\Damage\DamageComponent.cs" />
     <Compile Include="Core\Components\Advanced\Enemy\Spawner.cs" />
     <Compile Include="Core\Components\Advanced\Enemy\SpawnerFactory.cs" />
@@ -129,7 +130,7 @@
     <Compile Include="Core\Components\Advanced\Map\MapCollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
     <Compile Include="Core\Components\Advanced\Physics\UnforcableMapCollidablePhysicsComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Player\PlayerInputListener.cs" />
+    <Compile Include="Core\Components\Advanced\Command\PlayerInputListener.cs" />
     <Compile Include="Core\Components\Advanced\Damage\DeathEffectComponent.cs" />
     <Compile Include="Core\Components\Advanced\Position\MapCollidablePositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SkillComponent.cs" />
@@ -149,6 +150,7 @@
     <Compile Include="Core\JsonPersistable.cs" />
     <Compile Include="Core\Map\Map.cs" />
     <Compile Include="Core\Map\MapDescriptor.cs" />
+    <Compile Include="Core\Map\NavigationMesh.cs" />
     <Compile Include="Core\Map\Platform.cs" />
     <Compile Include="Core\Messaging\CommandMessage.cs" />
     <Compile Include="Core\Messaging\DamageMessage.cs" />
@@ -198,7 +200,7 @@
     <Compile Include="Core\Utils\ColorUtils.cs" />
     <Compile Include="Core\Utils\CriticalRegion.cs" />
     <Compile Include="Core\Utils\Distance\Directions.cs" />
-    <Compile Include="Core\Utils\Distance\ICollisionTree.cs" />
+    <Compile Include="Core\Utils\Distance\ISpatialTree.cs" />
     <Compile Include="Core\Utils\Distance\Distance.cs" />
     <Compile Include="Core\Utils\Distance\KDTree.cs" />
     <Compile Include="Core\Utils\Distance\RTree.cs" />
@@ -251,6 +253,7 @@
     <Compile Include="Core\Utils\ImmutablePair.cs" />
     <Compile Include="Core\Utils\IPair.cs" />
     <Compile Include="Core\Utils\LidgrenUtils.cs" />
+    <Compile Include="Core\Utils\Optional.cs" />
     <Compile Include="Core\Utils\Pair.cs" />
     <Compile Include="Core\Utils\RandomUtils.cs" />
     <Compile Include="Core\Utils\TextureFactory.cs" />

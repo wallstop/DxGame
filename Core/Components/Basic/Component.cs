@@ -119,7 +119,7 @@ namespace DXGame.Core.Components.Basic
 
         public virtual void Dispose()
         {
-            Parent?.RemoveComponent(this);
+            Parent?.RemoveComponents(this);
             Parent = null;
             DxGame?.RemoveComponent(this);
             DxGame = null;

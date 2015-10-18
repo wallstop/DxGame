@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Components.Developer
 {
-    public delegate ICollisionTree<T> CollisionTreeProducer<T>();
+    public delegate ISpatialTree<T> CollisionTreeProducer<T>();
 
     /**
         <summary>
@@ -33,15 +33,15 @@ namespace DXGame.Core.Components.Developer
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            ICollisionTree<T> collisionTree = producer_();
+            ISpatialTree<T> spatialTree = producer_();
             /* Draw each "collision rectangle" */
-            List<DxRectangle> divisions = collisionTree.Divisions;
+            List<DxRectangle> divisions = spatialTree.Divisions;
             foreach (var division in divisions)
             {
                 spriteBatch.DrawBorder(division, 1, Color.DarkSlateBlue);
             }
             /* ...as well as each Node in the tree */
-            List<DxRectangle> nodes = collisionTree.Nodes;
+            List<DxRectangle> nodes = spatialTree.Nodes;
             foreach (var nodeBoundary in nodes)
             {
                 spriteBatch.DrawBorder(nodeBoundary, 1, Color.Black);

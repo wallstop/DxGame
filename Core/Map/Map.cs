@@ -32,7 +32,7 @@ namespace DXGame.Core.Map
         }
 
         [DataMember]
-        public ICollisionTree<MapCollidableComponent> Collidables { get; private set; }
+        public ISpatialTree<MapCollidableComponent> Collidables { get; private set; }
 
         [DataMember]
         public DxVector2 PlayerSpawn { get; private set; }

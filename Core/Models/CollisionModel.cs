@@ -10,7 +10,7 @@ namespace DXGame.Core.Models
 {
     public class CollisionModel : Model
     {
-        public ICollisionTree<PhysicsComponent> Collidables { get; private set; }
+        public ISpatialTree<PhysicsComponent> Collidables { get; private set; }
 
         public CollisionModel(DxGame game) 
             : base(game)

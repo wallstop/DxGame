@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Advanced.Command;
 using DXGame.Core.Components.Advanced.Enemy;
 using DXGame.Core.Components.Advanced.Physics;
-using DXGame.Core.Components.Advanced.Player;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Messaging;

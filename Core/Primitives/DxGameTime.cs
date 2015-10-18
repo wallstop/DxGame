@@ -12,16 +12,16 @@ namespace DXGame.Core.Primitives
 
     [Serializable]
     [DataContract]
-    public class DxGameTime : IEquatable<DxGameTime>
+    public class DxGameTime : IEquatable<DxGameTime>, IComparable<DxGameTime>
     {
         [DataMember]
-        public TimeSpan TotalGameTime { get; private set; }
+        public TimeSpan TotalGameTime { get; }
 
         [DataMember]
-        public TimeSpan ElapsedGameTime { get; private set; }
+        public TimeSpan ElapsedGameTime { get; }
 
         [DataMember]
-        public bool IsRunningSlowly { get; private set; }
+        public bool IsRunningSlowly { get; }
 
         public DxGameTime()
             : this(TimeSpan.Zero, TimeSpan.Zero)
@@ -59,6 +59,21 @@ namespace DXGame.Core.Primitives
         public double DetermineScaleFactor(DxGame dxGame)
         {
             return (ElapsedGameTime.TotalMilliseconds * dxGame.TargetFps / DateTimeConstants.MILLISECONDS_PER_SECOND);
+        }
+
+        /**
+
+            <summary>
+                Ordered naturally based on TotalGameTime
+            </summary>
+        */
+        public int CompareTo(DxGameTime other)
+        {
+            if (Check.IsNullOrDefault(other))
+            {
+                return 1;
+            }
+            return TotalGameTime.CompareTo(other.TotalGameTime);
         }
     }
 }

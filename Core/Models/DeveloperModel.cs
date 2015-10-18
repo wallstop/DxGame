@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms.VisualStyles;
 using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Developer;
@@ -25,6 +26,8 @@ namespace DXGame.Core.Models
         private readonly GameElementCollection components_ = new GameElementCollection();
         private readonly DeveloperSwitch devSwitch_;
 
+        public DeveloperMode DeveloperMode => devSwitch_.DeveloperMode;
+
         public DeveloperModel(DxGame game) 
             : base(game)
         {
@@ -39,6 +42,10 @@ namespace DXGame.Core.Models
             components_.Add(boundingBoxWidget);
             var teamCounterWidget = new TeamCounterWidget(game);
             components_.Add(teamCounterWidget);
+            var timePerFrameBackground = new TimePerFrameGraphBackground(game);
+            components_.Add(timePerFrameBackground);
+            var timePerFrameGraph = new TimePerFrameGraph(game);
+            DxGame.AddAndInitializeComponents(timePerFrameGraph);
         }
 
         public override bool ShouldSerialize => false;

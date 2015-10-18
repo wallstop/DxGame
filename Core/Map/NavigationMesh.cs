@@ -137,6 +137,7 @@ namespace DXGame.Core.Map
 
 
             // DOOP DOOP TODO
+            return nodes;
 
         }
 

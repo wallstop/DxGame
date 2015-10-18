@@ -47,7 +47,7 @@ namespace DXGame.Core.Components.Advanced
                             collisionLines.Add(Spatial.Space.RightBorder);
                             break;
                         case CollidableDirection.Up:
-                            collisionLines.Add(Spatial.Space.UpperBorder);
+                            collisionLines.Add(Spatial.Space.TopBorder);
                             break;
                     }
                 }

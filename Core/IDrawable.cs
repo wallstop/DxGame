@@ -15,7 +15,12 @@ namespace DXGame.Core
         NORMAL = 5,
         HUD_LAYER = 8,
         LOW = 10,
-        END_SPRITEBATCH = 1000
+        END_SPRITEBATCH = 1000,
+        /* 
+            User primitives (actual GPU shader calls) must be made after sprite batch has finished 
+            (http://stackoverflow.com/questions/27431038/going-back-to-spritebatch-draw-after-using-graphicsdevice-drawuserprimitives) 
+        */
+        USER_PRIMITIVES = 1001
     }
 
     public interface IDrawable : IComparable<IDrawable>

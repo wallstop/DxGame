@@ -138,11 +138,13 @@
     <Compile Include="Core\Components\Developer\BoundingBoxWidget.cs" />
     <Compile Include="Core\Components\Developer\DeveloperSwitch.cs" />
     <Compile Include="Core\Components\Developer\LifeSuckerComponent.cs" />
+    <Compile Include="Core\Components\Developer\TimePerFrameGraph.cs" />
     <Compile Include="Core\Components\Developer\TeamCounterWidget.cs" />
     <Compile Include="Core\DataStructures\Tree.cs" />
     <Compile Include="Core\EventSystem.cs" />
     <Compile Include="Core\Frames\SingleElementFrame.cs" />
     <Compile Include="Core\Generators\PlayerGenerator.cs" />
+    <Compile Include="Core\GraphicsWidgets\Graph.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\FpsWidget.cs" />
     <Compile Include="Core\Components\Developer\CollisionTreeWidget.cs" />
     <Compile Include="Core\IDrawable.cs" />

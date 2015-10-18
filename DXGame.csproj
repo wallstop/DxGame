@@ -124,6 +124,7 @@
     <Compile Include="Core\Components\Advanced\Enemy\Spawner.cs" />
     <Compile Include="Core\Components\Advanced\Enemy\SpawnerFactory.cs" />
     <Compile Include="Core\Components\Advanced\FacingComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Impulse\PathfindingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Impulse\StandardActionComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapCollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
@@ -159,6 +160,7 @@
     <Compile Include="Core\Models\CollisionModel.cs" />
     <Compile Include="Core\Models\DeveloperModel.cs" />
     <Compile Include="Core\Models\MapModel.cs" />
+    <Compile Include="Core\Models\PathfindingModel.cs" />
     <Compile Include="Core\Models\PhysicsModel.cs" />
     <Compile Include="Core\Physics\Force.cs" />
     <Compile Include="Core\Physics\Interaction.cs" />
@@ -246,7 +248,10 @@
     <Compile Include="Core\Models\Model.cs" />
     <Compile Include="Core\Models\NetworkModel.cs" />
     <Compile Include="Core\Models\PlayerModel.cs" />
+    <Compile Include="Core\Utils\ImmutablePair.cs" />
+    <Compile Include="Core\Utils\IPair.cs" />
     <Compile Include="Core\Utils\LidgrenUtils.cs" />
+    <Compile Include="Core\Utils\Pair.cs" />
     <Compile Include="Core\Utils\RandomUtils.cs" />
     <Compile Include="Core\Utils\TextureFactory.cs" />
     <Compile Include="Core\Network\ClientConnectionRequest.cs" />

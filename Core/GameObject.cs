@@ -7,6 +7,7 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using NetTopologySuite.IO;
 
 namespace DXGame.Core
 {
@@ -79,7 +80,20 @@ namespace DXGame.Core
             components_.Add(component);
         }
 
-        public void RemoveComponent(Component component)
+        /**
+            <summary>
+                Removes all Components of the provided Type. 
+
+                This is particularly useful for simulation purposes in pathfinding where you'd like to copy and 
+                simulate the object, but not have the copy itself attempt to pathfind and simulate.
+            </summary>
+        */
+        public void RemoveComponents<T>() where T : Component
+        {
+            components_.RemoveAll(component => component is T);
+        }
+
+        public void RemoveComponents(Component component)
         {
             if (components_.Contains(component))
             {

@@ -277,7 +277,7 @@ namespace DXGame.Core.State
                 currentVelocity.Y = Math.Min(0, currentVelocity.Y);
                 physicsComponent.Velocity = currentVelocity;
                 var initialVelocity = new DxVector2(0, - JumpSpeed(Entity) * 1.6f);
-                var force = new Force(initialVelocity, INITIAL_JUMP_ACCELERATION,
+                var force = new Force(initialVelocity, INITIAL_JUMP_ACCELERATION, initialVelocity,
                     INITIAL_JUMP_DISSIPATION, forceName);
                AttachForce(Entity, force);
             }
@@ -313,7 +313,7 @@ namespace DXGame.Core.State
             public Movement(DxVector2 directionalForceVector, string forceName)
             {
                 Direction = directionalForceVector;
-                Force = new Force(new DxVector2(), directionalForceVector, DissipationFunction, forceName);
+                Force = new Force(new DxVector2(), directionalForceVector, directionalForceVector, DissipationFunction, forceName);
             }
 
             /* Honestly I do not remember wtf any of this is, seems pretty complicated & cool */

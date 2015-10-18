@@ -57,7 +57,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             var targetVelocityVector = targetRadian.UnitVector * forceScalar;
 
             /* Apply force... */
-            var force = new Force(targetVelocityVector, new DxVector2(), ShockwaveDissipation, "Shockwave");
+            var force = new Force(targetVelocityVector, new DxVector2(), targetVelocityVector, ShockwaveDissipation, "Shockwave");
             destination.AttachForce(force);
 
             /* ...and then damage (if we can) */

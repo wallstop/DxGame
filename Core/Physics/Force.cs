@@ -22,16 +22,28 @@ namespace DXGame.Core.Physics
     [DataContract]
     public class Force
     {
+        /**
+            Summary provides a quick and simple gist of what a Force is attempting to do. Jump provides an upwards vector 
+            (of some magnitude). Moving right provides a right-wards vector (of some magnitude), for example 
+        */
+        [DataMember]
+        public DxVector2 Summary { get; }
+        [DataMember]
         public DxVector2 InitialVelocity { get; }
+        [DataMember]
         public DxVector2 Acceleration { get; private set; }
+        [DataMember]
         public bool Dissipated { get; private set; }
+        [DataMember]
         protected DissipationFunction Dissipation { get; }
+        [DataMember]
         public string Name { get; }
 
-        public Force(DxVector2 initialVelocity, DxVector2 acceleration, DissipationFunction dissipationFunction, string name, bool dissipated = false)
+        public Force(DxVector2 initialVelocity, DxVector2 acceleration, DxVector2 summary, DissipationFunction dissipationFunction, string name, bool dissipated = false)
         {
             Validate.IsNotNull(dissipationFunction,
                 StringUtils.GetFormattedNullOrDefaultMessage(this, dissipationFunction));
+            Summary = summary;
             Dissipation = dissipationFunction;
             Dissipated = dissipated;
             InitialVelocity = initialVelocity;
@@ -62,7 +74,7 @@ namespace DXGame.Core.Physics
 
         public override int GetHashCode()
         {
-            return Objects.HashCode(InitialVelocity, Acceleration, Dissipated);
+            return Objects.HashCode(InitialVelocity, Acceleration, Dissipated, Summary);
         }
     }
 }

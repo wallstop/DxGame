@@ -77,6 +77,7 @@ namespace DXGame.Core.Components.Basic
         {
             if (ReferenceEquals(null, game))
             {
+                LOG.Trace($"Component created with a null DxGame reference {this}");
                 game = DxGame.Instance;
             }
             DxGame = game;

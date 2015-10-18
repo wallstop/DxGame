@@ -1,26 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
-using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Main;
 
-namespace DXGame.Core.Components.Advanced.Player
+namespace DXGame.Core.Components.Advanced.Command
 {
     /**
 
         <summary>
-            Ideal use is to check input events & fire command events based on gameTime
+            Given a set of input events & the current gameTime (TODO: Remove gameTime & delegate cooldown checks appropriately),
+            fires a CommandMessage if (specific condition) is met.
         </summary>
     */
-    delegate void ActionCheck(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime);
+
+    internal delegate void ActionCheck(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime);
+
+    /**
+
+        <summary>
+            Checks input events & fires commandments for any and all events. 
+            Properly syncs up with current controls.
+        </summary>
+    */
 
     [Serializable]
     [DataContract]
-    public class PlayerInputListener : Component
+    public sealed class PlayerInputListener : AbstractCommandComponent
     {
         // TODO: Configify (this should be in player properties or some shit
         private static readonly TimeSpan DROP_THROUGH_PLATFORM_DELAY = TimeSpan.FromSeconds(1);
@@ -30,20 +40,22 @@ namespace DXGame.Core.Components.Advanced.Player
         {
             get
             {
-                var actionChecks = new List<ActionCheck>
+                /* Rip every function that is a ActionCheck off of the class via Reflection (what could go wrong?) */
+                var allMethods = typeof(PlayerInputListener).GetMethods(BindingFlags.NonPublic | BindingFlags.Public);
+                var actionChecks = new List<ActionCheck>(allMethods.Length);
+                foreach (var method in allMethods)
                 {
-                    CheckForMoveLeft,
-                    CheckForMoveRight,
-                    CheckForMoveUp,
-                    CheckForMoveDown,
-                    CheckForAbility1,
-                    CheckForAbility2,
-                    CheckForAbility3,
-                    CheckForAbility4,
-                    CheckForMovement,
-                    CheckForInteraction,
-                    CheckForAttack
-                };
+                    try
+                    {
+                        var actionCheck =
+                            (ActionCheck)Delegate.CreateDelegate(typeof(ActionCheck), method);
+                        actionChecks.Add(actionCheck);
+                    }
+                    catch (Exception)
+                    {
+                        // Lol woops, not an ActionCheck, pls ignore
+                    }
+                }
                 return actionChecks;
             }
         }

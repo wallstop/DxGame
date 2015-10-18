@@ -7,6 +7,7 @@ using DXGame.Core.Utils.Distance;
 using DXGame.Main;
 using System.Linq;
 using System.Runtime.Serialization;
+using DXGame.Core.Components.Advanced.Command;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 
@@ -14,7 +15,7 @@ namespace DXGame.TowerGame.Components
 {
     [Serializable]
     [DataContract]
-    public class SimpleEnemyAI : Component
+    public class SimpleEnemyAI : AbstractCommandComponent
     {
         private static readonly TimeSpan MOVEMENT_DELAY_CHECK = TimeSpan.FromSeconds(1);
         private static readonly double PERSONAL_SPACE_ = 50;

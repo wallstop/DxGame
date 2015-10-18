@@ -50,7 +50,7 @@ namespace DXGame.Core.Components.Developer
         internal static readonly Point Size = new Point(200, 50);
 
         [DataMember]
-        private SortedList<DxGameTime> GameTimes { get; }
+        private LinkedList<DxGameTime> GameTimes { get; }
 
         [DataMember]
         private Graph Graph { get; set; }
@@ -58,7 +58,7 @@ namespace DXGame.Core.Components.Developer
         public TimePerFrameGraph(DxGame game) 
             : base(game)
         {
-            GameTimes = new SortedList<DxGameTime>();
+            GameTimes = new LinkedList<DxGameTime>();
             Graph = new Graph(DxGame.GraphicsDevice, Size)
             {
                 MaxValue = (float)DxGame.TargetElapsedTime.TotalMilliseconds,
@@ -72,10 +72,21 @@ namespace DXGame.Core.Components.Developer
             var developerModel = DxGame.Model<DeveloperModel>();
             if (developerModel.DeveloperMode == DeveloperMode.FullOn)
             {
-                GameTimes.Add(gameTime);
-                DxGameTime removalGameTime = new DxGameTime(gameTime.TotalGameTime - STRETCH_TO_KEEP,
-                    gameTime.ElapsedGameTime, gameTime.IsRunningSlowly);
-                GameTimes.RemoveBelow(removalGameTime);
+                GameTimes.AddLast(gameTime);
+                var removeBefore = gameTime.TotalGameTime - STRETCH_TO_KEEP;
+
+                while (true)
+                {
+                    var firstGameTime = GameTimes.First.Value;
+                    if (firstGameTime.TotalGameTime < removeBefore)
+                    {
+                        GameTimes.RemoveFirst();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
             }
         }
 
@@ -85,7 +96,7 @@ namespace DXGame.Core.Components.Developer
             if (developerModel.DeveloperMode == DeveloperMode.FullOn)
             {
                 var screenRegion = DxGame.ScreenRegion;
-                // TODO: Fix whatever weird math is being done with the screen region to make drawing things "sane"
+                /* Draw direction to the screen buffer - there currently is no translation matrix for direct GPU primitives */
                 var drawLocation = new Vector2((screenRegion.Width / 2.0f), 0);
                 drawLocation.Y += Size.Y;
                 Graph.Position = drawLocation;
@@ -95,8 +106,12 @@ namespace DXGame.Core.Components.Developer
                     var pointValue = (float) time.ElapsedGameTime.TotalMilliseconds;
                     var scale = Math.Min(1.0f, pointValue / DxGame.TargetElapsedTime.TotalMilliseconds);
                     var color = Color.White;
+                    /* 
+                        Scale our colors nicely towards "hotness". White starts as straight 255 values, so we can scale red up by 
+                        the percent of a "60 fps frame" each frame is, and green up by the inverse of that, resulting in a decent gradiant 
+                    */
                     color.R = (byte)(color.R * scale);
-                    color.B = (byte) 0;
+                    color.B = 0;
                     color.G = (byte) (color.G * (1.0 - scale));
                     return Tuple.Create(pointValue, color);
                 }

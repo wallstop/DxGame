@@ -16,6 +16,9 @@ namespace DXGame.Core.Primitives
 
         public DxVector2 Vector => new DxVector2(End.X - Start.X, End.Y - Start.Y);
 
+        /* Careful with vertical lines */
+        public float Slope => (End.Y - Start.Y) / (End.X - Start.X);
+
         public DxLine(DxVector2 start, DxVector2 end)
         {
             Start = start;

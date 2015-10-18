@@ -6,6 +6,8 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
@@ -17,8 +19,6 @@ namespace DXGame.Core.Map
     [DataContract]
     public class NavigationMesh
     {
-        //private static readonly int MESH_PIXEL_SPACING = 2;
-
         private static ThreadLocal<Dictionary<UniqueId, NavigationMesh>> CACHE =
             new ThreadLocal<Dictionary<UniqueId, NavigationMesh>>(() => new Dictionary<UniqueId, NavigationMesh>());
 
@@ -51,19 +51,23 @@ namespace DXGame.Core.Map
         private ReadOnlyCollection<Node> Nodes { get; }
         private ISpatialTree<Node> NodeQuery { get; }
 
-
-        public NavigationMesh(MapModel mapModel)
+        public static NavigationMesh MeshFor(MapModel mapModel)
         {
-            Validate.IsNotNullOrDefault(mapModel, StringUtils.GetFormattedNullOrDefaultMessage(this, mapModel));
+            Validate.IsNotNullOrDefault(mapModel, $"Cannot retrieve the MapId from a null {typeof (MapModel)}");
+            return PopulateOrRetrieveMesh(mapModel);
+        }
 
+        private NavigationMesh(MapModel mapModel)
+        {
             var nodes = BuildMesh(mapModel);
-            Nodes = new ReadOnlyCollection<Node>(Nodes);
+            Nodes = new ReadOnlyCollection<Node>(nodes);
+            NodeQuery = new QuadTree<Node>(node => node.Position, MapBounds(mapModel), Nodes);
         }
 
         private static NavigationMesh PopulateOrRetrieveMesh(MapModel mapModel)
         {
             var cachedNavigationMesh = CACHE.Value;
-            var mapId = mapModel.Map.Id;
+            var mapId = MapId(mapModel);
             if (cachedNavigationMesh.ContainsKey(mapId))
             {
                 return cachedNavigationMesh[mapId];
@@ -77,10 +81,63 @@ namespace DXGame.Core.Map
         private static List<Node> BuildMesh(MapModel mapModel)
         {
             var map = mapModel.Map;
-            var space = map.MapDescriptor.Size * map.MapDescriptor.Scale;
+            var bounds = map.MapDescriptor.Size * map.MapDescriptor.Scale;
+
+            var allMapTiles = map.Collidables.Elements;
+            foreach(var mapTile in allMapTiles)
+            {
+                var tileSpace = mapTile.Spatial.Space;
+            }
+
 
 
             return null;
+        }
+
+        private static DxRectangle MapBounds(MapModel mapModel)
+        {
+            var map = mapModel.Map;
+            var space = map.MapDescriptor.Size * map.MapDescriptor.Scale;
+            return space;
+        }
+
+        private static UniqueId MapId(MapModel mapModel)
+        {
+            var mapId = mapModel.Map.Id;
+            return mapId;
+        }
+
+        private static List<Node> ConvertMapTileToNodes(MapCollidableComponent mapTile)
+        {
+            const CollidableDirection onlyCollisionDirectionWeCareAbout = CollidableDirection.Up;
+            if (!mapTile.CollidableDirections.Contains(onlyCollisionDirectionWeCareAbout))
+            {
+                return Enumerable.Empty<Node>().ToList();
+            }
+
+            var space = mapTile.Spatial.Space;
+
+            var topEdge = space.TopBorder;
+            var minX = ((int) topEdge.Start.X).NearestEven();
+            var maxX = ((int) topEdge.End.X).NearestEven();
+            if (minX >= maxX)
+            {
+                return Enumerable.Empty<Node>().ToList();
+            }
+
+            const int step = 2;
+
+            var nodes = new List<Node>((maxX - minX) / step);
+            var slope = topEdge.Slope;
+            for (int i = minX; i < maxX; i += step)
+            {
+                var y = (i - topEdge.Start.X) * slope + topEdge.Start.Y;
+                // TODO
+            }
+
+
+            // DOOP DOOP TODO
+
         }
 
     }

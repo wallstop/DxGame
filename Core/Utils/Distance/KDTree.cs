@@ -68,6 +68,30 @@ namespace DXGame.Core.Utils.Distance
         private readonly Coordinate<T> coordinate_;
         private readonly KDTreeNode<T> head_;
 
+        public List<T> Elements
+        {
+            get {
+                Queue<KDTreeNode<T>> nodesToVisit = new Queue<KDTreeNode<T>>();
+                nodesToVisit.Enqueue(head_);
+                var elements = new List<T>();
+
+                do
+                {
+                    var currentNode = nodesToVisit.Dequeue();
+                    if (currentNode.Terminal)
+                    {
+                        elements.AddRange(currentNode.Points);
+                        continue;
+                    }
+
+                    nodesToVisit.Enqueue(currentNode.Left);
+                    nodesToVisit.Enqueue(currentNode.Right);
+
+                } while (nodesToVisit.Any());
+                return elements;
+            }
+        }
+
         public List<DxRectangle> Nodes => Divisions; 
 
         public List<DxRectangle> Divisions

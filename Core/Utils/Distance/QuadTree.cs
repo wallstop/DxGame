@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Messaging;
 using DXGame.Core.Primitives;
 
 namespace DXGame.Core.Utils.Distance
@@ -48,7 +46,47 @@ namespace DXGame.Core.Utils.Distance
         private readonly Coordinate<T> coordinate_;
         private readonly QuadTreeNode<T> head_;
 
-        public List<DxRectangle> Nodes => Divisions; 
+        public QuadTree(Coordinate<T> coordinate, DxRectangle boundary, IEnumerable<T> points)
+            : this(coordinate, boundary, points, DEFAULT_BUCKET_SIZE)
+        {
+        }
+
+        public QuadTree(Coordinate<T> coordinate, DxRectangle boundary, IEnumerable<T> points, int bucketSize)
+        {
+            Validate.IsTrue(bucketSize > 0, $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
+            Validate.IsNotNull(coordinate, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(coordinate)));
+            coordinate_ = coordinate;
+            boundary_ = boundary;
+            head_ = new QuadTreeNode<T>(boundary, coordinate_, points.ToList(), bucketSize);
+        }
+
+        // TODO: Simplifiy all these trees into a better structure (too much copy paste) 
+        public List<T> Elements {
+            get {
+
+                Queue<QuadTreeNode<T>> nodesToVisit = new Queue<QuadTreeNode<T>>();
+                nodesToVisit.Enqueue(head_);
+
+                var elements = new List<T>();
+                do
+                {
+                    var currentNode = nodesToVisit.Dequeue();
+                    if (currentNode.Terminal)
+                    {
+                        elements.AddRange(currentNode.Points);
+                        continue;
+                    }
+
+                    foreach (var node in currentNode.Children)
+                    {
+                        nodesToVisit.Enqueue(node);
+                    }
+                } while (nodesToVisit.Any());
+
+                return elements;
+            }
+        }
+        public List<DxRectangle> Nodes => Divisions;
 
         public List<DxRectangle> Divisions
         {
@@ -75,25 +113,6 @@ namespace DXGame.Core.Utils.Distance
 
                 return quadrants;
             }
-        }
-
-        public QuadTree(Coordinate<T> coordinate, DxRectangle boundary, List<T> points)
-            : this(coordinate, boundary, points, DEFAULT_BUCKET_SIZE)
-        {
-        }
-
-        public QuadTree(Coordinate<T> coordinate, DxRectangle boundary, List<T> points, int bucketSize)
-        {
-            Validate.IsTrue(bucketSize > 0, $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
-            Validate.IsNotNull(coordinate, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(coordinate)));
-            coordinate_ = coordinate;
-            boundary_ = boundary;
-            head_ = new QuadTreeNode<T>(boundary, coordinate_, points, bucketSize);
-        }
-
-        public List<T> InRange(DxVector2 point, float radius)
-        {
-            return InRange(new DxRectangle(point.X - radius, point.Y - radius, radius, radius));
         }
 
         public List<T> InRange(IShape range)
@@ -136,6 +155,7 @@ namespace DXGame.Core.Utils.Distance
                 Provides an approximate nearest-neighbor element for the specified point
             </summary>
         */
+
         public Optional<T> Closest(DxVector2 position)
         {
             // wtf resharper impure method?
@@ -166,7 +186,8 @@ namespace DXGame.Core.Utils.Distance
             /* No points? Too bad. */
             if (!currentNode.Points.Any())
             {
-                Assert.IsTrue(!hierarchicalParents.Any(), "Didn't find any points, expected our parent tree to be empty (but it wasn't!)");
+                Assert.IsTrue(!hierarchicalParents.Any(),
+                    "Didn't find any points, expected our parent tree to be empty (but it wasn't!)");
                 return Optional<T>.Empty;
             }
 
@@ -184,6 +205,11 @@ namespace DXGame.Core.Utils.Distance
             }
 
             return new Optional<T>(closest);
+        }
+
+        public List<T> InRange(DxVector2 point, float radius)
+        {
+            return InRange(new DxRectangle(point.X - radius, point.Y - radius, radius, radius));
         }
     }
 }

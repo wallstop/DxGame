@@ -9,6 +9,12 @@ using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Map
 {
+    /**
+        <summary>
+            This is a CollidableComponent of type Map. Not a Component for Colliding with the Map
+        </summary>
+        TODO: Rename this, it is garbage
+    */
     [Serializable]
     [DataContract]
     public class MapCollidableComponent : CollidableComponent

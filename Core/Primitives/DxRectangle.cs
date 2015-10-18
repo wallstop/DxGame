@@ -42,7 +42,7 @@ namespace DXGame.Core.Primitives
         public DxLine LeftBorder => new DxLine(X, Y, X, Y + Height);
         public DxLine RightBorder => new DxLine(X + Width, Y, X + Width, Y + Height);
         public DxLine BottomBorder => new DxLine(X, Y + Height, X + Width, Y + Height);
-        public DxLine UpperBorder => new DxLine(X, Y, X + Width, Y);
+        public DxLine TopBorder => new DxLine(X, Y, X + Width, Y);
 
 
         public List<DxLine> Lines
@@ -50,7 +50,7 @@ namespace DXGame.Core.Primitives
             get
             {
                 const int numLines = 4;
-                var lines = new List<DxLine>(numLines) {UpperBorder, BottomBorder, LeftBorder, RightBorder};
+                var lines = new List<DxLine>(numLines) { TopBorder, BottomBorder, LeftBorder, RightBorder};
                 return lines;
             }
         }

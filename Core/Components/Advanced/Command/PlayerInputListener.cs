@@ -32,14 +32,14 @@ namespace DXGame.Core.Components.Advanced.Command
     [DataContract]
     public class PlayerInputListener : AbstractCommandComponent
     {
-        // TODO: Configify (this should be in player properties or some shit
+        // TODO: Configify (this should be in player properties or some shit)
         private static readonly TimeSpan DROP_THROUGH_PLATFORM_DELAY = TimeSpan.FromSeconds(1);
+
+        [IgnoreDataMember] private List<ActionCheck> cachedActionChecks_;
+
         [DataMember] private TimeSpan lastDroppedThroughPlatform_ = TimeSpan.FromSeconds(0);
 
-        [IgnoreDataMember]
-        private List<ActionCheck> cachedActionChecks_;
-
-        private List<ActionCheck> ActionChecks
+        private IEnumerable<ActionCheck> ActionChecks
         {
             get
             {
@@ -50,9 +50,12 @@ namespace DXGame.Core.Components.Advanced.Command
                 }
 
                 /* Rip every function that is a ActionCheck off of the class via Reflection (what could go wrong?) */
-                var allMethods = typeof(PlayerInputListener).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance);
+                var allMethods = typeof (PlayerInputListener).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance);
                 var actionChecks = new List<ActionCheck>(allMethods.Length);
-                actionChecks.AddRange(allMethods.Select(method => (ActionCheck) Delegate.CreateDelegate(typeof (ActionCheck), this, method, false)).Where(actionCheck => !ReferenceEquals(null, actionCheck)));
+                actionChecks.AddRange(
+                    allMethods.Select(
+                        method => (ActionCheck) Delegate.CreateDelegate(typeof (ActionCheck), this, method, false))
+                        .Where(actionCheck => !ReferenceEquals(null, actionCheck)));
                 /* Cache them so this is only a one-time hit */
                 cachedActionChecks_ = actionChecks;
                 return cachedActionChecks_;

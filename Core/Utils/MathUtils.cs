@@ -117,5 +117,12 @@ namespace DXGame.Core.Utils
         {
             return (value + increment) % max;
         }
+
+        /* Taken from http://stackoverflow.com/questions/4360348/how-to-find-nearest-even-number-for-given-int-given-11-return-12 */
+        public static int NearestEven(this int value)
+        {
+            return (value + 1) ^ ~1;
+        }
     }
 }
+ 

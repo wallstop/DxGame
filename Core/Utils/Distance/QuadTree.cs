@@ -182,19 +182,46 @@ namespace DXGame.Core.Utils.Distance
                 }
                 break;
             }
+            Validate.IsTrue(currentNode.Terminal);
 
-            /* No points? Too bad. */
+            List<T> points;
+
+            /* No points? Look up one, we might've hit a dud. */
             if (!currentNode.Points.Any())
             {
-                Assert.IsTrue(!hierarchicalParents.Any(),
+                Validate.IsTrue(hierarchicalParents.Any(),
                     "Didn't find any points, expected our parent tree to be empty (but it wasn't!)");
-                return Optional<T>.Empty;
+
+                QuadTreeNode<T> parent = hierarchicalParents.Pop();
+                points = new List<T>();
+                Queue<QuadTreeNode<T>> nodesToVisit = new Queue<QuadTreeNode<T>>();
+                nodesToVisit.Enqueue(parent);
+                do
+                {
+                    var visitedNode = nodesToVisit.Dequeue();
+                    if (visitedNode.Terminal)
+                    {
+                        points.AddRange(visitedNode.Points);
+                    }
+                    else
+                    {
+                        foreach (var node in visitedNode.Children)
+                        {
+                            nodesToVisit.Enqueue(node);
+                        }
+                    }
+
+                } while (nodesToVisit.Any());
+            }
+            else
+            {
+                points = currentNode.Points;
             }
 
             /* Points? Walk the list once to find the closest one */
-            var closest = currentNode.Points[0];
+            var closest = points[0];
             var smallestMagnitude = (position - coordinate_(closest)).MagnitudeSquared;
-            foreach (var point in currentNode.Points)
+            foreach (var point in points)
             {
                 var magnitude = (position - coordinate_(point)).MagnitudeSquared;
                 if (magnitude < smallestMagnitude)

@@ -117,11 +117,20 @@ namespace DXGame.Core.Models
 
             var commandmentQueue = new Queue<Commandment>();
             commandmentQueue.Enqueue(Commandment.None);
-            CommandmentProducer commandmentProducer = () => commandmentQueue.Dequeue();
-            var currentEntity = CopyAndPrepGameObject(entity, commandmentProducer);
+            var currentEntity = CopyAndPrepGameObject(entity);
 
             var mapModel = DxGame.Instance.Model<MapModel>();
             var navigationMesh = NavigationMesh.MeshFor(mapModel);
+            var closestNode = navigationMesh.NodeQuery.Closest(destination);
+            if (closestNode.HasValue)
+            {
+                destination = closestNode.Value.Position;
+            }
+            else
+            {
+                return null;
+            }
+
             var explorableMesh = new ExplorableMesh(navigationMesh);
             var exhausted = new HashSet<NavigationMesh.Node>();
             var available =
@@ -141,7 +150,7 @@ namespace DXGame.Core.Models
 
             var sourceNodes = new List<NavigationMesh.Node>();
             var pathBuilder = Path.Builder();
-            var currentTime = DxGame.Instance.CurrentTime;
+            var currentTime = DxGame.Instance.CurrentTime.Copy();
             var isInitialPath = true;
             Path initialPath = null;
 
@@ -151,26 +160,38 @@ namespace DXGame.Core.Models
                 {
                     pathBuilder.WithStep(commandmentQueue.Peek());
                 }
-                currentTime = SimulateOneStep(currentEntity, currentTime);
+                var currentCommandment = commandmentQueue.Dequeue();
+                currentTime = SimulateOneStep(currentEntity, currentTime, currentCommandment);
                 var spatial = currentEntity.ComponentOfType<SpatialComponent>();
                 var space = spatial.Space;
                 var nodesInRange = navigationMesh.NodeQuery.InRange(space);
                 /* Not colliding? Just try to get closer then */
                 if (!nodesInRange.Any())
                 {
-                    var rankedCommandments = RankCommandments(spatial, movementCommendments, destination);
-                    if (rankedCommandments.Any())
-                    {
-                        var commandmentToUse = rankedCommandments[0];
-                        pathBuilder.WithStep(commandmentToUse);
-                        commandmentQueue.Enqueue(commandmentToUse);
-                        continue;
-                    }
-                    break;
+                    var chosenCommandment = Commandment.None;
+                    pathBuilder.WithStep(chosenCommandment);
+                    commandmentQueue.Enqueue(chosenCommandment);
+                    //var rankedCommandments = RankCommandments(spatial, movementCommendments, destination);
+                    //if (rankedCommandments.Any())
+                    //{
+                    //    var commandmentToUse = rankedCommandments[0];
+                    //    pathBuilder.WithStep(commandmentToUse);
+                    //    commandmentQueue.Enqueue(commandmentToUse);
+                    //    continue;
+                    //}
+                    continue;
                 }
                 /* At a node? Great! Inform our mesh of the path that we took */
                 foreach (var node in nodesInRange)
                 {
+                    if (node.Position == destination)
+                    {
+                        bool done = true;
+                        if (done)
+                        {
+
+                        }
+                    }
                     if (!exhausted.Contains(node))
                     {
                         available.Add(node);
@@ -240,9 +261,10 @@ namespace DXGame.Core.Models
                 var firstForce =
                     movementCommendments[firstCommandment];
                 var secondForce = movementCommendments[secondCommandment];
-                return
-                    (destination - spatial.Center + firstForce.Summary).MagnitudeSquared.CompareTo(
-                        (destination - spatial.Center + secondForce.Summary).MagnitudeSquared);
+                var comparison =
+                    (destination - (spatial.Center + firstForce.Summary)).MagnitudeSquared.CompareTo(
+                        (destination - (spatial.Center + secondForce.Summary)).MagnitudeSquared);
+                return comparison;
             });
             return rankedCommandments;
         }
@@ -268,7 +290,7 @@ namespace DXGame.Core.Models
             return emptyAttemptedCommandments;
         }
 
-        private static GameObject CopyAndPrepGameObject(GameObject entity, CommandmentProducer commandmentProducer)
+        private static GameObject CopyAndPrepGameObject(GameObject entity)
         {
             var entityCopy = entity.Copy();
             /* 
@@ -279,22 +301,20 @@ namespace DXGame.Core.Models
             entityCopy.RemoveComponents<PathfindingComponent>();
             entityCopy.CurrentMessages.RemoveAll(message => message is CommandMessage);
             entityCopy.FutureMessages.RemoveAll(message => message is CommandMessage);
-            var pathfinderInputFeeder = new PathfindingInputComponent(commandmentProducer);
-            entityCopy.AttachComponent(pathfinderInputFeeder);
             return entityCopy;
         }
 
-        private DxGameTime SimulateOneStep(GameObject entity, DxGameTime initialTime)
+        private DxGameTime SimulateOneStep(GameObject entity, DxGameTime initialTime, Commandment commandment)
         {
-            var frameRate = DxGame.Instance.TargetFps;
-            var frameTimeSlice = TimeSpan.FromSeconds(frameRate);
-            var nextFrame = new DxGameTime(initialTime.TotalGameTime + frameTimeSlice, frameTimeSlice, initialTime.IsRunningSlowly);
+            var nextFrame = new DxGameTime(initialTime.TotalGameTime + FRAME_TIME_SLICE, FRAME_TIME_SLICE, initialTime.IsRunningSlowly);
             var components = new SortedList<IProcessable>(entity.Components);
             entity.Process(nextFrame);
             foreach (var component in components)
             {
                 component.Process(nextFrame);
             }
+            var commandMessage = new CommandMessage() {Commandment = commandment};
+            entity.FutureMessages.Add(commandMessage);
             return nextFrame;
         }
     }

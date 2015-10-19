@@ -15,7 +15,7 @@ namespace DXGame.Core.Utils
     public struct Optional<T>
     {
         private static readonly Optional<T> EMPTY = new Optional<T>(default(T), false);
-        public static Optional<T> Empty => Empty;
+        public static Optional<T> Empty => EMPTY;
 
         [DataMember]
         private readonly T value_;

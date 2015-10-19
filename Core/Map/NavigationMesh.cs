@@ -30,7 +30,7 @@ namespace DXGame.Core.Map
         {
             var nodes = BuildMesh(mapModel);
             Nodes = new ReadOnlyCollection<Node>(nodes);
-            NodeQuery = new QuadTree<Node>(node => node.Position, MapBounds(mapModel), Nodes);
+            NodeQuery = new QuadTree<Node>(node => node.Position, MapBounds(mapModel.Map), Nodes);
         }
 
         public static NavigationMesh MeshFor(MapModel mapModel)
@@ -69,9 +69,8 @@ namespace DXGame.Core.Map
             return nodes;
         }
 
-        private static DxRectangle MapBounds(MapModel mapModel)
+        private static DxRectangle MapBounds(Map map)
         {
-            var map = mapModel.Map;
             var space = map.MapDescriptor.Size * map.MapDescriptor.Scale;
             return space;
         }
@@ -84,11 +83,11 @@ namespace DXGame.Core.Map
 
         private static List<Node> ConvertMapFloorToNodes(Map map)
         {
-            var bounds = map.MapDescriptor.Size * map.MapDescriptor.Scale;
+            var bounds = MapBounds(map);
             var maxX = ((int) bounds.Width).NearestEven();
             var nodes = new List<Node>(maxX / STEP);
-            var height = bounds.Y + bounds.Height;
-            for (int i = 0; i < maxX; ++i)
+            var height = bounds.Y + bounds.Height - 1;
+            for (int i = 0; i < maxX; i += STEP)
             {
                 var node = new Node(new DxVector2(i, height), null);
                 nodes.Add(node);
@@ -118,7 +117,7 @@ namespace DXGame.Core.Map
             var slope = topEdge.Slope;
             for (int i = minX; i < maxX; i += STEP)
             {
-                var y = (i - topEdge.Start.X) * slope + topEdge.Start.Y;
+                var y = (i - topEdge.Start.X) * slope + topEdge.Start.Y - 1;
                 var node = new Node(new DxVector2(i, y), mapTile);
                 nodes.Add(node);
             }

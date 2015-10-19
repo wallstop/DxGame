@@ -24,7 +24,6 @@ namespace DXGame.Core.Components.Advanced.Physics
     [DataContract]
     public class PhysicsComponent : Component
     {
-        protected static readonly float VELOCITY_FLOOR = 0.5f;
         /* Currently acting forces on this object. This will typically include gravity & air resistance */
         [DataMember] protected readonly List<Force> forces_ = new List<Force>();
         [DataMember] protected SpatialComponent space_;

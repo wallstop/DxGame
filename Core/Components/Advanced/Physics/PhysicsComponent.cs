@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
@@ -66,24 +67,31 @@ namespace DXGame.Core.Components.Advanced.Physics
         {
             return new PhysicsComponentBuilder();
         }
-
-        protected override void Update(DxGameTime gameTime)
+        
+        public static Tuple<DxVector2, DxVector2> ForceComputation(DxGameTime gameTime, DxVector2 position,
+            DxVector2 velocity, List<Force> forces)
         {
-            var scaleAmount = gameTime.DetermineScaleFactor(DxGame);
+            var scaleAmount = gameTime.DetermineScaleFactor(DxGame.Instance);
             var acceleration = new DxVector2();
-            foreach (var force in forces_)
+            foreach (var force in forces)
             {
-                force.Update(Velocity, acceleration, gameTime);
+                force.Update(velocity, acceleration, gameTime);
                 if (!force.Dissipated)
                 {
                     acceleration += force.Acceleration;
                 }
             }
-            /* If our forces are gone, remove them */
+            velocity += (acceleration * scaleAmount);
+            position += (velocity * scaleAmount);
+            return Tuple.Create(position, velocity);
+        }
+
+        protected override void Update(DxGameTime gameTime)
+        {
+            var physicsOutput = ForceComputation(gameTime, Position, Velocity, forces_);
+            Position = physicsOutput.Item1;
+            Velocity = physicsOutput.Item2;
             forces_.RemoveAll(force => force.Dissipated);
-            /* Scale our acceleration to the elapsed time for the current frame - we don't want the game running at hyperspeed */
-            Velocity += (acceleration * scaleAmount);
-            Position += (Velocity * scaleAmount);
         }
 
         protected void HandleCollisionMessage(CollisionMessage message)

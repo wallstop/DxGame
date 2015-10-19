@@ -20,8 +20,9 @@ namespace DXGame.Core.Map
         private static readonly ThreadLocal<Dictionary<UniqueId, NavigationMesh>> CACHE =
             new ThreadLocal<Dictionary<UniqueId, NavigationMesh>>(() => new Dictionary<UniqueId, NavigationMesh>());
 
-        private ReadOnlyCollection<Node> Nodes { get; }
-        private ISpatialTree<Node> NodeQuery { get; }
+        // TODO: We can get rid of this, since we can compute it on-the-fly via our spatial tree
+        public ReadOnlyCollection<Node> Nodes { get; }
+        public ISpatialTree<Node> NodeQuery { get; }
 
         private NavigationMesh(MapModel mapModel)
         {

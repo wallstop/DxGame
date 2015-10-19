@@ -126,6 +126,7 @@
     <Compile Include="Core\Components\Advanced\Enemy\SpawnerFactory.cs" />
     <Compile Include="Core\Components\Advanced\FacingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Impulse\PathfindingComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Command\PathfindingInputComponent.cs" />
     <Compile Include="Core\Components\Advanced\Impulse\StandardActionComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapCollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />

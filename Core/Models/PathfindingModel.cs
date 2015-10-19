@@ -6,8 +6,11 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Command;
 using DXGame.Core.Components.Advanced.Impulse;
+using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
+using DXGame.Core.Map;
 using DXGame.Core.Messaging;
+using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -20,6 +23,9 @@ namespace DXGame.Core.Models
     public class PathfindingModel : Model
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        
+        private static readonly float FRAME_RATE = (float)Main.DxGame.Instance.TargetFps;
+        private static readonly TimeSpan FRAME_TIME_SLICE = TimeSpan.FromSeconds(FRAME_RATE);
 
         public PathfindingModel(DxGame game)
             : base(game)
@@ -43,33 +49,67 @@ namespace DXGame.Core.Models
             {
                 return Enumerable.Empty<ImmutablePair<DxGameTime, Commandment>>().ToList();
             }
+            
+            var commandmentQueue = new Queue<Commandment>();
+            CommandmentProducer commandmentProducer = () => commandmentQueue.Dequeue();
+            var entityCopy = CopyAndPrepGameObject(entity, commandmentProducer);
 
-            var frameRate = DxGame.TargetFps;
-            var frameTimeSlice = TimeSpan.FromSeconds(frameRate);
+            var mapModel = DxGame.Model<MapModel>();
+            var navigationMesh = NavigationMesh.MeshFor(mapModel);
 
-            /* Hacky - assume some "cooldowns" to certain commandment types to aid us in path finding */
-            var commandmentCooldowns = new Dictionary<Commandment, TimeSpan>()
-            {
-                [Commandment.MoveUp] = TimeSpan.FromSeconds(2),
-                [Commandment.MoveDown] = TimeSpan.FromSeconds(1)
-            };
-            /* ...then fill the rest up with default cooldown (one frame) */
-            foreach (Commandment commandment in Enum.GetValues(typeof (Commandment)).Cast<Commandment>().Where(commandment => !commandmentCooldowns.ContainsKey(commandment)))
-            {
-                commandmentCooldowns[commandment] = frameTimeSlice;
-            }
+            var exhaustedNodes = new HashSet<NavigationMesh.Node>();
+            var attemptedCommandmentsAtEachNode = new Dictionary<NavigationMesh.Node, HashSet<Commandment>>(); 
 
-            var entityCopy = CopyAndPrepGameObject(entity);
 
-            var orderedPath = new List<ImmutablePair<DxGameTime, Commandment>>();
 
-            // TODO
 
             return null;
-
         }
 
-        private static GameObject CopyAndPrepGameObject(GameObject entity)
+        /* Note: This destructively modifies forces (if they dissipate) */
+        private static float DetermineMaximumJumpHeight(List<Force> forces)
+        {
+            var initialPosition = new DxVector2(0, 0);
+            var currentVelocity = new DxVector2(0, 0);
+            var highestPosition = initialPosition.Y;
+            var currentPosition = initialPosition;
+            var currentTime = TimeSpan.FromSeconds(0);
+            while (currentPosition.Y > initialPosition.Y)
+            {
+                var gameTime = ConstructGameTime(currentTime);
+                var forceComputation = PhysicsComponent.ForceComputation(gameTime, currentPosition, currentVelocity,
+                    forces);
+                forces.RemoveAll(force => force.Dissipated);
+                currentPosition = forceComputation.Item1;
+                currentVelocity = forceComputation.Item2;
+                highestPosition = Math.Max(highestPosition, currentPosition.Y);
+                currentTime += FRAME_TIME_SLICE;
+            }
+            return highestPosition;
+        }
+
+        private static DxGameTime ConstructGameTime(TimeSpan initialTime)
+        {
+            var gameTime = new DxGameTime(initialTime, FRAME_TIME_SLICE, false);
+            return gameTime;
+        }
+
+        /* TODO: Make a multimap */
+        private static HashSet<Commandment> RetrieveCommandmentsForNode(
+            Dictionary<NavigationMesh.Node, HashSet<Commandment>> attemptedCommandments,
+            NavigationMesh.Node navigationNode)
+        {
+            if (attemptedCommandments.ContainsKey(navigationNode))
+            {
+                return attemptedCommandments[navigationNode];
+            }
+
+            var emptyAttemptedCommandments = new HashSet<Commandment>();
+            attemptedCommandments[navigationNode] = emptyAttemptedCommandments;
+            return emptyAttemptedCommandments;
+        }
+
+        private static GameObject CopyAndPrepGameObject(GameObject entity, CommandmentProducer commandmentProducer)
         {
             var entityCopy = entity.Copy();
             /* 
@@ -80,6 +120,8 @@ namespace DXGame.Core.Models
             entityCopy.RemoveComponents<PathfindingComponent>();
             entityCopy.CurrentMessages.RemoveAll(message => message is CommandMessage);
             entityCopy.FutureMessages.RemoveAll(message => message is CommandMessage);
+            var pathfinderInputFeeder = new PathfindingInputComponent(DxGame.Instance, commandmentProducer);
+            entityCopy.AttachComponent(pathfinderInputFeeder);
             return entityCopy;
         }
 

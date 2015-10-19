@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Models;
@@ -19,49 +17,23 @@ namespace DXGame.Core.Map
     [DataContract]
     public class NavigationMesh
     {
-        private static ThreadLocal<Dictionary<UniqueId, NavigationMesh>> CACHE =
+        private static readonly ThreadLocal<Dictionary<UniqueId, NavigationMesh>> CACHE =
             new ThreadLocal<Dictionary<UniqueId, NavigationMesh>>(() => new Dictionary<UniqueId, NavigationMesh>());
-
-        public class Node
-        {
-            public DxVector2 Position { get; }
-            public Dictionary<Direction, Node> Links { get; } = new Dictionary<Direction, Node>();
-
-            public Node(DxVector2 position)
-            {
-                Position = position;
-            }
-
-            public override int GetHashCode()
-            {
-                return Objects.HashCode(Position, Links);
-            }
-
-            public override bool Equals(object other)
-            {
-                var node = other as Node;
-                if (ReferenceEquals(null, node))
-                {
-                    return false;
-                }
-                return node.Position == Position && Objects.Equals(Links, node.Links);
-            }
-        }
 
         private ReadOnlyCollection<Node> Nodes { get; }
         private ISpatialTree<Node> NodeQuery { get; }
-
-        public static NavigationMesh MeshFor(MapModel mapModel)
-        {
-            Validate.IsNotNullOrDefault(mapModel, $"Cannot retrieve the MapId from a null {typeof (MapModel)}");
-            return PopulateOrRetrieveMesh(mapModel);
-        }
 
         private NavigationMesh(MapModel mapModel)
         {
             var nodes = BuildMesh(mapModel);
             Nodes = new ReadOnlyCollection<Node>(nodes);
             NodeQuery = new QuadTree<Node>(node => node.Position, MapBounds(mapModel), Nodes);
+        }
+
+        public static NavigationMesh MeshFor(MapModel mapModel)
+        {
+            Validate.IsNotNullOrDefault(mapModel, $"Cannot retrieve the MapId from a null {typeof (MapModel)}");
+            return PopulateOrRetrieveMesh(mapModel);
         }
 
         private static NavigationMesh PopulateOrRetrieveMesh(MapModel mapModel)
@@ -73,25 +45,23 @@ namespace DXGame.Core.Map
                 return cachedNavigationMesh[mapId];
             }
 
-            // TODO
-            return null;
-
+            var navigationMesh = new NavigationMesh(mapModel);
+            cachedNavigationMesh[mapId] = navigationMesh;
+            return navigationMesh;
         }
 
         private static List<Node> BuildMesh(MapModel mapModel)
         {
             var map = mapModel.Map;
-            var bounds = map.MapDescriptor.Size * map.MapDescriptor.Scale;
-
+            var nodes = new List<Node>();
             var allMapTiles = map.Collidables.Elements;
-            foreach(var mapTile in allMapTiles)
+            foreach (var mapTile in allMapTiles)
             {
-                var tileSpace = mapTile.Spatial.Space;
+                var tileNodes = ConvertMapTileToNodes(mapTile);
+                nodes.AddRange(tileNodes);
             }
 
-
-
-            return null;
+            return nodes;
         }
 
         private static DxRectangle MapBounds(MapModel mapModel)
@@ -132,14 +102,35 @@ namespace DXGame.Core.Map
             for (int i = minX; i < maxX; i += step)
             {
                 var y = (i - topEdge.Start.X) * slope + topEdge.Start.Y;
-                // TODO
+                var node = new Node(new DxVector2(i, y), mapTile);
+                nodes.Add(node);
             }
-
-
-            // DOOP DOOP TODO
             return nodes;
-
         }
 
+        public class Node
+        {
+            public DxVector2 Position { get; }
+            public MapCollidableComponent MapTile { get; }
+
+            public Node(DxVector2 position, MapCollidableComponent mapTile)
+            {
+                Validate.IsNotNullOrDefault(mapTile, StringUtils.GetFormattedNullOrDefaultMessage(this, mapTile));
+                MapTile = mapTile;
+                Position = position;
+            }
+
+            public override int GetHashCode()
+            {
+                return Objects.HashCode(Position);
+            }
+
+            public override bool Equals(object other)
+            {
+                var node = other as Node;
+                return !ReferenceEquals(null, node) && Position == node.Position &&
+                       Objects.Equals(MapTile, node.MapTile);
+            }
+        }
     }
 }

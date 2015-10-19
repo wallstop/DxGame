@@ -17,6 +17,8 @@ namespace DXGame.Core.Map
     [DataContract]
     public class NavigationMesh
     {
+        private const int STEP = 2;
+
         private static readonly ThreadLocal<Dictionary<UniqueId, NavigationMesh>> CACHE =
             new ThreadLocal<Dictionary<UniqueId, NavigationMesh>>(() => new Dictionary<UniqueId, NavigationMesh>());
 
@@ -61,6 +63,8 @@ namespace DXGame.Core.Map
                 var tileNodes = ConvertMapTileToNodes(mapTile);
                 nodes.AddRange(tileNodes);
             }
+            var bottomEdge = ConvertMapFloorToNodes(map);
+            nodes.AddRange(bottomEdge);
 
             return nodes;
         }
@@ -76,6 +80,20 @@ namespace DXGame.Core.Map
         {
             var mapId = mapModel.Map.Id;
             return mapId;
+        }
+
+        private static List<Node> ConvertMapFloorToNodes(Map map)
+        {
+            var bounds = map.MapDescriptor.Size * map.MapDescriptor.Scale;
+            var maxX = ((int) bounds.Width).NearestEven();
+            var nodes = new List<Node>((maxX + 1) / STEP);
+            var height = bounds.Y + bounds.Height;
+            for (int i = 0; i < maxX; ++i)
+            {
+                var node = new Node(new DxVector2(i, height), null);
+                nodes.Add(node);
+            }
+            return nodes;
         }
 
         private static List<Node> ConvertMapTileToNodes(MapCollidableComponent mapTile)
@@ -96,11 +114,9 @@ namespace DXGame.Core.Map
                 return Enumerable.Empty<Node>().ToList();
             }
 
-            const int step = 2;
-
-            var nodes = new List<Node>((maxX - minX) / step);
+            var nodes = new List<Node>((maxX - minX + 1) / STEP);
             var slope = topEdge.Slope;
-            for (int i = minX; i < maxX; i += step)
+            for (int i = minX; i < maxX; i += STEP)
             {
                 var y = (i - topEdge.Start.X) * slope + topEdge.Start.Y;
                 var node = new Node(new DxVector2(i, y), mapTile);
@@ -116,7 +132,6 @@ namespace DXGame.Core.Map
 
             public Node(DxVector2 position, MapCollidableComponent mapTile)
             {
-                Validate.IsNotNullOrDefault(mapTile, StringUtils.GetFormattedNullOrDefaultMessage(this, mapTile));
                 MapTile = mapTile;
                 Position = position;
             }

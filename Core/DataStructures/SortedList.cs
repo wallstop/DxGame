@@ -9,7 +9,7 @@ namespace DXGame.Core.DataStructures
 {
     [Serializable]
     [DataContract]
-    public class SortedList<T> : IList<T> where T : IComparable<T>
+    public class SortedList<T> : IList<T>
     {
         [DataMember]
         private readonly IComparer<T> comparer_;

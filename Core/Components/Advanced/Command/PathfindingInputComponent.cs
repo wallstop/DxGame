@@ -30,7 +30,8 @@ namespace DXGame.Core.Components.Advanced.Command
 
         protected override void Update(DxGameTime gameTime)
         {
-            var commandMessage = new CommandMessage {Commandment = CommandmentFeeder()};
+            var commandment = CommandmentFeeder();
+            var commandMessage = new CommandMessage {Commandment = commandment};
             Parent?.BroadcastMessage(commandMessage);
         }
     }

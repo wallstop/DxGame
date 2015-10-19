@@ -26,14 +26,9 @@ namespace DXGame.Core.Components.Developer
         private TimeSpan lastUpdated_ = TimeSpan.Zero;
         protected SpriteFont spriteFont_;
 
-        public TeamCounterWidget(DxGame game)
-            : base(game)
-        {
-        }
-
         public override void LoadContent()
         {
-            spriteFont_ = DxGame.Content.Load<SpriteFont>("Fonts/Pericles");
+            spriteFont_ = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Pericles");
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -46,7 +41,7 @@ namespace DXGame.Core.Components.Developer
 
             teamCounts_.Clear();
             /* Grab all team components */
-            var teamComponents = DxGame.DxGameElements.OfType<TeamComponent>();
+            var teamComponents = DxGame.Instance.DxGameElements.OfType<TeamComponent>();
             foreach (var team in teamComponents.Select(teamComponent => teamComponent.Team))
             {
                 int currentCount;
@@ -72,7 +67,7 @@ namespace DXGame.Core.Components.Developer
                 Comparer<string>.Create((first, second) => second.Length - first.Length));
 
             var size = spriteFont_.MeasureString(teamCountsSortedByLength[0]);
-            var screenRegion = DxGame.ScreenRegion;
+            var screenRegion = DxGame.Instance.ScreenRegion;
 
             // TODO: Fix whatever weird math is being done with the screen region to make drawing things "sane"
             var drawLocation = new Vector2(Math.Abs(screenRegion.X) + PIXEL_OFFSET,

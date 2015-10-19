@@ -58,9 +58,8 @@ namespace DXGame.Core.Components.Advanced
         [DataMember]
         public SpatialComponent Spatial { get; }
 
-        protected CollidableComponent(DxGame game, IList<CollidableDirection> collidableDirections,
+        protected CollidableComponent(IList<CollidableDirection> collidableDirections,
             SpatialComponent spatial)
-            : base(game)
         {
             CollidableDirections = new ReadOnlyCollection<CollidableDirection>(collidableDirections);
             Spatial = spatial;
@@ -123,8 +122,7 @@ namespace DXGame.Core.Components.Advanced
             public virtual CollidableComponent Build()
             {
                 Validate.IsNotNull(spatial_, StringUtils.GetFormattedNullOrDefaultMessage(this, spatial_));
-                var game = DxGame.Instance;
-                return new CollidableComponent(game, collidableDirections_, spatial_);
+                return new CollidableComponent(collidableDirections_, spatial_);
             }
 
             public CollidableComponentBuilder WithCollidableDirections(IEnumerable<CollidableDirection> directions)

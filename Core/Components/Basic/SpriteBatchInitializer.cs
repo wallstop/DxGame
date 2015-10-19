@@ -11,8 +11,7 @@ namespace DXGame.Core.Components.Basic
     [DataContract]
     public class SpriteBatchInitializer : DrawableComponent
     {
-        public SpriteBatchInitializer(DxGame game)
-            : base(game)
+        public SpriteBatchInitializer()
         {
             DrawPriority = DrawPriority.INIT_SPRITEBATCH;
         }
@@ -20,9 +19,9 @@ namespace DXGame.Core.Components.Basic
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             // TODO: Change this ugly color
-            DxGame.GraphicsDevice.Clear(Color.CornflowerBlue);
+            DxGame.Instance.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            DxRectangle screen = DxGame.ScreenRegion;
+            DxRectangle screen = DxGame.Instance.ScreenRegion;
 
             Matrix cameraShift = Matrix.CreateTranslation(screen.X, screen.Y, 0);
 

@@ -31,9 +31,9 @@ namespace DXGame.Core.Components.Advanced.Physics
 
         private DxVector2 Dimensions => space_.Dimensions;
 
-        protected MapCollidablePhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration,
+        protected MapCollidablePhysicsComponent(DxVector2 velocity, DxVector2 acceleration,
             SpatialComponent space, UpdatePriority updatePriority)
-            : base(game, velocity, acceleration, space, updatePriority)
+            : base(velocity, acceleration, space, updatePriority)
         {
             MessageHandler.RegisterMessageHandler<DropThroughPlatformRequest>(HandleDropThroughPlatformRequest);
         }
@@ -45,7 +45,7 @@ namespace DXGame.Core.Components.Advanced.Physics
 
         private void HandleDropThroughPlatformRequest(DropThroughPlatformRequest message)
         {
-            var map = DxGame.Model<MapModel>();
+            var map = DxGame.Instance.Model<MapModel>();
             var mapQueryRegion = Space;
             /* Give the region a little bit of buffer room to check for platforms we may be standing on */
             mapQueryRegion.Height += 3;
@@ -53,7 +53,7 @@ namespace DXGame.Core.Components.Advanced.Physics
             /* TODO: Either find or implement an LRU cache */
             mapTilesToIgnore_.AddRange(
                 mapTiles.Where(tile => tile.PlatformType == PlatformType.Platform)
-                    .Select(tile => Tuple.Create(tile, DxGame.CurrentTime.TotalGameTime)));
+                    .Select(tile => Tuple.Create(tile, DxGame.Instance.CurrentTime.TotalGameTime)));
         }
 
         /**
@@ -84,7 +84,7 @@ namespace DXGame.Core.Components.Advanced.Physics
 
             // TODO: Vector-based collision
 
-            var map = DxGame.Model<MapModel>();
+            var map = DxGame.Instance.Model<MapModel>();
             var collisionSpace = CollisionSpace(traveledLine);
 
             List<MapCollidableComponent> mapTiles = map.Map.Collidables.InRange(collisionSpace);
@@ -197,8 +197,7 @@ namespace DXGame.Core.Components.Advanced.Physics
         {
             public override PhysicsComponent Build()
             {
-                CheckParameters();
-                var physics = new MapCollidablePhysicsComponent(game_, velocity_, acceleration_, space_, updatePriority_);
+                var physics = new MapCollidablePhysicsComponent(velocity_, acceleration_, space_, updatePriority_);
                 foreach (var force in forces_)
                 {
                     physics.AttachForce(force);

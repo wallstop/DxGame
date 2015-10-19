@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using DXGame.Core.Behavior.Goals;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Command;
 using DXGame.Core.Components.Advanced.Enemy;
+using DXGame.Core.Components.Advanced.Impulse;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Messaging;
+using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
 using DXGame.Core.Skills;
 using DXGame.Core.State;
@@ -18,14 +21,12 @@ namespace DXGame.Core.Generators
 {
     public class PlayerGenerator
     {
-        private readonly DxGame game_;
         private readonly FloatingHealthIndicator healthBar_;
         private readonly PhysicsComponent physics_;
         private readonly EntityPropertiesComponent playerProperties_;
-        private readonly WeaponComponent weapon_;
         public SpatialComponent PlayerSpace { get; }
 
-        public PlayerGenerator(DxGame game, DxVector2 playerPosition, DxRectangle bounds)
+        public PlayerGenerator(DxVector2 playerPosition, DxRectangle bounds)
         {
             PlayerSpace = (BoundedSpatialComponent)
                 BoundedSpatialComponent.Builder().WithBounds(bounds)
@@ -39,9 +40,7 @@ namespace DXGame.Core.Generators
             /* Fuck with the health so we can check if the hp bar works */
             playerProperties_.Health.CurrentValue -= 3;
             // TODO: Need to add state machine in (how?)
-
-            // TODO Make sure animation component works 
-            weapon_ = new RangedWeaponComponent(game).WithPhysicsComponent(physics_).WithDamage(50);
+            
 
             // TODO make these colors not shit and/or blend into the current biome
             healthBar_ =
@@ -51,18 +50,27 @@ namespace DXGame.Core.Generators
                     .WithPosition(PlayerSpace)
                     .Build();
             healthBar_.LoadContent();
-            game_ = game;
+ 
         }
 
         public List<GameObject> Generate()
         {
             var objects = new List<GameObject>();
             var playerBuilder = GameObject.Builder();
-            var inputListener = new PlayerInputListener(game_);
-            var facingComponent = new FacingComponent(game_);
-            var teamComponent = new TeamComponent(game_, Team.PlayerTeam);
-            playerBuilder.WithComponents(PlayerSpace, physics_, weapon_,
-                playerProperties_, healthBar_, inputListener, facingComponent, teamComponent);
+            var inputListener = new PlayerInputListener();
+            var facingComponent = new FacingComponent();
+            var teamComponent = new TeamComponent(Team.PlayerTeam);
+
+            var standardActionComponent =
+                StandardActionComponent.Builder().WithAction(ActionType.Movement, Commandment.MoveLeft).WithAction(ActionType.Movement, Commandment.MoveRight).WithAction(ActionType.Movement, Commandment.MoveUp)
+                    .WithMovementForce(Commandment.MoveLeft, SimpleDirectionalForce(new DxVector2(-3, 0)))
+                    .WithMovementForce(Commandment.MoveRight, SimpleDirectionalForce(new DxVector2(3, 0)))
+                    .WithMovementForce(Commandment.MoveUp, SimpleDirectionalForce(new DxVector2(-3, 0))).Build();
+
+            var pathfinding = new PathfindingComponent(standardActionComponent);
+
+            playerBuilder.WithComponents(PlayerSpace, physics_, 
+                    playerProperties_, healthBar_, inputListener, facingComponent, teamComponent, standardActionComponent, pathfinding);
             var playerObject = playerBuilder.Build();
             var shockwaveSkill =
                 Skill.Builder()
@@ -76,16 +84,23 @@ namespace DXGame.Core.Generators
                     .WithSkillFunction(Gevurah.RainOfArrows)
                     .WithCommandment(Commandment.Ability2)
                     .Build();
-            var playerSkillComponent = new SkillComponent(game_, shockwaveSkill, arrowRainSkill);
+            var playerSkillComponent = new SkillComponent(shockwaveSkill, arrowRainSkill);
             playerObject.AttachComponent(playerSkillComponent);
             StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(playerObject, "Player");
             objects.Add(playerObject);
+
 
             var simpleSpawner = SpawnerFactory.SimpleBoxSpawner();
             var simpleSpawnerOwner = GameObject.Builder().WithComponent(simpleSpawner).Build();
             objects.Add(simpleSpawnerOwner);
 
             return objects;
+        }
+
+        // TODO: NEED TO PROPOGATE FORCE INFO UP SOMEHOW
+        private static Force SimpleDirectionalForce(DxVector2 direction)
+        {
+            return new Force(new DxVector2(), new DxVector2(), direction, (x, y, z) => Tuple.Create(true, new DxVector2()), "TestPleaseRemove");
         }
     }
 }

@@ -14,12 +14,12 @@ namespace DXGame.Core.Menus
         private readonly GameObject mousePointer_;
         protected List<MenuItem> MenuItems { get; } = new List<MenuItem>();
 
-        protected Menu(DxGame game) : base(game)
+        protected Menu()
         {
-            var mousePosition = new MouseTrackingComponent(DxGame);
-            var mouseSprite = new SimpleSpriteComponent(DxGame).WithAsset("MousePointer").WithPosition(mousePosition);
+            var mousePosition = new MouseTrackingComponent();
+            var mouseSprite = new SimpleSpriteComponent().WithAsset("MousePointer").WithPosition(mousePosition);
             mousePointer_ = GameObject.Builder().WithComponents(mousePosition, mouseSprite).Build();
-            DxGame.AddAndInitializeComponents(mousePosition, mouseSprite);
+            DxGame.Instance.AddAndInitializeComponents(mousePosition, mouseSprite);
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
@@ -53,7 +53,7 @@ namespace DXGame.Core.Menus
 
         public override void Dispose()
         {
-            DxGame.RemoveGameObject(mousePointer_);
+            DxGame.Instance.RemoveGameObject(mousePointer_);
             base.Dispose();
         }
     }

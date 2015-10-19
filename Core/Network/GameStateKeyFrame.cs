@@ -36,8 +36,9 @@ namespace DXGame.Core.Network
             MessageType = MessageType.SERVER_DATA_KEYFRAME;
         }
 
-        public static GameStateKeyFrame FromGame(DxGame game, DxGameTime gameTime)
+        public static GameStateKeyFrame FromGame(DxGameTime gameTime)
         {
+            var game = DxGame.Instance;
             var keyFrame = new GameStateKeyFrame
             {
                 GameTime = gameTime,

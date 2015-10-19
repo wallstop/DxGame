@@ -14,10 +14,6 @@ namespace DXGame.Core.GraphicsWidgets.HUD
     [DataContract]
     public class BuffBar : HudComponent
     {
-        public BuffBar(DxGame game)
-            : base(game)
-        {
-        }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {

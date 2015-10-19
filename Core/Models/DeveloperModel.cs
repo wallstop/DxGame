@@ -28,24 +28,23 @@ namespace DXGame.Core.Models
 
         public DeveloperMode DeveloperMode => devSwitch_.DeveloperMode;
 
-        public DeveloperModel(DxGame game) 
-            : base(game)
+        public DeveloperModel()
         {
             DrawPriority = DrawPriority.HUD_LAYER;
-            var fpsTracker = new FpsWidget(DxGame);
+            var fpsTracker = new FpsWidget();
             components_.Add(fpsTracker);
-            devSwitch_ = new DeveloperSwitch(DxGame);
+            devSwitch_ = new DeveloperSwitch();
             components_.Add(devSwitch_);
-            var mapTreeWidget = new CollisionTreeWidget<MapCollidableComponent>(game, () => DxGame.Model<MapModel>().Map.Collidables);
+            var mapTreeWidget = new CollisionTreeWidget<MapCollidableComponent>(() => DxGame.Instance.Model<MapModel>().Map.Collidables);
             components_.Add(mapTreeWidget);
-            var boundingBoxWidget = new BoundingBoxWidget(game);
+            var boundingBoxWidget = new BoundingBoxWidget();
             components_.Add(boundingBoxWidget);
-            var teamCounterWidget = new TeamCounterWidget(game);
+            var teamCounterWidget = new TeamCounterWidget();
             components_.Add(teamCounterWidget);
-            var timePerFrameBackground = new TimePerFrameGraphBackground(game);
+            var timePerFrameBackground = new TimePerFrameGraphBackground();
             components_.Add(timePerFrameBackground);
-            var timePerFrameGraph = new TimePerFrameGraph(game);
-            DxGame.AddAndInitializeComponents(timePerFrameGraph);
+            var timePerFrameGraph = new TimePerFrameGraph();
+            DxGame.Instance.AddAndInitializeComponents(timePerFrameGraph);
         }
 
         public override bool ShouldSerialize => false;

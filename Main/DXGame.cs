@@ -218,18 +218,18 @@ namespace DXGame.Main
         protected override void Initialize()
         {
             SpriteBatch = new SpriteBatch(GraphicsDevice);
-            AddAndInitializeComponent(new SpriteBatchInitializer(this));
-            AddAndInitializeComponent(new SpriteBatchEnder(this));
-            var playMenu = new MainMenu(this);
+            AddAndInitializeComponent(new SpriteBatchInitializer());
+            AddAndInitializeComponent(new SpriteBatchEnder());
+            var playMenu = new MainMenu();
             AddAndInitializeComponent(playMenu);
 
-            var frameModel = new FrameModel(this);
+            var frameModel = new FrameModel();
             AttachModel(frameModel);
 
-            var netModel = new NetworkModel(this);
+            var netModel = new NetworkModel();
             AttachModel(netModel);
 
-            var inputModel = new InputModel(this);
+            var inputModel = new InputModel();
             AttachModel(inputModel);
 
             base.Initialize();

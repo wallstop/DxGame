@@ -32,8 +32,7 @@ namespace DXGame.Core.Components.Advanced.Damage
     {
         [DataMember] protected DeathEffect deathEffect_;
 
-        public DeathEffectComponent(DxGame game, DeathEffect deathEffect)
-            : base(game)
+        public DeathEffectComponent(DeathEffect deathEffect)
         {
             Validate.IsNotNull(deathEffect, StringUtils.GetFormattedNullOrDefaultMessage(this,
                 nameof(DeathEffect)));
@@ -53,7 +52,7 @@ namespace DXGame.Core.Components.Advanced.Damage
                 deathEffect_.Invoke(spatial.Space);
             }
             /* But regardless of whether or not a spatial exists, we want to kill this guy - remove everything from the game */
-            DxGame.RemoveGameObject(Parent);
+            DxGame.Instance.RemoveGameObject(Parent);
         }
 
         public static void SimpleEnemyBloodParticles(DxRectangle deathSpace)

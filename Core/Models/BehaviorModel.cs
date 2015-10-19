@@ -23,8 +23,7 @@ namespace DXGame.Core.Models
     {
         //private Dictionary<BehaviorComponent, > 
 
-        public BehaviorModel(DxGame game) 
-            : base(game)
+        public BehaviorModel()
         {
         }
 

@@ -10,8 +10,7 @@ namespace DXGame.Core.Components.Basic
     [DataContract]
     public class SpriteBatchEnder : DrawableComponent
     {
-        public SpriteBatchEnder(DxGame game)
-            : base(game)
+        public SpriteBatchEnder()
         {
             DrawPriority = DrawPriority.END_SPRITEBATCH;
         }

@@ -86,7 +86,7 @@ namespace DXGame.Core.Map
         {
             var bounds = map.MapDescriptor.Size * map.MapDescriptor.Scale;
             var maxX = ((int) bounds.Width).NearestEven();
-            var nodes = new List<Node>((maxX + 1) / STEP);
+            var nodes = new List<Node>(maxX / STEP);
             var height = bounds.Y + bounds.Height;
             for (int i = 0; i < maxX; ++i)
             {

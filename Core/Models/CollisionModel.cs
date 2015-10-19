@@ -12,8 +12,7 @@ namespace DXGame.Core.Models
     {
         public ISpatialTree<PhysicsComponent> Collidables { get; private set; }
 
-        public CollisionModel(DxGame game) 
-            : base(game)
+        public CollisionModel()
         {
             MessageHandler.RegisterMessageHandler<PhysicsMessage>(HandlePhysicsMessage);
         }
@@ -22,7 +21,7 @@ namespace DXGame.Core.Models
 
         protected override void Update(DxGameTime gameTime)
         {
-            var physics = DxGame.DxGameElements.OfType<PhysicsComponent>().ToList();
+            var physics = DxGame.Instance.DxGameElements.OfType<PhysicsComponent>().ToList();
             Collidables = new RTree<PhysicsComponent>(physicsComponent => physicsComponent.Space, physics);
         }
 

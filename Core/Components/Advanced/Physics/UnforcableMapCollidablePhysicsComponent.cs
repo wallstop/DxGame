@@ -17,9 +17,9 @@ namespace DXGame.Core.Components.Advanced.Physics
     [DataContract]
     public class UnforcableMapCollidablePhysicsComponent : MapCollidablePhysicsComponent
     {
-        protected UnforcableMapCollidablePhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration,
+        protected UnforcableMapCollidablePhysicsComponent(DxVector2 velocity, DxVector2 acceleration,
             SpatialComponent space, UpdatePriority updatePriority)
-            : base(game, velocity, acceleration, space, updatePriority)
+            : base(velocity, acceleration, space, updatePriority)
         {
         }
 
@@ -37,7 +37,7 @@ namespace DXGame.Core.Components.Advanced.Physics
         {
             public override PhysicsComponent Build()
             {
-                var physics = new UnforcableMapCollidablePhysicsComponent(game_, velocity_, acceleration_, space_,
+                var physics = new UnforcableMapCollidablePhysicsComponent(velocity_, acceleration_, space_,
                     updatePriority_);
                 return physics;
             }

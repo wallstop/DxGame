@@ -17,18 +17,25 @@ namespace DXGame.Core.Components.Advanced.Impulse
         [DataMember]
         public StandardActionComponent ActionComponent { get; }
 
-        public PathfindingComponent(DxGame game, StandardActionComponent standardActionComponent)
-            : base(game)
+        public PathfindingComponent(StandardActionComponent standardActionComponent)
         {
             Validate.IsNotNullOrDefault(standardActionComponent,
                 StringUtils.GetFormattedNullOrDefaultMessage(this, standardActionComponent));
             ActionComponent = standardActionComponent;
         }
 
+        protected override void Update(DxGameTime gameTime)
+        {
+            var mapModel = DxGame.Instance.Model<MapModel>();
+            var targetArea = mapModel.Map.RandomSpawnLocation;
+            var targetLocation = new DxVector2(targetArea.X, targetArea.Y);
+            var path = FindPath(targetLocation, TimeSpan.FromSeconds(5));
+        }
+
         public List<ImmutablePair<DxGameTime, Commandment>> FindPath(DxVector2 destination, TimeSpan timeout)
         {
-            var beginningTime = DxGame.CurrentTime;
-            var pathFindingModel = DxGame.Model<PathfindingModel>();
+            var beginningTime = DxGame.Instance.CurrentTime;
+            var pathFindingModel = DxGame.Instance.Model<PathfindingModel>();
             var fullPath = pathFindingModel.Pathfind(Parent, destination);
             var cutoffTime = beginningTime.TotalGameTime + timeout;
             /* Cull everything past our timeout */

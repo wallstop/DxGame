@@ -33,9 +33,8 @@ namespace DXGame.Core.Components.Advanced.Particle
         protected float MaxDistance { get; set; }
         protected float TransparencyWeight { get; }
 
-        protected Particle(DxGame game, Color color, float radius, float growRate, DxVector2 position,
+        protected Particle(Color color, float radius, float growRate, DxVector2 position,
             DxVector2 velocity, DxVector2 acceleration, TimeSpan timeToLive, float maxDistance, float transparencyWeight)
-            : base(game)
         {
             // TODO: Only draw / make particles if like "hefty" graphics options are specified.
             Color = color;
@@ -77,7 +76,7 @@ namespace DXGame.Core.Components.Advanced.Particle
                 return;
             }
             /* Othwerise, do our own physics computations (scale to FPS like normal physics components) */
-            var scaleFactor = gameTime.DetermineScaleFactor(DxGame);
+            var scaleFactor = gameTime.DetermineScaleFactor(DxGame.Instance);
 
             Velocity += (Acceleration * scaleFactor);
             var scaledVelocity = (Velocity * scaleFactor);
@@ -115,7 +114,7 @@ namespace DXGame.Core.Components.Advanced.Particle
                 Validate.IsTrue(radius_ > 0, $"Cannot create {typeof (Particle)}s with a negative radius ({radius_})");
                 Validate.IsTrue(maxDistance_ >= 0, $"Cannot create {typeof(Particle)}s with a negative maxDistance ({maxDistance_})");
                 Validate.IsTrue(transparencyWeight_ >= 0 && transparencyWeight_ <= 1.0f, $"Cannot create {typeof (Particle)}s with an transparencyWeight that is not [0, 1] (was {transparencyWeight_})");
-                return new Particle(game_, color_, radius_, growRate_, position_, velocity_, acceleration_, timeToLive_, maxDistance_, transparencyWeight_);
+                return new Particle(color_, radius_, growRate_, position_, velocity_, acceleration_, timeToLive_, maxDistance_, transparencyWeight_);
             }
 
             public ParticleBuilder WithMaxDistance(float maxDistance)

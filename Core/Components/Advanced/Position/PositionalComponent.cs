@@ -54,8 +54,7 @@ namespace DXGame.Core.Components.Advanced.Position
             set { position_ = value; }
         }
 
-        protected PositionalComponent(DxGame game, DxVector2 position)
-            : base(game)
+        protected PositionalComponent(DxVector2 position)
         {
             position_ = position;
         }
@@ -71,8 +70,7 @@ namespace DXGame.Core.Components.Advanced.Position
 
             public virtual PositionalComponent Build()
             {
-                var game = DxGame.Instance;
-                return new PositionalComponent(game, position_);
+                return new PositionalComponent(position_);
             }
 
             public PositionalComponentBuilder WithPosition(DxVector2 position)

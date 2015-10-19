@@ -7,8 +7,7 @@ namespace DXGame.Core.Models
     {
         public HudRegion HudRegion { get; private set; }
 
-        public HudModel(DxGame game)
-            : base(game)
+        public HudModel()
         {
             // If we have this here, do we actually need a HudComponent at all?
             DrawPriority = DrawPriority.HUD_LAYER;
@@ -16,7 +15,7 @@ namespace DXGame.Core.Models
 
         public override void Initialize()
         {
-            HudRegion = new HudRegion(DxGame);
+            HudRegion = new HudRegion();
         }
     }
 }

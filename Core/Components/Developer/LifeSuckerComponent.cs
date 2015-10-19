@@ -22,11 +22,6 @@ namespace DXGame.Core.Components.Developer
         private static readonly TimeSpan LIFE_SUCK_TICK_FREQUENCY = TimeSpan.FromSeconds(1);
         private TimeSpan lastSucked_ = TimeSpan.Zero;
 
-        public LifeSuckerComponent(DxGame game)
-            : base(game)
-        {
-        }
-
         protected override void Update(DxGameTime gameTime)
         {
             if (lastSucked_ + LIFE_SUCK_TICK_FREQUENCY <= gameTime.TotalGameTime)

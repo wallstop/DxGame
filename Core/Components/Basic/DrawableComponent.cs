@@ -26,8 +26,7 @@ namespace DXGame.Core.Components.Basic
     [DataContract]
     public abstract class DrawableComponent : Component, IComparable<DrawableComponent>, IDrawable
     {
-        protected DrawableComponent(DxGame game)
-            : base(game)
+        protected DrawableComponent()
         {
             DrawPriority = DrawPriority.NORMAL;
         }

@@ -21,8 +21,7 @@ namespace DXGame.Core.GraphicsWidgets.HUD
 
         //private static readonly int NUM_SKILLS = 4;
 
-        private AbilityBar(DxGame game)
-            : base(game)
+        private AbilityBar()
         {
         }
 
@@ -36,7 +35,7 @@ namespace DXGame.Core.GraphicsWidgets.HUD
             int numHorizontalDivisions = 2;
             int numVerticalDivisions = numSkills + 1;
 
-            DxRectangle hudRegion = DxGame.GameSettings.HudRegion;
+            DxRectangle hudRegion = DxGame.Instance.GameSettings.HudRegion;
             // TODO: Come up with a better splitting algorithm. There's gotta be one publicly available somewhere
             float availableWidth = hudRegion.Width - (numVerticalDivisions * MIN_PIXEL_GAP);
             // SkillAreas are square, so same width & height

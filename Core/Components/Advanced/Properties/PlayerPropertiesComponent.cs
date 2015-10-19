@@ -14,7 +14,7 @@ namespace DXGame.Core.Components.Advanced.Properties
     public class PlayerPropertiesComponent : EntityPropertiesComponent
     {
         public static PlayerPropertiesComponent DefaultPlayerProperties
-            => new PlayerPropertiesComponent(DxGame.Instance)
+            => new PlayerPropertiesComponent()
             {
                 // TODO: Tweak these values, they're ok-enough for now
                 Health = new Property<int>(10, "Health"),
@@ -25,10 +25,5 @@ namespace DXGame.Core.Components.Advanced.Properties
                 AttackSpeed =
                     new Property<TimeSpan>(TimeSpan.FromMilliseconds(300), "AttackSpeed")
             };
-
-        public PlayerPropertiesComponent(DxGame game)
-            : base(game)
-        {
-        }
     }
 }

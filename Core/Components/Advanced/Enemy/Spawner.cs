@@ -21,8 +21,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
     {
         protected SpawnTrigger SpawnTrigger { get; }
 
-        protected Spawner(DxGame game, DxVector2 position, DxRectangle spawnArea, SpawnTrigger spawnTrigger)
-            : base(game)
+        protected Spawner(DxVector2 position, DxRectangle spawnArea, SpawnTrigger spawnTrigger)
         {
             SpawnTrigger = spawnTrigger;
         }
@@ -35,14 +34,14 @@ namespace DXGame.Core.Components.Advanced.Enemy
                 var spawnedObject = spawnCheck.Item2;
                 var position = spawnedObject.ComponentOfType<PositionalComponent>();
                 position.Position = RandomPositionInSpawnArea();
-                DxGame.AddAndInitializeGameObject(spawnedObject);
+                DxGame.Instance.AddAndInitializeGameObject(spawnedObject);
             }
             base.Update(gameTime);
         }
 
         private DxVector2 RandomPositionInSpawnArea()
         {
-            var map = DxGame.Model<MapModel>();
+            var map = DxGame.Instance.Model<MapModel>();
             var spawnArea = map.RandomSpawnLocation;
             var minX = spawnArea.X;
             var maxX = spawnArea.X + spawnArea.Width;
@@ -61,7 +60,6 @@ namespace DXGame.Core.Components.Advanced.Enemy
 
         public class SpawnerBuilder : IBuilder<Spawner>
         {
-            private DxGame game_;
             private DxVector2 position_;
             private DxRectangle spawnArea_;
             private SpawnTrigger spawnTrigger_;
@@ -70,7 +68,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
             {
                 Validate.IsNotNullOrDefault(spawnTrigger_,
                     StringUtils.GetFormattedNullOrDefaultMessage(this, "SpawnTrigger"));
-                return new Spawner(game_, position_, spawnArea_, spawnTrigger_);
+                return new Spawner(position_, spawnArea_, spawnTrigger_);
             }
 
             public SpawnerBuilder WithPosition(DxVector2 position)
@@ -88,13 +86,6 @@ namespace DXGame.Core.Components.Advanced.Enemy
             public SpawnerBuilder WithSpawnTrigger(SpawnTrigger trigger)
             {
                 spawnTrigger_ = trigger;
-                return this;
-            }
-
-            public SpawnerBuilder WithGame(DxGame game)
-            {
-                Validate.IsNotNullOrDefault(game, StringUtils.GetFormattedNullOrDefaultMessage(this, game));
-                game_ = game;
                 return this;
             }
         }

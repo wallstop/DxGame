@@ -62,15 +62,14 @@ namespace DXGame.Core.Components.Advanced.Command
             }
         }
 
-        public PlayerInputListener(DxGame game)
-            : base(game)
+        public PlayerInputListener()
         {
         }
 
         protected override void Update(DxGameTime gameTime)
         {
             /* TODO: Change state transitions to simply be event handlers based off the events emitted from here */
-            var inputModel = DxGame.Model<InputModel>();
+            var inputModel = DxGame.Instance.Model<InputModel>();
             var inputEvents = inputModel.Events.ToList();
             foreach (var actionCheck in ActionChecks)
             {
@@ -82,7 +81,7 @@ namespace DXGame.Core.Components.Advanced.Command
 
         private void CheckForMoveLeft(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Controls.Left))
+            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Left))
             {
                 Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.MoveLeft});
             }
@@ -90,7 +89,7 @@ namespace DXGame.Core.Components.Advanced.Command
 
         private void CheckForMoveRight(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Controls.Right))
+            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Right))
             {
                 Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.MoveRight});
             }
@@ -98,7 +97,7 @@ namespace DXGame.Core.Components.Advanced.Command
 
         private void CheckForMoveUp(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Controls.Jump))
+            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Jump))
             {
                 Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.MoveUp});
             }
@@ -106,7 +105,7 @@ namespace DXGame.Core.Components.Advanced.Command
 
         private void CheckForMoveDown(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
         {
-            if (inputEvents.Any(keyEvent => keyEvent.Key == DxGame.Controls.Down && keyEvent.HeldDown) &&
+            if (inputEvents.Any(keyEvent => keyEvent.Key == DxGame.Instance.Controls.Down && keyEvent.HeldDown) &&
                 (lastDroppedThroughPlatform_ + DROP_THROUGH_PLATFORM_DELAY) < gameTime.TotalGameTime)
             {
                 Parent?.BroadcastMessage(new DropThroughPlatformRequest());
@@ -118,7 +117,7 @@ namespace DXGame.Core.Components.Advanced.Command
 
         private void CheckForAttack(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Controls.Attack))
+            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Attack))
             {
                 Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.Attack});
             }
@@ -126,7 +125,7 @@ namespace DXGame.Core.Components.Advanced.Command
 
         private void CheckForAbility1(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Controls.Ability1))
+            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability1))
             {
                 Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.Ability1});
             }
@@ -134,7 +133,7 @@ namespace DXGame.Core.Components.Advanced.Command
 
         private void CheckForAbility2(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Controls.Ability2))
+            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability2))
             {
                 Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.Ability2});
             }
@@ -142,7 +141,7 @@ namespace DXGame.Core.Components.Advanced.Command
 
         private void CheckForAbility3(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Controls.Ability3))
+            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability3))
             {
                 Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.Ability3});
             }
@@ -150,7 +149,7 @@ namespace DXGame.Core.Components.Advanced.Command
 
         private void CheckForAbility4(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Controls.Ability4))
+            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability4))
             {
                 Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.Ability4});
             }
@@ -158,7 +157,7 @@ namespace DXGame.Core.Components.Advanced.Command
 
         private void CheckForMovement(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Controls.Movement))
+            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Movement))
             {
                 Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.Movement});
             }
@@ -166,7 +165,7 @@ namespace DXGame.Core.Components.Advanced.Command
 
         private void CheckForInteraction(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Controls.Interact))
+            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Interact))
             {
                 Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.InteractWithEnvironment});
             }

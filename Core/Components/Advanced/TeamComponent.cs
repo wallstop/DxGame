@@ -17,8 +17,7 @@ namespace DXGame.Core.Components.Advanced
         [DataMember]
         public Team Team { get; }
 
-        public TeamComponent(DxGame game, Team team) 
-            : base(game)
+        public TeamComponent(Team team)
         {
             Validate.IsNotNull(team, StringUtils.GetFormattedNullOrDefaultMessage(this, team));
             Team = team;

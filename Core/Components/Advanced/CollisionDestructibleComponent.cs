@@ -13,7 +13,6 @@ namespace DXGame.Core.Components.Advanced
     public class CollisionDestructibleComponent : Component
     {
         public CollisionDestructibleComponent(DxGame game)
-            : base(game)
         {
             MessageHandler.RegisterMessageHandler<CollisionMessage>(HandleCollision);
         }
@@ -22,7 +21,7 @@ namespace DXGame.Core.Components.Advanced
         {
             if (collisionMessage.CollisionDirections.Any())
             {
-                DxGame.RemoveGameObject(Parent);
+                DxGame.Instance.RemoveGameObject(Parent);
             }
         }
     }

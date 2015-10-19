@@ -29,10 +29,8 @@ namespace DXGame.TowerGame.Components
         /// <summary>
         /// Initialize a simple AI that follows the player.
         /// </summary>
-        /// <param name="game">  Game instance.</param>
         /// <param name="spatialComponent">  This AI's object's spatial component.</param>
-        private SimpleEnemyAI(DxGame game, SpatialComponent spatialComponent) 
-            : base(game)
+        private SimpleEnemyAI(SpatialComponent spatialComponent) 
         {
             spatialComponent_ = spatialComponent;
         }
@@ -40,7 +38,7 @@ namespace DXGame.TowerGame.Components
         protected override void Update(DxGameTime gameTime)
         {
             // Extract player model, players; handle limitations on AI
-            PlayerModel playerModel = DxGame.Model<PlayerModel>();
+            PlayerModel playerModel = DxGame.Instance.Model<PlayerModel>();
             if (playerModel.Players.Count > 1) {
                 throw new InvalidOperationException("SimpleEnemyAI cannot fathom multiple players.");
             } else if (playerModel.Players.Count < 1)
@@ -78,24 +76,14 @@ namespace DXGame.TowerGame.Components
         /// </summary>
         public class SimpleEnemyAIBuilder : IBuilder<SimpleEnemyAI>
         {
-            private DxGame game_;
             private SpatialComponent spatialComponent_;
 
             public SimpleEnemyAI Build()
             {
-                // Validate contents of this build
-                Validate.IsNotNull(game_,
-                    "AI requires a game to function.");
                 Validate.IsNotNull(spatialComponent_, 
                     "AI requires a spatial component to make decisions.");
                 // Construct and return the desired object
-                return new SimpleEnemyAI(game_, spatialComponent_);
-            }
-
-            public SimpleEnemyAIBuilder WithDxGame(DxGame game)
-            {
-                game_ = game;
-                return this;
+                return new SimpleEnemyAI(spatialComponent_);
             }
 
             public SimpleEnemyAIBuilder WithSpatialComponent(SpatialComponent spatialComponent)

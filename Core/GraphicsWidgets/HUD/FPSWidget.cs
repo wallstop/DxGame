@@ -24,10 +24,9 @@ namespace DXGame.Core.GraphicsWidgets.HUD
         private SpriteFont spriteFont_;
         private string fps_;
 
-        public FpsWidget(DxGame game) 
-            : base(game)
+        public FpsWidget()
         {
-            fpsTracker_ = new FpsTracker(game);
+            fpsTracker_ = new FpsTracker();
         }
 
         public override void Initialize()
@@ -38,7 +37,7 @@ namespace DXGame.Core.GraphicsWidgets.HUD
 
         public override void LoadContent()
         {
-            spriteFont_ = DxGame.Content.Load<SpriteFont>("Fonts/Pericles");
+            spriteFont_ = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Pericles");
             fpsTracker_.LoadContent();
             base.LoadContent();
         }
@@ -58,7 +57,7 @@ namespace DXGame.Core.GraphicsWidgets.HUD
             }
 
             var size = spriteFont_.MeasureString(fps_);
-            var screenRegion = DxGame.ScreenRegion;
+            var screenRegion = DxGame.Instance.ScreenRegion;
             // TODO: Fix whatever weird math is being done with the screen region to make drawing things "sane"
             var drawLocation = new Vector2(Math.Abs(screenRegion.X) + screenRegion.Width - size.X - PIXEL_OFFSET, Math.Abs(screenRegion.Y) + PIXEL_OFFSET);
             const float transparencyWeight = 0.8f;

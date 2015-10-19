@@ -22,8 +22,7 @@ namespace DXGame.Core.GraphicsWidgets
         protected TimeSpan LastToggled { get; set; } = TimeSpan.Zero;
         public override bool ShouldSerialize => false;
 
-        private BlinkingCursor(DxGame game, Texture2D cursorTexture, TimeSpan blinkRate, DxRectangle space)
-            : base(game)
+        private BlinkingCursor(Texture2D cursorTexture, TimeSpan blinkRate, DxRectangle space)
         {
             Space = space;
             BlinkRate = blinkRate;
@@ -54,7 +53,6 @@ namespace DXGame.Core.GraphicsWidgets
         {
             private TimeSpan blinkRate_ = TimeSpan.FromSeconds(1.0 / 2);
             private Texture2D cursorTexture_ = TextureFactory.TextureForColor(Color.Black);
-            private DxGame game_;
             /* Default to origin, 1 pixel wide, 1 pixel tall */
             private DxRectangle space_ = new DxRectangle(0, 0, 1, 1);
 
@@ -66,18 +64,8 @@ namespace DXGame.Core.GraphicsWidgets
                     $"Cannot create a {typeof (BlinkingCursor)} with a BlinkRate of {blinkRate_}");
                 Validate.IsTrue(space_.Height > 0, $"Cannot create a {typeof(BlinkingCursor)} with a negative height ({space_.Height})!");
                 Validate.IsTrue(space_.Width > 0, $"Cannot create a {typeof(BlinkingCursor)} with a negative width ({space_.Width})!");
-                if (Check.IsNullOrDefault(game_))
-                {
-                    game_ = DxGame.Instance;
-                }
                 /* Space can always be set (and will probably be updated) post-construction, so it's ok to have a default rectangle space */
-                return new BlinkingCursor(game_, cursorTexture_, blinkRate_, space_);
-            }
-
-            public BlinkingCursorBuilder WithGame(DxGame game)
-            {
-                game_ = game;
-                return this;
+                return new BlinkingCursor(cursorTexture_, blinkRate_, space_);
             }
 
             public BlinkingCursorBuilder WithBlinkRate(TimeSpan blinkRate)

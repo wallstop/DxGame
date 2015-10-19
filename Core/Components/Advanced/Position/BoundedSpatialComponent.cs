@@ -49,9 +49,9 @@ namespace DXGame.Core.Components.Advanced.Position
             }
         }
 
-        protected BoundedSpatialComponent(DxGame game, DxVector2 position, DxVector2 dimensions, DxVector2 xBounds,
+        protected BoundedSpatialComponent(DxVector2 position, DxVector2 dimensions, DxVector2 xBounds,
             DxVector2 yBounds)
-            : base(game, position, dimensions)
+            : base(position, dimensions)
         {
             XBounds = xBounds;
             YBounds = yBounds;
@@ -90,8 +90,7 @@ namespace DXGame.Core.Components.Advanced.Position
             {
                 Validate.IsTrue(xBounds_.Magnitude > 0);
                 Validate.IsTrue(yBounds_.Magnitude > 0);
-                var game = DxGame.Instance;
-                return new BoundedSpatialComponent(game, position_, dimensions_, xBounds_, yBounds_);
+                return new BoundedSpatialComponent(position_, dimensions_, xBounds_, yBounds_);
             }
         }
     }

@@ -22,8 +22,7 @@ namespace DXGame.Core.Input
         [DataMember]
         public List<KeyboardEvent> FinishedEvents { get; private set; }
 
-        public InputHandler(DxGame game)
-            : base(game)
+        public InputHandler()
         {
             CurrentEvents = new List<KeyboardEvent>();
             FinishedEvents = new List<KeyboardEvent>();

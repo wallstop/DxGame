@@ -14,8 +14,7 @@ namespace DXGame.Core.Components.Advanced.Behavior
         public Team Team { get; }
         public StandardActionComponent Action { get; }
 
-        protected BehaviorComponent(DxGame game, StandardActionComponent actionComponent, Team team)
-            : base(game)
+        protected BehaviorComponent(StandardActionComponent actionComponent, Team team)
         {
             Team = team;
             Action = actionComponent;
@@ -36,9 +35,8 @@ namespace DXGame.Core.Components.Advanced.Behavior
                 Validate.IsNotNull(team_, StringUtils.GetFormattedNullOrDefaultMessage(this, team_));
                 Validate.IsNotNull(actionComponent_,
                     StringUtils.GetFormattedNullOrDefaultMessage(this, actionComponent_));
-
-                var game = DxGame.Instance;
-                return new BehaviorComponent(game, actionComponent_, team_);
+                
+                return new BehaviorComponent(actionComponent_, team_);
             }
 
             public BehaviorComponentBuilder WithTeam(Team team)

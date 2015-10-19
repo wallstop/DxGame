@@ -29,7 +29,7 @@ namespace DXGame.Core.GraphicsWidgets.HUD
         public int FramesPerSecond { get; private set; }
         public override bool ShouldSerialize => false;
 
-        public FpsTracker(DxGame game) : base(game)
+        public FpsTracker()
         {
             stopWatch_ = Stopwatch.StartNew();
         }

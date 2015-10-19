@@ -14,11 +14,6 @@ namespace DXGame.Core.GraphicsWidgets.HUD
     public class HudRegion : HudComponent
     {
 
-        public HudRegion(DxGame game)
-            : base(game)
-        {
-        }
-
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             throw new NotImplementedException();

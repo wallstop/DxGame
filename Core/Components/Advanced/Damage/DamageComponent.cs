@@ -23,8 +23,7 @@ namespace DXGame.Core.Components.Advanced.Damage
         [DataMember]
         protected EntityPropertiesComponent EntityProperties { get; }
 
-        protected DamageComponent(DxGame game, EntityPropertiesComponent entityProperties)
-            : base(game)
+        protected DamageComponent(EntityPropertiesComponent entityProperties)
         {
             EntityProperties = entityProperties;
             MessageHandler.RegisterMessageHandler<DamageMessage>(HandleDamageMessage);
@@ -57,7 +56,7 @@ namespace DXGame.Core.Components.Advanced.Damage
             {
                 Validate.IsNotNull(entityProperties_,
                     StringUtils.GetFormattedNullOrDefaultMessage(this, entityProperties_));
-                return new DamageComponent(DxGame.Instance, entityProperties_);
+                return new DamageComponent(entityProperties_);
             }
 
             public DamageComponentBuilder WithEntityProprerties(EntityPropertiesComponent entityProperties)

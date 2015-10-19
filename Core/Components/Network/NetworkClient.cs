@@ -25,11 +25,6 @@ namespace DXGame.Core.Components.Network
         protected NetworkClientConfig ClientConfig { get; set; }
         public NetClient ClientConnection => Connection as NetClient;
 
-        public NetworkClient(DxGame game)
-            : base(game)
-        {
-        }
-
         public NetworkClient WithNetworkClientConfig(NetworkClientConfig configuration)
         {
             Validate.IsNotNullOrDefault(configuration,
@@ -119,25 +114,25 @@ namespace DXGame.Core.Components.Network
                 return component != null && component.ShouldSerialize;
             };
             // TODO: Faster way of dumping state
-            DxGame.DxGameElements.Remove(shouldSerialize);
+            DxGame.Instance.DxGameElements.Remove(shouldSerialize);
             foreach (var element in serverDataKeyFrame.GameElements)
             {
-                DxGame.DxGameElements.Add(element);
+                DxGame.Instance.DxGameElements.Add(element);
             }
-            DxGame.NewGameElements.Clear();
+            DxGame.Instance.NewGameElements.Clear();
             foreach (var element in serverDataKeyFrame.NewGameElements)
             {
-                DxGame.NewGameElements.Add(element);
+                DxGame.Instance.NewGameElements.Add(element);
             }
-            DxGame.RemovedGameElements.Clear();
+            DxGame.Instance.RemovedGameElements.Clear();
             foreach (var element in serverDataKeyFrame.RemovedGameEleemnts)
             {
-                DxGame.RemovedGameElements.Add(element);
+                DxGame.Instance.RemovedGameElements.Add(element);
             }
-            DxGame.Models.RemoveAll(shouldSerialize);
+            DxGame.Instance.Models.RemoveAll(shouldSerialize);
             foreach (var model in serverDataKeyFrame.Models)
             {
-                DxGame.Models.Add(model);
+                DxGame.Instance.Models.Add(model);
             }
         }
 

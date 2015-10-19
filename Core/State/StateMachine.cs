@@ -46,7 +46,7 @@ namespace DXGame.Core.State
             }
         }
 
-        protected StateMachine(DxGame game, State initialState) : base(game)
+        protected StateMachine(State initialState)
         {
             InitialState = initialState;
             Reset();
@@ -83,26 +83,13 @@ namespace DXGame.Core.State
 
         public class StateMachineBuilder : IBuilder<StateMachine>
         {
-            private DxGame game_;
             private State initialState_;
 
             public StateMachine Build()
             {
-                /* Rely on validation inside StateMachine to null-check inputs */
-                if (ReferenceEquals(null, game_))
-                {
-                    game_ = DxGame.Instance;
-                }
-
                 Validate.IsNotNullOrDefault(initialState_,
                     StringUtils.GetFormattedNullOrDefaultMessage(this, "InitialState"));
-                return new StateMachine(game_, initialState_);
-            }
-
-            public StateMachineBuilder WithDxGame(DxGame game)
-            {
-                game_ = game;
-                return this;
+                return new StateMachine(initialState_);
             }
 
             public StateMachineBuilder WithInitialState(State initialState)

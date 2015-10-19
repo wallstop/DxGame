@@ -31,7 +31,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
         {
             var position = parent.ComponentOfType<SpatialComponent>();
             var facing = parent.ComponentOfType<FacingComponent>();
-            var arrowRainLauncher = new ArrowRainLauncher(DxGame.Instance, parent, position.Center, facing.Facing);
+            var arrowRainLauncher = new ArrowRainLauncher(parent, position.Center, facing.Facing);
             var arrowRainObject = GameObject.Builder().WithComponent(arrowRainLauncher).Build();
             DxGame.Instance.AddAndInitializeGameObject(arrowRainObject);
         }
@@ -67,7 +67,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             /* ... and attach a life sucker (just to be evil) */
             if (!ReferenceEquals(destination.Parent, null))
             {
-                var lifeSucker = new LifeSuckerComponent(DxGame.Instance);
+                var lifeSucker = new LifeSuckerComponent();
                 destination.Parent.AttachComponent(lifeSucker);
                 DxGame.Instance.AddAndInitializeComponents(lifeSucker);
             }

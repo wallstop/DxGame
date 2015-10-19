@@ -82,10 +82,9 @@ namespace DXGame.Core.Components.Advanced
         public virtual int MaxHealth => entityProperties_.MaxHealth.CurrentValue;
         public virtual double PercentHealthRemaining => (double) Health / MaxHealth;
 
-        protected FloatingHealthIndicator(DxGame game, DxVector2 floatDistance, Color foregroundColor,
+        protected FloatingHealthIndicator(DxVector2 floatDistance, Color foregroundColor,
             Color backgroundColor, EntityPropertiesComponent properties,
             PositionalComponent position)
-            : base(game)
         {
             ValidateFloatDistance(floatDistance);
             Validate.IsNotNullOrDefault(properties, StringUtils.GetFormattedNullOrDefaultMessage(this, properties));
@@ -154,7 +153,7 @@ namespace DXGame.Core.Components.Advanced
                 Validate.IsNotNullOrDefault(entityProperties_,
                     StringUtils.GetFormattedNullOrDefaultMessage(typeof (FloatingHealthIndicator), entityProperties_));
 
-                return new FloatingHealthIndicator(Main.DxGame.Instance, floatDistance_, foregroundColor_, backgroundColor_, entityProperties_, position_);
+                return new FloatingHealthIndicator(floatDistance_, foregroundColor_, backgroundColor_, entityProperties_, position_);
             }
         }
 

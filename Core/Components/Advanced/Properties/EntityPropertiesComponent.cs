@@ -35,11 +35,6 @@ namespace DXGame.Core.Components.Advanced.Properties
         [DataMember]
         public Property<TimeSpan> AttackSpeed { get; protected set; }
 
-        public EntityPropertiesComponent(DxGame game)
-            : base(game)
-        {
-        }
-
         public override void Initialize()
         {
             /* Assume base class has dealt with actually creating the Properties */
@@ -54,7 +49,7 @@ namespace DXGame.Core.Components.Advanced.Properties
                 /* If so, tell everyone that we've died. */
                 var entityDeathMessage = new EntityDeathMessage() {Entity = Parent};
                 /* The world deserves to know. We were important. */
-                DxGame.BroadcastMessage(entityDeathMessage);
+                DxGame.Instance.BroadcastMessage(entityDeathMessage);
                 Parent?.BroadcastMessage(entityDeathMessage);
             }
         }

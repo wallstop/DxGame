@@ -18,14 +18,9 @@ namespace DXGame.Core.Menus
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         protected TextBox PortBox { get; set; }
 
-        public HostMultiplayerMenu(DxGame game)
-            : base(game)
-        {
-        }
-
         public override void Initialize()
         {
-            var spriteFont = DxGame.Content.Load<SpriteFont>("Fonts/ComicSans");
+            var spriteFont = DxGame.Instance.Content.Load<SpriteFont>("Fonts/ComicSans");
 
             var portBoxSpatial = (SpatialComponent) SpatialComponent.Builder().WithDimensions(new DxVector2
             {
@@ -58,7 +53,7 @@ namespace DXGame.Core.Menus
                     });
 
 
-            DxGame.AddAndInitializeComponent(PortBox);
+            DxGame.Instance.AddAndInitializeComponent(PortBox);
 
             var hostLabel = new MenuItem().WithSpriteFont(spriteFont)
                 .WithText("Host")
@@ -79,7 +74,7 @@ namespace DXGame.Core.Menus
 
         public override void Dispose()
         {
-            DxGame.RemoveComponent(PortBox);
+            DxGame.Instance.RemoveComponent(PortBox);
             base.Dispose();
         }
 
@@ -101,14 +96,14 @@ namespace DXGame.Core.Menus
             config.MaximumConnections = 1;
 
             NetworkServer server =
-                (NetworkServer) new NetworkServer(DxGame).WithConfiguration(config);
-            var networkModel = DxGame.Model<NetworkModel>();
+                (NetworkServer) new NetworkServer().WithConfiguration(config);
+            var networkModel = DxGame.Instance.Model<NetworkModel>();
             networkModel.AttachServer(server);
             server.EstablishConnection();
 
-            var game = DxGame;
+            var game = DxGame.Instance;
             Dispose();
-            game.AttachModel(new GameModel(game));
+            game.AttachModel(new GameModel());
         }
     }
 }

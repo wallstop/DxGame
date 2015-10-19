@@ -7,14 +7,9 @@ namespace DXGame.Core.Menus
 {
     public class PlayMenu : Menu
     {
-        public PlayMenu(DxGame game)
-            : base(game)
-        {
-        }
-
         public override void Initialize()
         {
-            var spriteFont = DxGame.Content.Load<SpriteFont>("Fonts/Gungsuh");
+            var spriteFont = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Gungsuh");
             MenuItem singlePlayer = new MenuItem().WithText("Single Player")
                 .WithAction(SinglePlayerAction)
                 .WithSpriteFont(spriteFont)
@@ -39,19 +34,19 @@ namespace DXGame.Core.Menus
 
         private void SinglePlayerAction()
         {
-            DxGame.AttachModel(new GameModel(DxGame));
+            DxGame.Instance.AttachModel(new GameModel());
             Dispose();
         }
 
         private void HostMultiplayer()
         {
-            DxGame.AddAndInitializeComponent(new HostMultiplayerMenu(DxGame));
+            DxGame.Instance.AddAndInitializeComponent(new HostMultiplayerMenu());
             Dispose();
         }
 
         private void JoinMultiplayer()
         {
-            DxGame.AddAndInitializeComponent(new JoinMultiplayerMenu(DxGame));
+            DxGame.Instance.AddAndInitializeComponent(new JoinMultiplayerMenu());
             Dispose();
         }
     }

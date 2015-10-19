@@ -12,16 +12,11 @@ namespace DXGame.Core.Models
         public IEnumerable<KeyboardEvent> FinishedEvents { get; private set; }
         private InputHandler InputHandler { get; set; }
 
-        public InputModel(DxGame game)
-            : base(game)
-        {
-        }
-
         public override bool ShouldSerialize => false;
 
         public override void Initialize()
         {
-            InputHandler = new InputHandler(DxGame);
+            InputHandler = new InputHandler();
         }
 
         protected override void Update(DxGameTime gameTime)

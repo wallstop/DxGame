@@ -22,7 +22,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
             // Extract the map model and bounds
             var mapModel = game.Model<MapModel>();
             var bounds = mapModel.MapBounds;
-            var teamComponent = new TeamComponent(game, Team.EnemyTeam);
+            var teamComponent = new TeamComponent(Team.EnemyTeam);
             // Build spatial component from bounds
             var enemySpatial =
                 (BoundedSpatialComponent)
@@ -40,7 +40,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
 
             var damageComponent = DamageComponent.Builder().WithEntityProprerties(enemyProperties).Build();
 
-            var deathExploder = new DeathEffectComponent(game, DeathEffectComponent.SimpleEnemyBloodParticles);
+            var deathExploder = new DeathEffectComponent(DeathEffectComponent.SimpleEnemyBloodParticles);
             
             var enemyObject =
                 GameObject.Builder()
@@ -52,7 +52,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
             StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(enemyObject,
                 "SimpleBox");
             // Build and attach AI
-            var simpleAi = SimpleEnemyAI.Builder().WithDxGame(game).WithSpatialComponent(enemySpatial).Build();
+            var simpleAi = SimpleEnemyAI.Builder().WithSpatialComponent(enemySpatial).Build();
             enemyObject.AttachComponent(simpleAi);
 
             return enemyObject;
@@ -67,7 +67,6 @@ namespace DXGame.Core.Components.Advanced.Enemy
             var spawnFunction = new SimpleBoxSpawnFunction();
             return
                 Spawner.Builder()
-                    .WithGame(game)
                     .WithSpawnTrigger(spawnFunction.Spawn)
                     .Build();
         }

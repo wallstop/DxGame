@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
 using DXGame.Core.Map;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
@@ -17,19 +15,16 @@ namespace DXGame.Core.Models
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private static readonly string MAP_PATH = "Content/Map/";
         private readonly List<Map.Map> maps_ = new List<Map.Map>();
-
         public DxRectangle RandomSpawnLocation => Map.RandomSpawnLocation;
         public DxVector2 PlayerSpawn => Map.PlayerSpawn;
         public DxRectangle MapBounds => Map.MapDescriptor.Size * Map.MapDescriptor.Scale;
         public Map.Map Map { get; private set; }
+        public override bool ShouldSerialize => false;
 
-        public MapModel(DxGame game)
-            : base(game)
+        public MapModel()
         {
             DrawPriority = DrawPriority.MAP;
         }
-
-        public override bool ShouldSerialize => false;
 
         public override void LoadContent()
         {
@@ -38,10 +33,10 @@ namespace DXGame.Core.Models
                 Directory.EnumerateFiles(MAP_PATH)
                     .Where(
                         path =>
-                            Path.HasExtension(path) &&
-                            (Path.GetExtension(path)?.Equals(MapDescriptor.MapExtension) ?? false))
+                            System.IO.Path.HasExtension(path) &&
+                            (System.IO.Path.GetExtension(path)?.Equals(MapDescriptor.MapExtension) ?? false))
                     .Select(MapDescriptor.StaticLoad)
-                    .Select(mapDescriptor => new Map.Map(DxGame, mapDescriptor));
+                    .Select(mapDescriptor => new Map.Map(mapDescriptor));
             maps_.AddRange(maps);
             Validate.IsNotEmpty(maps_, $"Failed to find maps! Check {MAP_PATH} for valid descriptors");
             base.LoadContent();

@@ -25,8 +25,7 @@ namespace DXGame.Core.Components.Network
 
         private TimeSpan lastSent_ = TimeSpan.Zero;
 
-        public NetworkServer(DxGame game)
-            : base(game)
+        public NetworkServer()
         {
             ClientFrameStates = new Dictionary<NetConnection, FrameModel>();
         }
@@ -76,7 +75,7 @@ namespace DXGame.Core.Components.Network
             if (lastSent_ + KEY_FRAME_DELAY < gameTime.TotalGameTime)
             {
                 // Quick and dirty for now - do some nice differentials later
-                var message = GameStateKeyFrame.FromGame(DxGame, gameTime);
+                var message = GameStateKeyFrame.FromGame(gameTime);
                 var outgoingMessage = message.ToNetOutgoingMessage(ServerConnection);
                 foreach (NetConnection connection in ClientFrameStates.Keys)
                 {
@@ -186,7 +185,7 @@ namespace DXGame.Core.Components.Network
             Validate.IsFalse(ClientFrameStates.ContainsKey(connection),
                 $"Received ClientConnectionRequest that we're already tracking, this is an issue! Request: {clientConnectionRequest}");
 
-            var frameModel = new FrameModel(DxGame);
+            var frameModel = new FrameModel();
             ClientFrameStates.Add(connection, frameModel);
             LOG.Info(
                 $"Successfully initialized ClientConnection {connection} for player {clientConnectionRequest.PlayerName}");

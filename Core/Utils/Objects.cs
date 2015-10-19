@@ -40,10 +40,10 @@ namespace DXGame.Core.Utils
             return (type.IsValueType & type.IsPrimitive);
         }
 
-        public static object Copy(this object originalObject)
-        {
-            return InternalCopy(originalObject, new Dictionary<object, object>(new ReferenceEqualityComparer()));
-        }
+        //public static object Copy(this object originalObject)
+        //{
+        //    return InternalCopy(originalObject, new Dictionary<object, object>(new ReferenceEqualityComparer()));
+        //}
 
         private static object InternalCopy(object originalObject, IDictionary<object, object> visited)
         {
@@ -117,8 +117,15 @@ namespace DXGame.Core.Utils
 
         public static T Copy<T>(this T original)
         {
-            return (T) Copy((object) original);
+            var blob = Serializer<T>.BinarySerialize(original);
+            var copy = Serializer<T>.BinaryDeserialize(blob);
+            return copy;
         }
+
+        //public static T Copy<T>(this T original)
+        //{
+        //    return (T) Copy((object) original);
+        //}
 
         /**
             Borrowed from http://stackoverflow.com/questions/8113570/c-set-a-member-object-value-using-reflection/8113612 

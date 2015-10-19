@@ -23,8 +23,7 @@ namespace DXGame.Core.Components.Developer
         private readonly CollisionTreeProducer<T> producer_;
         public override bool ShouldSerialize => false;
 
-        public CollisionTreeWidget(DxGame game, CollisionTreeProducer<T> collisionTreeProducer)
-            : base(game)
+        public CollisionTreeWidget(CollisionTreeProducer<T> collisionTreeProducer)
         {
             Validate.IsNotNullOrDefault(collisionTreeProducer,
                 StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(collisionTreeProducer)));

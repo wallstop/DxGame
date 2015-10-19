@@ -63,9 +63,8 @@ namespace DXGame.Core.GraphicsWidgets
             }
         }
 
-        private TextBox(DxGame game, BlinkingCursor blinkingCursor, List<Keys> validKeys, Texture2D background,
+        private TextBox(BlinkingCursor blinkingCursor, List<Keys> validKeys, Texture2D background,
             Color textColor, SpatialComponent spatial, SpriteFont spriteFont, int maxLength)
-            : base(game)
         {
             Text = "";
             CursorPosition = 0;
@@ -102,7 +101,7 @@ namespace DXGame.Core.GraphicsWidgets
             // Only update if we have focus
             if (InFocus)
             {
-                var inputModel = DxGame.Model<InputModel>();
+                var inputModel = DxGame.Instance.Model<InputModel>();
                 IEnumerable<KeyboardEvent> finishedKeys =
                     inputModel.FinishedEvents.Where(key => (ValidKeys.Contains(key.Key)));
                 HandleKeyboardEvents(finishedKeys);
@@ -189,7 +188,6 @@ namespace DXGame.Core.GraphicsWidgets
         {
             private Texture2D backgroundTexture_ = TextureFactory.TextureForColor(Color.White);
             private Color cursorColor_ = Color.Black;
-            private DxGame game_;
             private int maxLength_;
             private SpatialComponent spatial_;
             private SpriteFont spriteFont_;
@@ -205,21 +203,11 @@ namespace DXGame.Core.GraphicsWidgets
                 const string testString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
                 var stringMeasurement = spriteFont_.MeasureString(testString);
                 var textWidth = stringMeasurement.X / testString.Length;
-                if (Check.IsNullOrDefault(game_))
-                {
-                    game_ = DxGame.Instance;
-                }
                 var blinkingCursor =
-                    BlinkingCursor.Builder().WithWidth(textWidth).WithColor(cursorColor_).WithGame(game_).Build();
+                    BlinkingCursor.Builder().WithWidth(textWidth).WithColor(cursorColor_).Build();
 
-                return new TextBox(game_, blinkingCursor, validKeys_, backgroundTexture_, textColor_, spatial_,
+                return new TextBox(blinkingCursor, validKeys_, backgroundTexture_, textColor_, spatial_,
                     spriteFont_, maxLength_);
-            }
-
-            public TextBoxBuilder WithGame(DxGame game)
-            {
-                game_ = game;
-                return this;
             }
 
             public TextBoxBuilder WithValidKeys(IEnumerable<Keys> validKeys)

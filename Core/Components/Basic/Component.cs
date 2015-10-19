@@ -62,7 +62,6 @@ namespace DXGame.Core.Components.Basic
     public abstract class Component : IIdentifiable, IComparable<Component>, IProcessable, IDisposable
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        [NonSerialized] [IgnoreDataMember] public DxGame DxGame;
         [DataMember] protected bool initialized_;
 
         [DataMember]
@@ -73,14 +72,8 @@ namespace DXGame.Core.Components.Basic
 
         public virtual bool ShouldSerialize => true;
 
-        protected Component(DxGame game)
+        protected Component()
         {
-            if (ReferenceEquals(null, game))
-            {
-                LOG.Trace($"Component created with a null DxGame reference {this}");
-                game = DxGame.Instance;
-            }
-            DxGame = game;
             UpdatePriority = UpdatePriority.NORMAL;
             initialized_ = false;
         }
@@ -121,8 +114,7 @@ namespace DXGame.Core.Components.Basic
         {
             Parent?.RemoveComponents(this);
             Parent = null;
-            DxGame?.RemoveComponent(this);
-            DxGame = null;
+            DxGame.Instance.RemoveComponent(this);
         }
 
         protected virtual void Update(DxGameTime gameTime)
@@ -150,7 +142,6 @@ namespace DXGame.Core.Components.Basic
         [OnDeserialized]
         private void BaseDeSerialize(StreamingContext context)
         {
-            DxGame = DxGame.Instance;
             DeSerialize();
         }
 

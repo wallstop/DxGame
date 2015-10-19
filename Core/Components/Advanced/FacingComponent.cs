@@ -20,8 +20,7 @@ namespace DXGame.Core.Components.Advanced
         [DataMember]
         public Direction Facing { get; private set; } = Direction.East;
 
-        public FacingComponent(DxGame game)
-            : base(game)
+        public FacingComponent()
         {
             MessageHandler.RegisterMessageHandler<CommandMessage>(HandleCommandMessage);
         }

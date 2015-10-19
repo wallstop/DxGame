@@ -22,9 +22,9 @@ namespace DXGame.Core.Components.Advanced.Map
         [DataMember]
         public PlatformType PlatformType { get; }
 
-        protected MapCollidableComponent(DxGame game, IList<CollidableDirection> collidableDirections,
+        protected MapCollidableComponent(IList<CollidableDirection> collidableDirections,
             SpatialComponent spatial, PlatformType type)
-            : base(game, collidableDirections, spatial)
+            : base(collidableDirections, spatial)
         {
             PlatformType = type;
         }
@@ -47,8 +47,7 @@ namespace DXGame.Core.Components.Advanced.Map
             public override CollidableComponent Build()
             {
                 Validate.IsNotNull(spatial_, StringUtils.GetFormattedNullOrDefaultMessage(this, spatial_));
-                var game = DxGame.Instance;
-                return new MapCollidableComponent(game, collidableDirections_, spatial_, type_);
+                return new MapCollidableComponent(collidableDirections_, spatial_, type_);
             }
         }
     }

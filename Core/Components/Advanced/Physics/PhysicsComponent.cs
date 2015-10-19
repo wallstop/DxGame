@@ -46,9 +46,8 @@ namespace DXGame.Core.Components.Advanced.Physics
         public DxRectangle Space => space_.Space;
         public virtual SpatialComponent SpatialComponent => space_;
 
-        protected PhysicsComponent(DxGame game, DxVector2 velocity, DxVector2 acceleration, SpatialComponent position,
+        protected PhysicsComponent(DxVector2 velocity, DxVector2 acceleration, SpatialComponent position,
             UpdatePriority updatePriority)
-            : base(game)
         {
             MessageHandler.RegisterMessageHandler<CollisionMessage>(HandleCollisionMessage);
             velocity_ = velocity;
@@ -117,15 +116,13 @@ namespace DXGame.Core.Components.Advanced.Physics
         {
             protected readonly HashSet<Force> forces_ = new HashSet<Force>();
             protected DxVector2 acceleration_;
-            protected DxGame game_;
             protected SpatialComponent space_;
             protected UpdatePriority updatePriority_ = UpdatePriority.PHYSICS;
             protected DxVector2 velocity_;
 
             public virtual PhysicsComponent Build()
             {
-                CheckParameters();
-                var physics = new PhysicsComponent(game_, velocity_, acceleration_, space_, updatePriority_);
+                var physics = new PhysicsComponent(velocity_, acceleration_, space_, updatePriority_);
                 foreach (var force in forces_)
                 {
                     physics.AttachForce(force);
@@ -177,25 +174,10 @@ namespace DXGame.Core.Components.Advanced.Physics
                 return this;
             }
 
-            public virtual PhysicsComponentBuilder WithGame(DxGame game)
-            {
-                game_ = game;
-                return this;
-            }
-
             public virtual PhysicsComponentBuilder WithGravity()
             {
                 forces_.Add(WorldForces.Gravity);
                 return this;
-            }
-
-            protected void CheckParameters()
-            {
-                Validate.IsNotNull(space_, StringUtils.GetFormattedNullOrDefaultMessage(this, space_));
-                if (game_ == null)
-                {
-                    game_ = DxGame.Instance;
-                }
             }
         }
     }

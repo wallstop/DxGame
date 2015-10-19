@@ -56,8 +56,7 @@ namespace DXGame.Core.Map
             }
         }
 
-        public Map(DxGame game, MapDescriptor descriptor)
-            : base(game)
+        public Map(MapDescriptor descriptor)
         {
             Validate.IsNotNullOrDefault(descriptor,
                 StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(descriptor)));
@@ -67,7 +66,7 @@ namespace DXGame.Core.Map
 
         public override void LoadContent()
         {
-            MapTexture = DxGame.Content.Load<Texture2D>("Map/" + Path.GetFileNameWithoutExtension(MapDescriptor.Asset));
+            MapTexture = DxGame.Instance.Content.Load<Texture2D>("Map/" + Path.GetFileNameWithoutExtension(MapDescriptor.Asset));
             base.LoadContent();
         }
 
@@ -96,7 +95,7 @@ namespace DXGame.Core.Map
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            var range = DxGame.ScreenRegion;
+            var range = DxGame.Instance.ScreenRegion;
             /* 
                 Map is pretty special: We want actually want to draw whatever chunk of the map the screen is currently seeing. 
                 However, we've already set up a matrix translation on our camera for every object. So, we need to undo the translation (just flip x & y)

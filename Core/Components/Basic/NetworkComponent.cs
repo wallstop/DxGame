@@ -70,15 +70,14 @@ namespace DXGame.Core.Components.Basic
             }
         }
 
-        protected NetworkComponent(DxGame game)
-            : base(game)
+        protected NetworkComponent()
         {
             MessageQueue = new ConcurrentQueue<NetIncomingMessage>();
         }
 
         protected void ReadFromConnection()
         {
-            TimeSpan sleepTime = DxGame.TargetElapsedTime;
+            TimeSpan sleepTime = DxGame.Instance.TargetElapsedTime;
             try
             {
                 while (true)

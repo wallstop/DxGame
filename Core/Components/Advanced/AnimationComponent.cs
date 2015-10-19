@@ -24,9 +24,8 @@ namespace DXGame.Core.Components.Advanced
         [DataMember]
         public StateMachine StateMachine { get; }
 
-        private AnimationComponent(DxGame game, StateMachine stateMachine,
+        private AnimationComponent(StateMachine stateMachine,
             Dictionary<State.State, Animation.Animation> animationsForStates, PositionalComponent position)
-            : base(game)
         {
             StateMachine = stateMachine;
             Position = position;
@@ -42,7 +41,7 @@ namespace DXGame.Core.Components.Advanced
         {
             foreach (var pair in animationsForStates_)
             {
-                pair.Value.LoadContent(DxGame.Content);
+                pair.Value.LoadContent(DxGame.Instance.Content);
             }
         }
 
@@ -50,7 +49,7 @@ namespace DXGame.Core.Components.Advanced
         {
             foreach (var pair in animationsForStates_)
             {
-                pair.Value.LoadContent(DxGame.Content);
+                pair.Value.LoadContent(DxGame.Instance.Content);
             }
         }
 
@@ -74,25 +73,14 @@ namespace DXGame.Core.Components.Advanced
             private readonly Dictionary<State.State, Animation.Animation> animationsForStates_ =
                 new Dictionary<State.State, Animation.Animation>();
 
-            private DxGame game_;
             private PositionalComponent position_;
             private StateMachine stateMachine_;
 
             public AnimationComponent Build()
             {
-                if (ReferenceEquals(null, game_))
-                {
-                    game_ = Main.DxGame.Instance;
-                }
                 Validate.IsNotNull(position_, StringUtils.GetFormattedNullOrDefaultMessage(this, position_));
                 Validate.IsNotNull(stateMachine_, StringUtils.GetFormattedNullOrDefaultMessage(this, stateMachine_));
-                return new AnimationComponent(game_, stateMachine_, animationsForStates_, position_);
-            }
-
-            public AnimationComponentBuilder WithDxGame(DxGame game)
-            {
-                game_ = game;
-                return this;
+                return new AnimationComponent(stateMachine_, animationsForStates_, position_);
             }
 
             public AnimationComponentBuilder WithPosition(PositionalComponent position)

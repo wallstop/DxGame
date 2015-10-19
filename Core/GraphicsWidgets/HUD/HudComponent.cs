@@ -12,8 +12,7 @@ namespace DXGame.Core.GraphicsWidgets.HUD
     [DataContract]
     public abstract class HudComponent : DrawableComponent
     {
-        protected HudComponent(DxGame game)
-            : base(game)
+        protected HudComponent()
         {
             DrawPriority = DrawPriority.HUD_LAYER;
         }

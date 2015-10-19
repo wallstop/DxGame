@@ -20,8 +20,7 @@ namespace DXGame.Core.Components.Advanced.Command
     {
         private CommandmentProducer CommandmentFeeder { get; }
 
-        public PathfindingInputComponent(DxGame game, CommandmentProducer commandmentFeeder)
-            : base(game)
+        public PathfindingInputComponent(CommandmentProducer commandmentFeeder)
         {
             Validate.IsNotNullOrDefault(commandmentFeeder,
                 StringUtils.GetFormattedNullOrDefaultMessage(this, commandmentFeeder));

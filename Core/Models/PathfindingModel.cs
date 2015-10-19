@@ -22,7 +22,7 @@ using NLog;
 
 namespace DXGame.Core.Models
 {
-    internal class Path
+    sealed internal class Path
     {
         public List<Commandment> Directions { get; }
         public Optional<Commandment> Beginning { get; }
@@ -57,7 +57,7 @@ namespace DXGame.Core.Models
         }
     }
 
-    internal class ExplorableMesh
+    sealed internal class ExplorableMesh
     {
         private readonly Dictionary<NavigationMesh.Node, HashSet<Path>> paths_ = new Dictionary<NavigationMesh.Node, HashSet<Path>>();
 
@@ -95,13 +95,8 @@ namespace DXGame.Core.Models
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         
-        private static readonly float FRAME_RATE = (float)Main.DxGame.Instance.TargetFps;
-        private static readonly TimeSpan FRAME_TIME_SLICE = TimeSpan.FromSeconds(FRAME_RATE * 2);
-
-        public PathfindingModel(DxGame game)
-            : base(game)
-        {
-        }
+        private static readonly float FRAME_RATE = (float)DxGame.Instance.TargetFps;
+        private static readonly TimeSpan FRAME_TIME_SLICE = DxGame.Instance.TargetElapsedTime;
         
         public List<ImmutablePair<DxGameTime, Commandment>> Pathfind(GameObject entity, DxVector2 destination)
         {
@@ -121,10 +116,11 @@ namespace DXGame.Core.Models
 
 
             var commandmentQueue = new Queue<Commandment>();
+            commandmentQueue.Enqueue(Commandment.None);
             CommandmentProducer commandmentProducer = () => commandmentQueue.Dequeue();
             var currentEntity = CopyAndPrepGameObject(entity, commandmentProducer);
 
-            var mapModel = DxGame.Model<MapModel>();
+            var mapModel = DxGame.Instance.Model<MapModel>();
             var navigationMesh = NavigationMesh.MeshFor(mapModel);
             var explorableMesh = new ExplorableMesh(navigationMesh);
             var exhausted = new HashSet<NavigationMesh.Node>();
@@ -140,12 +136,12 @@ namespace DXGame.Core.Models
                     return firstDistanceToGoal.CompareTo(secondDistanceToGoal);
                 }));
 
-            var snapshots = new Dictionary<NavigationMesh.Node, GameObject>();
+            var snapshots = new Dictionary<NavigationMesh.Node, Tuple<GameObject, DxGameTime>>();
             var traveled = new Dictionary<NavigationMesh.Node, NavigationMesh.Node>();
 
             var sourceNodes = new List<NavigationMesh.Node>();
             var pathBuilder = Path.Builder();
-            var currentTime = DxGame.CurrentTime;
+            var currentTime = DxGame.Instance.CurrentTime;
             var isInitialPath = true;
             Path initialPath = null;
 
@@ -155,7 +151,7 @@ namespace DXGame.Core.Models
                 {
                     pathBuilder.WithStep(commandmentQueue.Peek());
                 }
-                SimulateOneStep(currentEntity, currentTime);
+                currentTime = SimulateOneStep(currentEntity, currentTime);
                 var spatial = currentEntity.ComponentOfType<SpatialComponent>();
                 var space = spatial.Space;
                 var nodesInRange = navigationMesh.NodeQuery.InRange(space);
@@ -178,7 +174,7 @@ namespace DXGame.Core.Models
                     if (!exhausted.Contains(node))
                     {
                         available.Add(node);
-                        snapshots[node] = currentEntity.Copy();
+                        snapshots[node] = Tuple.Create(currentEntity.Copy(), currentTime.Copy());
                     }
                     var path = pathBuilder.Build(node);
                     if (isInitialPath)
@@ -203,7 +199,7 @@ namespace DXGame.Core.Models
                 foreach (var availableNode in available)
                 {
                     var attemptedCommandments = explorableMesh.AttemptedCommandments(availableNode);
-                    var entityAtNode = snapshots[availableNode];
+                    var entityAtNode = snapshots[availableNode].Item1;
                     var spatialInstance = entityAtNode.ComponentOfType<SpatialComponent>();
                     var rankedCommandments = RankCommandments(spatialInstance, movementCommendments, destination);
                     var unusedCommandments = rankedCommandments.Except(attemptedCommandments).ToList();
@@ -214,6 +210,7 @@ namespace DXGame.Core.Models
                         continue;
                     }
                     currentEntity = entityAtNode.Copy();
+                    currentTime = snapshots[availableNode].Item2.Copy();
                     var commandmentToUse = unusedCommandments[0];
                     commandmentQueue.Enqueue(commandmentToUse);
                     break;
@@ -282,17 +279,22 @@ namespace DXGame.Core.Models
             entityCopy.RemoveComponents<PathfindingComponent>();
             entityCopy.CurrentMessages.RemoveAll(message => message is CommandMessage);
             entityCopy.FutureMessages.RemoveAll(message => message is CommandMessage);
-            var pathfinderInputFeeder = new PathfindingInputComponent(DxGame.Instance, commandmentProducer);
+            var pathfinderInputFeeder = new PathfindingInputComponent(commandmentProducer);
             entityCopy.AttachComponent(pathfinderInputFeeder);
             return entityCopy;
         }
 
         private DxGameTime SimulateOneStep(GameObject entity, DxGameTime initialTime)
         {
-            var frameRate = DxGame.TargetFps;
+            var frameRate = DxGame.Instance.TargetFps;
             var frameTimeSlice = TimeSpan.FromSeconds(frameRate);
             var nextFrame = new DxGameTime(initialTime.TotalGameTime + frameTimeSlice, frameTimeSlice, initialTime.IsRunningSlowly);
+            var components = new SortedList<IProcessable>(entity.Components);
             entity.Process(nextFrame);
+            foreach (var component in components)
+            {
+                component.Process(nextFrame);
+            }
             return nextFrame;
         }
     }

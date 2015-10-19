@@ -20,14 +20,9 @@ namespace DXGame.Core.Components.Developer
     [DataContract]
     public class TimePerFrameGraphBackground : DrawableComponent
     {
-        public TimePerFrameGraphBackground(DxGame game) 
-            : base(game)
-        {
-        }
-
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            var screenRegion = DxGame.ScreenRegion;
+            var screenRegion = DxGame.Instance.ScreenRegion;
             // TODO: Fix whatever weird math is being done with the screen region to make drawing things "sane"
             var drawLocation = new Vector2(Math.Abs(screenRegion.X) + (screenRegion.Width / 2.0f),
                 Math.Abs(screenRegion.Y));
@@ -55,13 +50,12 @@ namespace DXGame.Core.Components.Developer
         [DataMember]
         private Graph Graph { get; set; }
 
-        public TimePerFrameGraph(DxGame game) 
-            : base(game)
+        public TimePerFrameGraph()
         {
             GameTimes = new LinkedList<DxGameTime>();
-            Graph = new Graph(DxGame.GraphicsDevice, Size)
+            Graph = new Graph(DxGame.Instance.GraphicsDevice, Size)
             {
-                MaxValue = (float)DxGame.TargetElapsedTime.TotalMilliseconds,
+                MaxValue = (float)DxGame.Instance.TargetElapsedTime.TotalMilliseconds,
                 Type = Graph.GraphType.Line
             };
             DrawPriority = DrawPriority.USER_PRIMITIVES;
@@ -69,7 +63,7 @@ namespace DXGame.Core.Components.Developer
 
         protected override void Update(DxGameTime gameTime)
         {
-            var developerModel = DxGame.Model<DeveloperModel>();
+            var developerModel = DxGame.Instance.Model<DeveloperModel>();
             if (developerModel.DeveloperMode == DeveloperMode.FullOn)
             {
                 GameTimes.AddLast(gameTime);
@@ -92,10 +86,10 @@ namespace DXGame.Core.Components.Developer
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            var developerModel = DxGame.Model<DeveloperModel>();
+            var developerModel = DxGame.Instance.Model<DeveloperModel>();
             if (developerModel.DeveloperMode == DeveloperMode.FullOn)
             {
-                var screenRegion = DxGame.ScreenRegion;
+                var screenRegion = DxGame.Instance.ScreenRegion;
                 /* Draw direction to the screen buffer - there currently is no translation matrix for direct GPU primitives */
                 var drawLocation = new Vector2((screenRegion.Width / 2.0f), 0);
                 drawLocation.Y += Size.Y;
@@ -104,7 +98,7 @@ namespace DXGame.Core.Components.Developer
 
                 {
                     var pointValue = (float) time.ElapsedGameTime.TotalMilliseconds;
-                    var scale = Math.Min(1.0f, pointValue / DxGame.TargetElapsedTime.TotalMilliseconds);
+                    var scale = Math.Min(1.0f, pointValue / DxGame.Instance.TargetElapsedTime.TotalMilliseconds);
                     var color = Color.White;
                     /* 
                         Scale our colors nicely towards "hotness". White starts as straight 255 values, so we can scale red up by 

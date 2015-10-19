@@ -25,10 +25,6 @@ namespace DXGame.Core.Models
         [DataMember]
         public SpatialComponent FocalPoint { get; protected set; }
 
-        public GameModel(DxGame game) : base(game)
-        {
-        }
-
         protected override void DeSerialize()
         {
             // Do nothing with this, this Initialize will do all kinds of bad things (re-trigger map model spawning, for example)
@@ -36,13 +32,15 @@ namespace DXGame.Core.Models
 
         public override void Initialize()
         {
-            var mapModel = new MapModel(DxGame);
-            DxGame.AttachModel(mapModel);
-            var developerModel = new DeveloperModel(DxGame);
-            DxGame.AttachModel(developerModel);
-            var collisionModel = new CollisionModel(DxGame);
-            DxGame.AttachModel(collisionModel);
-            PlayerGenerator playerGenerator = new PlayerGenerator(DxGame, mapModel.PlayerSpawn,
+            var mapModel = new MapModel();
+            DxGame.Instance.AttachModel(mapModel);
+            var developerModel = new DeveloperModel();
+            DxGame.Instance.AttachModel(developerModel);
+            var collisionModel = new CollisionModel();
+            DxGame.Instance.AttachModel(collisionModel);
+            var pathfindingModel = new PathfindingModel();
+            DxGame.Instance.AttachModel(pathfindingModel);
+            PlayerGenerator playerGenerator = new PlayerGenerator(mapModel.PlayerSpawn,
                 mapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;
             var generatedObjects = playerGenerator.Generate();
@@ -50,11 +48,11 @@ namespace DXGame.Core.Models
 
             var activePlayer = Player.PlayerFrom(player, "Player1");
             // TODO
-            var playerModel = new PlayerModel(DxGame).WithActivePlayer(activePlayer);
-            DxGame.AttachModel(playerModel);
-            
+            var playerModel = new PlayerModel().WithActivePlayer(activePlayer);
+            DxGame.Instance.AttachModel(playerModel);
+
             // TODO: Split these out into some kind of unified loading... thing
-            DxGame.AddAndInitializeGameObjects(generatedObjects);
+            DxGame.Instance.AddAndInitializeGameObjects(generatedObjects);
             base.Initialize();
         }
     }

@@ -12,8 +12,7 @@ namespace DXGame.Core.Models
         public TimeSpan FrameRetention { get; protected set; }
         protected List<Frame> Frames { get; set; }
 
-        public FrameModel(DxGame game)
-            : base(game)
+        public FrameModel()
         {
             Frames = new List<Frame>();
         }

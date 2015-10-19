@@ -50,8 +50,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
         [DataMember]
         private GameObject Source { get; }
 
-        public ArrowRainLauncher(DxGame game, GameObject source, DxVector2 position, Direction direction)
-            : base(game)
+        public ArrowRainLauncher(GameObject source, DxVector2 position, Direction direction)
         {
             Validate.IsNotNullOrDefault(source, StringUtils.GetFormattedNullOrDefaultMessage(this, "source"));
             Source = source;
@@ -117,9 +116,9 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
         private void Launch()
         {
-            var arrowRainer = new ArrowRainer(DxGame, Source, Spatial.Position, Direction);
+            var arrowRainer = new ArrowRainer(Source, Spatial.Position, Direction);
             Parent.AttachComponent(arrowRainer);
-            DxGame.AddAndInitializeComponent(arrowRainer);
+            DxGame.Instance.AddAndInitializeComponent(arrowRainer);
             Dispose();
         }
 
@@ -175,8 +174,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
         private DxVector2 Position { get; }
         private GameObject Source { get; }
 
-        public ArrowRainer(DxGame game, GameObject source, DxVector2 position, Direction direction)
-            : base(game)
+        public ArrowRainer(GameObject source, DxVector2 position, Direction direction)
         {
             Validate.IsNotNullOrDefault(source, StringUtils.GetFormattedNullOrDefaultMessage(this, "source"));
             Source = source;
@@ -213,7 +211,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
                 Source = Source,
                 Interaction = ArrowRainInteraction
             };
-            DxGame.BroadcastMessage(arrowRainCollisionMessage);
+            DxGame.Instance.BroadcastMessage(arrowRainCollisionMessage);
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
@@ -254,7 +252,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
                     .Map.Collidables.InRange(new DxRectangle(Position.X, Position.Y, ARROW_RAIN_WIDTH, ARROW_RAIN_DEPTH))
                     .Select(tile => tile.Spatial.Space).ToList();
             mapTilesInRange.Sort((tile1, tile2) => (int) (tile2.Y - tile1.Y));
-            var scaleFactor = gameTime.DetermineScaleFactor(DxGame);
+            var scaleFactor = gameTime.DetermineScaleFactor(DxGame.Instance);
             /* 
                 We need to do a counting for loop because DxVector2s are structs 
                 (foreach would copy them instead of updating their references) 
@@ -330,7 +328,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
         public override void LoadContent()
         {
-            arrowSprite_ = DxGame.Content.Load<Texture2D>(ASSET_NAME);
+            arrowSprite_ = DxGame.Instance.Content.Load<Texture2D>(ASSET_NAME);
             base.LoadContent();
         }
 

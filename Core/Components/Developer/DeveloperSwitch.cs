@@ -25,14 +25,9 @@ namespace DXGame.Core.Components.Developer
         private static readonly Keys DEV_KEY = Keys.F7;
         public DeveloperMode DeveloperMode { get; private set; } = DeveloperMode.NotSoOn;
 
-        public DeveloperSwitch(DxGame game)
-            : base(game)
-        {
-        }
-
         protected override void Update(DxGameTime gameTime)
         {
-            var inputModel = DxGame.Model<InputModel>();
+            var inputModel = DxGame.Instance.Model<InputModel>();
             var finishedEvents = inputModel.FinishedEvents;
             if (finishedEvents.Any(inputEvent => inputEvent.Key == DEV_KEY))
             {

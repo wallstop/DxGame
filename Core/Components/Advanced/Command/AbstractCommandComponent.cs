@@ -17,8 +17,7 @@ namespace DXGame.Core.Components.Advanced.Command
     [DataContract]
     public abstract class AbstractCommandComponent : Component
     {
-        protected AbstractCommandComponent(DxGame game)
-            : base(game)
+        protected AbstractCommandComponent()
         {
         }
     }

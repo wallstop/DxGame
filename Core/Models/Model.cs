@@ -11,8 +11,7 @@ namespace DXGame.Core.Models
     [DataContract]
     public abstract class Model : DrawableComponent
     {
-        protected Model(DxGame game)
-            : base(game)
+        protected Model()
         {
         }
 

@@ -18,14 +18,9 @@ namespace DXGame.Core.Menus
         protected TextBox AddressBox { get; set; }
         protected SpriteFont SpriteFont { get; set; }
 
-        public JoinMultiplayerMenu(DxGame game)
-            : base(game)
-        {
-        }
-
         public override void Initialize()
         {
-            SpriteFont = DxGame.Content.Load<SpriteFont>("Fonts/ComicSans");
+            SpriteFont = DxGame.Instance.Content.Load<SpriteFont>("Fonts/ComicSans");
 
             var portBoxSpatial = (SpatialComponent)
                 SpatialComponent.Builder().WithDimensions(new DxVector2
@@ -103,14 +98,14 @@ namespace DXGame.Core.Menus
             MenuItems.Add(portLabel);
             MenuItems.Add(addressLabel);
             MenuItems.Add(connectButton);
-            DxGame.AddAndInitializeComponent(AddressBox);
-            DxGame.AddAndInitializeComponent(PortBox);
+            DxGame.Instance.AddAndInitializeComponent(AddressBox);
+            DxGame.Instance.AddAndInitializeComponent(PortBox);
         }
 
         public override void Dispose()
         {
-            DxGame.RemoveComponent(PortBox);
-            DxGame.RemoveComponent(AddressBox);
+            DxGame.Instance.RemoveComponent(PortBox);
+            DxGame.Instance.RemoveComponent(AddressBox);
             base.Dispose();
         }
 
@@ -125,17 +120,17 @@ namespace DXGame.Core.Menus
             };
 
             var client =
-                ((NetworkClient) new NetworkClient(DxGame).WithConfiguration(config))
+                ((NetworkClient) new NetworkClient().WithConfiguration(config))
                     .WithNetworkClientConfig(
                         networkClientConfig);
-            var networkModel = DxGame.Model<NetworkModel>();
+            var networkModel = DxGame.Instance.Model<NetworkModel>();
             networkModel.AttachClient(client);
             client.EstablishConnection();
 
-            var game = DxGame;
+            var game = DxGame.Instance;
             Dispose();
             game.UpdateMode = UpdateMode.Passive;
-            game.AttachModel(new GameModel(game));
+            game.AttachModel(new GameModel());
         }
     }
 }

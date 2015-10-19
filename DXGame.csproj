@@ -190,8 +190,6 @@
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Properties\EntityPropertiesComponent.cs" />
     <Compile Include="Core\Components\Advanced\Properties\PlayerPropertiesComponent.cs" />
-    <Compile Include="Core\Components\Advanced\RangedWeaponComponent.cs" />
-    <Compile Include="Core\Components\Advanced\WeaponComponent.cs" />
     <Compile Include="Core\Components\Basic\Component.cs" />
     <Compile Include="Core\Components\Advanced\Position\BoundedSpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\Physics\MapCollidablePhysicsComponent.cs" />

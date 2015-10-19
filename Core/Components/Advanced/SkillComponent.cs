@@ -28,13 +28,12 @@ namespace DXGame.Core.Components.Advanced
         [DataMember]
         private DxGameTime LatestGameTime { get; set; }
 
-        public SkillComponent(DxGame game, params Skill[] skills)
-            : this(game, skills.ToList())
+        public SkillComponent(params Skill[] skills)
+            : this(skills.ToList())
         {
         }
 
-        public SkillComponent(DxGame game, List<Skill> skills)
-            : base(game)
+        public SkillComponent(List<Skill> skills)
         {
             Validate.IsNotNull(skills, StringUtils.GetFormattedNullOrDefaultMessage(this, skills));
             Validate.NoNullElements(skills, StringUtils.GetFormattedNullOrDefaultMessage(this, typeof (Skill)));

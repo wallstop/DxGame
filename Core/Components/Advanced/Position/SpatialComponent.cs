@@ -39,8 +39,8 @@ namespace DXGame.Core.Components.Advanced.Position
 
         public virtual DxVector2 Center => position_ + Dimensions / 2.0f;
 
-        protected SpatialComponent(DxGame game, DxVector2 position, DxVector2 dimensions)
-            : base(game, position)
+        protected SpatialComponent(DxVector2 position, DxVector2 dimensions)
+            : base(position)
         {
             Dimensions = dimensions;
         }
@@ -62,8 +62,7 @@ namespace DXGame.Core.Components.Advanced.Position
 
             public override PositionalComponent Build()
             {
-                var game = DxGame.Instance;
-                return new SpatialComponent(game, position_, dimensions_);
+                return new SpatialComponent(position_, dimensions_);
             }
         }
     }

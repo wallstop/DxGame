@@ -35,8 +35,7 @@ namespace DXGame.Core.Components.Advanced
             set { assetName_ = value; }
         }
 
-        public SimpleSpriteComponent(DxGame game)
-            : base(game)
+        public SimpleSpriteComponent()
         {
         }
 
@@ -72,8 +71,8 @@ namespace DXGame.Core.Components.Advanced
 
         public override void Initialize()
         {
-            Validate.IsNotNull(DxGame.Content, StringUtils.GetFormattedNullOrDefaultMessage(this, DxGame.Content));
-            texture_ = DxGame.Content.Load<Texture2D>(assetName_);
+            Validate.IsNotNull(DxGame.Instance.Content, StringUtils.GetFormattedNullOrDefaultMessage(this, DxGame.Instance.Content));
+            texture_ = DxGame.Instance.Content.Load<Texture2D>(assetName_);
             // Assign boundingBox to be the shape of the texture only if it hasn't been custom-set
             // TODO: Change to an isLoaded bool flag / state
             if (Check.IsNullOrDefault(boundingBox_))

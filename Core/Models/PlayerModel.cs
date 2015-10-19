@@ -19,11 +19,6 @@ namespace DXGame.Core.Models
         [DataMember]
         public ICollection<Player> Players { get; private set; } = new List<Player>();
 
-        public PlayerModel(DxGame game)
-            : base(game)
-        {
-        }
-
         /* 
             Do we need this distinction?
         */

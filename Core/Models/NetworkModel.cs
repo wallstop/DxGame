@@ -16,11 +16,6 @@ namespace DXGame.Core.Models
 
         public IEnumerable<NetworkServer> Servers => connections_.OfType<NetworkServer>();
 
-        public NetworkModel(DxGame game)
-            : base(game)
-        {
-        }
-
         public override bool ShouldSerialize => false;
 
         public NetworkModel WithClient(NetworkClient client)

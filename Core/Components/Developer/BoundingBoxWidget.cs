@@ -17,14 +17,10 @@ namespace DXGame.Core.Components.Developer
 
     public class BoundingBoxWidget : DrawableComponent
     {
-        public BoundingBoxWidget(DxGame game)
-            : base(game)
-        {
-        }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            foreach (var spatial in DxGame.DxGameElements.OfType<SpatialComponent>())
+            foreach (var spatial in DxGame.Instance.DxGameElements.OfType<SpatialComponent>())
             {
                 spriteBatch.DrawBorder(spatial.Space, 1, Color.Red);
             }

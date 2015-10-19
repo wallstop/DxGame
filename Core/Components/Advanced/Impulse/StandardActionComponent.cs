@@ -23,10 +23,8 @@ namespace DXGame.Core.Components.Advanced.Impulse
         /* Answers the question of "How does a Commandment affect my position?" */
         public ReadOnlyDictionary<Commandment, Force> MovementForces { get; }
 
-        protected StandardActionComponent(DxGame game,
-            IDictionary<ActionType, ReadOnlyCollection<Commandment>> actionMapping,
+        protected StandardActionComponent(IDictionary<ActionType, ReadOnlyCollection<Commandment>> actionMapping,
             IDictionary<Commandment, Force> movementForces)
-            : base(game)
         {
             Actions = new ReadOnlyDictionary<ActionType, ReadOnlyCollection<Commandment>>(actionMapping);
             MovementForces = new ReadOnlyDictionary<Commandment, Force>(movementForces);
@@ -54,7 +52,6 @@ namespace DXGame.Core.Components.Advanced.Impulse
                     $"Cannot create a {typeof (StandardActionComponent)} with null {typeof (Commandment)}s for Movements");
                 Validate.NoNullElements(movementForces_.Values,
                     $"Cannot create a {typeof (StandardActionComponent)} with null {typeof (Force)}s for Movements");
-                var game = DxGame.Instance;
                 var actions = new Dictionary<ActionType, ReadOnlyCollection<Commandment>>();
 
                 foreach (var actionMapping in actionsByType_)
@@ -65,7 +62,7 @@ namespace DXGame.Core.Components.Advanced.Impulse
                 var movementCommandments = CommandmentsForType(ActionType.Movement);
                 Validate.AreEqual(movementCommandments.Count, movementForces_.Count);
 
-                return new StandardActionComponent(game, actions, movementForces_);
+                return new StandardActionComponent(actions, movementForces_);
             }
 
             public StandardActionComponentBuilder WithMovementForce(Commandment commandment, Force force)

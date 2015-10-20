@@ -127,12 +127,6 @@ namespace DXGame.Core.Components.Basic
             {
                 initialized_ = true;
             }
-            else
-            {
-                // Why are we doing this?
-                var logMessage = $"Initialize called on already Initialized {GetType()} {this}";
-                LOG.Debug(logMessage);
-            }
         }
 
         public virtual void LoadContent()

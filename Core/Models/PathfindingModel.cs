@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 using DXGame.Core.Components.Advanced.Command;
 using DXGame.Core.Components.Advanced.Impulse;
-using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.DataStructures;
 using DXGame.Core.Map;
@@ -19,7 +15,6 @@ using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using NetTopologySuite.Geometries;
 using NLog;
 
 namespace DXGame.Core.Models
@@ -32,7 +27,8 @@ namespace DXGame.Core.Models
             constant and defined by whatever our simulation uses as a constant time frame (ie, 16ms)
         </summary>
     */
-    sealed internal class Path
+
+    internal sealed class Path
     {
         public List<Commandment> Directions { get; }
         public Optional<Commandment> Beginning { get; }
@@ -73,9 +69,11 @@ namespace DXGame.Core.Models
             order to do A* pathfinding (where we do not know the directional links between Nodes, but can find them)
         </summary>
     */
-    sealed internal class ExplorableMesh
+
+    internal sealed class ExplorableMesh
     {
-        private readonly Dictionary<NavigableSurface.Node, HashSet<Path>> paths_ = new Dictionary<NavigableSurface.Node, HashSet<Path>>();
+        private readonly Dictionary<NavigableSurface.Node, HashSet<Path>> paths_ =
+            new Dictionary<NavigableSurface.Node, HashSet<Path>>();
 
         public ExplorableMesh(NavigableSurface mesh)
         {
@@ -91,6 +89,7 @@ namespace DXGame.Core.Models
                 "Notifies" the mesh that there is a new path available (explored), attaching it and updating the appropriate Nodes
             </summary>
         */
+
         public void AttachPath(NavigableSurface.Node start, Path path)
         {
             Validate.IsNotNull(start);
@@ -130,6 +129,7 @@ namespace DXGame.Core.Models
                 Note: The returned List will never be null, only (potentially) empty
             </summary>
         */
+
         public List<Path> PathsFrom(NavigableSurface.Node start)
         {
             Validate.IsNotNull(start);
@@ -143,21 +143,28 @@ namespace DXGame.Core.Models
                 This is useful to mark Nodes as "Exhausted"
             </summary>
         */
+
         public HashSet<Commandment> AttemptedCommandments(NavigableSurface.Node start)
         {
-            return new HashSet<Commandment>(paths_[start]/*.Where(path => path.Beginning.HasValue)*/.Select(path => path.Beginning.Value));
+            return
+                new HashSet<Commandment>(
+                    paths_[start] /*.Where(path => path.Beginning.HasValue)*/.Select(path => path.Beginning.Value));
         }
     }
 
     internal sealed class ExplorableMeshCache
     {
-        private static readonly ThreadLocal<Dictionary<ImmutablePair<UniqueId, NavigableSurface>, ExplorableMesh>> CACHE =
-    new ThreadLocal<Dictionary<ImmutablePair<UniqueId, NavigableSurface>, ExplorableMesh>>(() => new Dictionary<ImmutablePair<UniqueId, NavigableSurface>, ExplorableMesh>());
+        private static readonly ThreadLocal<Dictionary<ImmutablePair<UniqueId, NavigableSurface>, ExplorableMesh>> CACHE
+            =
+            new ThreadLocal<Dictionary<ImmutablePair<UniqueId, NavigableSurface>, ExplorableMesh>>(
+                () => new Dictionary<ImmutablePair<UniqueId, NavigableSurface>, ExplorableMesh>());
 
         public static ExplorableMesh MeshFor(GameObject entity, NavigableSurface surface)
         {
-            Validate.IsNotNullOrDefault(entity, $"Cannot retrieve an {typeof(ExplorableMesh)} for a null {nameof(entity)}");
-            Validate.IsNotNullOrDefault(surface, $"Cannot retrieve an {typeof(ExplorableMesh)} for a null {surface.GetType()}");
+            Validate.IsNotNullOrDefault(entity,
+                $"Cannot retrieve an {typeof (ExplorableMesh)} for a null {nameof(entity)}");
+            Validate.IsNotNullOrDefault(surface,
+                $"Cannot retrieve an {typeof (ExplorableMesh)} for a null {surface.GetType()}");
             return PopulateOrRetrieveMesh(entity, surface);
         }
 
@@ -183,8 +190,11 @@ namespace DXGame.Core.Models
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        private static readonly TimeSpan FRAME_TIME_SLICE = TimeSpan.FromMilliseconds(DxGame.Instance.TargetElapsedTime.Milliseconds);
-        private static readonly TimeSpan COMPUTATION_TIMEOUT = TimeSpan.FromMilliseconds(150); // Only budget a partial frame for this shit
+        private static readonly TimeSpan FRAME_TIME_SLICE =
+            TimeSpan.FromMilliseconds(DxGame.Instance.TargetElapsedTime.Milliseconds);
+
+        private static readonly TimeSpan COMPUTATION_TIMEOUT = TimeSpan.FromMilliseconds(150);
+            // Only budget a partial frame for this shit
 
         public LinkedList<ImmutablePair<TimeSpan, Commandment>> Pathfind(GameObject entity, DxVector2 target)
         {
@@ -223,7 +233,6 @@ namespace DXGame.Core.Models
             var available =
                 new SortedSet<NavigableSurface.Node>(Comparer<NavigableSurface.Node>.Create((firstNode, secondNode) =>
                 {
-
                     var firstDistanceToGoal =
                         (targetNode.Position -
                          firstNode.Position)
@@ -250,6 +259,7 @@ namespace DXGame.Core.Models
                 {
                     pathBuilder.WithStep(commandmentQueue.Peek());
                 }
+                // TODO: Need to mix in exploration with... already explored...ness
                 var currentCommandment = commandmentQueue.Dequeue();
                 currentTime = SimulateOneStep(currentEntity, currentTime, currentCommandment);
                 var spatial = currentEntity.ComponentOfType<SpatialComponent>();
@@ -272,7 +282,6 @@ namespace DXGame.Core.Models
                         var commandmentToUse = rankedCommandments[0];
                         pathBuilder.WithStep(commandmentToUse);
                         commandmentQueue.Enqueue(commandmentToUse);
-                        continue;
                     }
                     continue;
                 }
@@ -313,7 +322,7 @@ namespace DXGame.Core.Models
                 /* annnd determine what we should do next! */
                 pathBuilder = Path.Builder();
                 sourceNodes = nodesInRange;
-                
+
                 do
                 {
                     var availableNode = available.Min;
@@ -381,20 +390,23 @@ namespace DXGame.Core.Models
                 {
                     break;
                 }
-                var chosenPath = availablePaths.FirstOrDefault(availablePath => Objects.Equals(availablePath.End, endpoint));
+                var chosenPath =
+                    availablePaths.FirstOrDefault(availablePath => Objects.Equals(availablePath.End, endpoint));
                 if (ReferenceEquals(null, chosenPath))
                 {
                     break;
                 }
-                foreach( var pathSegment in chosenPath.Directions.Select(segment => new ImmutablePair<TimeSpan, Commandment>(FRAME_TIME_SLICE, segment)))
+                foreach (
+                    var pathSegment in
+                        chosenPath.Directions.Select(
+                            segment => new ImmutablePair<TimeSpan, Commandment>(FRAME_TIME_SLICE, segment)))
                 {
                     path.AddLast(pathSegment);
                 }
-            currentNode = endpoint;
+                currentNode = endpoint;
             }
             return path;
         }
-
 
         private static List<Commandment> RankCommandments(SpatialComponent spatial,
             ReadOnlyDictionary<Commandment, Force> movementCommendments, DxVector2 destination)
@@ -405,7 +417,7 @@ namespace DXGame.Core.Models
             {
                 return rankedCommandments;
             }
-            
+
             rankedCommandments.AddRange(movementCommendments.Select(entry => entry.Key));
             rankedCommandments.Sort((firstCommandment, secondCommandment) =>
             {
@@ -419,6 +431,7 @@ namespace DXGame.Core.Models
             });
             return rankedCommandments;
         }
+
         private static GameObject CopyAndPrepGameObject(GameObject entity)
         {
             var entityCopy = entity.Copy();
@@ -438,7 +451,7 @@ namespace DXGame.Core.Models
             var nextFrame = new DxGameTime(newTime, FRAME_TIME_SLICE, false);
             var components = new SortedList<IProcessable>(entity.Components);
             // Cheat - just dump the message right into their queue - rely on the fact that state machines can't be triggered via immediate mode (TODO: PLS FIX)
-            var commandMessage = new CommandMessage() { Commandment = commandment };
+            var commandMessage = new CommandMessage {Commandment = commandment};
             entity.FutureMessages.Add(commandMessage);
             entity.Process(nextFrame);
             foreach (var component in components)

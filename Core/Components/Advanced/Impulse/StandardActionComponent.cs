@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
-using DXGame.Core.Behavior;
 using DXGame.Core.Behavior.Goals;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Physics;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Impulse
 {
+    /* TODO: Get rid of this trash, this is not a good design */
+
     [Serializable]
     [DataContract]
     public class StandardActionComponent : Component
@@ -28,6 +29,27 @@ namespace DXGame.Core.Components.Advanced.Impulse
         {
             Actions = new ReadOnlyDictionary<ActionType, ReadOnlyCollection<Commandment>>(actionMapping);
             MovementForces = new ReadOnlyDictionary<Commandment, Force>(movementForces);
+        }
+
+        public static StandardActionComponent StandardMovementComponent()
+        {
+            var standardActionComponent =
+                Builder()
+                    .WithAction(ActionType.Movement, Commandment.MoveLeft)
+                    .WithAction(ActionType.Movement, Commandment.MoveRight)
+                    .WithAction(ActionType.Movement, Commandment.MoveUp)
+                    .WithAction(ActionType.Movement, Commandment.MoveDown)
+                    .WithMovementForce(Commandment.MoveLeft, SimpleDirectionalForce(new DxVector2(-1, 0)))
+                    .WithMovementForce(Commandment.MoveRight, SimpleDirectionalForce(new DxVector2(1, 0)))
+                    .WithMovementForce(Commandment.MoveUp, SimpleDirectionalForce(new DxVector2(0, -1)))
+                    .WithMovementForce(Commandment.MoveDown, SimpleDirectionalForce(new DxVector2(0, 1))).Build();
+            return standardActionComponent;
+        }
+
+        private static Force SimpleDirectionalForce(DxVector2 direction)
+        {
+            return new Force(new DxVector2(), new DxVector2(), direction,
+                (x, y, z) => Tuple.Create(true, new DxVector2()), "SimplePathFindingForce");
         }
 
         public static StandardActionComponentBuilder Builder()

@@ -26,20 +26,17 @@ namespace DXGame.Core.Components.Advanced.Impulse
 
         protected override void Update(DxGameTime gameTime)
         {
+            // TODO
             var mapModel = DxGame.Instance.Model<MapModel>();
             var targetArea = mapModel.Map.RandomSpawnLocation;
             var targetLocation = new DxVector2(targetArea.X, targetArea.Y);
-            var path = FindPath(targetLocation, TimeSpan.FromSeconds(5));
+            var path = FindPath(targetLocation);
         }
 
-        public List<ImmutablePair<DxGameTime, Commandment>> FindPath(DxVector2 destination, TimeSpan timeout)
+        public List<ImmutablePair<TimeSpan, Commandment>> FindPath(DxVector2 destination)
         {
-            var beginningTime = DxGame.Instance.CurrentTime;
             var pathFindingModel = DxGame.Instance.Model<PathfindingModel>();
             var fullPath = pathFindingModel.Pathfind(Parent, destination);
-            var cutoffTime = beginningTime.TotalGameTime + timeout;
-            /* Cull everything past our timeout */
-            fullPath.RemoveAll(pair => pair.Key.TotalGameTime > cutoffTime);
             return fullPath;
         }
     }

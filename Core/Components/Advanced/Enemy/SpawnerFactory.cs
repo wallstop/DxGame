@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using DXGame.Core.Components.Advanced.Command;
 using DXGame.Core.Components.Advanced.Damage;
+using DXGame.Core.Components.Advanced.Impulse;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
@@ -27,6 +29,9 @@ namespace DXGame.Core.Components.Advanced.Enemy
             var enemySpatial =
                 (BoundedSpatialComponent)
                     BoundedSpatialComponent.Builder().WithBounds(bounds).WithDimensions(new DxVector2(50, 50)).Build();
+            var platformDropper = new MapPlatformDropper();
+            var standardActionComponent = StandardActionComponent.StandardMovementComponent();
+            var pathfinding = new PathfindingInputComponent();
             var enemyPhysics =
                 MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(enemySpatial).Build();
 
@@ -45,7 +50,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
             var enemyObject =
                 GameObject.Builder()
                     .WithComponents(enemySpatial, enemyPhysics, enemyProperties, floatingHealthBar, deathExploder,
-                        damageComponent, teamComponent)
+                        damageComponent, teamComponent, pathfinding, standardActionComponent, platformDropper)
                     .Build();
             // Create a state machine for the enemy in question
             // Horrifically complex; weep, gnash teeth
@@ -82,7 +87,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
         {
             private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
             private static readonly TimeSpan SPAWN_DELAY = TimeSpan.FromSeconds(1 / 10.0);
-            private static readonly int MAX_BOXES_IN_PLAY = 10;
+            private static readonly int MAX_BOXES_IN_PLAY = 1;
             private TimeSpan lastSpawned_ = TimeSpan.Zero;
             private int numSpawned_;
 

@@ -35,7 +35,7 @@ namespace DXGame.Core.Map
             So, we offset each and every point along every edge by "lifting" it up by a tiny amount. This allows 
             us to do collision checks against it painlessly.
         */
-        private const float OFFSET = -0.1f;
+        private const float OFFSET = -0.01f;
 
         private static readonly ThreadLocal<Dictionary<UniqueId, NavigableSurface>> CACHE =
             new ThreadLocal<Dictionary<UniqueId, NavigableSurface>>(() => new Dictionary<UniqueId, NavigableSurface>());
@@ -171,6 +171,11 @@ namespace DXGame.Core.Map
             public override int GetHashCode()
             {
                 return Objects.HashCode(Position);
+            }
+
+            public override string ToString()
+            {
+                return Position.ToString();
             }
 
             public override bool Equals(object other)

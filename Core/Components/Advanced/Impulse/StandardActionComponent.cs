@@ -35,10 +35,12 @@ namespace DXGame.Core.Components.Advanced.Impulse
         {
             var standardActionComponent =
                 Builder()
+                    .WithAction(ActionType.Movement, Commandment.None)
                     .WithAction(ActionType.Movement, Commandment.MoveLeft)
                     .WithAction(ActionType.Movement, Commandment.MoveRight)
                     .WithAction(ActionType.Movement, Commandment.MoveUp)
                     .WithAction(ActionType.Movement, Commandment.MoveDown)
+                    .WithMovementForce(Commandment.None, SimpleDirectionalForce(new DxVector2()))
                     .WithMovementForce(Commandment.MoveLeft, SimpleDirectionalForce(new DxVector2(-1, 0)))
                     .WithMovementForce(Commandment.MoveRight, SimpleDirectionalForce(new DxVector2(1, 0)))
                     .WithMovementForce(Commandment.MoveUp, SimpleDirectionalForce(new DxVector2(0, -1)))

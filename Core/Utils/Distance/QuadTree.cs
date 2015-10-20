@@ -171,16 +171,13 @@ namespace DXGame.Core.Utils.Distance
             while (!currentNode.Terminal)
             {
                 var children = currentNode.Children;
-                foreach (var child in children)
+                var closestChild = children.FirstOrDefault(child => child.Boundary.Contains(position));
+                if (ReferenceEquals(closestChild, null))
                 {
-                    if (child.Boundary.Contains(position))
-                    {
-                        hierarchicalParents.Push(currentNode);
-                        currentNode = child;
-                        break;
-                    }
+                    break;
                 }
-                break;
+                hierarchicalParents.Push(currentNode);
+                currentNode = closestChild;
             }
             Validate.IsTrue(currentNode.Terminal);
 

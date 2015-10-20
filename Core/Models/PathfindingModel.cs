@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading;
 using DXGame.Core.Components.Advanced.Command;
 using DXGame.Core.Components.Advanced.Impulse;
 using DXGame.Core.Components.Advanced.Physics;
@@ -93,7 +95,33 @@ namespace DXGame.Core.Models
         {
             Validate.IsNotNull(start);
             Validate.IsNotNull(path);
-            paths_[start].Add(path);
+            // Don't loop to yourself
+            if (!Objects.Equals(start, path.End))
+            {
+                paths_[start].Add(path);
+            }
+        }
+
+        public List<NavigableSurface.Node> DetermineAvailable(NavigableSurface.Node start)
+        {
+            var seenNodes = new HashSet<NavigableSurface.Node>();
+            var unexplored = new Queue<NavigableSurface.Node>();
+            unexplored.Enqueue(start);
+            do
+            {
+                var current = unexplored.Dequeue();
+                var paths = PathsFrom(start);
+                foreach (var node in paths.Select(path => path.End))
+                {
+                    if (seenNodes.Add(node))
+                    {
+                        unexplored.Enqueue(node);
+                    }
+                }
+            } while (unexplored.Any());
+
+            seenNodes.Remove(start);
+            return seenNodes.ToList();
         }
 
         /**
@@ -117,7 +145,35 @@ namespace DXGame.Core.Models
         */
         public HashSet<Commandment> AttemptedCommandments(NavigableSurface.Node start)
         {
-            return new HashSet<Commandment>(paths_[start].Where(path => path.Beginning.HasValue).Select(path => path.Beginning.Value));
+            return new HashSet<Commandment>(paths_[start]/*.Where(path => path.Beginning.HasValue)*/.Select(path => path.Beginning.Value));
+        }
+    }
+
+    internal sealed class ExplorableMeshCache
+    {
+        private static readonly ThreadLocal<Dictionary<ImmutablePair<UniqueId, NavigableSurface>, ExplorableMesh>> CACHE =
+    new ThreadLocal<Dictionary<ImmutablePair<UniqueId, NavigableSurface>, ExplorableMesh>>(() => new Dictionary<ImmutablePair<UniqueId, NavigableSurface>, ExplorableMesh>());
+
+        public static ExplorableMesh MeshFor(GameObject entity, NavigableSurface surface)
+        {
+            Validate.IsNotNullOrDefault(entity, $"Cannot retrieve an {typeof(ExplorableMesh)} for a null {nameof(entity)}");
+            Validate.IsNotNullOrDefault(surface, $"Cannot retrieve an {typeof(ExplorableMesh)} for a null {surface.GetType()}");
+            return PopulateOrRetrieveMesh(entity, surface);
+        }
+
+        private static ExplorableMesh PopulateOrRetrieveMesh(GameObject entity, NavigableSurface surface)
+        {
+            var cachedNavigationMesh = CACHE.Value;
+            var entityId = entity.Id;
+            var key = new ImmutablePair<UniqueId, NavigableSurface>(entityId, surface);
+            if (cachedNavigationMesh.ContainsKey(key))
+            {
+                return cachedNavigationMesh[key];
+            }
+
+            var newExplorableMesh = new ExplorableMesh(surface);
+            cachedNavigationMesh[key] = newExplorableMesh;
+            return newExplorableMesh;
         }
     }
 
@@ -126,10 +182,11 @@ namespace DXGame.Core.Models
     public class PathfindingModel : Model
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        
-        private static readonly TimeSpan FRAME_TIME_SLICE = DxGame.Instance.TargetElapsedTime;
-        
-        public List<ImmutablePair<TimeSpan, Commandment>> Pathfind(GameObject entity, DxVector2 target)
+
+        private static readonly TimeSpan FRAME_TIME_SLICE = TimeSpan.FromMilliseconds(DxGame.Instance.TargetElapsedTime.Milliseconds);
+        private static readonly TimeSpan COMPUTATION_TIMEOUT = TimeSpan.FromMilliseconds(150); // Only budget a partial frame for this shit
+
+        public LinkedList<ImmutablePair<TimeSpan, Commandment>> Pathfind(GameObject entity, DxVector2 target)
         {
             var entityIsNull = Check.IsNullOrDefault(entity);
             if (entityIsNull)
@@ -140,7 +197,7 @@ namespace DXGame.Core.Models
             /* If the provided entity is null or we're already at our destination, there's nothing to do */
             if (entityIsNull || entity.ComponentOfType<SpatialComponent>().Space.Contains(target))
             {
-                return Enumerable.Empty<ImmutablePair<TimeSpan, Commandment>>().ToList();
+                return new LinkedList<ImmutablePair<TimeSpan, Commandment>>();
             }
 
             var actionComponent = entity.ComponentOfType<StandardActionComponent>();
@@ -156,12 +213,12 @@ namespace DXGame.Core.Models
             if (!closestNode.HasValue)
             {
                 LOG.Info($"Could not find a Node close to {target}");
-                return Enumerable.Empty<ImmutablePair<TimeSpan, Commandment>>().ToList();
+                return new LinkedList<ImmutablePair<TimeSpan, Commandment>>();
             }
 
             var targetNode = closestNode.Value;
 
-            var explorableMesh = new ExplorableMesh(navigationMesh);
+            var explorableMesh = ExplorableMeshCache.MeshFor(entity, navigationMesh);
             var exhausted = new HashSet<NavigableSurface.Node>();
             var available =
                 new SortedSet<NavigableSurface.Node>(Comparer<NavigableSurface.Node>.Create((firstNode, secondNode) =>
@@ -175,17 +232,19 @@ namespace DXGame.Core.Models
                     return firstDistanceToGoal.CompareTo(secondDistanceToGoal);
                 }));
 
-            var snapshots = new Dictionary<NavigableSurface.Node, Tuple<GameObject, DxGameTime>>();
+            var snapshots = new Dictionary<NavigableSurface.Node, Tuple<GameObject, TimeSpan>>();
             var traveled = new Dictionary<NavigableSurface.Node, NavigableSurface.Node>();
 
-            var sourceNodes = new List<NavigableSurface.Node>();
+            List<NavigableSurface.Node> sourceNodes = new List<NavigableSurface.Node>();
             var pathBuilder = Path.Builder();
-            var currentTime = DxGame.Instance.CurrentTime.Copy();
+            var startTime = DxGame.Instance.CurrentTime.ElapsedGameTime;
+            var currentTime = startTime;
             var isInitialPath = true;
             Path initialPath = null;
-
+            NavigableSurface.Node best = targetNode;
             var done = false;
-            while (!done)
+            var timer = Stopwatch.StartNew();
+            while (!done && (timer.Elapsed < COMPUTATION_TIMEOUT))
             {
                 if (commandmentQueue.Any())
                 {
@@ -196,9 +255,17 @@ namespace DXGame.Core.Models
                 var spatial = currentEntity.ComponentOfType<SpatialComponent>();
                 var space = spatial.Space;
                 var nodesInRange = navigationMesh.NodeQuery.InRange(space);
+                if (nodesInRange.Any())
+                {
+                    nodesInRange = nodesInRange.Except(sourceNodes).ToList();
+                }
                 /* Not colliding? Just try to get closer then */
                 if (!nodesInRange.Any())
                 {
+                    // Do nothing until we have interacted with the navigable surface
+                    //var commandmentToUse = Commandment.None;
+                    //pathBuilder.WithStep(commandmentToUse);
+                    //commandmentQueue.Enqueue(commandmentToUse);
                     var rankedCommandments = RankCommandments(spatial, movementCommendments, targetNode.Position);
                     if (rankedCommandments.Any())
                     {
@@ -220,16 +287,20 @@ namespace DXGame.Core.Models
 
                     if (!exhausted.Contains(node))
                     {
-                        available.Add(node);
-                        snapshots[node] = Tuple.Create(currentEntity.Copy(), currentTime.Copy());
+                        bool added = available.Add(node);
+                        if (added)
+                        {
+                            snapshots[node] = Tuple.Create(currentEntity.Copy(), (currentTime - startTime));
+                        }
                     }
                     var path = pathBuilder.Build(node);
                     if (isInitialPath)
                     {
                         isInitialPath = false;
-                        initialPath = pathBuilder.Build(node);
+                        initialPath = path;
+                        sourceNodes = nodesInRange;
                     }
-                    else
+                    //else
                     {
                         foreach (var sourceNode in sourceNodes)
                         {
@@ -242,9 +313,10 @@ namespace DXGame.Core.Models
                 /* annnd determine what we should do next! */
                 pathBuilder = Path.Builder();
                 sourceNodes = nodesInRange;
-
-                foreach (var availableNode in available)
+                
+                do
                 {
+                    var availableNode = available.Min;
                     var attemptedCommandments = explorableMesh.AttemptedCommandments(availableNode);
                     var entityAtNode = snapshots[availableNode].Item1;
                     var spatialInstance = entityAtNode.ComponentOfType<SpatialComponent>();
@@ -257,42 +329,68 @@ namespace DXGame.Core.Models
                         continue;
                     }
                     currentEntity = entityAtNode.Copy();
-                    currentTime = snapshots[availableNode].Item2.Copy();
+                    currentTime = startTime + snapshots[availableNode].Item2;
                     var commandmentToUse = unusedCommandments[0];
                     commandmentQueue.Enqueue(commandmentToUse);
                     break;
-                }
+                } while (available.Any());
+
                 if (!commandmentQueue.Any())
                 {
                     break;
                 }
             }
 
+
             if (!done)
             {
-                LOG.Info($"Failed to find path to {targetNode}, closest to {target}");
-                return Enumerable.Empty<ImmutablePair<TimeSpan, Commandment>>().ToList();
+                LOG.Info($"Failed to find path to {targetNode}, closest to {target}, defaulting to best-guess");
+                // TRY TO DO IT ANYWAY FOOL
+                best = available.Min;
+            }
+
+
+            if (ReferenceEquals(null, initialPath) || ReferenceEquals(null, best))
+            {
+                return new LinkedList<ImmutablePair<TimeSpan, Commandment>>();
             }
 
             var startNode = initialPath.End;
 
-            var finalPath = RecreatePath(explorableMesh, traveled, startNode, targetNode);
+            var finalPath = RecreatePath(explorableMesh, traveled, startNode, best);
             return finalPath;
         }
 
-        private static List<ImmutablePair<TimeSpan, Commandment>> RecreatePath(ExplorableMesh explorableMesh,
+        private static LinkedList<ImmutablePair<TimeSpan, Commandment>> RecreatePath(ExplorableMesh explorableMesh,
             Dictionary<NavigableSurface.Node, NavigableSurface.Node> traveled, NavigableSurface.Node start,
             NavigableSurface.Node end)
         {
-            var path = new List<ImmutablePair<TimeSpan, Commandment>>();
+            var path = new LinkedList<ImmutablePair<TimeSpan, Commandment>>();
             var currentNode = start;
-            while (!Objects.Equals(start, end))
+            var visited = new HashSet<NavigableSurface.Node> {currentNode};
+            while (!Objects.Equals(currentNode, end))
             {
                 var availablePaths = explorableMesh.PathsFrom(currentNode);
+                if (!traveled.ContainsKey(currentNode))
+                {
+                    break;
+                }
                 var endpoint = traveled[currentNode];
-                var chosenPath = availablePaths.First(availablePath => Objects.Equals(availablePath.End, endpoint));
-                path.AddRange(chosenPath.Directions.Select(segment => new ImmutablePair<TimeSpan, Commandment>(FRAME_TIME_SLICE, segment)));
-                currentNode = endpoint;
+                var isNewEndpoint = visited.Add(endpoint);
+                if (!isNewEndpoint)
+                {
+                    break;
+                }
+                var chosenPath = availablePaths.FirstOrDefault(availablePath => Objects.Equals(availablePath.End, endpoint));
+                if (ReferenceEquals(null, chosenPath))
+                {
+                    break;
+                }
+                foreach( var pathSegment in chosenPath.Directions.Select(segment => new ImmutablePair<TimeSpan, Commandment>(FRAME_TIME_SLICE, segment)))
+                {
+                    path.AddLast(pathSegment);
+                }
+            currentNode = endpoint;
             }
             return path;
         }
@@ -329,24 +427,30 @@ namespace DXGame.Core.Models
                 other commands will get in the way of our simulation 
             */
             entityCopy.RemoveComponents<AbstractCommandComponent>();
-            entityCopy.RemoveComponents<PathfindingComponent>();
             entityCopy.CurrentMessages.RemoveAll(message => message is CommandMessage);
             entityCopy.FutureMessages.RemoveAll(message => message is CommandMessage);
             return entityCopy;
         }
 
-        private DxGameTime SimulateOneStep(GameObject entity, DxGameTime initialTime, Commandment commandment)
+        private TimeSpan SimulateOneStep(GameObject entity, TimeSpan initial, Commandment commandment)
         {
-            var nextFrame = new DxGameTime(initialTime.TotalGameTime + FRAME_TIME_SLICE, FRAME_TIME_SLICE, initialTime.IsRunningSlowly);
+            var newTime = initial + FRAME_TIME_SLICE;
+            var nextFrame = new DxGameTime(newTime, FRAME_TIME_SLICE, false);
             var components = new SortedList<IProcessable>(entity.Components);
+            // Cheat - just dump the message right into their queue - rely on the fact that state machines can't be triggered via immediate mode (TODO: PLS FIX)
+            var commandMessage = new CommandMessage() { Commandment = commandment };
+            entity.FutureMessages.Add(commandMessage);
             entity.Process(nextFrame);
             foreach (var component in components)
             {
                 component.Process(nextFrame);
             }
-            var commandMessage = new CommandMessage() {Commandment = commandment};
-            entity.FutureMessages.Add(commandMessage);
-            return nextFrame;
+            //entity.Process(nextFrame);
+            //foreach (var component in components)
+            //{
+            //    component.Process(nextFrame);
+            //}
+            return newTime;
         }
     }
 }

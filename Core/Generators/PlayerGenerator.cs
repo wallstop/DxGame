@@ -60,17 +60,9 @@ namespace DXGame.Core.Generators
             var inputListener = new PlayerInputListener();
             var facingComponent = new FacingComponent();
             var teamComponent = new TeamComponent(Team.PlayerTeam);
-
-            var standardActionComponent =
-                StandardActionComponent.Builder().WithAction(ActionType.Movement, Commandment.MoveLeft).WithAction(ActionType.Movement, Commandment.MoveRight).WithAction(ActionType.Movement, Commandment.MoveUp)
-                    .WithMovementForce(Commandment.MoveLeft, SimpleDirectionalForce(new DxVector2(-3, 0)))
-                    .WithMovementForce(Commandment.MoveRight, SimpleDirectionalForce(new DxVector2(3, 0)))
-                    .WithMovementForce(Commandment.MoveUp, SimpleDirectionalForce(new DxVector2(-3, 0))).Build();
-
-            var pathfinding = new PathfindingComponent(standardActionComponent);
-
+            
             playerBuilder.WithComponents(PlayerSpace, physics_, 
-                    playerProperties_, healthBar_, inputListener, facingComponent, teamComponent, standardActionComponent, pathfinding);
+                    playerProperties_, healthBar_, inputListener, facingComponent, teamComponent);
             var playerObject = playerBuilder.Build();
             var shockwaveSkill =
                 Skill.Builder()

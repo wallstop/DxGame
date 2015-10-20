@@ -1,15 +1,13 @@
 ﻿using System;
-using DXGame.Core.Models;
-using DXGame.Core.Components.Basic;
-using DXGame.Core.Components.Advanced.Position;
-using DXGame.Core.Messaging;
-using DXGame.Core.Utils.Distance;
-using DXGame.Main;
 using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Command;
+using DXGame.Core.Components.Advanced.Position;
+using DXGame.Core.Messaging;
+using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
+using DXGame.Main;
 
 namespace DXGame.TowerGame.Components
 {
@@ -18,50 +16,52 @@ namespace DXGame.TowerGame.Components
     public class SimpleEnemyAI : AbstractCommandComponent
     {
         private static readonly TimeSpan MOVEMENT_DELAY_CHECK = TimeSpan.FromSeconds(1);
+
+        private static readonly TimeSpan PATHFINDING_TIMEOUT = MOVEMENT_DELAY_CHECK - TimeSpan.FromMilliseconds(10);
+            // just cuz
+
         private static readonly double PERSONAL_SPACE_ = 50;
-        [DataMember]
-        private TimeSpan lastChangedMovement_ = TimeSpan.FromSeconds(0);
-        [DataMember]
-        private readonly SpatialComponent spatialComponent_;
-        [DataMember]
-        private TimeSpan lastNearPlayer_ = TimeSpan.FromSeconds(0);
+
+        [DataMember] private readonly SpatialComponent spatialComponent_;
+
+        private TimeSpan timeSinceLastMovementRequest_ = TimeSpan.Zero;
 
         /// <summary>
-        /// Initialize a simple AI that follows the player.
+        ///     Initialize a simple AI that follows the player.
         /// </summary>
         /// <param name="spatialComponent">  This AI's object's spatial component.</param>
-        private SimpleEnemyAI(SpatialComponent spatialComponent) 
+        private SimpleEnemyAI(SpatialComponent spatialComponent)
         {
             spatialComponent_ = spatialComponent;
         }
 
         protected override void Update(DxGameTime gameTime)
         {
+            timeSinceLastMovementRequest_ += gameTime.ElapsedGameTime;
             // Extract player model, players; handle limitations on AI
             PlayerModel playerModel = DxGame.Instance.Model<PlayerModel>();
-            if (playerModel.Players.Count > 1) {
-                throw new InvalidOperationException("SimpleEnemyAI cannot fathom multiple players.");
-            } else if (playerModel.Players.Count < 1)
-            {
-                throw new InvalidOperationException("SimpleEnemyAI cannot cope with loneliness.");
-            }
+            Validate.AreEqual(1, playerModel.Players.Count,
+                $"{GetType()} cannot fathom {playerModel.Players.Count} players.");
             Core.Player player = playerModel.Players.First();
 
-            // Keep track of when this unit was last near the player
-            if (Math.Abs(player.Position.Position.X - spatialComponent_.Position.X) < PERSONAL_SPACE_)
+            var closeEnough = Math.Abs(player.Position.Position.X - spatialComponent_.Position.X) < PERSONAL_SPACE_;
+            if (closeEnough)
             {
-                lastNearPlayer_ = gameTime.TotalGameTime;
+                return;
             }
 
-            // Chase the player along the X-axis, sending a movement request if the player moves away
-            if (gameTime.TotalGameTime.Subtract(lastNearPlayer_) > MOVEMENT_DELAY_CHECK)
+            if (timeSinceLastMovementRequest_ <= MOVEMENT_DELAY_CHECK)
             {
-                Direction d = (player.Position.Position.X > spatialComponent_.Position.X) 
-                    ? Direction.East : Direction.West;
-                Parent.BroadcastMessage(new CommandMessage {Commandment = CommandMessage.CommandmentForDirection(d)});
+                return;
             }
 
-            base.Update(gameTime);
+            var pathfindingRequest = new PathFindingRequest
+            {
+                Location = player.Position.Position,
+                Timeout = PATHFINDING_TIMEOUT
+            };
+            Parent?.BroadcastMessage(pathfindingRequest);
+            timeSinceLastMovementRequest_ = TimeSpan.Zero;
         }
 
         public static SimpleEnemyAIBuilder Builder()
@@ -70,9 +70,8 @@ namespace DXGame.TowerGame.Components
         }
 
         /// <summary>
-        /// A simple IBuilder for simple AI.  
-        /// 
-        /// Requires a spatial component.
+        ///     A simple IBuilder for simple AI.
+        ///     Requires a spatial component.
         /// </summary>
         public class SimpleEnemyAIBuilder : IBuilder<SimpleEnemyAI>
         {
@@ -80,8 +79,7 @@ namespace DXGame.TowerGame.Components
 
             public SimpleEnemyAI Build()
             {
-                Validate.IsNotNull(spatialComponent_, 
-                    "AI requires a spatial component to make decisions.");
+                Validate.IsNotNull(spatialComponent_, "AI requires a spatial component to make decisions.");
                 // Construct and return the desired object
                 return new SimpleEnemyAI(spatialComponent_);
             }

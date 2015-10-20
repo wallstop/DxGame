@@ -125,8 +125,8 @@
     <Compile Include="Core\Components\Advanced\Enemy\Spawner.cs" />
     <Compile Include="Core\Components\Advanced\Enemy\SpawnerFactory.cs" />
     <Compile Include="Core\Components\Advanced\FacingComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Impulse\PathfindingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PathfindingInputComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Impulse\MapPlatformDropper.cs" />
     <Compile Include="Core\Components\Advanced\Impulse\StandardActionComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapCollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
@@ -153,12 +153,13 @@
     <Compile Include="Core\JsonPersistable.cs" />
     <Compile Include="Core\Map\Map.cs" />
     <Compile Include="Core\Map\MapDescriptor.cs" />
-    <Compile Include="Core\Map\NavigationMesh.cs" />
+    <Compile Include="Core\Map\NavigableSurface.cs" />
     <Compile Include="Core\Map\Platform.cs" />
     <Compile Include="Core\Messaging\CommandMessage.cs" />
     <Compile Include="Core\Messaging\DamageMessage.cs" />
     <Compile Include="Core\Messaging\DropThroughPlatformRequest.cs" />
     <Compile Include="Core\Messaging\EntityDeathMessage.cs" />
+    <Compile Include="Core\Messaging\PathFindingRequest.cs" />
     <Compile Include="Core\Messaging\MessageHandler.cs" />
     <Compile Include="Core\Messaging\PhysicsMessage.cs" />
     <Compile Include="Core\Models\BehaviorModel.cs" />
@@ -555,6 +556,7 @@
   <ItemGroup>
     <Folder Include="Content\Behaviors\" />
     <Folder Include="Core\GraphicsWidgets\Utils\" />
+    <Folder Include="Core\Pathfinding\" />
     <Folder Include="Network\" />
     <Folder Include="TowerGame\Actions\" />
     <Folder Include="TowerGame\Buffs\" />

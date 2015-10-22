@@ -22,7 +22,7 @@ namespace DXGame.Core.Primitives
         public float Magnitude => unchecked((float) Math.Sqrt(MagnitudeSquared));
         public DxRadian Radian => new DxRadian(this);
         public DxDegree Degree => new DxDegree(this);
-        public DxVector2 EmptyVector => new DxVector2();
+        public static DxVector2 EmptyVector => new DxVector2();
 
         public DxVector2 UnitVector
         {

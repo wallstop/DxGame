@@ -21,7 +21,7 @@ namespace DXGame.Core.Physics
 
         /* Applies a constant downwards force (down is -y, in terms of graphic space) to an object */
 
-        public static readonly Force Gravity = new Force(new DxVector2(), GRAVITY_ACCELERATION, GRAVITY_ACCELERATION, GravityDissipation,
+        public static readonly Force Gravity = new Force(new DxVector2(), GRAVITY_ACCELERATION, GravityDissipation,
             "Gravity");
 
         /* 
@@ -29,8 +29,7 @@ namespace DXGame.Core.Physics
             which will gradually slow them down if they are not actively generating velocity 
         */
 
-        public static readonly Force AirResistance = new Force(new DxVector2(), new DxVector2(), new DxVector2(), 
-            AirResistanceDissipation, "AirResistance");
+        public static readonly Force AirResistance = new Force(DxVector2.EmptyVector, DxVector2.EmptyVector, AirResistanceDissipation, "AirResistance");
 
         /* 
             Applies a more aggressive version of AirResistance, but only in the X direction. 

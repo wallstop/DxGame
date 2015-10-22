@@ -18,37 +18,35 @@ namespace DXGame.Core.Messaging
     public class CollisionMessage : Message
     {
         [DataMember]
-        public List<Direction> CollisionDirections { get; set; }
+        public Dictionary<Direction, IIdentifiable> CollisionDirections { get; } = new Dictionary<Direction, IIdentifiable>();
 
         public CollisionMessage()
         {
-            CollisionDirections = new List<Direction>();
         }
 
-        public CollisionMessage WithDirection(Direction direction)
+        public CollisionMessage WithDirectionAndSource(Direction direction, IIdentifiable source)
         {
-            CollisionDirections.Add(direction);
+            CollisionDirections[direction] = source;
             return this;
         }
 
-        public CollisionMessage(DxVector2 collisionVector)
-            : this()
+        public CollisionMessage(DxVector2 collisionVector, IIdentifiable source)
         {
             if (collisionVector.X > 0)
             {
-                WithDirection(Direction.East);
+                WithDirectionAndSource(Direction.East, source);
             }
             if (collisionVector.X < 0)
             {
-                WithDirection(Direction.West);
+                WithDirectionAndSource(Direction.West, source);
             }
             if (collisionVector.Y > 0)
             {
-                WithDirection(Direction.South);
+                WithDirectionAndSource(Direction.South, source);
             }
             if (collisionVector.Y < 0)
             {
-                WithDirection(Direction.North);
+                WithDirectionAndSource(Direction.North, source);
             }
         }
     }

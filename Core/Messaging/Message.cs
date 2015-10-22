@@ -5,7 +5,8 @@ namespace DXGame.Core.Messaging
 {
     [Serializable]
     [DataContract]
-    public class Message
+    public class Message : IIdentifiable
     {
+        public virtual UniqueId Id { get; } = new UniqueId();
     }
 }

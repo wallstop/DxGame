@@ -97,14 +97,14 @@ namespace DXGame.Core.Components.Advanced.Physics
             var collisionDirections = message.CollisionDirections;
             var velocity = Velocity; 
             // Collide on against y axis (vertical)? Cease movement and acceleration in that direction
-            if (collisionDirections.Contains(Direction.East) ||
-                collisionDirections.Contains(Direction.West))
+            if (collisionDirections.ContainsKey(Direction.East) ||
+                collisionDirections.ContainsKey(Direction.West))
             {
                 velocity.X = 0;
             }
             // Same for horizontal movement
-            if (collisionDirections.Contains(Direction.South) ||
-                collisionDirections.Contains(Direction.North))
+            if (collisionDirections.ContainsKey(Direction.South) ||
+                collisionDirections.ContainsKey(Direction.North))
             {
                 velocity.Y = 0;
             }

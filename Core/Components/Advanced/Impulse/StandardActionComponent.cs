@@ -50,8 +50,7 @@ namespace DXGame.Core.Components.Advanced.Impulse
 
         private static Force SimpleDirectionalForce(DxVector2 direction)
         {
-            return new Force(new DxVector2(), new DxVector2(), direction,
-                (x, y, z) => Tuple.Create(true, new DxVector2()), "SimplePathFindingForce");
+            return new Force(DxVector2.EmptyVector, DxVector2.EmptyVector, (x, y, z) => Tuple.Create(true, new DxVector2()), "SimplePathFindingForce");
         }
 
         public static StandardActionComponentBuilder Builder()

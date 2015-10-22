@@ -36,21 +36,6 @@ namespace DXGame.Core.State
     */
     public class StateMachineFactory
     {
-        /* TODO: Change this to be something else and make the dissipation smarter */
-        private static readonly DxVector2 INITIAL_JUMP_ACCELERATION = new DxVector2(0.0f, 0.0f);
-
-        private static readonly DissipationFunction INITIAL_JUMP_DISSIPATION =
-            (externalVelocity, acceleration, gameTime) =>
-            {
-                /* If our jumping force is applying a (down into the ground) acceleration, we're done! */
-                var done = externalVelocity.Y > 0;
-                if (done)
-                {
-                    return Tuple.Create(true, new DxVector2());
-                }
-                return Tuple.Create(false, acceleration);
-            };
-
         /**
 
             <summary>
@@ -199,7 +184,7 @@ namespace DXGame.Core.State
                 double-applying the jump force 
             */
             var collisionMessages = entity.FutureMessages.OfType<CollisionMessage>();
-            return collisionMessages.Any(collision => collision.CollisionDirections.Contains(Direction.South));
+            return collisionMessages.Any(collision => collision.CollisionDirections.ContainsKey(Direction.South));
         }
 
         /* 
@@ -254,32 +239,20 @@ namespace DXGame.Core.State
 
             public void MoveRightAction(DxGameTime gameTime)
             {
-                var forceName = "MoveRight";
-                var movement = new Movement(new DxVector2(MovementSpeed(Entity), 0), forceName);
-                AttachForce(Entity, movement.Force);
+                var force = Entity.ComponentOfType<EntityPropertiesComponent>().MovementForceFor(Commandment.MoveRight);
+                AttachForce(Entity, force);
             }
 
             public void MoveLeftAction(DxGameTime gameTime)
             {
-                var forceName = "MoveLeft";
-                var movement = new Movement(new DxVector2(-MovementSpeed(Entity), 0), forceName);
-                AttachForce(Entity, movement.Force);
+                var force = Entity.ComponentOfType<EntityPropertiesComponent>().MovementForceFor(Commandment.MoveLeft);
+                AttachForce(Entity, force);
             }
 
             public void OnJumpEnterAction(DxGameTime gameTime)
             {
-                var forceName = "Jump";
-
-                var physicsComponent = Entity.ComponentOfType<PhysicsComponent>();
-
-                /* Null out any downwards velocity. This prevents us from doing "puny" mid-air jumps */
-                var currentVelocity = physicsComponent.Velocity;
-                currentVelocity.Y = Math.Min(0, currentVelocity.Y);
-                physicsComponent.Velocity = currentVelocity;
-                var initialVelocity = new DxVector2(0, - JumpSpeed(Entity) * 1.6f);
-                var force = new Force(initialVelocity, INITIAL_JUMP_ACCELERATION, initialVelocity,
-                    INITIAL_JUMP_DISSIPATION, forceName);
-               AttachForce(Entity, force);
+                var force =  Entity.ComponentOfType<EntityPropertiesComponent>().MovementForceFor(Commandment.MoveUp);
+                AttachForce(Entity, force);
             }
 
             public void JumpAction(DxGameTime gameTime)
@@ -287,65 +260,9 @@ namespace DXGame.Core.State
                 /* We jump until we are no longer jumping */
             }
 
-            private static float JumpSpeed(GameObject entity)
-            {
-                return entity.ComponentOfType<EntityPropertiesComponent>().JumpSpeed.CurrentValue;
-            }
-
-            private static float MovementSpeed(GameObject entity)
-            {
-                return entity.ComponentOfType<EntityPropertiesComponent>().MoveSpeed.CurrentValue;
-            }
-
             private static void AttachForce(GameObject entity, Force force)
             {
                 entity.ComponentOfType<PhysicsComponent>().AttachForce(force);
-            }
-        }
-
-        [Serializable]
-        private class Movement
-        {
-            private bool dissipated_;
-            public Force Force { get; }
-            private DxVector2 Direction { get; }
-
-            public Movement(DxVector2 directionalForceVector, string forceName)
-            {
-                Direction = directionalForceVector;
-                Force = new Force(new DxVector2(), directionalForceVector, directionalForceVector, DissipationFunction, forceName);
-            }
-
-            /* Honestly I do not remember wtf any of this is, seems pretty complicated & cool */
-
-            private Tuple<bool, DxVector2> DissipationFunction(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime)
-            {
-                var xDirectionSign = Math.Sign(Direction.X);
-                var xIsNegative = xDirectionSign == -1;
-                DxVector2 accelerationVector = new DxVector2
-                {
-                    X =
-                        xIsNegative
-                            ? Math.Min(Direction.X - externalVelocity.X, 0)
-                            : Math.Max(Direction.X - externalVelocity.X, 0)
-                };
-                accelerationVector.X = xIsNegative
-                    ? Math.Max(accelerationVector.X, Direction.X)
-                    : Math.Min(accelerationVector.X, Direction.X);
-
-                var yDirectionSign = Math.Sign(Direction.Y);
-                var yIsNegative = yDirectionSign == -1;
-
-                accelerationVector.Y = yIsNegative
-                    ? Math.Min(Direction.Y - externalVelocity.Y, 0)
-                    : Math.Max(Direction.Y - externalVelocity.Y, 0);
-                accelerationVector.Y = yIsNegative
-                    ? Math.Max(accelerationVector.Y, Direction.Y)
-                    : Math.Min(accelerationVector.Y, Direction.Y);
-                var hasDissipated = dissipated_;
-                // Dissipate after one frame always (we need continual move left requests to actually move)
-                dissipated_ = true;
-                return Tuple.Create(hasDissipated, accelerationVector);
             }
         }
     }

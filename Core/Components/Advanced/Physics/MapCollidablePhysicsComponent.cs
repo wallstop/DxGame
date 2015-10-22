@@ -126,13 +126,13 @@ namespace DXGame.Core.Components.Advanced.Physics
                         if (collisionSpace.Y + collisionSpace.Height >= mapBlockPosition.Y && mapBlockPosition.Y > collisionSpace.Height && previousPosition.Y + Dimensions.Y <= mapBlockPosition.Y && mapSpatial.CollidableDirections.Contains(CollidableDirection.Up))
                         {
                             Position = new DxVector2(Position.X, mapBlockPosition.Y - Dimensions.Y);
-                            collision.CollisionDirections.Add(Direction.South);
+                            collision.CollisionDirections.Add(Direction.South, mapSpatial);
                         }
                         // above collision
                         else if (mapSpatial.CollidableDirections.Contains(CollidableDirection.Down)) 
                         {
                             Position = new DxVector2(Position.X, mapBlockPosition.Y + mapBlockDimensions.Y);
-                            collision.CollisionDirections.Add(Direction.North);
+                            collision.CollisionDirections.Add(Direction.North, mapSpatial);
                         }
                     }
                     /*
@@ -145,13 +145,13 @@ namespace DXGame.Core.Components.Advanced.Physics
                         if (collisionSpace.X < mapBlockPosition.X + mapBlockDimensions.X && mapBlockPosition.X < collisionSpace.X && mapSpatial.CollidableDirections.Contains(CollidableDirection.Right))
                         {
                             Position = new DxVector2(Position.X + largestIntersection.Width, Position.Y);
-                            collision.CollisionDirections.Add(Direction.West);
+                            collision.CollisionDirections.Add(Direction.West, mapSpatial);
                         }
                         // right collision
                         else if(mapSpatial.CollidableDirections.Contains(CollidableDirection.Left))
                         {
                             Position = new DxVector2(Position.X - largestIntersection.Width, Position.Y);
-                            collision.CollisionDirections.Add(Direction.East);
+                            collision.CollisionDirections.Add(Direction.East, mapSpatial);
                         }
                     }
                     /* Since we just collided, recalculate our "collision space" */

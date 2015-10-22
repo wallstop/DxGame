@@ -22,12 +22,6 @@ namespace DXGame.Core.Physics
     [DataContract]
     public class Force
     {
-        /**
-            Summary provides a quick and simple gist of what a Force is attempting to do. Jump provides an upwards vector 
-            (of some magnitude). Moving right provides a right-wards vector (of some magnitude), for example 
-        */
-        [DataMember]
-        public DxVector2 Summary { get; }
         [DataMember]
         public DxVector2 InitialVelocity { get; }
         [DataMember]
@@ -39,11 +33,10 @@ namespace DXGame.Core.Physics
         [DataMember]
         public string Name { get; }
 
-        public Force(DxVector2 initialVelocity, DxVector2 acceleration, DxVector2 summary, DissipationFunction dissipationFunction, string name, bool dissipated = false)
+        public Force(DxVector2 initialVelocity, DxVector2 acceleration, DissipationFunction dissipationFunction, string name, bool dissipated = false)
         {
             Validate.IsNotNull(dissipationFunction,
                 StringUtils.GetFormattedNullOrDefaultMessage(this, dissipationFunction));
-            Summary = summary;
             Dissipation = dissipationFunction;
             Dissipated = dissipated;
             InitialVelocity = initialVelocity;
@@ -64,17 +57,17 @@ namespace DXGame.Core.Physics
         public override bool Equals(object other)
         {
             var force = other as Force;
-            if (Objects.Equals(force, null))
+            if (force == null)
             {
                 return false;
             }
             return InitialVelocity == force.InitialVelocity && Acceleration == force.Acceleration &&
-                   Dissipated == force.Dissipated;
+                   Dissipated == force.Dissipated && Objects.Equals(Dissipation, force.Dissipation);
         }
 
         public override int GetHashCode()
         {
-            return Objects.HashCode(InitialVelocity, Acceleration, Dissipated, Summary);
+            return Objects.HashCode(Name, Dissipation, InitialVelocity);
         }
     }
 }

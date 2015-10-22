@@ -88,11 +88,5 @@ namespace DXGame.Core.Generators
 
             return objects;
         }
-
-        // TODO: NEED TO PROPOGATE FORCE INFO UP SOMEHOW
-        private static Force SimpleDirectionalForce(DxVector2 direction)
-        {
-            return new Force(new DxVector2(), new DxVector2(), direction, (x, y, z) => Tuple.Create(true, new DxVector2()), "TestPleaseRemove");
-        }
     }
 }

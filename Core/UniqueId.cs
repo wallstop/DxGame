@@ -19,6 +19,9 @@ namespace DXGame.Core
         private static readonly UniqueId INVALID = new UniqueId(INVALID_ID);
         private readonly long id_;
 
+        [NonSerialized]
+        private int hashCode_;
+
         public UniqueId()
             : this(GenerateId())
         {
@@ -65,7 +68,11 @@ namespace DXGame.Core
 
         public override int GetHashCode()
         {
-            return id_.GetHashCode();
+            if (hashCode_ == 0)
+            {
+                hashCode_ = id_.GetHashCode(); ;
+            }
+            return hashCode_;
         }
 
         public override string ToString()

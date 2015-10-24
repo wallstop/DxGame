@@ -15,7 +15,7 @@ namespace DXGame.TowerGame.Components
     [DataContract]
     public class SimpleEnemyAI : AbstractCommandComponent
     {
-        private static readonly TimeSpan MOVEMENT_DELAY_CHECK = TimeSpan.FromSeconds(1);
+        private static readonly TimeSpan MOVEMENT_DELAY_CHECK = TimeSpan.FromSeconds(3);
 
         private static readonly TimeSpan PATHFINDING_TIMEOUT = MOVEMENT_DELAY_CHECK - TimeSpan.FromMilliseconds(10);
             // just cuz
@@ -57,7 +57,7 @@ namespace DXGame.TowerGame.Components
 
             var pathfindingRequest = new PathFindingRequest
             {
-                Location = player.Position.Position,
+                Location = new DxVector2(player.Position.Position.X, player.Position.Position.Y + player.Position.Height - 0.001),
                 Timeout = PATHFINDING_TIMEOUT
             };
             Parent?.BroadcastMessage(pathfindingRequest);

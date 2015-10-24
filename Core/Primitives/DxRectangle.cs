@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
+using System.Windows.Forms;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
@@ -79,6 +80,11 @@ namespace DXGame.Core.Primitives
             Height = height;
         }
 
+        public DxRectangle(double x, double y, double width, double height)
+            : this((float)x, (float)y, (float)width, (float)height)
+        {
+        }
+
         public bool Equals(DxRectangle rhs)
         {
             return X == rhs.X && Y == rhs.Y && Width == rhs.Width && Height == rhs.Height;
@@ -141,6 +147,22 @@ namespace DXGame.Core.Primitives
         public static DxRectangle operator /(DxRectangle lhs, float scalar)
         {
             return lhs * (1.0 / scalar);
+        }
+
+        public static DxRectangle operator +(DxRectangle lhs, DxVector2 translation)
+        {
+            lhs.X += translation.X;
+            lhs.Y += translation.Y;
+            return lhs;
+        }
+
+        public static DxRectangle operator +(DxRectangle lhs, DxRectangle rhs)
+        {
+            lhs.X += rhs.X;
+            lhs.Y += rhs.Y;
+            lhs.Width += rhs.Width;
+            lhs.Height += rhs.Height;
+            return lhs;
         }
 
         public bool Contains(float x, float y)

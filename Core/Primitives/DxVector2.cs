@@ -57,6 +57,11 @@ namespace DXGame.Core.Primitives
             Y = y;
         }
 
+        public DxVector2(double x, double y)
+            : this((float)x, (float)y)
+        {
+        }
+
         public DxVector2(float value)
         {
             X = value;

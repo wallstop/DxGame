@@ -5,35 +5,47 @@ using DXGame.Core.Utils;
 
 namespace DXGame.Core.Physics
 {
-
     /**
         <summary>
             Returns a tuple [isDissipated, newAcceleration] given the current acceleration value & the gameTime
         </summary>
     */
-    public delegate Tuple<bool, DxVector2> DissipationFunction(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime);
+
+    public delegate Tuple<bool, DxVector2> DissipationFunction(
+        DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime);
 
     /**
         <summary>
             Represents some kind of external force that can be applied to physics-type objects. An easy example is Gravity.
         </summary>
     */
+
     [Serializable]
     [DataContract]
     public class Force
     {
         [DataMember]
         public DxVector2 InitialVelocity { get; }
+
         [DataMember]
         public DxVector2 Acceleration { get; private set; }
+
         [DataMember]
         public bool Dissipated { get; private set; }
+
         [DataMember]
         protected DissipationFunction Dissipation { get; }
+
         [DataMember]
         public string Name { get; }
 
-        public Force(DxVector2 initialVelocity, DxVector2 acceleration, DissipationFunction dissipationFunction, string name, bool dissipated = false)
+        public static Force NullForce
+            =>
+                new Force(DxVector2.EmptyVector, DxVector2.EmptyVector,
+                    ((velocity, acceleration, time) => Tuple.Create(true, DxVector2.EmptyVector)), "NullForce");
+
+        public Force(DxVector2 initialVelocity, DxVector2 acceleration, DissipationFunction dissipationFunction,
+            string name, bool dissipated = false)
         {
             Validate.IsNotNull(dissipationFunction,
                 StringUtils.GetFormattedNullOrDefaultMessage(this, dissipationFunction));

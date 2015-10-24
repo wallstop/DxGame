@@ -165,8 +165,7 @@ namespace DXGame.Core.Utils.Distance
             }
 
             var currentNode = head_;
-
-            var hierarchicalParents = new Stack<QuadTreeNode<T>>();
+            
             /* Drill down until we're at the terminal node that contains our target */
             while (!currentNode.Terminal)
             {
@@ -176,43 +175,20 @@ namespace DXGame.Core.Utils.Distance
                 {
                     break;
                 }
-                hierarchicalParents.Push(currentNode);
                 currentNode = closestChild;
             }
             Validate.IsTrue(currentNode.Terminal);
 
-            List<T> points;
-
-            /* No points? Look up one, we might've hit a dud. */
-            if (!currentNode.Points.Any())
+            /* We need to find all nodes that are above and beyond us (http://gamedev.stackexchange.com/questions/27264/how-do-i-optimize-searching-for-the-nearest-point). IE, two layers out, one layer in. */
+            DxRectangle searchBoundary = currentNode.Boundary;
+            searchBoundary.X -= searchBoundary.Width;
+            searchBoundary.Y -= searchBoundary.Height;
+            searchBoundary.Width *= 3;
+            searchBoundary.Height *= 3;
+            List<T> points = InRange(searchBoundary);
+            if (!points.Any())
             {
-                Validate.IsTrue(hierarchicalParents.Any(),
-                    "Didn't find any points, expected our parent tree to be empty (but it wasn't!)");
-
-                QuadTreeNode<T> parent = hierarchicalParents.Pop();
-                points = new List<T>();
-                Queue<QuadTreeNode<T>> nodesToVisit = new Queue<QuadTreeNode<T>>();
-                nodesToVisit.Enqueue(parent);
-                do
-                {
-                    var visitedNode = nodesToVisit.Dequeue();
-                    if (visitedNode.Terminal)
-                    {
-                        points.AddRange(visitedNode.Points);
-                    }
-                    else
-                    {
-                        foreach (var node in visitedNode.Children)
-                        {
-                            nodesToVisit.Enqueue(node);
-                        }
-                    }
-
-                } while (nodesToVisit.Any());
-            }
-            else
-            {
-                points = currentNode.Points;
+                return Optional<T>.Empty;
             }
 
             /* Points? Walk the list once to find the closest one */

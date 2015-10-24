@@ -56,6 +56,11 @@ namespace DXGame.Core.Utils
             return new Optional<T>(value);
         }
 
+        public static Optional<T> Of(T value)
+        {
+            return new Optional<T>(value);
+        }
+
         public static bool operator ==(Optional<T> lhs, Optional<T> rhs)
         {
             /* 

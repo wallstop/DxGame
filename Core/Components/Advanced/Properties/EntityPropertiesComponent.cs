@@ -7,6 +7,7 @@ using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
 using DXGame.Core.Properties;
 using DXGame.Main;
+using NLog;
 using Component = DXGame.Core.Components.Basic.Component;
 
 namespace DXGame.Core.Components.Advanced.Properties
@@ -15,6 +16,7 @@ namespace DXGame.Core.Components.Advanced.Properties
     [DataContract]
     public class EntityPropertiesComponent : Component
     {
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         /*
             TODO: Modify access of these properties. In general, we should leave it up to OTHER components to decide what to do with this information. 
             Properties classes should be a dump data store.
@@ -58,7 +60,7 @@ namespace DXGame.Core.Components.Advanced.Properties
                 case Commandment.MoveUp:
                     return JumpForce();
                 default:
-                    throw new InvalidEnumArgumentException($"Could not determine appropriate Force for {commandment}");
+                    return Force.NullForce;
             }
         }
 

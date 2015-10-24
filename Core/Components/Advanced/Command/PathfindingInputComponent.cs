@@ -12,9 +12,9 @@ namespace DXGame.Core.Components.Advanced.Command
     [Serializable]
     public class PathfindingInputComponent : AbstractCommandComponent
     {
-        private LinkedList<ImmutablePair<TimeSpan, Commandment>> currentPath_;
-        private bool ignoreNextFrame_ = false;
+        private LinkedList<Commandment []> currentPath_;
         private TimeSpan currentTimeout_;
+        private TimeSpan pathTimeout_;
         private TimeSpan timeOnCurrentCommandment_;
         private TimeSpan totalTime_;
 
@@ -30,19 +30,14 @@ namespace DXGame.Core.Components.Advanced.Command
             var pathfindingModel = DxGame.Instance.Model<PathfindingModel>();
             var path = pathfindingModel.Pathfind(Parent, request.Location);
             ResetState();
-            ignoreNextFrame_ = true;
-            currentPath_ = path;
+            pathTimeout_ = path.Item1;
+            currentPath_ = path.Item2;
             totalTime_ = TimeSpan.Zero;
             currentTimeout_ = request.Timeout;
         }
 
         protected override void Update(DxGameTime gameTime)
         {
-            if (ignoreNextFrame_)
-            {
-                ignoreNextFrame_ = false;
-                return;
-            }
             if (!currentPath_.Any())
             {
                 return;
@@ -69,14 +64,13 @@ namespace DXGame.Core.Components.Advanced.Command
             do
             {
                 var currentInstruction = currentPath_.First();
-                var time = currentInstruction.Key;
-                if (timeOnCurrentCommandment_ < time)
+                if (timeOnCurrentCommandment_ < pathTimeout_)
                 {
                     onTrack = true;
                 }
                 else
                 {
-                    timeOnCurrentCommandment_ -= time;
+                    timeOnCurrentCommandment_ -= pathTimeout_;
                     currentPath_.RemoveFirst();
                 }
             } while (currentPath_.Any() && !onTrack);
@@ -84,11 +78,11 @@ namespace DXGame.Core.Components.Advanced.Command
 
         private void ResetState()
         {
-            ignoreNextFrame_ = false;
-            currentPath_ = new LinkedList<ImmutablePair<TimeSpan, Commandment>>();
+            currentPath_ = new LinkedList<Commandment []>();
             timeOnCurrentCommandment_ = TimeSpan.Zero;
             currentTimeout_ = TimeSpan.Zero;
             totalTime_ = TimeSpan.Zero;
+            pathTimeout_ = TimeSpan.Zero;
         }
 
         private void ExecuteDirection()
@@ -97,10 +91,13 @@ namespace DXGame.Core.Components.Advanced.Command
             {
                 return;
             }
-            var firstCommand = currentPath_.First();
+            var commandments = currentPath_.First();
             timeOnCurrentCommandment_ = TimeSpan.Zero;
-            var commandMessage = new CommandMessage {Commandment = firstCommand.Value};
-            Parent?.BroadcastMessage(commandMessage);
+            foreach (Commandment commandment in commandments)
+            {
+                var commandMessage = new CommandMessage {Commandment = commandment};
+                Parent?.BroadcastMessage(commandMessage);
+            }
         }
     }
 }

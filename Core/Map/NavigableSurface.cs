@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Threading;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Map;
+using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
@@ -28,7 +29,7 @@ namespace DXGame.Core.Map
     public class NavigableSurface
     {
         /* How many pixels lie between each Node on the same Edge */
-        private const int STEP = 2;
+        private const int STEP = 5;
         /* 
             The Edges of each platform/block have Y values that are exactly on the edge. 
             When factoring in collision, it turns out that we never actually collide with these (y value) points!
@@ -79,7 +80,7 @@ namespace DXGame.Core.Map
         {
             var map = mapModel.Map;
             var nodes = new List<Node>();
-            var allMapTiles = map.Collidables.Elements;
+            List<MapCollidableComponent> allMapTiles = map.Collidables.Elements;
             foreach (var mapTile in allMapTiles)
             {
                 var tileNodes = ConvertMapTileToNodes(mapTile);
@@ -106,16 +107,7 @@ namespace DXGame.Core.Map
         private static List<Node> ConvertMapFloorToNodes(Map map)
         {
             var bounds = MapBounds(map);
-            var maxX = ((int) bounds.Width).NearestEven();
-            var nodes = new List<Node>(maxX / STEP);
-            // Make sure to offset the Y values so they can be collided with
-            var height = bounds.Y + bounds.Height + OFFSET;
-            for (int i = 0; i < maxX; i += STEP)
-            {
-                var node = new Node(new DxVector2(i, height), null);
-                nodes.Add(node);
-            }
-            return nodes;
+            return ConvertAreaToNodes(null, bounds);
         }
 
         private static List<Node> ConvertMapTileToNodes(MapCollidableComponent mapTile)
@@ -126,24 +118,20 @@ namespace DXGame.Core.Map
                 return Enumerable.Empty<Node>().ToList();
             }
 
-            var space = mapTile.Spatial.Space;
+            DxRectangle space = mapTile.Spatial.Space;
+            return ConvertAreaToNodes(mapTile, space);
+        }
 
-            /* Make sure our map is valid */
-            var topEdge = space.TopBorder;
-            var minX = ((int) topEdge.Start.X).NearestEven();
-            var maxX = ((int) topEdge.End.X).NearestEven();
-            if (minX >= maxX)
-            {
-                return Enumerable.Empty<Node>().ToList();
-            }
+        private static List<Node> ConvertAreaToNodes(MapCollidableComponent mapTile, DxRectangle space)
+        {
+            float xMin = space.X;
+            float xMax = space.X + space.Width;
+            float y = space.Y + OFFSET;
 
-            var nodes = new List<Node>((maxX - minX).NearestEven() / STEP);
-            var slope = topEdge.Slope;
-            for (int i = minX; i < maxX; i += STEP)
+            List<Node> nodes = new List<Node>((int) Math.Ceiling(xMax - xMin / STEP));
+            for (float x = xMin; x < xMax; x += STEP)
             {
-                // Make sure to offset the Y values so they can collided with
-                var y = (i - topEdge.Start.X) * slope + topEdge.Start.Y + OFFSET;
-                var node = new Node(new DxVector2(i, y), mapTile);
+                Node node = new Node(new DxVector2(x, y), mapTile);
                 nodes.Add(node);
             }
             return nodes;
@@ -159,7 +147,6 @@ namespace DXGame.Core.Map
         public class Node
         {
             public DxVector2 Position { get; }
-            // TODO: We don't actually need MapTile (currently unused)
             public MapCollidableComponent MapTile { get; }
 
             public Node(DxVector2 position, MapCollidableComponent mapTile)

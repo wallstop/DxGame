@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DXGame.Core.Primitives;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -36,6 +37,16 @@ namespace DXGame.Core.Utils
             var filledCircle = TextureFactory.FilledCircleForColor(color);
             var transparency = ColorFactory.Transparency(transparencyWeight);
             spriteBatch.Draw(filledCircle, destinationRectangle: destination, color: transparency);
+        }
+
+        public static void DrawLine(this SpriteBatch spriteBatch, DxVector2 start, DxVector2 end, Color color, float thickness,
+            float transparencyWeight = 1.0f)
+        {
+            DxVector2 displacement = end - start;
+            float angle = (float) Math.Atan2(displacement.Y, displacement.X);
+
+            var texture = TextureFactory.TextureForColor(color);
+            spriteBatch.Draw(texture, destinationRectangle: new Rectangle((int)start.X, (int)start.Y, (int)displacement.Magnitude, (int)thickness), rotation: angle);
         }
 
         /**

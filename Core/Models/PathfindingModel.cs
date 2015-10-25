@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -35,56 +36,19 @@ namespace DXGame.Core.Models
 
     internal sealed class Path
     {
-        public List<Commandment[]> Directions { get; }
-        public Commandment[] Beginning { get; }
+        public TimeSpan Time { get; } // TODO
+        public Commandment[] Directions { get; }
         public NavigableSurface.Node End { get; }
 
-        private Path(List<Commandment[]> directions, Commandment[] beginning, NavigableSurface.Node end)
+        private Path(Commandment[] directions, TimeSpan time, NavigableSurface.Node end)
         {
             Directions = directions;
-            Beginning = beginning;
+            Time = time;
             End = end;
         }
-
-        public static PathBuilder Builder()
-        {
-            return new PathBuilder();
-        }
-
         public static Path From(Commandment[] commandmentChain, TimeSpan time, NavigableSurface.Node end)
         {
-            double totalSteps = time.TotalMilliseconds / PathfindingModel.SIMULATION_STEP;
-            List<Commandment[]> directions = new List<Commandment[]>((int) Math.Round(totalSteps + 2));
-            for (int i = 0; i < totalSteps; ++i)
-            {
-                directions.Add(commandmentChain);
-            }
-            return new Path(directions, commandmentChain, end);
-        }
-
-        public class PathBuilder
-        {
-            private readonly List<Commandment[]> directions_ = new List<Commandment[]>();
-            private Commandment[] beginning_;
-
-            public PathBuilder WithStep(Commandment[] commandment)
-            {
-                directions_.Add(commandment);
-                return this;
-            }
-
-            public PathBuilder WithBeginning(Commandment[] beginning)
-            {
-                beginning_ = beginning;
-                return this;
-            }
-
-            public Path Build(NavigableSurface.Node end)
-            {
-                Validate.IsNotNullOrDefault(end);
-                Validate.IsNotNullOrDefault(beginning_);
-                return new Path(directions_, beginning_, end);
-            }
+            return new Path(commandmentChain, time, end);
         }
     }
 
@@ -106,6 +70,8 @@ namespace DXGame.Core.Models
         public IEnumerable<NavigableSurface.Node> Nodes => paths_.Keys;
         public NavigableSurface NavigableSurface { get; }
 
+        public HashSet<NavigableSurface.Node> Exhausted  { get; }
+        
         public ExplorableMesh(NavigableSurface surface)
         {
             Validate.IsNotNullOrDefault(surface);
@@ -115,6 +81,7 @@ namespace DXGame.Core.Models
                 exhaustedCommandments_[node] = new HashSet<Commandment[]>();
             }
             NavigableSurface = surface;
+            Exhausted = new HashSet<NavigableSurface.Node>();
         }
 
         /**
@@ -130,7 +97,7 @@ namespace DXGame.Core.Models
             // Don't loop to yourself
             if (!Objects.Equals(start, path.End))
             {
-                ExhaustCommandment(start, path.Beginning);
+                ExhaustCommandment(start, path.Directions);
                 paths_[start].Add(path);
             }
         }
@@ -164,16 +131,16 @@ namespace DXGame.Core.Models
         public List<Commandment[]> AvailableCommandments(NavigableSurface.Node start)
         {
             HashSet<Commandment[]> exhausted = exhaustedCommandments_[start];
+            List<Commandment[]> result;
             if (exhausted.Any())
             {
-                return PathfindingModel.AVAILABLE_COMMANDMENTS.Except(exhausted).ToList();
+                result = PathfindingModel.AVAILABLE_COMMANDMENTS.Except(exhausted).ToList();
+            } else {
+                result = PathfindingModel.AVAILABLE_COMMANDMENTS.ToList();
             }
-            return PathfindingModel.AVAILABLE_COMMANDMENTS.ToList();
-        }
 
-        public HashSet<Commandment[]> AttemptedCommandments(NavigableSurface.Node start)
-        {
-            return new HashSet<Commandment[]>(paths_[start].Select(path => path.Beginning));
+            result.Sort((first, second) => first.Length.CompareTo(second.Length));
+            return result;
         }
     }
 
@@ -211,6 +178,23 @@ namespace DXGame.Core.Models
 
     [Serializable]
     [DataContract]
+    public class PathfindingResult
+    {
+        public LinkedList<ImmutablePair<TimeSpan, Commandment[]>> Path { get; }
+
+        public LinkedList<DxVector2> WayPoints { get; }
+
+        public PathfindingResult(LinkedList<ImmutablePair<TimeSpan, Commandment[]>> path, LinkedList<DxVector2> waypoints)
+        {
+            Validate.IsNotNull(path, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(path)));
+            Validate.IsNotNull(waypoints, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(waypoints)));
+            Path = path;
+            WayPoints = waypoints;
+        }
+    }
+
+    [Serializable]
+    [DataContract]
     public class PathfindingModel : Model
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
@@ -224,11 +208,11 @@ namespace DXGame.Core.Models
             {
                 new [] { Commandment.None },
                 new[] {Commandment.MoveUp},
-                new[] {Commandment.MoveUp, Commandment.MoveLeft},
-                new[] {Commandment.MoveUp, Commandment.MoveRight},
                 new[] {Commandment.MoveLeft},
                 new[] {Commandment.MoveRight},
                 new[] {Commandment.MoveDown},
+                new[] {Commandment.MoveUp, Commandment.MoveLeft},
+                new[] {Commandment.MoveUp, Commandment.MoveRight},
                 new[] {Commandment.MoveDown, Commandment.MoveLeft},
                 new[] {Commandment.MoveDown, Commandment.MoveRight}
             });
@@ -236,10 +220,9 @@ namespace DXGame.Core.Models
         // Only budget a partial frame for this shit
         private static readonly TimeSpan EXPLORATION_TIMEOUT = TimeSpan.FromSeconds(0.005);
 
-        private static Tuple<TimeSpan, LinkedList<Commandment[]>> EmptyPath => Tuple.Create(TimeSpan.Zero,
-            new LinkedList<Commandment[]>());
+        private static PathfindingResult EmptyPath => new PathfindingResult(new LinkedList<ImmutablePair<TimeSpan, Commandment[]>>(), new LinkedList<DxVector2>());
 
-        public Tuple<TimeSpan, LinkedList<Commandment []>> Pathfind(GameObject entity, DxVector2 target)
+        public PathfindingResult Pathfind(GameObject entity, DxVector2 target)
         {
             var entityIsNull = Check.IsNullOrDefault(entity);
             if (entityIsNull)
@@ -253,10 +236,7 @@ namespace DXGame.Core.Models
                 LOG.Warn($"No work to do - we're either null or at our destination");
                 return EmptyPath;
             }
-
-            var actionComponent = entity.ComponentOfType<StandardActionComponent>();
-            ReadOnlyDictionary<Commandment, Force> movementCommendments = actionComponent.MovementForces.Copy();
-
+            
             var commandmentQueue = new Queue<Commandment>();
             commandmentQueue.Enqueue(Commandment.None);
 
@@ -273,7 +253,7 @@ namespace DXGame.Core.Models
             SpatialComponent spatial = entity.ComponentOfType<SpatialComponent>();
 
             Optional<NavigableSurface.Node> maybeOriginalNode =
-                navigationMesh.NodeQuery.Closest(new DxVector2(spatial.Space.X, spatial.Space.Y));
+                navigationMesh.NodeQuery.Closest(new DxVector2(spatial.Space.X, spatial.Space.Y + spatial.Space.Height - 0.01f));
             if (!maybeOriginalNode.HasValue)
             {
                 LOG.Warn($"Could not determine the closest node to {spatial.Space}");
@@ -320,34 +300,46 @@ namespace DXGame.Core.Models
                 }
             }
 
-            LinkedList<Commandment []> directions = ReconstructPath(explorableMesh, originalNode,
+            PathfindingResult result = ReconstructPath(explorableMesh, originalNode,
                 targetNode, traveled);
-            return Tuple.Create(SIMULATION_TIME_STEP, directions);
+            return result;
         }
 
-        private static LinkedList<Commandment []> ReconstructPath(ExplorableMesh mesh, NavigableSurface.Node start, NavigableSurface.Node end, Dictionary<NavigableSurface.Node, NavigableSurface.Node> traveled)
+        private static PathfindingResult ReconstructPath(ExplorableMesh mesh, NavigableSurface.Node start, NavigableSurface.Node end, Dictionary<NavigableSurface.Node, NavigableSurface.Node> traveled)
         {
+            
             NavigableSurface.Node current = start;
-            LinkedList<Commandment []> directions =
-                new LinkedList<Commandment []>();
+            LinkedList<ImmutablePair<TimeSpan, Commandment []>> directions =
+                new LinkedList<ImmutablePair<TimeSpan, Commandment[]>>();
+            LinkedList<DxVector2> waypoints = new LinkedList<DxVector2>();
+            waypoints.AddLast(current.Position);
             while (current != end)
             {
                 List<Path> paths = mesh.PathsFrom(current);
+                if (!traveled.ContainsKey(current))
+                {
+                    LOG.Warn($"Could not properly reconstruct the path (no link between {current} and {end}. Bailing early.");
+                    break;
+                }
                 NavigableSurface.Node nextStep = traveled[current];
                 Path correctPath = paths.FirstOrDefault(path => path.End == nextStep);
                 if (correctPath == null)
                 {
                     // weird
                     LOG.Warn($"Could not properly reconstruct the path (no link between {current} and {nextStep}. Bailing early.");
-                    return directions;
+                    break;
                 }
-                foreach (Commandment[] direction in correctPath.Directions)
-                {
-                    directions.AddLast(direction);
-                }
+                directions.AddLast(new ImmutablePair<TimeSpan, Commandment[]>(correctPath.Time, correctPath.Directions));
                 current = nextStep;
+                waypoints.AddLast(current.Position);
             }
-            return directions;
+            return new PathfindingResult(directions, waypoints);
+        }
+
+        private static void ReachInitialNode(GameObject entity, LinkedList<ImmutablePair<TimeSpan, Commandment[]>> directions, NavigableSurface.Node start )
+        {
+            // TODO
+
         }
 
         private void Explore(GameObject entity, NavigableSurface.Node target, ExplorableMesh mesh,
@@ -356,7 +348,9 @@ namespace DXGame.Core.Models
             SpatialComponent spatial = entity.ComponentOfType<SpatialComponent>();
             DxVector2 space = spatial.Dimensions;
             DxVector2 position = spatial.Position;
+            position.Y += space.Y - 0.01f;
 
+            // TODO: Fix this and go to closest node instead of "starting" there
             Optional<NavigableSurface.Node> maybeStartingPoint = mesh.NavigableSurface.NodeQuery.Closest(position);
             if (!maybeStartingPoint.HasValue)
             {
@@ -366,9 +360,8 @@ namespace DXGame.Core.Models
 
             NavigableSurface.Node startingPoint = maybeStartingPoint.Value;
             NavigableSurface.Node current = startingPoint;
-            TimeSpan maxTime = TimeSpan.FromSeconds(0.01);
+            TimeSpan maxTime = TimeSpan.FromSeconds(0.016);
             Stopwatch timer = Stopwatch.StartNew();
-            HashSet<NavigableSurface.Node> exhausted = new HashSet<NavigableSurface.Node>();
             SortedSet<NavigableSurface.Node> available =new SortedSet<NavigableSurface.Node>(Comparer<NavigableSurface.Node>.Create(
                     (first, second) =>
                         (target.Position - first.Position).MagnitudeSquared.CompareTo(
@@ -377,15 +370,14 @@ namespace DXGame.Core.Models
 
             while (timer.Elapsed < maxTime)
             {
-                exhausted.Add(current);
+                mesh.Exhausted.Add(current);
                 if (!available.Any())
                 {
                     break;
                 }
                 current = available.Min;
                 available.Remove(current);
-                
-                DxRectangle currentSpace = new DxRectangle(current.Position.X, current.Position.Y - space.Y, space.X, space.Y);
+
                 List<Commandment[]> availableCommandments = mesh.AvailableCommandments(current);
                 foreach (var entry in displacementFunctions)
                 {
@@ -396,12 +388,10 @@ namespace DXGame.Core.Models
                     }
                     SimplePolynomial polynomial = entry.Value;
                     DxRectangle bounds = polynomial.Bounds;
-                    bounds.Width += space.X;
                     bounds.Height += space.Y;
                     bounds.X += current.Position.X;
                     bounds.Y += current.Position.Y;
-                    bounds.Y -= space.Y;
-                    DxRectangle searchSpace = bounds;
+                    DxRectangle searchSpace = FudgeBounds(bounds);
                     List<NavigableSurface.Node> maybeReachableNodes =
                         mesh.NavigableSurface.NodeQuery.InRange(searchSpace);
                     if (!maybeReachableNodes.Any())
@@ -417,40 +407,45 @@ namespace DXGame.Core.Models
 
                     foreach (NavigableSurface.Node node in maybeReachableNodes)
                     {
-                        if (!exhausted.Contains(node))
-                        {
-                            available.Add(node);
-                        }
                         DxVector2 displacement = node.Position - current.Position;
-                        double y = polynomial.PositionalDisplacement(displacement.X);
-                        /* Should pretty much always be true */
-                        if (bounds.Contains(node.Position))
+                        if (displacement.Y <= 0 && commandChain.Contains(Commandment.MoveDown))
                         {
-                            /* Hey, maybe we can reach! */
-                            TimeSpan time = polynomial.TimeFor(displacement.X);
-                            DxVector2 travelVector = polynomial.TimeDisplacement(time);
-                            DxRectangle translatedLocation = new DxRectangle(current.Position.X + travelVector.X, current.Position .Y + travelVector.Y + 0.01, space.X, space.Y);
-                            /* One last sanity check... */
-                            if (translatedLocation.Contains(node.Position) && time <= MAX_SIMULATION_TIME)
-                            {
-                                /* We're GOOD BOYS */
-                                Path path = Path.From(commandChain, time, node);
-                                // TODO: We currently don't handle gravity (woops), so we need to add some shit in here to deal with drops between platforms
-                                mesh.AttachPath(current, path);
-                            }
-                            else
-                            {
-                                mesh.ExhaustCommandment(current, commandChain);
-                            }
+                            continue;
                         }
-                        else
+                        double y = polynomial.PositionalDisplacement(displacement.X);
+                        /* Should pretty much always be false */
+                        if (!FudgeBounds(polynomial.Bounds).Contains(new DxVector2(displacement.X, y)))
                         {
-                            mesh.ExhaustCommandment(current, commandChain);
+                            continue;
+                        }
+                        /* Hey, maybe we can reach! */
+                        TimeSpan time = polynomial.TimeFor(displacement.X);
+                        /* One last sanity check... */
+                        if (time <= MAX_SIMULATION_TIME  /*&& (node.Position.Y.FuzzyCompare((float)(current.Position.Y + y), 1.0f) == 0) */)
+                        {
+                            if (!mesh.Exhausted.Contains(node))
+                            {
+                                available.Add(node);
+                            }
+                            /* We're GOOD BOYS */
+                            Path path = Path.From(commandChain, time, node);
+                            // TODO: We currently don't handle gravity (woops), so we need to add some shit in here to deal with drops between platforms
+                            mesh.AttachPath(current, path);
                         }
                     }
+                    mesh.ExhaustCommandment(current, commandChain);
                 }
-
             }
+        }
+
+        private static DxRectangle FudgeBounds(DxRectangle bounds)
+        {
+            const float offset = 0.01f;
+            bounds.X -= offset;
+            bounds.Y -= offset;
+            bounds.Width += offset * 2;
+            bounds.Height += offset * 2;
+            return bounds;
         }
 
         private static DxRectangle DetermineMaximumBounds(IEnumerable<SimplePolynomial> movements)

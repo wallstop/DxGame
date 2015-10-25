@@ -12,11 +12,13 @@ namespace DXGame.Core.Components.Advanced.Command
     [Serializable]
     public class PathfindingInputComponent : AbstractCommandComponent
     {
-        private LinkedList<Commandment []> currentPath_;
+        private LinkedList<ImmutablePair<TimeSpan, Commandment []>> currentPath_ = new LinkedList<ImmutablePair<TimeSpan, Commandment[]>>();
+        private LinkedList<DxVector2> waypoints_  = new LinkedList<DxVector2>();
         private TimeSpan currentTimeout_;
-        private TimeSpan pathTimeout_;
         private TimeSpan timeOnCurrentCommandment_;
         private TimeSpan totalTime_;
+
+        public IEnumerable<DxVector2> WayPoints => waypoints_; 
 
         public PathfindingInputComponent()
         {
@@ -30,8 +32,8 @@ namespace DXGame.Core.Components.Advanced.Command
             var pathfindingModel = DxGame.Instance.Model<PathfindingModel>();
             var path = pathfindingModel.Pathfind(Parent, request.Location);
             ResetState();
-            pathTimeout_ = path.Item1;
-            currentPath_ = path.Item2;
+            currentPath_ = path.Path;
+            waypoints_ = path.WayPoints;
             totalTime_ = TimeSpan.Zero;
             currentTimeout_ = request.Timeout;
         }
@@ -64,25 +66,28 @@ namespace DXGame.Core.Components.Advanced.Command
             do
             {
                 var currentInstruction = currentPath_.First();
-                if (timeOnCurrentCommandment_ < pathTimeout_)
+                if (timeOnCurrentCommandment_ < currentInstruction.Key)
                 {
                     onTrack = true;
                 }
                 else
                 {
-                    timeOnCurrentCommandment_ -= pathTimeout_;
+                    timeOnCurrentCommandment_ -= currentInstruction.Key;
                     currentPath_.RemoveFirst();
+                    waypoints_.RemoveFirst();
                 }
             } while (currentPath_.Any() && !onTrack);
         }
 
         private void ResetState()
         {
-            currentPath_ = new LinkedList<Commandment []>();
+            if (currentPath_.Any())
+            {
+                currentPath_ = new LinkedList<ImmutablePair<TimeSpan, Commandment[]>>();
+            }
             timeOnCurrentCommandment_ = TimeSpan.Zero;
             currentTimeout_ = TimeSpan.Zero;
             totalTime_ = TimeSpan.Zero;
-            pathTimeout_ = TimeSpan.Zero;
         }
 
         private void ExecuteDirection()
@@ -92,8 +97,8 @@ namespace DXGame.Core.Components.Advanced.Command
                 return;
             }
             var commandments = currentPath_.First();
-            timeOnCurrentCommandment_ = TimeSpan.Zero;
-            foreach (Commandment commandment in commandments)
+            currentTimeout_ = commandments.Key;
+            foreach (Commandment commandment in commandments.Value)
             {
                 var commandMessage = new CommandMessage {Commandment = commandment};
                 Parent?.BroadcastMessage(commandMessage);

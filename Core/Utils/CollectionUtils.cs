@@ -33,5 +33,10 @@ namespace DXGame.Core.Utils
                 yield return new List<T>(source.Skip(size * i).Take(size));
             }
         }
+
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source)
+        {
+            return new HashSet<T>(source);
+        }
     }
 }

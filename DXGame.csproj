@@ -141,6 +141,7 @@
     <Compile Include="Core\Components\Developer\BoundingBoxWidget.cs" />
     <Compile Include="Core\Components\Developer\DeveloperSwitch.cs" />
     <Compile Include="Core\Components\Developer\LifeSuckerComponent.cs" />
+    <Compile Include="Core\Components\Developer\PathDrawer.cs" />
     <Compile Include="Core\Components\Developer\TimePerFrameGraph.cs" />
     <Compile Include="Core\Components\Developer\TeamCounterWidget.cs" />
     <Compile Include="Core\DataStructures\Tree.cs" />
@@ -170,6 +171,9 @@
     <Compile Include="Core\Models\MapModel.cs" />
     <Compile Include="Core\Models\PathfindingModel.cs" />
     <Compile Include="Core\Models\PhysicsModel.cs" />
+    <Compile Include="Core\Pathfinding\CommandChain.cs" />
+    <Compile Include="Core\Pathfinding\Path.cs" />
+    <Compile Include="Core\Pathfinding\PathfindingConstants.cs" />
     <Compile Include="Core\Physics\Force.cs" />
     <Compile Include="Core\Physics\Interaction.cs" />
     <Compile Include="Core\Physics\WorldForces.cs" />
@@ -554,7 +558,6 @@
   <ItemGroup>
     <Folder Include="Content\Behaviors\" />
     <Folder Include="Core\GraphicsWidgets\Utils\" />
-    <Folder Include="Core\Pathfinding\" />
     <Folder Include="Network\" />
     <Folder Include="TowerGame\Actions\" />
     <Folder Include="TowerGame\Buffs\" />

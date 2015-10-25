@@ -29,7 +29,7 @@ namespace DXGame.Core.Map
     public class NavigableSurface
     {
         /* How many pixels lie between each Node on the same Edge */
-        private const int STEP = 5;
+        private const int STEP = 20;
         /* 
             The Edges of each platform/block have Y values that are exactly on the edge. 
             When factoring in collision, it turns out that we never actually collide with these (y value) points!
@@ -107,6 +107,7 @@ namespace DXGame.Core.Map
         private static List<Node> ConvertMapFloorToNodes(Map map)
         {
             var bounds = MapBounds(map);
+            bounds.Y += bounds.Height;
             return ConvertAreaToNodes(null, bounds);
         }
 

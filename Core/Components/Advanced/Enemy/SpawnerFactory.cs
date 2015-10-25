@@ -6,6 +6,7 @@ using DXGame.Core.Components.Advanced.Impulse;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
+using DXGame.Core.Components.Developer;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.State;
@@ -32,6 +33,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
             var platformDropper = new MapPlatformDropper();
             var standardActionComponent = StandardActionComponent.StandardMovementComponent();
             var pathfinding = new PathfindingInputComponent();
+            var pathDrawer = new PathDrawer();
             var enemyPhysics =
                 MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(enemySpatial).Build();
 
@@ -50,7 +52,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
             var enemyObject =
                 GameObject.Builder()
                     .WithComponents(enemySpatial, enemyPhysics, enemyProperties, floatingHealthBar, deathExploder,
-                        damageComponent, teamComponent, pathfinding, standardActionComponent, platformDropper)
+                        damageComponent, teamComponent, pathfinding, standardActionComponent, platformDropper, pathDrawer)
                     .Build();
             // Create a state machine for the enemy in question
             // Horrifically complex; weep, gnash teeth

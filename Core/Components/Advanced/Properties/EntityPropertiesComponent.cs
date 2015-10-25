@@ -80,8 +80,8 @@ namespace DXGame.Core.Components.Advanced.Properties
         {
             var physics = Parent.ComponentOfType<PhysicsComponent>();
             var currentVelocity = physics.Velocity;
-            currentVelocity.Y = Math.Min(0, currentVelocity.Y);
-            var initialVelocity = new DxVector2(0, -JumpSpeed.CurrentValue);
+            physics.Velocity = new DxVector2(currentVelocity.X, Math.Min(0, currentVelocity.Y));
+            var initialVelocity = new DxVector2(0, -JumpSpeed.CurrentValue * 1.6);
             var force = new Force(initialVelocity, InitialJumpAcceleration, JumpDissipation(), "Jump");
             return force;
         }

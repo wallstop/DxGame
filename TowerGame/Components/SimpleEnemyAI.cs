@@ -15,12 +15,12 @@ namespace DXGame.TowerGame.Components
     [DataContract]
     public class SimpleEnemyAI : AbstractCommandComponent
     {
-        private static readonly TimeSpan MOVEMENT_DELAY_CHECK = TimeSpan.FromSeconds(3);
+        private static readonly TimeSpan MOVEMENT_DELAY_CHECK = TimeSpan.FromSeconds(2);
 
         private static readonly TimeSpan PATHFINDING_TIMEOUT = MOVEMENT_DELAY_CHECK - TimeSpan.FromMilliseconds(10);
             // just cuz
 
-        private static readonly double PERSONAL_SPACE_ = 50;
+        private static readonly double PERSONAL_SPACE = 50;
 
         [DataMember] private readonly SpatialComponent spatialComponent_;
 
@@ -44,7 +44,7 @@ namespace DXGame.TowerGame.Components
                 $"{GetType()} cannot fathom {playerModel.Players.Count} players.");
             Core.Player player = playerModel.Players.First();
 
-            var closeEnough = Math.Abs(player.Position.Position.X - spatialComponent_.Position.X) < PERSONAL_SPACE_;
+            var closeEnough = Math.Abs(player.Position.Position.X - spatialComponent_.Position.X) < PERSONAL_SPACE && Math.Abs(player.Position.Position.Y - spatialComponent_.Position.Y) < PERSONAL_SPACE;
             if (closeEnough)
             {
                 return;

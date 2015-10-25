@@ -172,12 +172,13 @@
     <Compile Include="Core\Models\PathfindingModel.cs" />
     <Compile Include="Core\Models\PhysicsModel.cs" />
     <Compile Include="Core\Pathfinding\CommandChain.cs" />
-    <Compile Include="Core\Pathfinding\DisplacementFunction.cs" />
+    <Compile Include="Core\Pathfinding\DisplacementApproximator.cs" />
     <Compile Include="Core\Pathfinding\ExplorableMesh.cs" />
     <Compile Include="Core\Pathfinding\ExplorableMeshCache.cs" />
     <Compile Include="Core\Pathfinding\Path.cs" />
     <Compile Include="Core\Pathfinding\PathfindingConstants.cs" />
     <Compile Include="Core\Pathfinding\PathfindingResult.cs" />
+    <Compile Include="Core\Pathfinding\Simulation.cs" />
     <Compile Include="Core\Physics\Force.cs" />
     <Compile Include="Core\Physics\Interaction.cs" />
     <Compile Include="Core\Physics\WorldForces.cs" />
@@ -321,6 +322,14 @@
     </Reference>
     <Reference Include="MathNet.Numerics, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.3.8.0\lib\net40\MathNet.Numerics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8\Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\EnterpriseLibrary.TransientFaultHandling.Data.6.0.1304.1\lib\NET45\Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MonoGame.Framework, Version=3.4.0.459, Culture=neutral, processorArchitecture=MSIL">

@@ -38,20 +38,10 @@ namespace DXGame.Core.Components.Developer
                 return;
             }
 
-            if (waypoints.Count >= 2)
-            {
-                bool break1 =
-                false;
-                if (break1)
-                {
-
-                }
-            }
-
             var previous = new DxVector2(position.Position.X, position.Position.Y + position.Space.Height);
             foreach (var waypoint in waypoints)
             {
-                spriteBatch.DrawLine(previous, waypoint, Color.Red, 1);
+                spriteBatch.DrawLine(previous, waypoint, Color.Orange, 1);
                 previous = waypoint;
             }
         }

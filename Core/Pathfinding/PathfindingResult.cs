@@ -29,5 +29,7 @@ namespace DXGame.Core.Pathfinding
             WayPoints = waypoints;
             Successful = success;
         }
+
+        public static PathfindingResult EmptyResult => new PathfindingResult(new LinkedList<ImmutablePair<TimeSpan, CommandChain>>(), new LinkedList<DxVector2>(), false);
     }
 }

@@ -1,117 +1,89 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Threading;
-using DXGame.Core.Components.Advanced.Impulse;
-using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
-using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Map;
 using DXGame.Core.Messaging;
-using DXGame.Core.Physics;
+using DXGame.Core.Pathfinding;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using MathNet.Numerics;
 using NLog;
 
 namespace DXGame.Core.Models
 {
-    public delegate DxVector2 DisplacementFunction(TimeSpan offset);
-
-    public delegate float PositionalFunction(float x);
-
     [Serializable]
     [DataContract]
     public class PathfindingModel : Model
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        internal static readonly int SIMULATION_UPPER_BOUND = 10;
-        internal static readonly double SIMULATION_STEP = 0.01;
-        internal static readonly TimeSpan MAX_SIMULATION_TIME = TimeSpan.FromSeconds(SIMULATION_UPPER_BOUND);
-        internal static readonly TimeSpan SIMULATION_TIME_STEP = TimeSpan.FromSeconds(SIMULATION_STEP);
-
-        internal static readonly ReadOnlyCollection<Commandment[]> AVAILABLE_COMMANDMENTS =
-            new ReadOnlyCollection<Commandment[]>(new List<Commandment[]>
-            {
-                new [] { Commandment.None },
-                new[] {Commandment.MoveUp},
-                new[] {Commandment.MoveLeft},
-                new[] {Commandment.MoveRight},
-                new[] {Commandment.MoveDown},
-                new[] {Commandment.MoveUp, Commandment.MoveLeft},
-                new[] {Commandment.MoveUp, Commandment.MoveRight},
-                new[] {Commandment.MoveDown, Commandment.MoveLeft},
-                new[] {Commandment.MoveDown, Commandment.MoveRight}
-            });
-
-        // Only budget a partial frame for this shit
-        private static readonly TimeSpan EXPLORATION_TIMEOUT = TimeSpan.FromSeconds(0.005);
-
-        private static PathfindingResult EmptyPath => new PathfindingResult(new LinkedList<ImmutablePair<TimeSpan, Commandment[]>>(), new LinkedList<DxVector2>());
+        /* Small offset to make sure that our rectangles & collision checks encompass all points that they should */
+        private const float FudgeFactor = 0.01f;
 
         public PathfindingResult Pathfind(GameObject entity, DxVector2 target)
         {
             var entityIsNull = Check.IsNullOrDefault(entity);
-            if(entityIsNull)
+            if (entityIsNull)
             {
                 LOG.Info("Pathfinding called with null entity");
             }
 
             /* If the provided entity is null or we're already at our destination, there's nothing to do */
-            if(entityIsNull || entity.ComponentOfType<SpatialComponent>().Space.Contains(target))
+            if (entityIsNull || entity.ComponentOfType<SpatialComponent>().Space.Contains(target))
             {
                 LOG.Warn($"No work to do - we're either null or at our destination");
-                return EmptyPath;
+                return PathfindingResult.EmptyResult;
             }
-
-            var commandmentQueue = new Queue<Commandment>();
-            commandmentQueue.Enqueue(Commandment.None);
 
             var mapModel = DxGame.Instance.Model<MapModel>();
             var navigationMesh = NavigableSurface.SurfaceFor(mapModel);
             var closestNode = navigationMesh.NodeQuery.Closest(target);
-            if(!closestNode.HasValue)
+            if (!closestNode.HasValue)
             {
                 LOG.Info($"Could not find a Node close to {target}");
-                return EmptyPath;
+                return PathfindingResult.EmptyResult;
             }
 
-            var targetNode = closestNode.Value;
+            NavigableSurface.Node targetNode = closestNode.Value;
             SpatialComponent spatial = entity.ComponentOfType<SpatialComponent>();
 
             Optional<NavigableSurface.Node> maybeOriginalNode =
-                navigationMesh.NodeQuery.Closest(new DxVector2(spatial.Space.X, spatial.Space.Y + spatial.Space.Height - 0.01f));
-            if(!maybeOriginalNode.HasValue)
+                navigationMesh.NodeQuery.Closest(ClosestPlatformPoint(spatial));
+            /*
+                TODO: Have an initial pathfind round to snap ourselves to the nearest point. This currently does not work
+                well if we are in midair or not aligned perfectly to a NavigableSurface point
+            */
+            if (!maybeOriginalNode.HasValue)
             {
                 LOG.Warn($"Could not determine the closest node to {spatial.Space}");
-                return EmptyPath;
+                return PathfindingResult.EmptyResult;
             }
             NavigableSurface.Node originalNode = maybeOriginalNode.Value;
             NavigableSurface.Node current = originalNode;
 
-            var explorableMesh = ExplorableMeshCache.MeshFor(entity, navigationMesh);
-            var displacementFunctions = DetermineDisplacementFunction(entity);
+            ExplorableMesh explorableMesh = ExplorableMeshCache.MeshFor(entity, navigationMesh);
+            Dictionary<CommandChain, DisplacementApproximator> displacementApproximators =
+                Simulation.DetermineDisplacementApproximators(entity);
 
-            Explore(entity, targetNode, explorableMesh, displacementFunctions);
+            Explore(entity, targetNode, explorableMesh, displacementApproximators);
 
             HashSet<NavigableSurface.Node> exhausted = new HashSet<NavigableSurface.Node>();
-            SortedSet<NavigableSurface.Node> available = new SortedSet<NavigableSurface.Node>(Comparer<NavigableSurface.Node>.Create(
+            SortedSet<NavigableSurface.Node> available =
+                new SortedSet<NavigableSurface.Node>(Comparer<NavigableSurface.Node>.Create(
                     (first, second) =>
                         (targetNode.Position - first.Position).MagnitudeSquared.CompareTo(
                             (targetNode.Position - second.Position).MagnitudeSquared)
-                    )) { current };
+                    )) {current};
 
             Dictionary<NavigableSurface.Node, NavigableSurface.Node> traveled =
                 new Dictionary<NavigableSurface.Node, NavigableSurface.Node>();
 
-            while(current != targetNode)
+            /* A starrrrr */
+            while (current != targetNode)
             {
-                if(!available.Any())
+                if (!available.Any())
                 {
                     LOG.Warn($"Could not find path between {spatial.Space} and {target}");
                     break;
@@ -122,10 +94,10 @@ namespace DXGame.Core.Models
                 available.Remove(current);
                 exhausted.Add(current);
                 List<Path> paths = explorableMesh.PathsFrom(current);
-                foreach(Path path in paths)
+                foreach (Path path in paths)
                 {
                     NavigableSurface.Node end = path.End;
-                    if(!exhausted.Contains(end))
+                    if (!exhausted.Contains(end))
                     {
                         available.Add(end);
                     }
@@ -137,56 +109,50 @@ namespace DXGame.Core.Models
             return result;
         }
 
-        private static PathfindingResult ReconstructPath(ExplorableMesh mesh, NavigableSurface.Node start, NavigableSurface.Node end, Dictionary<NavigableSurface.Node, NavigableSurface.Node> traveled)
+        private static PathfindingResult ReconstructPath(ExplorableMesh mesh, NavigableSurface.Node start,
+            NavigableSurface.Node end, Dictionary<NavigableSurface.Node, NavigableSurface.Node> traveled)
         {
-
             NavigableSurface.Node current = start;
-            LinkedList<ImmutablePair<TimeSpan, Commandment[]>> directions =
-                new LinkedList<ImmutablePair<TimeSpan, Commandment[]>>();
+            LinkedList<ImmutablePair<TimeSpan, CommandChain>> directions =
+                new LinkedList<ImmutablePair<TimeSpan, CommandChain>>();
             LinkedList<DxVector2> waypoints = new LinkedList<DxVector2>();
             waypoints.AddLast(current.Position);
-            while(current != end)
+            /* We can do direct equals here withour fear - our NavigableSurface.Nodes are straight up unique */
+            while (current != end)
             {
                 List<Path> paths = mesh.PathsFrom(current);
-                if(!traveled.ContainsKey(current))
+                if (!traveled.ContainsKey(current))
                 {
-                    LOG.Warn($"Could not properly reconstruct the path (no link between {current} and {end}. Bailing early.");
+                    LOG.Warn(
+                        $"Could not properly reconstruct the path (no link between {current} and {end}. Bailing early.");
                     break;
                 }
                 NavigableSurface.Node nextStep = traveled[current];
                 Path correctPath = paths.FirstOrDefault(path => path.End == nextStep);
-                if(correctPath == null)
+                if (correctPath == null)
                 {
-                    // weird
-                    LOG.Warn($"Could not properly reconstruct the path (no link between {current} and {nextStep}. Bailing early.");
+                    LOG.Warn(
+                        $"Could not properly reconstruct the path (no link between {current} and {nextStep}. Bailing early.");
                     break;
                 }
-                directions.AddLast(new ImmutablePair<TimeSpan, Commandment[]>(correctPath.Time, correctPath.Directions));
+                directions.AddLast(new ImmutablePair<TimeSpan, CommandChain>(correctPath.Time, correctPath.Directions));
                 current = nextStep;
                 waypoints.AddLast(current.Position);
             }
             return new PathfindingResult(directions, waypoints);
         }
 
-        private static void ReachInitialNode(GameObject entity, LinkedList<ImmutablePair<TimeSpan, Commandment[]>> directions, NavigableSurface.Node start)
-        {
-            // TODO
-
-        }
-
         private void Explore(GameObject entity, NavigableSurface.Node target, ExplorableMesh mesh,
-            Dictionary<Commandment[], SimplePolynomial> displacementFunctions)
+            Dictionary<CommandChain, DisplacementApproximator> displacementApproximators)
         {
             SpatialComponent spatial = entity.ComponentOfType<SpatialComponent>();
-            DxVector2 space = spatial.Dimensions;
-            DxVector2 position = spatial.Position;
-            position.Y += space.Y - 0.01f;
+            DxVector2 groundPoint = ClosestPlatformPoint(spatial);
 
             // TODO: Fix this and go to closest node instead of "starting" there
-            Optional<NavigableSurface.Node> maybeStartingPoint = mesh.NavigableSurface.NodeQuery.Closest(position);
-            if(!maybeStartingPoint.HasValue)
+            Optional<NavigableSurface.Node> maybeStartingPoint = mesh.NavigableSurface.NodeQuery.Closest(groundPoint);
+            if (!maybeStartingPoint.HasValue)
             {
-                LOG.Warn($"Could not explore the mesh - there is no point near {position}");
+                LOG.Warn($"Could not explore the mesh - there is no point near {groundPoint}");
                 return;
             }
 
@@ -194,89 +160,110 @@ namespace DXGame.Core.Models
             NavigableSurface.Node current = startingPoint;
             TimeSpan maxTime = TimeSpan.FromSeconds(0.016);
             Stopwatch timer = Stopwatch.StartNew();
-            SortedSet<NavigableSurface.Node> available = new SortedSet<NavigableSurface.Node>(Comparer<NavigableSurface.Node>.Create(
+            SortedSet<NavigableSurface.Node> available =
+                new SortedSet<NavigableSurface.Node>(Comparer<NavigableSurface.Node>.Create(
                     (first, second) =>
                         (target.Position - first.Position).MagnitudeSquared.CompareTo(
                             (target.Position - second.Position).MagnitudeSquared)
-                    )) { current };
+                    )) {current};
 
-            while(timer.Elapsed < maxTime)
+            while (timer.Elapsed < maxTime)
             {
                 mesh.Exhausted.Add(current);
-                if(!available.Any())
+                if (!available.Any())
                 {
                     break;
                 }
                 current = available.Min;
                 available.Remove(current);
 
-                List<Commandment[]> availableCommandments = mesh.AvailableCommandments(current);
-                foreach(var entry in displacementFunctions)
+                List<CommandChain> availableCommandments = mesh.AvailableCommandChains(current);
+                foreach (var entry in displacementApproximators)
                 {
-                    Commandment[] commandChain = entry.Key;
-                    if(!availableCommandments.Contains(commandChain))
+                    CommandChain commandChain = entry.Key;
+                    if (!availableCommandments.Contains(commandChain))
                     {
                         continue;
                     }
-                    SimplePolynomial polynomial = entry.Value;
-                    DxRectangle bounds = polynomial.Bounds;
-                    bounds.Height += space.Y;
+                    DisplacementApproximator approximator = entry.Value;
+                    DxRectangle bounds = approximator.Bounds;
+                    bounds.Height += spatial.Space.Height;
                     bounds.X += current.Position.X;
                     bounds.Y += current.Position.Y;
                     DxRectangle searchSpace = FudgeBounds(bounds);
                     List<NavigableSurface.Node> maybeReachableNodes =
                         mesh.NavigableSurface.NodeQuery.InRange(searchSpace);
-                    if(!maybeReachableNodes.Any())
+
+                    if (!maybeReachableNodes.Any())
                     {
                         // No nodes? Truck on!
                         continue;
                     }
-                    if(maybeReachableNodes.Count == 1 && maybeReachableNodes.Contains(current))
+
+                    if (maybeReachableNodes.Count == 1 && maybeReachableNodes.Contains(current))
                     {
                         // Only ourself? Truck on!
                         continue;
                     }
 
-                    foreach(NavigableSurface.Node node in maybeReachableNodes)
+                    foreach (NavigableSurface.Node node in maybeReachableNodes)
                     {
                         DxVector2 displacement = node.Position - current.Position;
-                        if(displacement.Y <= 0 && commandChain.Contains(Commandment.MoveDown))
+                        /* 
+                            Are we trying to move down but have a CommandChain that is moving us down? 
+                            This is a quick hack to fix a bug, the real root should be investigated.
+                        */
+                        if (displacement.Y <= 0 && commandChain.Commandments.Contains(Commandment.MoveDown))
                         {
                             continue;
                         }
-                        double y = polynomial.PositionalDisplacement(displacement.X);
-                        /* Should pretty much always be false */
-                        if(!FudgeBounds(polynomial.Bounds).Contains(new DxVector2(displacement.X, y)))
+                        /* Determine the height that we will be at according to our displacement function */
+                        double y = approximator.PositionalDisplacement(displacement.X);
+                        /* And sanity check that we're within our bounds (could be something wacky like the jumping straight up case) */
+                        /* 
+                            TODO: This is a little bit off - we really want to extend the bounds by our spatial's space (maybe). 
+                            However, if we do, we'll need to encode that information somewhere, somehow. So, for now, ... don't. Do any of that.
+                        */
+                        if (!FudgeBounds(approximator.Bounds).Contains(new DxVector2(displacement.X, y)))
                         {
                             continue;
                         }
                         /* Hey, maybe we can reach! */
-                        TimeSpan time = polynomial.TimeFor(displacement.X);
+                        TimeSpan time = approximator.TimeFor(displacement.X);
                         /* One last sanity check... */
-                        if(time <= MAX_SIMULATION_TIME  /*&& (node.Position.Y.FuzzyCompare((float)(current.Position.Y + y), 1.0f) == 0) */)
+                        if (time <= PathfindingConstants.MaxSimulationTime)
                         {
-                            if(!mesh.Exhausted.Contains(node))
+                            if (!mesh.Exhausted.Contains(node))
                             {
                                 available.Add(node);
                             }
                             /* We're GOOD BOYS */
-                            Path path = Path.From(commandChain, time, node);
-                            // TODO: We currently don't handle gravity (woops), so we need to add some shit in here to deal with drops between platforms
+                            Path path = new Path(commandChain, time, node);
+                            /* 
+                                TODO: We need to handle un-traversable paths. All we have right now are the movement vectors. 
+                                We don't take into account if the movement vectors would collide us with anything - we simply
+                                assume that if we can point a movement vector from one map point to another, than we can move there.
+                                This is badong, and needs to be fixed (somewhere in this method) 
+                            */
                             mesh.AttachPath(current, path);
                         }
                     }
-                    mesh.ExhaustCommandment(current, commandChain);
                 }
             }
         }
 
+        private static DxVector2 ClosestPlatformPoint(SpatialComponent spatial)
+        {
+            return new DxVector2(spatial.Position.X, spatial.Position.Y + spatial.Height - FudgeFactor);
+        }
+
+        /* Slightly increase the bounds just a weeee bit so we cover things that we are perfectly interacting with */
         private static DxRectangle FudgeBounds(DxRectangle bounds)
         {
-            const float offset = 0.01f;
-            bounds.X -= offset;
-            bounds.Y -= offset;
-            bounds.Width += offset * 2;
-            bounds.Height += offset * 2;
+            bounds.X -= FudgeFactor;
+            bounds.Y -= FudgeFactor;
+            bounds.Width += FudgeFactor * 2;
+            bounds.Height += FudgeFactor * 2;
             return bounds;
         }
     }

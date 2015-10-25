@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
+using DXGame.Core.Pathfinding;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -12,7 +13,7 @@ namespace DXGame.Core.Components.Advanced.Command
     [Serializable]
     public class PathfindingInputComponent : AbstractCommandComponent
     {
-        private LinkedList<ImmutablePair<TimeSpan, Commandment []>> currentPath_ = new LinkedList<ImmutablePair<TimeSpan, Commandment[]>>();
+        private LinkedList<ImmutablePair<TimeSpan, CommandChain>> currentPath_ = new LinkedList<ImmutablePair<TimeSpan, CommandChain>>();
         private LinkedList<DxVector2> waypoints_  = new LinkedList<DxVector2>();
         private TimeSpan currentTimeout_;
         private TimeSpan timeOnCurrentCommandment_;
@@ -83,7 +84,11 @@ namespace DXGame.Core.Components.Advanced.Command
         {
             if (currentPath_.Any())
             {
-                currentPath_ = new LinkedList<ImmutablePair<TimeSpan, Commandment[]>>();
+                currentPath_.Clear();
+            }
+            if (waypoints_.Any())
+            {
+                waypoints_.Clear();
             }
             timeOnCurrentCommandment_ = TimeSpan.Zero;
             currentTimeout_ = TimeSpan.Zero;
@@ -98,7 +103,7 @@ namespace DXGame.Core.Components.Advanced.Command
             }
             var commandments = currentPath_.First();
             currentTimeout_ = commandments.Key;
-            foreach (Commandment commandment in commandments.Value)
+            foreach (Commandment commandment in commandments.Value.Commandments)
             {
                 var commandMessage = new CommandMessage {Commandment = commandment};
                 Parent?.BroadcastMessage(commandMessage);

@@ -15,9 +15,9 @@ namespace DXGame.TowerGame.Components
     [DataContract]
     public class SimpleEnemyAI : AbstractCommandComponent
     {
-        private static readonly TimeSpan MOVEMENT_DELAY_CHECK = TimeSpan.FromSeconds(2);
+        private static readonly TimeSpan MOVEMENT_DELAY_CHECK = TimeSpan.FromSeconds(1.5f);
 
-        private static readonly TimeSpan PATHFINDING_TIMEOUT = MOVEMENT_DELAY_CHECK - TimeSpan.FromMilliseconds(10);
+        private static readonly TimeSpan PATHFINDING_TIMEOUT = MOVEMENT_DELAY_CHECK;
             // just cuz
 
         private static readonly double PERSONAL_SPACE = 50;

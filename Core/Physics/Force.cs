@@ -39,10 +39,15 @@ namespace DXGame.Core.Physics
         [DataMember]
         public string Name { get; }
 
+        /** 
+            <summary>
+                This force does absolutely nothing and dissipates immediately.
+            </summary>
+        */
         public static Force NullForce
             =>
                 new Force(DxVector2.EmptyVector, DxVector2.EmptyVector,
-                    ((velocity, acceleration, time) => Tuple.Create(true, DxVector2.EmptyVector)), "NullForce");
+                    ((velocity, acceleration, time) => Tuple.Create(true, DxVector2.EmptyVector)), "NullForce", true);
 
         public Force(DxVector2 initialVelocity, DxVector2 acceleration, DissipationFunction dissipationFunction,
             string name, bool dissipated = false)

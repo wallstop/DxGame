@@ -172,8 +172,12 @@
     <Compile Include="Core\Models\PathfindingModel.cs" />
     <Compile Include="Core\Models\PhysicsModel.cs" />
     <Compile Include="Core\Pathfinding\CommandChain.cs" />
+    <Compile Include="Core\Pathfinding\DisplacementFunction.cs" />
+    <Compile Include="Core\Pathfinding\ExplorableMesh.cs" />
+    <Compile Include="Core\Pathfinding\ExplorableMeshCache.cs" />
     <Compile Include="Core\Pathfinding\Path.cs" />
     <Compile Include="Core\Pathfinding\PathfindingConstants.cs" />
+    <Compile Include="Core\Pathfinding\PathfindingResult.cs" />
     <Compile Include="Core\Physics\Force.cs" />
     <Compile Include="Core\Physics\Interaction.cs" />
     <Compile Include="Core\Physics\WorldForces.cs" />

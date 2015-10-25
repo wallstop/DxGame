@@ -15,7 +15,14 @@ namespace DXGame.Core.Pathfinding
         public static readonly TimeSpan MaxSimulationTime = TimeSpan.FromSeconds(SimulationUpperBound);
         public static readonly TimeSpan SimulationTimeStep = TimeSpan.FromSeconds(SimulationStep);
 
-        public static readonly ReadOnlyCollection<CommandChain> AvailableCommandments = new ReadOnlyCollection<CommandChain>(new List<CommandChain>
+        public static readonly ReadOnlyCollection<Commandment> SurfaceTraversalCommandments =
+            new ReadOnlyCollection<Commandment>(new List<Commandment> { Commandment.MoveLeft, Commandment.MoveRight });
+
+        public static readonly ReadOnlyCollection<Commandment> VerticalTraversalCommandments =
+            new ReadOnlyCollection<Commandment>(new List<Commandment> { Commandment.MoveUp, Commandment.MoveDown });
+
+        public static readonly ReadOnlyCollection<CommandChain> AvailableCommandments = 
+            new ReadOnlyCollection<CommandChain>(new List<CommandChain>
         {
             new CommandChain(Commandment.None),
             new CommandChain(Commandment.MoveUp),

@@ -42,12 +42,6 @@ namespace DXGame.Core.Pathfinding
         public DisplacementApproximator(double[] xRegression, double[] yRegression, double[] positionalRegression,
             double[] xToTimeRegression, DxRectangle bounds)
         {
-            Validate.IsNotNullOrDefault(xRegression, $"Cannot create a {GetType()} with a null {nameof(xRegression)}");
-            Validate.IsNotNullOrDefault(yRegression, $"Cannot create a {GetType()} with a null {nameof(yRegression)}");
-            Validate.IsNotNullOrDefault(positionalRegression,
-                $"Cannot create a {GetType()} with a null {nameof(positionalRegression)}");
-            Validate.IsNotNullOrDefault(xToTimeRegression,
-                $"Cannot create a {GetType()} with a null {nameof(xToTimeRegression)}");
             XTerms = xRegression;
             YTerms = yRegression;
             PositionalTerms = positionalRegression;

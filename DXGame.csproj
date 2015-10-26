@@ -129,7 +129,6 @@
     <Compile Include="Core\Components\Advanced\FacingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PathfindingInputComponent.cs" />
     <Compile Include="Core\Components\Advanced\Impulse\MapPlatformDropper.cs" />
-    <Compile Include="Core\Components\Advanced\Impulse\StandardActionComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapCollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
     <Compile Include="Core\Components\Advanced\Physics\UnforcableMapCollidablePhysicsComponent.cs" />
@@ -144,7 +143,9 @@
     <Compile Include="Core\Components\Developer\PathDrawer.cs" />
     <Compile Include="Core\Components\Developer\TimePerFrameGraph.cs" />
     <Compile Include="Core\Components\Developer\TeamCounterWidget.cs" />
+    <Compile Include="Core\Components\Advanced\EntityTypeComponent.cs" />
     <Compile Include="Core\DataStructures\Tree.cs" />
+    <Compile Include="Core\EntityType.cs" />
     <Compile Include="Core\EventSystem.cs" />
     <Compile Include="Core\Frames\SingleElementFrame.cs" />
     <Compile Include="Core\Generators\PlayerGenerator.cs" />
@@ -296,6 +297,7 @@
     <Compile Include="Core\Utils\ThreadLocalRandom.cs" />
     <Compile Include="Core\Utils\TimeSpanUtils.cs" />
     <Compile Include="Core\Utils\UintUtils.cs" />
+    <Compile Include="Core\Utils\UnboundedLoadingCache.cs" />
     <Compile Include="Core\Utils\Validate.cs" />
     <Compile Include="Core\Primitives\DxGameTime.cs" />
     <Compile Include="Core\Primitives\DxRectangle.cs" />

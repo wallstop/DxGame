@@ -158,8 +158,9 @@ namespace DXGame.Core.Models
 
             NavigableSurface.Node startingPoint = maybeStartingPoint.Value;
             NavigableSurface.Node current = startingPoint;
-            TimeSpan maxTime = TimeSpan.FromSeconds(0.016);
+            TimeSpan maxTime = TimeSpan.FromSeconds(0.010);
             Stopwatch timer = Stopwatch.StartNew();
+            /* TODO: Properly populate available and exhausted based off of what we've already explored */
             SortedSet<NavigableSurface.Node> available =
                 new SortedSet<NavigableSurface.Node>(Comparer<NavigableSurface.Node>.Create(
                     (first, second) =>
@@ -252,6 +253,13 @@ namespace DXGame.Core.Models
             }
         }
 
+        /**
+            <summary>
+                Our normal positional points represent upper-left-hand-corner of a Rectangle.
+                However, the NavigableSurface details Nodes whose points are on the platform - or, the bottom of an entity.
+                This is a quick and dirty approximation of where we should be searching from.
+            </summary>
+        */
         private static DxVector2 ClosestPlatformPoint(SpatialComponent spatial)
         {
             return new DxVector2(spatial.Position.X, spatial.Position.Y + spatial.Height - FudgeFactor);

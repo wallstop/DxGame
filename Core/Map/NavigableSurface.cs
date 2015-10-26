@@ -144,11 +144,18 @@ namespace DXGame.Core.Map
                 Describes a static point that a MapCollidable Entity can "rest" on (and the MapTile that the point belongs to)
             </summary>
         */
-
+        [Serializable]
+        [DataContract]
         public class Node
         {
+            [DataMember]
             public DxVector2 Position { get; }
+            [DataMember]
             public MapCollidableComponent MapTile { get; }
+
+            [IgnoreDataMember]
+            [NonSerialized]
+            private int hash_;
 
             public Node(DxVector2 position, MapCollidableComponent mapTile)
             {
@@ -158,7 +165,11 @@ namespace DXGame.Core.Map
 
             public override int GetHashCode()
             {
-                return Objects.HashCode(Position);
+                if(hash_ == 0)
+                {
+                    hash_ = Objects.HashCode(Position, MapTile);
+                }
+                return hash_;
             }
 
             public override string ToString()

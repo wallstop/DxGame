@@ -1,8 +1,10 @@
-﻿using DXGame.Core.Components.Advanced.Physics;
+﻿using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Messaging;
 using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
+using DXGame.Core.Utils;
 using MathNet.Numerics;
 using System;
 using System.Collections.Generic;
@@ -12,14 +14,22 @@ namespace DXGame.Core.Pathfinding
 {
     public static class Simulation
     {
-        public static Dictionary<CommandChain, DisplacementApproximator> DetermineDisplacementApproximators(GameObject entity)
+        private static readonly UnboundedLoadingCache<EntityTypeComponent, Dictionary<CommandChain, DisplacementApproximator>> ENTITY_MOVEMENT_APPROXIMATORS =
+            new UnboundedLoadingCache<EntityTypeComponent, Dictionary<CommandChain, DisplacementApproximator>>(entityTypeComponent =>
+               ApproximatorForProperties(entityTypeComponent.Parent.ComponentOfType<EntityPropertiesComponent>()));
+
+        public static Dictionary<CommandChain, DisplacementApproximator> DetermineDisplacementApproximators(GameObject entity, bool cacheResults = false)
+        {
+            EntityTypeComponent entityType = entity.ComponentOfType<EntityTypeComponent>();
+            return ENTITY_MOVEMENT_APPROXIMATORS.Get(entityType);
+        }
+
+        private static Dictionary<CommandChain, DisplacementApproximator> ApproximatorForProperties(EntityPropertiesComponent entityProperties)
         {
             Dictionary<CommandChain, DisplacementApproximator> approximatorsByCommand = new Dictionary<CommandChain, DisplacementApproximator>();
-
-            EntityPropertiesComponent properties = entity.ComponentOfType<EntityPropertiesComponent>();
             foreach(CommandChain commandChain in PathfindingConstants.AvailableCommandments)
             {
-                DisplacementApproximator approximator = RegressForces(commandChain, properties);
+                DisplacementApproximator approximator = RegressForces(commandChain, entityProperties);
                 approximatorsByCommand[commandChain] = approximator;
             }
             return approximatorsByCommand;

@@ -31,7 +31,8 @@ namespace DXGame.Core.Components.Advanced.Enemy
                 (BoundedSpatialComponent)
                     BoundedSpatialComponent.Builder().WithBounds(bounds).WithDimensions(new DxVector2(50, 50)).Build();
             var platformDropper = new MapPlatformDropper();
-            var standardActionComponent = StandardActionComponent.StandardMovementComponent();
+            var entityType = EntityType.EntityTypeFor("SmallBox");
+            var entityTypeComponent = new EntityTypeComponent(entityType);
             var pathfinding = new PathfindingInputComponent();
             var pathDrawer = new PathDrawer();
             var enemyPhysics =
@@ -52,7 +53,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
             var enemyObject =
                 GameObject.Builder()
                     .WithComponents(enemySpatial, enemyPhysics, enemyProperties, floatingHealthBar, deathExploder,
-                        damageComponent, teamComponent, pathfinding, standardActionComponent, platformDropper, pathDrawer)
+                        damageComponent, teamComponent, pathfinding, platformDropper, pathDrawer, entityTypeComponent)
                     .Build();
             // Create a state machine for the enemy in question
             // Horrifically complex; weep, gnash teeth

@@ -11,7 +11,7 @@ namespace DXGame.Core.Utils
     [DataContract]
     public class AbstractCache<U, T> : ICache<U, T>
     {
-        protected readonly ReaderWriterLockSlim globalLock_ = new ReaderWriterLockSlim();
+        protected readonly ReaderWriterLockSlim globalLock_ = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
         [DataMember]
         protected readonly Dictionary<U, T> cache_ = new Dictionary<U, T>();
 

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DXGame.Core.Utils;
+using DXGame.Main;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -18,8 +20,6 @@ namespace DXGame.Core.Animation
 
     public class AnimationFactory
     {
-        private static readonly string CONTENT_PATH = "Content";
-
         private static readonly Lazy<AnimationFactory> SINGLETON =
             new Lazy<AnimationFactory>(() => new AnimationFactory());
 
@@ -34,16 +34,15 @@ namespace DXGame.Core.Animation
                 {StandardAnimationType.WalkingRight, "Walk_Right"}
             });
 
-        private readonly Dictionary<string, AnimationDescriptor> animations_ =
-            new Dictionary<string, AnimationDescriptor>();
+        private readonly UnboundedCache<string, AnimationDescriptor> animationCache_ = new UnboundedCache<string, AnimationDescriptor>();
 
         public static AnimationFactory Instance => SINGLETON.Value;
 
         private AnimationFactory()
         {
-            foreach (var animationFile in AnimationDescriptors(CONTENT_PATH))
+            foreach (var animationFile in AnimationDescriptors(DxGame.Instance.Content.RootDirectory))
             {
-                animations_[animationFile] = AnimationDescriptor.StaticLoad(animationFile);
+                animationCache_.PutIfAbsent(animationFile, AnimationDescriptor.StaticLoad(animationFile));
             }
         }
 
@@ -54,13 +53,16 @@ namespace DXGame.Core.Animation
 
         public static AnimationDescriptor AnimationFor(string category, string animation)
         {
-            return
-                Instance.animations_
+            AnimationDescriptor animationDescriptor = 
+                Instance.animationCache_.KeyedElements
                     .First(
                         entry =>
                             (entry.Value.Asset.Contains(category) || entry.Key.Contains(category)) &&
                             (entry.Value.Asset.Contains(animation) || entry.Key.Contains(animation))).Value;
+            return animationDescriptor;
         }
+
+        public static void GenerateStaticStandardAnimationTypes(string 
 
         /**
             Recursively walk through all Content subdirectories looking for .adtr files

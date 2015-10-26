@@ -25,7 +25,7 @@ namespace DXGame.Core
         public static Team PlayerTeam { get; } = TeamFor("Player");
         public static Team EnemyTeam { get; } = TeamFor("BasicEnemy");
 
-        public static ReadOnlyCollection<Team> Teams => TEAM_CACHE.Elements;
+        public static IReadOnlyCollection<Team> Teams => TEAM_CACHE.Elements;
 
         private Team(string name)
         {

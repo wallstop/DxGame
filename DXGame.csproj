@@ -134,6 +134,7 @@
     <Compile Include="Core\Components\Advanced\Physics\UnforcableMapCollidablePhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PlayerInputListener.cs" />
     <Compile Include="Core\Components\Advanced\Damage\DeathEffectComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Position\MapBoundedSpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\Position\MapCollidablePositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SkillComponent.cs" />
     <Compile Include="Core\Components\Advanced\TeamComponent.cs" />
@@ -210,6 +211,7 @@
     <Compile Include="Core\Components\Advanced\Position\PositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
     <Compile Include="Core\Team.cs" />
+    <Compile Include="Core\Utils\AbstractCache.cs" />
     <Compile Include="Core\Utils\ColorFactory.cs" />
     <Compile Include="Core\Utils\ColorUtils.cs" />
     <Compile Include="Core\Utils\CriticalRegion.cs" />
@@ -264,6 +266,7 @@
     <Compile Include="Core\Models\Model.cs" />
     <Compile Include="Core\Models\NetworkModel.cs" />
     <Compile Include="Core\Models\PlayerModel.cs" />
+    <Compile Include="Core\Utils\ICache.cs" />
     <Compile Include="Core\Utils\ImmutablePair.cs" />
     <Compile Include="Core\Utils\IPair.cs" />
     <Compile Include="Core\Utils\LidgrenUtils.cs" />
@@ -297,6 +300,7 @@
     <Compile Include="Core\Utils\ThreadLocalRandom.cs" />
     <Compile Include="Core\Utils\TimeSpanUtils.cs" />
     <Compile Include="Core\Utils\UintUtils.cs" />
+    <Compile Include="Core\Utils\UnboundedCache.cs" />
     <Compile Include="Core\Utils\UnboundedLoadingCache.cs" />
     <Compile Include="Core\Utils\Validate.cs" />
     <Compile Include="Core\Primitives\DxGameTime.cs" />
@@ -309,6 +313,7 @@
     <Compile Include="Core\Properties\PropertyMutator.cs" />
     <Compile Include="TowerGame\Behavior\SimpleAttackPlayerBehavior.cs" />
     <Compile Include="TowerGame\Components\SimpleEnemyAI.cs" />
+    <Compile Include="TowerGame\Enemies\EnemyFactory.cs" />
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />
     <Compile Include="TowerGame\PropertyMutators\InheritedHatred.cs" />
     <Compile Include="TowerGame\Skills\Gevurah\ArrowRainComponent.cs" />
@@ -461,10 +466,8 @@
     <Content Include="Content\Player\Warp.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Sprites\AngryBox.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Sprites\SimpleBox.png">
+    <Content Include="Content\Sprites\LargeBox\LargeBox.png" />
+    <Content Include="Content\Sprites\SmallBox\SmallBox.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Main\Icon.ico" />
@@ -542,25 +545,25 @@
     <None Include="Content\Player\Idle_Jump.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Sprites\SimpleBox.adtr">
+    <None Include="Content\Sprites\SmallBox\SmallBox.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Sprites\SimpleBoxIdle.adtr">
+    <None Include="Content\Sprites\SmallBox\SmallBoxIdle.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Sprites\SimpleBoxIdle_Jump.adtr">
+    <None Include="Content\Sprites\SmallBox\SmallBoxIdle_Jump.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Sprites\SimpleBoxJump_Left.adtr">
+    <None Include="Content\Sprites\SmallBox\SmallBoxJump_Left.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Sprites\SimpleBoxJump_Right.adtr">
+    <None Include="Content\Sprites\SmallBox\SmallBoxJump_Right.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Sprites\SimpleBoxWalk_Left.adtr">
+    <None Include="Content\Sprites\SmallBox\SmallBoxWalk_Left.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Sprites\SimpleBoxWalk_Right.adtr">
+    <None Include="Content\Sprites\SmallBox\SmallBoxWalk_Right.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="NLog.xsd">
@@ -576,7 +579,6 @@
     <Folder Include="Network\" />
     <Folder Include="TowerGame\Actions\" />
     <Folder Include="TowerGame\Buffs\" />
-    <Folder Include="TowerGame\Enemies\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

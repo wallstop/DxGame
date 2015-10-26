@@ -1,5 +1,6 @@
 ﻿using DXGame.Core.Utils;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 
@@ -17,7 +18,7 @@ namespace DXGame.Core
     {
         private static readonly UnboundedLoadingCache<string, EntityType> ENTITY_TYPE_CACHE = new UnboundedLoadingCache<string, EntityType>(name => new EntityType(name));
 
-        public static ReadOnlyCollection<EntityType> EntityTypes => ENTITY_TYPE_CACHE.Elements;
+        public static IReadOnlyCollection<EntityType> EntityTypes => ENTITY_TYPE_CACHE.Elements;
 
         public string Name
         {

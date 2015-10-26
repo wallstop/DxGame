@@ -28,11 +28,7 @@ namespace DXGame.Core.Generators
 
         public PlayerGenerator(DxVector2 playerPosition, DxRectangle bounds)
         {
-            PlayerSpace = (BoundedSpatialComponent)
-                BoundedSpatialComponent.Builder().WithBounds(bounds)
-                    .WithDimensions(new DxVector2(50, 50))
-                    .WithPosition(playerPosition)
-                    .Build();
+            PlayerSpace = new MapBoundedSpatialComponent(playerPosition, new DxVector2(50, 50));
             physics_ =
                 MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(PlayerSpace).Build();
 

@@ -20,7 +20,6 @@ namespace DXGame.TowerGame.Enemies
         public static GameObject SmallBox()
         {
             string entityName = "SmallBox";
-            AnimationFactory.GenerateStaticStandardAnimationTypes(entityName);
             var teamComponent = new TeamComponent(Team.EnemyTeam);
             // Build spatial component from bounds
             var enemySpatial = new MapBoundedSpatialComponent(DxVector2.EmptyVector, new DxVector2(50, 50));
@@ -62,7 +61,7 @@ namespace DXGame.TowerGame.Enemies
         public static GameObject LargeBox()
         {
             string entityName = "LargeBox";
-            AnimationFactory.GenerateStaticStandardAnimationTypes(entityName);
+            // TODO
             var teamComponent = new TeamComponent(Team.EnemyTeam);
             // Build spatial component from bounds
             var enemySpatial = new MapBoundedSpatialComponent(DxVector2.EmptyVector, new DxVector2(250, 250));

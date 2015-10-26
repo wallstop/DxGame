@@ -39,6 +39,8 @@ namespace DXGame.Core.Animation
 
         private readonly UnboundedCache<string, AnimationDescriptor> animationCache_ = new UnboundedCache<string, AnimationDescriptor>();
         private readonly UnboundedLoadingCache<string, bool> generatedStaticAnimations_ = new UnboundedLoadingCache<string, bool>(InternalGenerateStaticStandardAnimationTypes);
+        /* TODO: Content-directory enumeration caching */
+        private readonly List<string> allContentFiles_;
 
         public static AnimationFactory Instance => SINGLETON.Value;
 
@@ -57,9 +59,25 @@ namespace DXGame.Core.Animation
 
         public static AnimationDescriptor AnimationFor(string category, string animation)
         {
-            AnimationDescriptor animationDescriptor = 
+            AnimationDescriptor animationDescriptor = SearchCache(category, animation);
+            if(Check.IsNullOrDefault(animationDescriptor))
+            {
+                LOG.Info($"Found no {typeof(AnimationDescriptor)} for {category}, {animation}, attempting to generate static files");
+                GenerateStaticStandardAnimationTypes(category);
+                GenerateStaticStandardAnimationTypes(animation);
+                GenerateStaticStandardAnimationTypes($"{category}{animation}");
+                GenerateStaticStandardAnimationTypes($"{animation}{category}");
+                animationDescriptor = SearchCache(category, animation);
+            }
+            Validate.IsNotNullOrDefault(animationDescriptor, $"Could not find a {typeof(AnimationDescriptor)} for {category}, {animation}");
+            return animationDescriptor;
+        }
+
+        private static AnimationDescriptor SearchCache(string category, string animation)
+        {
+            AnimationDescriptor animationDescriptor =
                 Instance.animationCache_.KeyedElements
-                    .First(
+                    .FirstOrDefault(
                         entry =>
                             (entry.Value.Asset.Contains(category) || entry.Key.Contains(category)) &&
                             (entry.Value.Asset.Contains(animation) || entry.Key.Contains(animation))).Value;

@@ -63,8 +63,8 @@ namespace DXGame.Core.Components.Developer
             var teamCountStrings =
                 teamCounts_.Select(teamAndCount => $"{teamAndCount.Key}: {teamAndCount.Value}").ToList();
             /* Sort them largest first */
-            var teamCountsSortedByLength = teamCountStrings.ToImmutableSortedSet(
-                Comparer<string>.Create((first, second) => second.Length - first.Length));
+            List<string> teamCountsSortedByLength = teamCountStrings.ToList();
+            teamCountsSortedByLength.Sort(Comparer<string>.Create((first, second) => second.Length - first.Length));
 
             var size = spriteFont_.MeasureString(teamCountsSortedByLength[0]);
             var screenRegion = DxGame.Instance.ScreenRegion;

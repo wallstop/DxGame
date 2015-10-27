@@ -45,6 +45,8 @@ namespace DXGame.Core
                 /* 
                     We compare negative to allow for first-created UniqueIds to be 
                     "greater than " all UniqueIds created after 
+
+                    ... why?
                 */
                 return -(id_.CompareTo(otherId.id_));
             }

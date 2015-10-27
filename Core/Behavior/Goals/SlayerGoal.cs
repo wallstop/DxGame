@@ -32,7 +32,7 @@ namespace DXGame.Core.Behavior.Goals
         {
             /* Regardless of the entity, the result is that the target has been destroyed! */
             var targetCopy = Target;
-            var targetHealth = targetCopy.ComponentOfType<EntityPropertiesComponent>().Health;
+            var targetHealth = targetCopy.ComponentOfType<EntityPropertiesComponent>().EntityProperties.Health;
             targetHealth.CurrentValue = 0;
             return SingleElementFrame.Builder().WithGameObject(targetCopy).Build();
         }
@@ -41,7 +41,7 @@ namespace DXGame.Core.Behavior.Goals
         {
             var targetId = target_.Id;
             return !reference.ObjectMapping.ContainsKey(targetId) ||
-                   reference.ObjectMapping[targetId].ComponentOfType<EntityPropertiesComponent>().Health.CurrentValue <=
+                   reference.ObjectMapping[targetId].ComponentOfType<EntityPropertiesComponent>().EntityProperties.Health.CurrentValue <=
                    0;
         }
 
@@ -55,7 +55,7 @@ namespace DXGame.Core.Behavior.Goals
             }
 
             var target = frame.ObjectMapping[targetId];
-            var targetHealth = target.ComponentOfType<EntityPropertiesComponent>().Health;
+            var targetHealth = target.ComponentOfType<EntityPropertiesComponent>().EntityProperties.Health;
             return new Score(0 - targetHealth.CurrentValue);
         }
     }

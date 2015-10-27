@@ -23,7 +23,7 @@ namespace DXGame.Core
         private static readonly UnboundedLoadingCache<string, Team> TEAM_CACHE = new UnboundedLoadingCache<string, Team>(name => new Team(name));
         public string Name { get; }
         public static Team PlayerTeam { get; } = TeamFor("Player");
-        public static Team EnemyTeam { get; } = TeamFor("BasicEnemy");
+        public static Team EnemyTeam { get; } = TeamFor("Enemy");
 
         public static IReadOnlyCollection<Team> Teams => TEAM_CACHE.Elements;
 

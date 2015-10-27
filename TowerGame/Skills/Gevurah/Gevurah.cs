@@ -12,6 +12,7 @@ using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
 using DXGame.Main;
+using System.Runtime.Serialization;
 
 namespace DXGame.TowerGame.Skills.Gevurah
 {
@@ -23,7 +24,9 @@ namespace DXGame.TowerGame.Skills.Gevurah
             var physicsMessage = new PhysicsMessage();
             physicsMessage.AffectedAreas.Add(new DxCircle(position, 100));
             physicsMessage.Source = parent;
-            physicsMessage.Interaction = ShockwaveInteraction;
+            // TODO: Hmmm this super sucks make better pls
+            physicsMessage.Interaction = (gameObject, destination) =>
+                new ShockwaveClosure(gameTime.TotalGameTime).ShockwaveInteraction(gameObject, destination);
             DxGame.Instance.BroadcastMessage(physicsMessage);
         }
 
@@ -36,43 +39,6 @@ namespace DXGame.TowerGame.Skills.Gevurah
             DxGame.Instance.AddAndInitializeGameObject(arrowRainObject);
         }
 
-        private static void ShockwaveInteraction(GameObject source, PhysicsComponent destination)
-        {
-            var sourcePhysics = source.ComponentOfType<PhysicsComponent>();
-            var difference = new DxVector2(destination.Space.Center) - new DxVector2(sourcePhysics.Space.Center);
-
-            /* If there is no difference in physics' positions (exact), we can't enact force on it :( This also prevents us from interacting with ourself */
-            if (difference.X == 0 && difference.Y == 0)
-            {
-                return;
-            }
-            var minForce = 25;
-            var maxForce = 37;
-
-            var radians = difference.Radian;
-            var targetRadian =
-                new DxRadian(ThreadLocalRandom.Current.NextFloat(radians.Value - (float) (Math.PI / 4),
-                    radians.Value + (float) (Math.PI / 4)));
-            var forceScalar = ThreadLocalRandom.Current.NextFloat(minForce, maxForce);
-            var targetVelocityVector = targetRadian.UnitVector * forceScalar;
-
-            /* Apply force... */
-            var force = new Force(targetVelocityVector, new DxVector2(), ShockwaveDissipation, "Shockwave");
-            destination.AttachForce(force);
-
-            /* ...and then damage (if we can) */
-            var damageDealt = new DamageMessage {Source = source, DamageCheck = ShockwaveDamage};
-            destination.Parent?.BroadcastMessage(damageDealt);
-
-            /* ... and attach a life sucker (just to be evil) */
-            if (!ReferenceEquals(destination.Parent, null))
-            {
-                var lifeSucker = new LifeSuckerComponent();
-                destination.Parent.AttachComponent(lifeSucker);
-                DxGame.Instance.AddAndInitializeComponents(lifeSucker);
-            }
-        }
-
         private static Tuple<bool, double> ShockwaveDamage(GameObject source, GameObject destination)
         {
             if (source == destination)
@@ -82,9 +48,69 @@ namespace DXGame.TowerGame.Skills.Gevurah
             return Tuple.Create(true, 3.0);
         }
 
-        private static Tuple<bool, DxVector2> ShockwaveDissipation(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime)
+        [Serializable]
+        [DataContract]
+        private class ShockwaveClosure
         {
-            return Tuple.Create(true, new DxVector2());
+            private static readonly TimeSpan DURATION = TimeSpan.FromSeconds(0.75);
+
+            [DataMember]
+            private DxVector2 initialAcceleration_;
+
+            [DataMember]
+            private TimeSpan InitialTime
+            {
+                get;
+            }
+
+            public ShockwaveClosure(TimeSpan initial)
+            {
+                InitialTime = initial;
+            }
+
+            public void ShockwaveInteraction(GameObject source, PhysicsComponent destination)
+            {
+                var sourcePhysics = source.ComponentOfType<PhysicsComponent>();
+                var difference = new DxVector2(destination.Space.Center) - new DxVector2(sourcePhysics.Space.Center);
+
+                /* If there is no difference in physics' positions (exact), we can't enact force on it :( This also prevents us from interacting with ourself */
+                if(difference.X == 0 && difference.Y == 0)
+                {
+                    return;
+                }
+                var minForce = 35;
+                var maxForce = 37;
+
+                var radians = difference.Radian;
+                var targetRadian =
+                    new DxRadian(ThreadLocalRandom.Current.NextFloat(radians.Value - (float) (Math.PI / 4),
+                        radians.Value + (float) (Math.PI / 4)));
+                var forceScalar = ThreadLocalRandom.Current.NextFloat(minForce, maxForce);
+                var targetVelocityVector = targetRadian.UnitVector * forceScalar;
+                initialAcceleration_ = targetVelocityVector;
+
+                /* Apply force... */
+                var force = new Force(targetVelocityVector, targetVelocityVector, ShockwaveDissipation, "Shockwave");
+                destination.AttachForce(force);
+
+                /* ...and then damage (if we can) */
+                var damageDealt = new DamageMessage { Source = source, DamageCheck = ShockwaveDamage };
+                destination.Parent?.BroadcastMessage(damageDealt);
+
+                /* ... and attach a life sucker (just to be evil) */
+                if(!ReferenceEquals(destination.Parent, null))
+                {
+                    var lifeSucker = new LifeSuckerComponent();
+                    destination.Parent.AttachComponent(lifeSucker);
+                    DxGame.Instance.AddAndInitializeComponents(lifeSucker);
+                }
+            }
+
+            public Tuple<bool, DxVector2> ShockwaveDissipation(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime)
+            {
+                TimeSpan totalElapsed = gameTime.TotalGameTime - InitialTime;
+                return Tuple.Create(DURATION < totalElapsed, initialAcceleration_ * 0.01);
+            }
         }
     }
 }

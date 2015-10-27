@@ -21,7 +21,7 @@ namespace DXGame.Core
     {
         [DataMember] private readonly GameObject player_;
         public SpatialComponent Position => player_.ComponentOfType<SpatialComponent>();
-        public PlayerPropertiesComponent Properties => player_.ComponentOfType<PlayerPropertiesComponent>();
+        public EntityPropertiesComponent Properties => player_.ComponentOfType<EntityPropertiesComponent>();
         public PhysicsComponent Physics => player_.ComponentOfType<PhysicsComponent>();
         public AnimationComponent Animation => player_.ComponentOfType<AnimationComponent>();
         public SkillComponent Abilities => player_.ComponentOfType<SkillComponent>();

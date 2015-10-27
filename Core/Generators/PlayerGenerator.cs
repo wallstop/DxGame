@@ -16,6 +16,7 @@ using DXGame.Core.State;
 using DXGame.Main;
 using DXGame.TowerGame.Skills.Gevurah;
 using Microsoft.Xna.Framework;
+using DXGame.TowerGame.Player;
 
 namespace DXGame.Core.Generators
 {
@@ -32,9 +33,9 @@ namespace DXGame.Core.Generators
             physics_ =
                 MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(PlayerSpace).Build();
 
-            playerProperties_ = PlayerPropertiesComponent.DefaultPlayerProperties;
+            playerProperties_ = new EntityPropertiesComponent(PlayerFactory.BasicPlayerProperties);
             /* Fuck with the health so we can check if the hp bar works */
-            playerProperties_.Health.CurrentValue -= 3;
+            playerProperties_.EntityProperties.Health.CurrentValue -= 3;
             // TODO: Need to add state machine in (how?)
             
 

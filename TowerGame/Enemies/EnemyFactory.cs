@@ -32,7 +32,7 @@ namespace DXGame.TowerGame.Enemies
                 MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(enemySpatial).Build();
 
             /* TODO: Configure properties */
-            var enemyProperties = PlayerPropertiesComponent.DefaultPlayerProperties;
+            var enemyProperties = new EntityPropertiesComponent(EnemyPropertyFactory.PropertiesFor(entityType));
             var floatingHealthBar =
                 FloatingHealthIndicator.Builder()
                     .WithEntityProperties(enemyProperties)
@@ -61,7 +61,6 @@ namespace DXGame.TowerGame.Enemies
         public static GameObject LargeBox()
         {
             string entityName = "LargeBox";
-            // TODO
             var teamComponent = new TeamComponent(Team.EnemyTeam);
             // Build spatial component from bounds
             var enemySpatial = new MapBoundedSpatialComponent(DxVector2.EmptyVector, new DxVector2(250, 250));
@@ -69,12 +68,11 @@ namespace DXGame.TowerGame.Enemies
             var entityType = EntityType.EntityTypeFor(entityName);
             var entityTypeComponent = new EntityTypeComponent(entityType);
             var pathfinding = new PathfindingInputComponent();
-            var pathDrawer = new PathDrawer();
             var enemyPhysics =
                 MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(enemySpatial).Build();
 
             /* TODO: Configure properties */
-            var enemyProperties = PlayerPropertiesComponent.DefaultPlayerProperties;
+            var enemyProperties = new EntityPropertiesComponent(EnemyPropertyFactory.PropertiesFor(entityType));
             var floatingHealthBar =
                 FloatingHealthIndicator.Builder()
                     .WithEntityProperties(enemyProperties)
@@ -88,7 +86,7 @@ namespace DXGame.TowerGame.Enemies
             var enemyObject =
                 GameObject.Builder()
                     .WithComponents(enemySpatial, enemyPhysics, enemyProperties, floatingHealthBar, deathExploder,
-                        damageComponent, teamComponent, pathfinding, platformDropper, pathDrawer, entityTypeComponent)
+                        damageComponent, teamComponent, pathfinding, platformDropper, entityTypeComponent)
                     .Build();
             // Create a state machine for the enemy in question
             // Horrifically complex; weep, gnash teeth

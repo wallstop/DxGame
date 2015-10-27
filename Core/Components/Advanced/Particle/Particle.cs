@@ -76,7 +76,7 @@ namespace DXGame.Core.Components.Advanced.Particle
                 return;
             }
             /* Othwerise, do our own physics computations (scale to FPS like normal physics components) */
-            var scaleFactor = gameTime.DetermineScaleFactor(DxGame.Instance);
+            var scaleFactor = gameTime.ScaleFactor;
 
             Velocity += (Acceleration * scaleFactor);
             var scaledVelocity = (Velocity * scaleFactor);

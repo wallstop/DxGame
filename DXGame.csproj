@@ -190,6 +190,7 @@
     <Compile Include="Core\Primitives\DxLine.cs" />
     <Compile Include="Core\Primitives\DxRadian.cs" />
     <Compile Include="Core\Primitives\IShape.cs" />
+    <Compile Include="Core\Properties\EntityProperties.cs" />
     <Compile Include="Core\Skills\Skill.cs" />
     <Compile Include="Core\State\Action.cs" />
     <Compile Include="Core\State\StateMachine.cs" />
@@ -203,7 +204,6 @@
     <Compile Include="Core\Components\Advanced\FloatingHealthIndicator.cs" />
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Properties\EntityPropertiesComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Properties\PlayerPropertiesComponent.cs" />
     <Compile Include="Core\Components\Basic\Component.cs" />
     <Compile Include="Core\Components\Advanced\Position\BoundedSpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\Physics\MapCollidablePhysicsComponent.cs" />
@@ -314,6 +314,7 @@
     <Compile Include="TowerGame\Behavior\SimpleAttackPlayerBehavior.cs" />
     <Compile Include="TowerGame\Components\SimpleEnemyAI.cs" />
     <Compile Include="TowerGame\Enemies\EnemyFactory.cs" />
+    <Compile Include="TowerGame\Enemies\EnemyPropertyFactory.cs" />
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />
     <Compile Include="TowerGame\PropertyMutators\InheritedHatred.cs" />
     <Compile Include="TowerGame\Skills\Gevurah\ArrowRainComponent.cs" />
@@ -556,6 +557,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Behaviors\" />
+    <Folder Include="Content\Properties\" />
     <Folder Include="Core\GraphicsWidgets\Utils\" />
     <Folder Include="Network\" />
     <Folder Include="TowerGame\Actions\" />

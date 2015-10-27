@@ -9,6 +9,7 @@ using DXGame.Core.Properties;
 using DXGame.Main;
 using NLog;
 using Component = DXGame.Core.Components.Basic.Component;
+using DXGame.Core.Utils;
 
 namespace DXGame.Core.Components.Advanced.Properties
 {
@@ -22,31 +23,21 @@ namespace DXGame.Core.Components.Advanced.Properties
             Properties classes should be a dump data store.
         */
 
-        // TODO: Move all Properties to their actual types (AttackSpeed instead of double, Health instead of int, etc
         [DataMember]
-        public Property<int> Health { get; protected set; }
+        public EntityProperties EntityProperties { get; }
 
-        [DataMember]
-        public Property<int> MaxHealth { get; protected set; }
-
-        [DataMember]
-        public Property<int> Defense { get; protected set; }
-
-        [DataMember]
-        public Property<float> MoveSpeed { get; protected set; }
-
-        [DataMember]
-        public Property<float> JumpSpeed { get; protected set; }
-
-        [DataMember]
-        public Property<TimeSpan> AttackSpeed { get; protected set; }
+        public EntityPropertiesComponent(EntityProperties entityProperties)
+        {
+            Validate.IsNotNull(entityProperties, StringUtils.GetFormattedNullOrDefaultMessage(this, entityProperties));
+            EntityProperties = entityProperties;
+        }
 
         protected virtual DxVector2 InitialJumpAcceleration => DxVector2.EmptyVector;
 
         public override void Initialize()
         {
             /* Assume child class has dealt with actually creating the Properties */
-            Health.AttachListener(EntityDeathListener);
+            EntityProperties.Health.AttachListener(EntityDeathListener);
         }
 
         public virtual Force MovementForceFor(Commandment commandment)
@@ -66,13 +57,13 @@ namespace DXGame.Core.Components.Advanced.Properties
 
         protected virtual Force MoveLeftForce()
         {
-            var movement = new Movement(new DxVector2(-MoveSpeed.CurrentValue, 0), "MoveLeft");
+            var movement = new Movement(new DxVector2(-EntityProperties.MoveSpeed.CurrentValue, 0), "MoveLeft");
             return movement.Force;
         }
 
         protected virtual Force MoveRightForce()
         {
-            var movement = new Movement(new DxVector2(MoveSpeed.CurrentValue, 0), "MoveRight");
+            var movement = new Movement(new DxVector2(EntityProperties.MoveSpeed.CurrentValue, 0), "MoveRight");
             return movement.Force;
         }
 
@@ -81,7 +72,7 @@ namespace DXGame.Core.Components.Advanced.Properties
             var physics = Parent.ComponentOfType<PhysicsComponent>();
             var currentVelocity = physics.Velocity;
             physics.Velocity = new DxVector2(currentVelocity.X, Math.Min(0, currentVelocity.Y));
-            var initialVelocity = new DxVector2(0, -JumpSpeed.CurrentValue * 1.6);
+            var initialVelocity = new DxVector2(0, -EntityProperties.JumpSpeed.CurrentValue * 1.6);
             var force = new Force(initialVelocity, InitialJumpAcceleration, JumpDissipation(), "Jump");
             return force;
         }

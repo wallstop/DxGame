@@ -105,18 +105,18 @@ namespace DXGame.Core.Components.Advanced.Physics
                 var mapSpatial = largestIntersectionTuple.Item2;
                 var mapBlockPosition = mapSpatial.Spatial.Position;
                 var mapBlockDimensions = mapSpatial.Spatial.Dimensions;
-
+                const float dimensionScalar = 0.9f;
                 var direction = traveledLine.Vector;
                 if(mapSpatial.CollidesWith(direction) && !mapTilesToIgnore_.Any(spatial => Equals(spatial.Item1, mapSpatial)))
                 {
                     if(largestIntersection.Width >= largestIntersection.Height || Velocity.X.FuzzyCompare(0) == 0)
                     {
-                        if(previousPosition.Y <= mapBlockPosition.Y && mapSpatial.CollidableDirections.Contains(CollidableDirection.Up))
+                        if((previousPosition.Y  + dimensionScalar * Dimensions.Y) <= mapBlockPosition.Y && mapSpatial.CollidableDirections.Contains(CollidableDirection.Up))
                         {
                             Position = new DxVector2(Position.X, mapBlockPosition.Y - Dimensions.Y);
                             collision.CollisionDirections[Direction.South] = mapSpatial;
                         }
-                        else if(previousPosition.Y >= mapBlockPosition.Y && mapSpatial.CollidableDirections.Contains(CollidableDirection.Down))
+                        else if(previousPosition.Y >= (mapBlockPosition.Y + dimensionScalar * mapBlockDimensions.Y) && mapSpatial.CollidableDirections.Contains(CollidableDirection.Down))
                         {
                             Position = new DxVector2(Position.X, mapBlockPosition.Y + mapBlockDimensions.Y);
                             collision.CollisionDirections[Direction.North] = mapSpatial;
@@ -124,12 +124,12 @@ namespace DXGame.Core.Components.Advanced.Physics
                     }
                     else
                     {
-                        if((previousPosition.X >= mapBlockPosition.X && mapSpatial.CollidableDirections.Contains(CollidableDirection.Right)))
+                        if((previousPosition.X >= (mapBlockPosition.X + dimensionScalar * mapBlockDimensions.X) && mapSpatial.CollidableDirections.Contains(CollidableDirection.Right)))
                         {
                             Position = new DxVector2(mapBlockPosition.X + mapBlockDimensions.X, Position.Y);
                             collision.CollisionDirections[Direction.West] = mapSpatial;
                         }
-                        else if(previousPosition.X <= (mapBlockPosition.X) && mapSpatial.CollidableDirections.Contains(CollidableDirection.Left))
+                        else if((previousPosition.X + dimensionScalar * Dimensions.X) <= mapBlockPosition.X && mapSpatial.CollidableDirections.Contains(CollidableDirection.Left))
                         {
                             Position = new DxVector2(mapBlockPosition.X - Dimensions.X, Position.Y);
                             collision.CollisionDirections[Direction.West] = mapSpatial;

@@ -24,7 +24,21 @@ namespace DXGame.Core.Primitives
         public bool IsRunningSlowly { get; }
         
         [IgnoreDataMember]
-        public double ScaleFactor => (ElapsedGameTime.TotalMilliseconds * DxGame.Instance.TargetFps / DateTimeConstants.MILLISECONDS_PER_SECOND);
+        public double ScaleFactor
+        {
+            get
+            {
+                if(scale_ == 0)
+                {
+                    scale_ = Math.Min(1.0, (ElapsedGameTime.TotalMilliseconds * DxGame.Instance.TargetFps / DateTimeConstants.MILLISECONDS_PER_SECOND));
+                }
+                return scale_;
+            }
+        }
+
+        [NonSerialized]
+        [IgnoreDataMember]
+        private double scale_;
 
         public DxGameTime()
             : this(TimeSpan.Zero, TimeSpan.Zero)

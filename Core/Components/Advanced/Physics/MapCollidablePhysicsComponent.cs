@@ -21,7 +21,7 @@ namespace DXGame.Core.Components.Advanced.Physics
     [DataContract]
     public class MapCollidablePhysicsComponent : PhysicsComponent
     {
-        private const int MAX_COLLISION_CHECKS = 10;
+        private const int MAX_COLLISION_CHECKS = 20;
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private static readonly DxRectangleAreaComparer DXRECTANGLE_AREA_COMPARER = new DxRectangleAreaComparer();
         private static readonly TimeSpan IGNORE_EXPIRY = TimeSpan.FromMilliseconds(30);
@@ -96,7 +96,7 @@ namespace DXGame.Core.Components.Advanced.Physics
             // TODO: Properly handle buggy collisions (failsafe for now)
             for (int i = 0; i < MAX_COLLISION_CHECKS; ++i)
             {
-                var largestIntersectionTuple = FindLargestIntersection(mapTiles, collisionSpace);
+                var largestIntersectionTuple = FindLargestIntersection(mapTiles, collisionSpace, previousPosition);
                 if (largestIntersectionTuple == null)
                 {
                     break;
@@ -107,61 +107,45 @@ namespace DXGame.Core.Components.Advanced.Physics
                 var mapBlockDimensions = mapSpatial.Spatial.Dimensions;
 
                 var direction = traveledLine.Vector;
-                if (mapSpatial.CollidesWith(direction) &&
-                    !mapTilesToIgnore_.Any(spatial => Equals(spatial.Item1, mapSpatial)))
+                if(mapSpatial.CollidesWith(direction) && !mapTilesToIgnore_.Any(spatial => Equals(spatial.Item1, mapSpatial)))
                 {
-                    /*
-                        Wrap to the Y axis if the collision area was greater along the X axis (implies the collision occured either up or down,
-                        as a left/right collision *should* have very little overlap on the X axis.
-
-                        OR wrap to the Y axis if we weren't moving in the X direction. This prevents "warps", where the player is jumping
-                        something like a few pixels off of a block boundary and gets warped back.
-
-                        Since the acceleration from gravity is always going to throw us downward, we check this first.
-                    */
-                    if (largestIntersection.Width >= largestIntersection.Height ||
-                        Velocity.X.FuzzyCompare(0.0f) == 0)
+                    if(largestIntersection.Width >= largestIntersection.Height || Velocity.X.FuzzyCompare(0) == 0)
                     {
-                        // below collision
-                        if (collisionSpace.Y + collisionSpace.Height >= mapBlockPosition.Y && mapBlockPosition.Y > collisionSpace.Height && previousPosition.Y + Dimensions.Y <= mapBlockPosition.Y && mapSpatial.CollidableDirections.Contains(CollidableDirection.Up))
+                        if(previousPosition.Y <= mapBlockPosition.Y && mapSpatial.CollidableDirections.Contains(CollidableDirection.Up))
                         {
                             Position = new DxVector2(Position.X, mapBlockPosition.Y - Dimensions.Y);
                             collision.CollisionDirections[Direction.South] = mapSpatial;
                         }
-                        // above collision
-                        else if (mapSpatial.CollidableDirections.Contains(CollidableDirection.Down)) 
+                        else if(previousPosition.Y >= mapBlockPosition.Y && mapSpatial.CollidableDirections.Contains(CollidableDirection.Down))
                         {
                             Position = new DxVector2(Position.X, mapBlockPosition.Y + mapBlockDimensions.Y);
                             collision.CollisionDirections[Direction.North] = mapSpatial;
                         }
                     }
-                    /*
-                            Wrap to the X axis otherwise. 
-                    */
                     else
-                    // if (intersection.Height > intersection.Width || MathUtils.FuzzyCompare(Velocity.Y, 0.0, MathUtils.DoubleTolerance) == 0)
                     {
-                        // left collision 
-                        if (collisionSpace.X < mapBlockPosition.X + mapBlockDimensions.X && mapBlockPosition.X < collisionSpace.X && mapSpatial.CollidableDirections.Contains(CollidableDirection.Right))
+                        if((previousPosition.X >= mapBlockPosition.X && mapSpatial.CollidableDirections.Contains(CollidableDirection.Right)))
                         {
-                            Position = new DxVector2(Position.X + largestIntersection.Width, Position.Y);
+                            Position = new DxVector2(mapBlockPosition.X + mapBlockDimensions.X, Position.Y);
                             collision.CollisionDirections[Direction.West] = mapSpatial;
                         }
-                        // right collision
-                        else if(mapSpatial.CollidableDirections.Contains(CollidableDirection.Left))
+                        else if(previousPosition.X <= (mapBlockPosition.X) && mapSpatial.CollidableDirections.Contains(CollidableDirection.Left))
                         {
-                            Position = new DxVector2(Position.X - largestIntersection.Width, Position.Y);
-                            collision.CollisionDirections[Direction.East] = mapSpatial;
+                            Position = new DxVector2(mapBlockPosition.X - Dimensions.X, Position.Y);
+                            collision.CollisionDirections[Direction.West] = mapSpatial;
                         }
                     }
+
                     /* Since we just collided, recalculate our "collision space" */
                     traveledLine = new DxLine(previousPosition, Position);
                     collisionSpace = CollisionSpace(traveledLine);
                 }
+                
                 else
                 {
                     mapTiles.Remove(mapSpatial);
                 }
+
             }
 
             // Let everyone else know we collided (only if we collided with anything)
@@ -173,7 +157,7 @@ namespace DXGame.Core.Components.Advanced.Physics
 
         private static Tuple<DxRectangle, MapCollidableComponent> FindLargestIntersection(
             IEnumerable<MapCollidableComponent> mapTiles,
-            DxRectangle currentSpace)
+            DxRectangle currentSpace, DxVector2 originalSpace)
         {
             Tuple<DxRectangle, MapCollidableComponent> largestIntersection = null;
             foreach (var mapTile in mapTiles)
@@ -183,7 +167,7 @@ namespace DXGame.Core.Components.Advanced.Physics
                     continue;
                 }
                 // There's a bug here that causes like infinite collision detection, fix pls
-                var intersection = DxRectangle.Intersect(mapTile.Spatial.Space, currentSpace);
+                DxRectangle intersection = DxRectangle.Intersect(mapTile.Spatial.Space, currentSpace);
                 if (largestIntersection == null || DXRECTANGLE_AREA_COMPARER.Compare(intersection,
                     largestIntersection.Item1) <= 0)
                 {

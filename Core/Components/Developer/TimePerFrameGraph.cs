@@ -25,7 +25,7 @@ namespace DXGame.Core.Components.Developer
             var screenRegion = DxGame.Instance.ScreenRegion;
             // TODO: Fix whatever weird math is being done with the screen region to make drawing things "sane"
             var drawLocation = new Vector2(Math.Abs(screenRegion.X) + (screenRegion.Width / 2.0f),
-                -Math.Abs(screenRegion.Y));
+                Math.Abs(screenRegion.Y));
             var drawSize = new Vector2(TimePerFrameGraph.Size.X, TimePerFrameGraph.Size.Y);
             var blackTexture = TextureFactory.TextureForColor(Color.Black);
             const float transparencyWeight = 0.8f;

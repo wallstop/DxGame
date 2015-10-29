@@ -145,7 +145,6 @@ namespace DXGame.Core.Components.Advanced.Physics
                 {
                     mapTiles.Remove(mapSpatial);
                 }
-
             }
 
             // Let everyone else know we collided (only if we collided with anything)

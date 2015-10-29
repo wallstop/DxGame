@@ -20,28 +20,12 @@ namespace DXGame.Core
     [DataContract]
     public sealed class Team : IEquatable<Team>
     {
-        private static readonly ReaderWriterLockSlim GLOBAL_TEAM_LOCK = new ReaderWriterLockSlim();
-        private static readonly List<Team> TEAMS = new List<Team>();
+        private static readonly UnboundedLoadingCache<string, Team> TEAM_CACHE = new UnboundedLoadingCache<string, Team>(name => new Team(name));
         public string Name { get; }
         public static Team PlayerTeam { get; } = TeamFor("Player");
-        public static Team EnemyTeam { get; } = TeamFor("BasicEnemy");
+        public static Team EnemyTeam { get; } = TeamFor("Enemy");
 
-        /**
-            <summary>
-                All known teams.
-            </summary>
-        */
-
-        public static ReadOnlyCollection<Team> Teams
-        {
-            get
-            {
-                using (new CriticalRegion(GLOBAL_TEAM_LOCK, CriticalRegion.LockType.Read))
-                {
-                    return new ReadOnlyCollection<Team>(TEAMS);
-                }
-            }
-        }
+        public static IReadOnlyCollection<Team> Teams => TEAM_CACHE.Elements;
 
         private Team(string name)
         {
@@ -74,28 +58,7 @@ namespace DXGame.Core
         public static Team TeamFor(string name)
         {
             Validate.IsNotEmpty(name, $"Cannot have {typeof (Team)}s with null/empty Names");
-            using (new CriticalRegion(GLOBAL_TEAM_LOCK, CriticalRegion.LockType.Read))
-            {
-                var existingTeam = TEAMS.FirstOrDefault(team => team.Name == name);
-                if (existingTeam != null)
-                {
-                    return existingTeam;
-                }
-            }
-
-            using (new CriticalRegion(GLOBAL_TEAM_LOCK, CriticalRegion.LockType.Write))
-            {
-                /* Search again, someone may have beaten us in the race-for-write-locks */
-                var existingTeam = TEAMS.FirstOrDefault(team => team.Name == name);
-                if (existingTeam != null)
-                {
-                    return existingTeam;
-                }
-
-                var newTeam = new Team(name);
-                TEAMS.Add(newTeam);
-                return newTeam;
-            }
+            return TEAM_CACHE.Get(name);
         }
 
         public override bool Equals(object other)

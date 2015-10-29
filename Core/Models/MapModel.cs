@@ -45,7 +45,8 @@ namespace DXGame.Core.Models
         public override void Initialize()
         {
             // Figure out a better way of choosing the map
-            Map = maps_[1]; // Always grab sample map (testing yay)
+            Map = maps_[2]; // Always grab sample map (testing yay)
+
             Map.LoadContent();
             Map.Initialize();
             base.Initialize();

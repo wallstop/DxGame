@@ -124,6 +124,11 @@ namespace DXGame.Core.Utils
         {
             return (value % 2 == 0 ? value : value + 1);
         }
+
+        public static float SafeSqrt(float value)
+        {
+            return (float)(Math.Sign(value) * Math.Sqrt(Math.Abs(value)));
+        }
     }
 }
  

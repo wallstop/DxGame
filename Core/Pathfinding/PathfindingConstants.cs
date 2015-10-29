@@ -2,15 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DXGame.Core.Pathfinding
 {
     public static class PathfindingConstants
     {
-        public static readonly int SimulationUpperBound = 10;
+        public static readonly int SimulationUpperBound = 5;
         public static readonly double SimulationStep = 0.01;
         public static readonly TimeSpan MaxSimulationTime = TimeSpan.FromSeconds(SimulationUpperBound);
         public static readonly TimeSpan SimulationTimeStep = TimeSpan.FromSeconds(SimulationStep);

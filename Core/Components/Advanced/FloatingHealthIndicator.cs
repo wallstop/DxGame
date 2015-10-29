@@ -78,8 +78,8 @@ namespace DXGame.Core.Components.Advanced
         [DataMember]
         protected PositionalComponent position_;
 
-        public virtual int Health => entityProperties_.Health.CurrentValue;
-        public virtual int MaxHealth => entityProperties_.MaxHealth.CurrentValue;
+        public virtual int Health => entityProperties_.EntityProperties.Health.CurrentValue;
+        public virtual int MaxHealth => entityProperties_.EntityProperties.MaxHealth.CurrentValue;
         public virtual double PercentHealthRemaining => (double) Health / MaxHealth;
 
         protected FloatingHealthIndicator(DxVector2 floatDistance, Color foregroundColor,

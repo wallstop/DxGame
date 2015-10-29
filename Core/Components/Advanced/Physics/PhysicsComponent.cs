@@ -69,7 +69,7 @@ namespace DXGame.Core.Components.Advanced.Physics
         public static Tuple<DxVector2, DxVector2> ForceComputation(DxGameTime gameTime, DxVector2 position,
             DxVector2 velocity, List<Force> forces)
         {
-            var scaleAmount = gameTime.DetermineScaleFactor(DxGame.Instance);
+            var scaleAmount = gameTime.ScaleFactor;
             var acceleration = new DxVector2();
             foreach (var force in forces)
             {

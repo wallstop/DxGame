@@ -32,7 +32,7 @@ namespace DXGame.Core.Pathfinding
         {
             get;
         }
-
+ 
         public ExplorableMesh(NavigableSurface surface)
         {
             Validate.IsNotNull(surface, StringUtils.GetFormattedNullOrDefaultMessage(this, surface));

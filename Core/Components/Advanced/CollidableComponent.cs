@@ -105,11 +105,11 @@ namespace DXGame.Core.Components.Advanced
 
             if (velocity.Y < 0)
             {
-                collisions.Add(CollidableDirection.Up);
+                collisions.Add(CollidableDirection.Down);
             }
             else if (velocity.Y > 0)
             {
-                collisions.Add(CollidableDirection.Down);
+                collisions.Add(CollidableDirection.Up);
             }
             return collisions;
         }

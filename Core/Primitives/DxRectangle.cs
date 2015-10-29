@@ -45,6 +45,7 @@ namespace DXGame.Core.Primitives
         public DxLine BottomBorder => new DxLine(X, Y + Height, X + Width, Y + Height);
         public DxLine TopBorder => new DxLine(X, Y, X + Width, Y);
 
+        public DxVector2 Position => new DxVector2(X, Y);
 
         public List<DxLine> Lines
         {

@@ -252,7 +252,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
                     .Map.Collidables.InRange(new DxRectangle(Position.X, Position.Y, ARROW_RAIN_WIDTH, ARROW_RAIN_DEPTH))
                     .Select(tile => tile.Spatial.Space).ToList();
             mapTilesInRange.Sort((tile1, tile2) => (int) (tile2.Y - tile1.Y));
-            var scaleFactor = gameTime.DetermineScaleFactor(DxGame.Instance);
+            var scaleFactor = gameTime.ScaleFactor;
             /* 
                 We need to do a counting for loop because DxVector2s are structs 
                 (foreach would copy them instead of updating their references) 

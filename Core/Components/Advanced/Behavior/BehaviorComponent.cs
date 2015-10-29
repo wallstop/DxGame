@@ -12,12 +12,10 @@ namespace DXGame.Core.Components.Advanced.Behavior
     public class BehaviorComponent : Component
     {
         public Team Team { get; }
-        public StandardActionComponent Action { get; }
 
-        protected BehaviorComponent(StandardActionComponent actionComponent, Team team)
+        protected BehaviorComponent(Team team)
         {
             Team = team;
-            Action = actionComponent;
         }
 
         public static BehaviorComponentBuilder Builder()
@@ -27,16 +25,13 @@ namespace DXGame.Core.Components.Advanced.Behavior
 
         public class BehaviorComponentBuilder : IBuilder<BehaviorComponent>
         {
-            private StandardActionComponent actionComponent_;
             private Team team_;
 
             public BehaviorComponent Build()
             {
                 Validate.IsNotNull(team_, StringUtils.GetFormattedNullOrDefaultMessage(this, team_));
-                Validate.IsNotNull(actionComponent_,
-                    StringUtils.GetFormattedNullOrDefaultMessage(this, actionComponent_));
                 
-                return new BehaviorComponent(actionComponent_, team_);
+                return new BehaviorComponent(team_);
             }
 
             public BehaviorComponentBuilder WithTeam(Team team)
@@ -45,11 +40,6 @@ namespace DXGame.Core.Components.Advanced.Behavior
                 return this;
             }
 
-            public BehaviorComponentBuilder WithStandardActionComponent(StandardActionComponent actionComponent)
-            {
-                actionComponent_ = actionComponent;
-                return this;
-            }
         }
     }
 }

@@ -23,12 +23,10 @@ namespace DXGame.Core.Components.Advanced.Position
     public class BoundedSpatialComponent : SpatialComponent
     {
         [DataMember]
-        public DxVector2 XBounds { get; }
-
-        [DataMember]
-        public DxVector2 YBounds { get; }
-
-        public DxRectangle Bounds => new DxRectangle(XBounds.X, YBounds.Y, XBounds.Y - XBounds.X, YBounds.Y - YBounds.X);
+        public virtual DxRectangle Bounds
+        {
+            get;
+        }
 
         [IgnoreDataMember]
         public override DxVector2 Position
@@ -38,8 +36,9 @@ namespace DXGame.Core.Components.Advanced.Position
             {
                 float width = Dimensions.X;
                 float height = Dimensions.Y;
-                float x = MathHelper.Clamp(value.X, XBounds.X, XBounds.Y - width);
-                float y = MathHelper.Clamp(value.Y, YBounds.X, YBounds.Y - height);
+                DxRectangle bounds = Bounds;
+                float x = MathHelper.Clamp(value.X, bounds.X, bounds.X + bounds.Width - width);
+                float y = MathHelper.Clamp(value.Y, bounds.Y, bounds.Y + bounds.Height - height);
                 var newPosition = new DxVector2(x, y);
                 position_ = newPosition;
                 if (newPosition != value)
@@ -53,8 +52,13 @@ namespace DXGame.Core.Components.Advanced.Position
             DxVector2 yBounds)
             : base(position, dimensions)
         {
-            XBounds = xBounds;
-            YBounds = yBounds;
+            Bounds = new DxRectangle(xBounds.X, xBounds.Y - xBounds.X, yBounds.X, yBounds.Y - yBounds.X);
+        }
+
+        /* Useful for subclasses that have their own special bound logic */
+        protected BoundedSpatialComponent(DxVector2 position, DxVector2 dimensions)
+            : base(position, dimensions)
+        {
         }
 
         public new static BoundedSpatialComponentBuilder Builder()

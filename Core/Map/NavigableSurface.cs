@@ -146,8 +146,10 @@ namespace DXGame.Core.Map
         */
         [Serializable]
         [DataContract]
-        public class Node
+        public class Node : IComparable<Node>
         {
+            public static Node EmptyNode = new Node(new DxVector2(int.MinValue, int.MinValue), null);
+
             [DataMember]
             public DxVector2 Position { get; }
             [DataMember]
@@ -182,6 +184,33 @@ namespace DXGame.Core.Map
                 var node = other as Node;
                 return !ReferenceEquals(null, node) && Position == node.Position &&
                        Objects.Equals(MapTile, node.MapTile);
+            }
+
+            public int CompareTo(Node other)
+            {
+                if(ReferenceEquals(other, null))
+                {
+                    return 1;
+                }
+                int positionCompare = Position.CompareTo(other.Position);
+                if(positionCompare != 0)
+                {
+                    return positionCompare;
+                }
+                if(ReferenceEquals(other.MapTile, null))
+                {
+                    if(ReferenceEquals(MapTile, null))
+                    {
+                        return 0;
+                    }
+                    return 1;
+                }
+                if(ReferenceEquals(MapTile, null))
+                {
+                    return -1;
+                }
+
+                return MapTile.Id.CompareTo(other.MapTile.Id);
             }
         }
     }

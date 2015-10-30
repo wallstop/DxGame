@@ -48,7 +48,12 @@ namespace DXGame.Core.Pathfinding
         {
             Validate.IsNotNull(start);
             Validate.IsNotNull(path);
-            paths_[start].Add(path);
+            if(Objects.Equals(start, NavigableSurface.Node.EmptyNode))
+            {
+                return;
+            }
+            HashSet<Path> pathsFromStart = paths_[start];
+            pathsFromStart.Add(path);
         }
 
         /**
@@ -60,6 +65,10 @@ namespace DXGame.Core.Pathfinding
         public List<Path> PathsFrom(NavigableSurface.Node start)
         {
             Validate.IsNotNull(start);
+            if(Objects.Equals(start, NavigableSurface.Node.EmptyNode))
+            {
+                return Enumerable.Empty<Path>().ToList();
+            }
             return paths_[start].ToList();
         }
 

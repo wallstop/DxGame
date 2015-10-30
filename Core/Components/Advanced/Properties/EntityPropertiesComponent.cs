@@ -96,7 +96,7 @@ namespace DXGame.Core.Components.Advanced.Properties
                 (externalVelocity, acceleration, gameTime) =>
                 {
                     /* If our jumping force is applying a (down into the ground) acceleration, we're done! */
-                    var done = externalVelocity.Y > 0;
+                    var done = externalVelocity.Y >= 0;
                     if (done)
                     {
                         return Tuple.Create(true, new DxVector2());

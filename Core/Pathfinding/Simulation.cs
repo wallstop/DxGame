@@ -62,7 +62,7 @@ namespace DXGame.Core.Pathfinding
                 Additionally, we want to apply gravity to only CommandChains that contain a vertical movement component. 
                 This lets us properly "model" traveling across a surface 
              */
-            if(PathfindingConstants.VerticalTraversalCommandments.Except(commandChain.Commandments).Any())
+            if(PathfindingConstants.VerticalTraversalCommandments.Intersect(commandChain.Commandments).Any())
             {
                 initialForces.Add(WorldForces.Gravity);
             }
@@ -118,7 +118,7 @@ namespace DXGame.Core.Pathfinding
             double[] x = xPositions.ToArray();
             SanitizeXValues(x);
             double[] y = yPositions.ToArray();
-            const int polynomialOrder = 2;
+            const int polynomialOrder = 5;
             double[] xRegression = Fit.Polynomial(timesAsArray, x, polynomialOrder);
             double[] yRegression = Fit.Polynomial(timesAsArray, y, polynomialOrder);
             double[] positionalRegression = Fit.Polynomial(x, y, polynomialOrder);

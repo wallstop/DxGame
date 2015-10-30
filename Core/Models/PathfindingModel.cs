@@ -11,6 +11,7 @@ using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using NLog;
+using DXGame.Core.DataStructures;
 
 namespace DXGame.Core.Models
 {
@@ -73,8 +74,15 @@ namespace DXGame.Core.Models
             SortedSet<NavigableSurface.Node> available =
                 new SortedSet<NavigableSurface.Node>(Comparer<NavigableSurface.Node>.Create(
                     (first, second) =>
-                        (targetNode.Position - first.Position).MagnitudeSquared.CompareTo(
-                            (targetNode.Position - second.Position).MagnitudeSquared)
+                    {
+                        int distanceCompare = (targetNode.Position - first.Position).MagnitudeSquared.CompareTo(
+                            (targetNode.Position - second.Position).MagnitudeSquared);
+                        if(distanceCompare != 0)
+                        {
+                            return distanceCompare;
+                        }
+                        return first.CompareTo(second);
+                    }
                     )) {current};
 
             Dictionary<NavigableSurface.Node, NavigableSurface.Node> traveled =
@@ -164,8 +172,15 @@ namespace DXGame.Core.Models
             SortedSet<NavigableSurface.Node> available =
                 new SortedSet<NavigableSurface.Node>(Comparer<NavigableSurface.Node>.Create(
                     (first, second) =>
-                        (target.Position - first.Position).MagnitudeSquared.CompareTo(
-                            (target.Position - second.Position).MagnitudeSquared)
+                    {
+                        int distanceCompare = (target.Position - first.Position).MagnitudeSquared.CompareTo(
+                            (target.Position - second.Position).MagnitudeSquared);
+                        if(distanceCompare != 0)
+                        {
+                            return distanceCompare;
+                        }
+                        return first.CompareTo(second);
+                    }
                     )) {current};
 
             while (timer.Elapsed < maxTime)
@@ -177,16 +192,15 @@ namespace DXGame.Core.Models
                 }
                 current = available.Min;
                 available.Remove(current);
+                if(Objects.Equals(current, NavigableSurface.Node.EmptyNode))
+                {
+                    continue;
+                }
 
                 List<CommandChain> availableCommandments = mesh.AvailableCommandChains(current);
-                foreach (var entry in displacementApproximators)
+                foreach (var commandChain in availableCommandments)
                 {
-                    CommandChain commandChain = entry.Key;
-                    if (!availableCommandments.Contains(commandChain))
-                    {
-                        continue;
-                    }
-                    DisplacementApproximator approximator = entry.Value;
+                    DisplacementApproximator approximator = displacementApproximators[commandChain];
                     DxRectangle bounds = approximator.Bounds;
                     bounds.Height += spatial.Space.Height;
                     bounds.X += current.Position.X;
@@ -197,12 +211,16 @@ namespace DXGame.Core.Models
 
                     if (!maybeReachableNodes.Any())
                     {
+                        Path badPath = new Path(commandChain, TimeSpan.Zero, NavigableSurface.Node.EmptyNode);
+                        mesh.AttachPath(current, badPath);
                         // No nodes? Truck on!
                         continue;
                     }
 
                     if (maybeReachableNodes.Count == 1 && maybeReachableNodes.Contains(current))
                     {
+                        Path badPath = new Path(commandChain, TimeSpan.Zero, NavigableSurface.Node.EmptyNode);
+                        mesh.AttachPath(current, badPath);
                         // Only ourself? Truck on!
                         continue;
                     }

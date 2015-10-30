@@ -55,7 +55,7 @@ namespace DXGame.Core.Pathfinding
         {
             if(hash_ == 0)
             {
-                hash_ = Objects.HashCode(Time, Directions, End);
+                hash_ = Objects.HashCode(Directions, End);
             }
             return hash_;
         }

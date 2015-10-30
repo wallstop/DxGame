@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using Microsoft.Xna.Framework;
+using DXGame.Core.Utils;
 
 namespace DXGame.Core.Primitives
 {
@@ -180,7 +181,7 @@ namespace DXGame.Core.Primitives
 
         public override int GetHashCode()
         {
-            return X.GetHashCode() + Y.GetHashCode();
+            return Objects.HashCode(X, Y);
         }
 
         public Vector2 ToVector2()

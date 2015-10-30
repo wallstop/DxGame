@@ -125,7 +125,7 @@
     <Compile Include="Core\Components\Advanced\Command\AbstractCommandComponent.cs" />
     <Compile Include="Core\Components\Advanced\Damage\DamageComponent.cs" />
     <Compile Include="Core\Components\Advanced\Enemy\Spawner.cs" />
-    <Compile Include="Core\Components\Advanced\Enemy\SpawnerFactory.cs" />
+    <Compile Include="TowerGame\Enemies\SpawnerFactory.cs" />
     <Compile Include="Core\Components\Advanced\FacingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PathfindingInputComponent.cs" />
     <Compile Include="Core\Components\Advanced\Impulse\MapPlatformDropper.cs" />

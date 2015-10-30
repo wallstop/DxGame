@@ -46,7 +46,7 @@ namespace DXGame.Core.Pathfinding
             var path = other as Path;
             if(ReferenceEquals(path, null))
             {
-                return Objects.Equals(Time, path.Time) && Objects.Equals(End, path.End) && Objects.Equals(Directions, path.Directions);
+                return Objects.Equals(End, path.End) && Objects.Equals(Directions, path.Directions);
             }
             return false;
         }

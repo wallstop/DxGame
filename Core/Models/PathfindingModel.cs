@@ -12,6 +12,7 @@ using DXGame.Core.Utils;
 using DXGame.Main;
 using NLog;
 using DXGame.Core.DataStructures;
+using System.Collections;
 
 namespace DXGame.Core.Models
 {
@@ -70,7 +71,7 @@ namespace DXGame.Core.Models
 
             Explore(entity, targetNode, explorableMesh, displacementApproximators);
 
-            HashSet<NavigableSurface.Node> exhausted = new HashSet<NavigableSurface.Node>();
+            HashSet<NavigableSurface.Node> exhausted = new HashSet<NavigableSurface.Node>() { NavigableSurface.Node.EmptyNode };
             SortedSet<NavigableSurface.Node> available =
                 new SortedSet<NavigableSurface.Node>(Comparer<NavigableSurface.Node>.Create(
                     (first, second) =>
@@ -85,67 +86,67 @@ namespace DXGame.Core.Models
                     }
                     )) {current};
 
-            Dictionary<NavigableSurface.Node, NavigableSurface.Node> traveled =
+            Dictionary<NavigableSurface.Node, NavigableSurface.Node> traveledFrom =
                 new Dictionary<NavigableSurface.Node, NavigableSurface.Node>();
 
-            /* A starrrrr */
-            while (current != targetNode)
+            /* TODO: actual a star https://en.wikipedia.org/wiki/A*_search_algorithm */
+            while (available.Any())
             {
-                if (!available.Any())
+                current = available.Min;
+                if(current == targetNode)
                 {
-                    LOG.Warn($"Could not find path between {spatial.Space} and {target}");
                     break;
                 }
-                NavigableSurface.Node last = current;
-                current = available.Min;
-                traveled[last] = current;
-                available.Remove(current);
                 exhausted.Add(current);
+                available.Remove(current);
+
                 List<Path> paths = explorableMesh.PathsFrom(current);
                 foreach (Path path in paths)
                 {
                     NavigableSurface.Node end = path.End;
-                    if (!exhausted.Contains(end))
+                    if(!exhausted.Contains(end))
                     {
-                        available.Add(end);
+                        bool newNode = available.Add(end);
+                        if(newNode)
+                        {
+                            traveledFrom[end] = current;
+                        }
                     }
                 }
             }
 
-            PathfindingResult result = ReconstructPath(explorableMesh, originalNode,
-                targetNode, traveled);
+            PathfindingResult result = ReconstructPath(explorableMesh, targetNode, traveledFrom);
             return result;
         }
 
-        private static PathfindingResult ReconstructPath(ExplorableMesh mesh, NavigableSurface.Node start,
-            NavigableSurface.Node end, Dictionary<NavigableSurface.Node, NavigableSurface.Node> traveled)
+        private static PathfindingResult ReconstructPath(ExplorableMesh mesh, NavigableSurface.Node end, Dictionary<NavigableSurface.Node, NavigableSurface.Node> traveledFrom)
         {
-            NavigableSurface.Node current = start;
+            NavigableSurface.Node current = end;
             LinkedList<ImmutablePair<TimeSpan, CommandChain>> directions =
                 new LinkedList<ImmutablePair<TimeSpan, CommandChain>>();
             LinkedList<DxVector2> waypoints = new LinkedList<DxVector2>();
             waypoints.AddLast(current.Position);
             /* We can do direct equals here withour fear - our NavigableSurface.Nodes are straight up unique */
-            while (current != end)
+            while(traveledFrom.ContainsKey(current))
             {
-                List<Path> paths = mesh.PathsFrom(current);
-                if (!traveled.ContainsKey(current))
+                NavigableSurface.Node previousStep = traveledFrom[current];
+                if(previousStep == current)
                 {
-                    LOG.Warn(
-                        $"Could not properly reconstruct the path (no link between {current} and {end}. Bailing early.");
                     break;
                 }
-                NavigableSurface.Node nextStep = traveled[current];
-                Path correctPath = paths.FirstOrDefault(path => path.End == nextStep);
+                List<Path> paths = mesh.PathsFrom(previousStep);
+                /* Pick the shortest (time-wise) path */
+                paths.Sort(Comparer<Path>.Create((firstPath, secondPath) => firstPath.Time.CompareTo(secondPath.Time)));
+                Path correctPath = paths.FirstOrDefault(path => path.End == current);
                 if (correctPath == null)
                 {
                     LOG.Warn(
-                        $"Could not properly reconstruct the path (no link between {current} and {nextStep}. Bailing early.");
+                        $"Could not properly reconstruct the path (no link between {previousStep} and {current}. Bailing early.");
                     break;
                 }
-                directions.AddLast(new ImmutablePair<TimeSpan, CommandChain>(correctPath.Time, correctPath.Directions));
-                current = nextStep;
-                waypoints.AddLast(current.Position);
+                directions.AddFirst(new ImmutablePair<TimeSpan, CommandChain>(correctPath.Time, correctPath.Directions));
+                current = previousStep;
+                waypoints.AddFirst(current.Position);
             }
             return new PathfindingResult(directions, waypoints);
         }
@@ -250,7 +251,7 @@ namespace DXGame.Core.Models
                         /* Hey, maybe we can reach! */
                         TimeSpan time = approximator.TimeFor(displacement.X);
                         /* One last sanity check... */
-                        if (time <= PathfindingConstants.MaxSimulationTime)
+                        if (time <= PathfindingConstants.MaxComplexSimulationTime)
                         {
                             if (!mesh.Exhausted.Contains(node))
                             {

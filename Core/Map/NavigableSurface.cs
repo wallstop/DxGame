@@ -148,8 +148,6 @@ namespace DXGame.Core.Map
         [DataContract]
         public class Node : IComparable<Node>
         {
-            public static Node EmptyNode = new Node(new DxVector2(int.MinValue, int.MinValue), null);
-
             [DataMember]
             public DxVector2 Position { get; }
             [DataMember]

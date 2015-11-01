@@ -6,7 +6,7 @@ using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
 
-namespace DXGame.Core.Components.Advanced.Enemy
+namespace DXGame.Core.Components.Advanced.Entities
 {
     /*
         Simple function that, given a GameTime, returns true if a GameObject should be spawned there
@@ -21,9 +21,15 @@ namespace DXGame.Core.Components.Advanced.Enemy
     {
         protected SpawnTrigger SpawnTrigger { get; }
 
-        protected Spawner(DxVector2 position, DxRectangle spawnArea, SpawnTrigger spawnTrigger)
+        protected virtual DxRectangle SpawnArea => spawnArea_;
+
+        protected DxRectangle spawnArea_;
+
+        protected Spawner(DxRectangle spawnArea, SpawnTrigger spawnTrigger)
         {
+            Validate.IsNotNull(spawnTrigger);
             SpawnTrigger = spawnTrigger;
+            spawnArea_ = spawnArea;
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -41,8 +47,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
 
         private DxVector2 RandomPositionInSpawnArea()
         {
-            var map = DxGame.Instance.Model<MapModel>();
-            var spawnArea = map.RandomSpawnLocation;
+            var spawnArea = SpawnArea;
             var minX = spawnArea.X;
             var maxX = spawnArea.X + spawnArea.Width;
             var minY = spawnArea.Y;
@@ -60,21 +65,14 @@ namespace DXGame.Core.Components.Advanced.Enemy
 
         public class SpawnerBuilder : IBuilder<Spawner>
         {
-            private DxVector2 position_;
-            private DxRectangle spawnArea_;
-            private SpawnTrigger spawnTrigger_;
+            protected DxRectangle spawnArea_;
+            protected SpawnTrigger spawnTrigger_;
 
-            public Spawner Build()
+            public virtual Spawner Build()
             {
                 Validate.IsNotNullOrDefault(spawnTrigger_,
                     StringUtils.GetFormattedNullOrDefaultMessage(this, "SpawnTrigger"));
-                return new Spawner(position_, spawnArea_, spawnTrigger_);
-            }
-
-            public SpawnerBuilder WithPosition(DxVector2 position)
-            {
-                position_ = position;
-                return this;
+                return new Spawner(spawnArea_, spawnTrigger_);
             }
 
             public SpawnerBuilder WithSpawnArea(DxRectangle spawnArea)

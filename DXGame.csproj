@@ -124,7 +124,18 @@
     <Compile Include="Core\Components\Advanced\CollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\AbstractCommandComponent.cs" />
     <Compile Include="Core\Components\Advanced\Damage\DamageComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Enemy\Spawner.cs" />
+    <Compile Include="Core\Components\Advanced\Entities\RandomSpawner.cs" />
+    <Compile Include="Core\Components\Advanced\Entities\Spawner.cs" />
+    <Compile Include="Core\Components\Advanced\IEnvironmentComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Map\MapRotationTriggerComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Map\MapTransition.cs" />
+    <Compile Include="Core\Event.cs" />
+    <Compile Include="Core\Messaging\EnvironmentInteractionMessage.cs" />
+    <Compile Include="Core\Messaging\LevelEndRequest.cs" />
+    <Compile Include="Core\Messaging\MapRotationNotification.cs" />
+    <Compile Include="Core\Messaging\MapRotationRequest.cs" />
+    <Compile Include="Core\Models\EnvironmentModel.cs" />
+    <Compile Include="Core\Models\EventModel.cs" />
     <Compile Include="TowerGame\Enemies\SpawnerFactory.cs" />
     <Compile Include="Core\Components\Advanced\FacingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PathfindingInputComponent.cs" />
@@ -172,7 +183,6 @@
     <Compile Include="Core\Models\DeveloperModel.cs" />
     <Compile Include="Core\Models\MapModel.cs" />
     <Compile Include="Core\Models\PathfindingModel.cs" />
-    <Compile Include="Core\Models\PhysicsModel.cs" />
     <Compile Include="Core\Pathfinding\CommandChain.cs" />
     <Compile Include="Core\Pathfinding\DisplacementApproximator.cs" />
     <Compile Include="Core\Pathfinding\ExplorableMesh.cs" />

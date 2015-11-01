@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Linq;
-using DXGame.Core.Components.Advanced.Command;
-using DXGame.Core.Components.Advanced.Damage;
-using DXGame.Core.Components.Advanced.Impulse;
-using DXGame.Core.Components.Advanced.Physics;
-using DXGame.Core.Components.Advanced.Position;
-using DXGame.Core.Components.Advanced.Properties;
-using DXGame.Core.Components.Developer;
-using DXGame.Core.Models;
+using DXGame.Core;
+using DXGame.Core.Components.Advanced.Entities;
 using DXGame.Core.Primitives;
-using DXGame.Core.State;
 using DXGame.Main;
 using DXGame.TowerGame.Components;
-using DXGame.TowerGame.Enemies;
 using NLog;
 
-namespace DXGame.Core.Components.Advanced.Enemy
+namespace DXGame.TowerGame.Enemies
 {
     public static class SpawnerFactory
     {
@@ -23,7 +15,7 @@ namespace DXGame.Core.Components.Advanced.Enemy
         {
             var spawnFunction = new SimpleBoxSpawnFunction();
             return
-                Spawner.Builder()
+                RandomSpawner.Builder()
                     .WithSpawnTrigger(spawnFunction.Spawn)
                     .Build();
         }

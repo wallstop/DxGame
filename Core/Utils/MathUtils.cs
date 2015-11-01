@@ -114,7 +114,7 @@ namespace DXGame.Core.Utils
             return (lhs > rhs ? 1 : -1);
         }
 
-        public static int WrappedAdd(int value, int increment, int max)
+        public static int WrappedAdd(this int value, int increment, int max)
         {
             return (value + increment) % max;
         }

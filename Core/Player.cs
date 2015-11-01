@@ -19,19 +19,21 @@ namespace DXGame.Core
     [DataContract]
     public class Player
     {
-        [DataMember] private readonly GameObject player_;
-        public SpatialComponent Position => player_.ComponentOfType<SpatialComponent>();
-        public EntityPropertiesComponent Properties => player_.ComponentOfType<EntityPropertiesComponent>();
-        public PhysicsComponent Physics => player_.ComponentOfType<PhysicsComponent>();
-        public AnimationComponent Animation => player_.ComponentOfType<AnimationComponent>();
-        public SkillComponent Abilities => player_.ComponentOfType<SkillComponent>();
+        [DataMember]
+        public GameObject Object { get; }
+
+        public SpatialComponent Position => Object.ComponentOfType<SpatialComponent>();
+        public EntityPropertiesComponent Properties => Object.ComponentOfType<EntityPropertiesComponent>();
+        public PhysicsComponent Physics => Object.ComponentOfType<PhysicsComponent>();
+        public AnimationComponent Animation => Object.ComponentOfType<AnimationComponent>();
+        public SkillComponent Abilities => Object.ComponentOfType<SkillComponent>();
 
         [DataMember]
         public string Name { get; private set; }
 
         private Player(GameObject gameObject)
         {
-            player_ = gameObject;
+            Object = gameObject;
         }
 
         public static Player PlayerFrom(GameObject existingPlayer, string name)

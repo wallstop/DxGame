@@ -25,6 +25,9 @@ namespace DXGame.Core.Map
         public MapDescriptor MapDescriptor { get; private set; }
 
         [IgnoreDataMember]
+        public DxRectangle ScaledBounds => MapDescriptor.Size*MapDescriptor.Scale;
+
+        [IgnoreDataMember]
         public Texture2D MapTexture
         {
             get { return mapTexture_; }
@@ -41,7 +44,7 @@ namespace DXGame.Core.Map
         {
             get
             {
-                var boundary = MapDescriptor.Size * MapDescriptor.Scale;
+                var boundary = ScaledBounds;
                 DxRectangle spawnLocation;
                 do
                 {
@@ -49,8 +52,8 @@ namespace DXGame.Core.Map
                     /* TODO: Have this be some kind of chooseable algorithm or something (bundled in map descriptor? ) */
                     spawnLocation =
                         new DxRectangle(
-                            ThreadLocalRandom.Current.NextFloat(boundary.X, (boundary.X + boundary.Width)),
-                            ThreadLocalRandom.Current.NextFloat(boundary.Y, (boundary.Y + boundary.Height)), 250, 250);
+                            ThreadLocalRandom.Current.NextFloat(boundary.X, (boundary.X + boundary.Width - 250)),
+                            ThreadLocalRandom.Current.NextFloat(boundary.Y, (boundary.Y + boundary.Height - 250)), 250, 250);
                 } while (CollidesWithMap(spawnLocation));
                 return spawnLocation;
             }

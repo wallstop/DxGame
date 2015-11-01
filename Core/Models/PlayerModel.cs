@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using DXGame.Core.Messaging;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using NLog;
@@ -19,6 +21,21 @@ namespace DXGame.Core.Models
         [DataMember]
         public ICollection<Player> Players { get; private set; } = new List<Player>();
 
+        public PlayerModel()
+        {
+            MessageHandler.RegisterMessageHandler<MapRotationNotification>(HandleMapRotationNotification);
+        }
+
+
+        private void HandleMapRotationNotification(MapRotationNotification mapRotationNotification)
+        {
+            MapModel mapModel = DxGame.Instance.Model<MapModel>();
+            DxVector2 playerSpawn = mapModel.PlayerSpawn;
+            foreach (Player player in Players)
+            {
+                player.Position.Position = playerSpawn;
+            }
+        }
         /* 
             Do we need this distinction?
         */

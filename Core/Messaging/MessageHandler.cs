@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
+using NLog;
 
 namespace DXGame.Core.Messaging
 {
@@ -20,8 +22,20 @@ namespace DXGame.Core.Messaging
     [DataContract]
     public class MessageHandler
     {
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
         [DataMember] private readonly Dictionary<Type, List<object>> typesToMessageHandlers_ =
             new Dictionary<Type, List<object>>();
+
+        [DataMember]
+        public bool AcceptAll { get; private set; } = false;
+
+        public void EnableAcceptAll()
+        {
+            Validate.IsFalse(AcceptAll, $"Expected {nameof(AcceptAll)} to be false, but it was not :(");
+            LOG.Info($"Enabling Accept-All mode");
+            AcceptAll = true;
+        }
 
         public void RegisterMessageHandler<T>(TypedMessageHandler<T> messageHandler) where T : Message
         {
@@ -59,14 +73,34 @@ namespace DXGame.Core.Messaging
 
         public void HandleMessage<T>(T message) where T : Message
         {
-            var type = typeof (T);
-            if (!typesToMessageHandlers_.ContainsKey(type))
+            if(AcceptAll)
+            {
+                SpamMessageHandlers<T>(message);
+            }
+            else
+            {
+                ActuallyHandleMessage<T>(message);
+            }
+        }
+
+        private void SpamMessageHandlers<T>(T message) where T : Message
+        {
+            foreach(object messageHandler in typesToMessageHandlers_.Values.SelectMany(values => values))
+            {
+                ((TypedMessageHandler<T>) (messageHandler))(message);
+            }
+        }
+
+        private void ActuallyHandleMessage<T>(T message) where T : Message
+        {
+            var type = typeof(T);
+            if(!typesToMessageHandlers_.ContainsKey(type))
             {
                 return;
             }
 
             IEnumerable<object> messageHandlers = typesToMessageHandlers_[type];
-            foreach (var messageHandler in messageHandlers)
+            foreach(var messageHandler in messageHandlers)
             {
                 /* They're really TypedMessageHandlers, I promise! */
                 ((TypedMessageHandler<T>) (messageHandler))(message);

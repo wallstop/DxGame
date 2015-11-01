@@ -63,71 +63,63 @@ namespace DXGame.Core.Models
                 return PathfindingResult.EmptyResult;
             }
             NavigableSurface.Node originalNode = maybeOriginalNode.Value;
+            NavigableSurface.Node current = originalNode;
 
             ExplorableMesh explorableMesh = ExplorableMeshCache.MeshFor(entity, navigationMesh);
             Dictionary<CommandChain, DisplacementApproximator> displacementApproximators =
                 Simulation.DetermineDisplacementApproximators(entity);
 
             Explore(entity, targetNode, explorableMesh, displacementApproximators);
-            HashSet<Path> exhausted = new HashSet<Path>();
-            HashSet<Path> availablePaths = new HashSet<Path>();
-            SortedSet<PathfindingEdge> rankedAvailable = new SortedSet<PathfindingEdge>();
-            Dictionary<NavigableSurface.Node, PathfindingEdge> internalGraph = new Dictionary<NavigableSurface.Node, PathfindingEdge>();
 
-            Path initialPath = new Path(PathfindingConstants.CommandChainNone, TimeSpan.Zero, null, originalNode);
-            PathfindingEdge initialEdge = new PathfindingEdge(initialPath, 0, 0);
-            internalGraph[originalNode] = initialEdge;
-            foreach(Path path in explorableMesh.PathsFrom(originalNode))
-            {
-                if(exhausted.Add(path))
-                {
-                    rankedAvailable.Add(new PathfindingEdge(path, AStarHeuristic(path.Start, path.End), AStarHeuristic(path.End, targetNode)));
-                }
-            }
+            HashSet<NavigableSurface.Node> exhausted = new HashSet<NavigableSurface.Node>() { NavigableSurface.Node.EmptyNode };
+            SortedSet<NavigableSurface.Node> available =
+                new SortedSet<NavigableSurface.Node>(Comparer<NavigableSurface.Node>.Create(
+                    (first, second) =>
+                    {
+                        int distanceCompare = (targetNode.Position - first.Position).MagnitudeSquared.CompareTo(
+                            (targetNode.Position - second.Position).MagnitudeSquared);
+                        if(distanceCompare != 0)
+                        {
+                            return distanceCompare;
+                        }
+                        return first.CompareTo(second);
+                    }
+                    )) {current};
 
-            while (rankedAvailable.Any())
+            Dictionary<NavigableSurface.Node, NavigableSurface.Node> traveledFrom =
+                new Dictionary<NavigableSurface.Node, NavigableSurface.Node>();
+
+            /* TODO: actual a star https://en.wikipedia.org/wiki/A*_search_algorithm */
+            while (available.Any())
             {
-                PathfindingEdge current = rankedAvailable.Min;
-                Path definingPath = current.Path;
-                if(!internalGraph.ContainsKey(definingPath.End) || internalGraph[definingPath.End].G > current.G)
-                {
-                    internalGraph[definingPath.End] = current;
-                }
-                if(definingPath.End == targetNode)
+                current = available.Min;
+                if(current == targetNode)
                 {
                     break;
                 }
+                exhausted.Add(current);
+                available.Remove(current);
 
-                rankedAvailable.Remove(current);
-                availablePaths.Remove(definingPath);
-                exhausted.Add(definingPath);
-                foreach(Path neighbor in explorableMesh.PathsFrom(definingPath.End))
+                List<Path> paths = explorableMesh.PathsFrom(current);
+                foreach (Path path in paths)
                 {
-                    if(exhausted.Contains(neighbor))
+                    NavigableSurface.Node end = path.End;
+                    if(!exhausted.Contains(end))
                     {
-                        continue;
+                        bool newNode = available.Add(end);
+                        if(newNode)
+                        {
+                            traveledFrom[end] = current;
+                        }
                     }
-                    float tentativeGScore = current.G + AStarHeuristic(neighbor.End, neighbor.Start);
-                    PathfindingEdge neighborEdge = new PathfindingEdge(neighbor, tentativeGScore, AStarHeuristic(neighbor.End, targetNode));
-                    if(!availablePaths.Add(neighbor))
-                    {
-                        continue;
-                    }
-                    availablePaths.Add(neighbor);
-                    rankedAvailable.Add(neighborEdge);
                 }
             }
 
-            PathfindingResult result = ReconstructPath(explorableMesh, originalNode, targetNode, internalGraph);
+            PathfindingResult result = ReconstructPath(explorableMesh, targetNode, traveledFrom);
             return result;
         }
 
-        private static float AStarHeuristic(NavigableSurface.Node start, NavigableSurface.Node end)
-        {
-            return (start.Position - end.Position).MagnitudeSquared;
-        }
-
-        private static PathfindingResult ReconstructPath(ExplorableMesh mesh, NavigableSurface.Node start, NavigableSurface.Node end, Dictionary<NavigableSurface.Node, PathfindingEdge> traveledFrom)
+        private static PathfindingResult ReconstructPath(ExplorableMesh mesh, NavigableSurface.Node end, Dictionary<NavigableSurface.Node, NavigableSurface.Node> traveledFrom)
         {
             NavigableSurface.Node current = end;
             LinkedList<ImmutablePair<TimeSpan, CommandChain>> directions =
@@ -135,13 +127,26 @@ namespace DXGame.Core.Models
             LinkedList<DxVector2> waypoints = new LinkedList<DxVector2>();
             waypoints.AddLast(current.Position);
             /* We can do direct equals here withour fear - our NavigableSurface.Nodes are straight up unique */
-            while(!ReferenceEquals(current, null) && traveledFrom.ContainsKey(current))
+            while(traveledFrom.ContainsKey(current))
             {
-                PathfindingEdge edge = traveledFrom[current];
-                Path correctPath = edge.Path;
+                NavigableSurface.Node previousStep = traveledFrom[current];
+                if(previousStep == current)
+                {
+                    break;
+                }
+                List<Path> paths = mesh.PathsFrom(previousStep);
+                /* Pick the shortest (time-wise) path */
+                paths.Sort(Comparer<Path>.Create((firstPath, secondPath) => firstPath.Time.CompareTo(secondPath.Time)));
+                Path correctPath = paths.FirstOrDefault(path => path.End == current);
+                if (correctPath == null)
+                {
+                    LOG.Warn(
+                        $"Could not properly reconstruct the path (no link between {previousStep} and {current}. Bailing early.");
+                    break;
+                }
                 directions.AddFirst(new ImmutablePair<TimeSpan, CommandChain>(correctPath.Time, correctPath.Directions));
-                current = correctPath.Start;
-                waypoints.AddFirst(correctPath.End.Position);
+                current = previousStep;
+                waypoints.AddFirst(current.Position);
             }
             return new PathfindingResult(directions, waypoints);
         }
@@ -188,6 +193,10 @@ namespace DXGame.Core.Models
                 }
                 current = available.Min;
                 available.Remove(current);
+                if(Objects.Equals(current, NavigableSurface.Node.EmptyNode))
+                {
+                    continue;
+                }
 
                 List<CommandChain> availableCommandments = mesh.AvailableCommandChains(current);
                 foreach (var commandChain in availableCommandments)
@@ -203,12 +212,16 @@ namespace DXGame.Core.Models
 
                     if (!maybeReachableNodes.Any())
                     {
+                        Path badPath = new Path(commandChain, TimeSpan.Zero, NavigableSurface.Node.EmptyNode);
+                        mesh.AttachPath(current, badPath);
                         // No nodes? Truck on!
                         continue;
                     }
 
                     if (maybeReachableNodes.Count == 1 && maybeReachableNodes.Contains(current))
                     {
+                        Path badPath = new Path(commandChain, TimeSpan.Zero, NavigableSurface.Node.EmptyNode);
+                        mesh.AttachPath(current, badPath);
                         // Only ourself? Truck on!
                         continue;
                     }
@@ -245,14 +258,14 @@ namespace DXGame.Core.Models
                                 available.Add(node);
                             }
                             /* We're GOOD BOYS */
-                            Path path = new Path(commandChain, time, current, node);
+                            Path path = new Path(commandChain, time, node);
                             /* 
                                 TODO: We need to handle un-traversable paths. All we have right now are the movement vectors. 
                                 We don't take into account if the movement vectors would collide us with anything - we simply
                                 assume that if we can point a movement vector from one map point to another, than we can move there.
                                 This is badong, and needs to be fixed (somewhere in this method) 
                             */
-                            mesh.AttachPath(path);
+                            mesh.AttachPath(current, path);
                         }
                     }
                 }
@@ -279,65 +292,6 @@ namespace DXGame.Core.Models
             bounds.Width += FudgeFactor * 2;
             bounds.Height += FudgeFactor * 2;
             return bounds;
-        }
-
-        private class PathfindingEdge : IComparable<PathfindingEdge>
-        {
-            public Path Path
-            {
-                get;
-            }
-
-            public float G
-            {
-                get;
-            }
-
-            public float F
-            {
-                get;
-            }
-
-            public PathfindingEdge(Path path, float g, float f)
-            {
-                Validate.IsNotNull(path);
-                Path = path;
-                G = g;
-                F = f;
-            }
-
-            public int CompareTo(PathfindingEdge other)
-            {
-                if(ReferenceEquals(other, null))
-                {
-                    return 1;
-                }
-                if(Objects.Equals(Path, other.Path))
-                {
-                    return 0;
-                }
-                int weightComparison = F.CompareTo(other.F);
-                if(weightComparison != 0)
-                {
-                    return weightComparison;
-                }
-                return Path.CompareTo(other.Path);
-            }
-
-            public override int GetHashCode()
-            {
-                return Path.GetHashCode();
-            }
-
-            public override bool Equals(object other)
-            {
-                PathfindingEdge edge = other as PathfindingEdge;
-                if(!ReferenceEquals(edge, null))
-                {
-                    return Path.Equals(edge.Path);
-                }
-                return false;
-            }
         }
     }
 }

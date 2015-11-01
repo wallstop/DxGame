@@ -44,14 +44,15 @@ namespace DXGame.Core.Pathfinding
             Exhausted = new HashSet<NavigableSurface.Node>();
         }
 
-        public void AttachPath(Path path)
+        public void AttachPath(NavigableSurface.Node start, Path path)
         {
+            Validate.IsNotNull(start);
             Validate.IsNotNull(path);
-            if(Objects.Equals(path.Start, path.End))
+            if(Objects.Equals(start, NavigableSurface.Node.EmptyNode))
             {
                 return;
             }
-            HashSet<Path> pathsFromStart = paths_[path.Start];
+            HashSet<Path> pathsFromStart = paths_[start];
             pathsFromStart.Add(path);
         }
 
@@ -64,6 +65,10 @@ namespace DXGame.Core.Pathfinding
         public List<Path> PathsFrom(NavigableSurface.Node start)
         {
             Validate.IsNotNull(start);
+            if(Objects.Equals(start, NavigableSurface.Node.EmptyNode))
+            {
+                return Enumerable.Empty<Path>().ToList();
+            }
             return paths_[start].ToList();
         }
 

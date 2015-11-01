@@ -11,7 +11,7 @@ namespace DXGame.Core.Pathfinding
 {
     [Serializable]
     [DataContract]
-    public class CommandChain : IComparable<CommandChain>
+    public class CommandChain
     {
         public IEnumerable<Commandment> Commandments => commandments_;
 
@@ -47,26 +47,5 @@ namespace DXGame.Core.Pathfinding
             return hash_;
         }
 
-        public int CompareTo(CommandChain other)
-        {
-            if(ReferenceEquals(other, null))
-            {
-                return 1;
-            }
-            int lengthComparison = commandments_.Count.CompareTo(other.commandments_.Count);
-            if(lengthComparison != 0)
-            {
-                return lengthComparison;
-            }
-            for(int i = 0; i < lengthComparison; ++i)
-            {
-                int commandComparison = commandments_[i].CompareTo(other.commandments_[i]);
-                if(commandComparison != 0)
-                {
-                    return commandComparison;
-                }
-            }
-            return 0;
-        }
     }
 }

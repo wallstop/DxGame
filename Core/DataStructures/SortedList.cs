@@ -102,6 +102,10 @@ namespace DXGame.Core.DataStructures
             Add(item);
         }
 
+        public T Min => list_[0];
+
+        public T Max => list_[list_.Count - 1];
+
         public void RemoveAt(int index)
         {
             list_.RemoveAt(index);

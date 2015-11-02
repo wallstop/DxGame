@@ -30,7 +30,7 @@ namespace DXGame.Core.Primitives
         public static DxRadian West => new DxRadian( Math.PI / 2);
         public static DxRadian North => new DxRadian(0);
         public static float MinValue => 0.0f;
-        public static float MaxValue => (float)Math.PI;
+        public static float MaxValue => (float)Math.PI * 2;
 
         [DataMember] public float Value;
         public DxDegree Degree => new DxDegree(this);

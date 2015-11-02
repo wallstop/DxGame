@@ -58,21 +58,23 @@ namespace DXGame.Core.Pathfinding
                     forceRegenerators.Add(() => properties.MovementForceFor(concreteCommandment));
                 }
             }
+
+            TimeSpan maxSimulationTime = PathfindingConstants.SimulationTimes[commandChain];
             /* 
                 Additionally, we want to apply gravity to only CommandChains that contain a vertical movement component. 
                 This lets us properly "model" traveling across a surface 
              */
-            if(PathfindingConstants.VerticalTraversalCommandments.Except(commandChain.Commandments).Any())
+            if(PathfindingConstants.VerticalTraversalCommandments.Intersect(commandChain.Commandments).Any())
             {
                 initialForces.Add(WorldForces.Gravity);
             }
             /* And finally, everything is affected by air resistance */
             initialForces.Add(WorldForces.AirResistance);
 
-            return SimulateAndApproximate(initialForces, forceRegenerators);
+            return SimulateAndApproximate(initialForces, forceRegenerators, maxSimulationTime);
         }
 
-        private static DisplacementApproximator SimulateAndApproximate(List<Force> initialForces, List<Func<Force>> forceRegenerators)
+        private static DisplacementApproximator SimulateAndApproximate(List<Force> initialForces, List<Func<Force>> forceRegenerators, TimeSpan maxSimulationTime)
         {
             /* Initialize our simulation shit */
             DxVector2 position = DxVector2.EmptyVector;
@@ -80,13 +82,13 @@ namespace DXGame.Core.Pathfinding
                 (current, force) => current + force.InitialVelocity);
             DxGameTime gameTime = new DxGameTime(TimeSpan.Zero, TimeSpan.Zero, false);
 
-            int expectedNumberOfElements = (int) ((PathfindingConstants.SimulationUpperBound + 1) / PathfindingConstants.SimulationStep);
+            int expectedNumberOfElements = (int) ((maxSimulationTime.TotalSeconds + 1) / PathfindingConstants.SimulationStep);
             List<double> times = new List<double>(expectedNumberOfElements);
             List<double> xPositions = new List<double>(expectedNumberOfElements);
             List<double> yPositions = new List<double>(expectedNumberOfElements);
 
             /* Basic sim loop: step "time frame by time frame" through our wonderful physics world */
-            for(double i = 0; i < PathfindingConstants.SimulationUpperBound; i += PathfindingConstants.SimulationStep)
+            for(double i = 0; i < maxSimulationTime.TotalSeconds; i += PathfindingConstants.SimulationStep)
             {
                 var newPositionAndVelocity = PhysicsComponent.ForceComputation(gameTime, position, velocity, initialForces);
                 position = newPositionAndVelocity.Item1;
@@ -118,12 +120,12 @@ namespace DXGame.Core.Pathfinding
             double[] x = xPositions.ToArray();
             SanitizeXValues(x);
             double[] y = yPositions.ToArray();
-            const int polynomialOrder = 2;
+            const int polynomialOrder = 5;
             double[] xRegression = Fit.Polynomial(timesAsArray, x, polynomialOrder);
             double[] yRegression = Fit.Polynomial(timesAsArray, y, polynomialOrder);
             double[] positionalRegression = Fit.Polynomial(x, y, polynomialOrder);
             double[] xToTimeRegression = Fit.Polynomial(x, timesAsArray, polynomialOrder);
-            return new DisplacementApproximator(xRegression, yRegression, positionalRegression, xToTimeRegression, bounds);
+            return new DisplacementApproximator(xRegression, yRegression, positionalRegression, xToTimeRegression, bounds, maxSimulationTime);
         }
 
         /**

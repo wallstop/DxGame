@@ -27,6 +27,12 @@ namespace DXGame.Core.Pathfinding
         [DataMember]
         private double[] XToTimeRegression { get; }
 
+        [DataMember]
+        public TimeSpan MaxSimulationTime
+        {
+            get;
+        }
+
         /**
             <summary>
                 Represents the absolute upper bounds that this displacement can have as an effect on an object
@@ -40,13 +46,14 @@ namespace DXGame.Core.Pathfinding
         private int hash_;
 
         public DisplacementApproximator(double[] xRegression, double[] yRegression, double[] positionalRegression,
-            double[] xToTimeRegression, DxRectangle bounds)
+            double[] xToTimeRegression, DxRectangle bounds, TimeSpan maxSimulationTime)
         {
             XTerms = xRegression;
             YTerms = yRegression;
             PositionalTerms = positionalRegression;
             XToTimeRegression = xToTimeRegression;
             Bounds = bounds;
+            MaxSimulationTime = maxSimulationTime;
         }
 
         /**

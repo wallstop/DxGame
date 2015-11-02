@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using Microsoft.Xna.Framework;
+using DXGame.Core.Utils;
 
 namespace DXGame.Core.Primitives
 {
@@ -14,7 +15,7 @@ namespace DXGame.Core.Primitives
 
     [Serializable]
     [DataContract]
-    public struct DxVector2 : IEquatable<DxVector2>, IEquatable<Vector2>
+    public struct DxVector2 : IEquatable<DxVector2>, IEquatable<Vector2>, IComparable<DxVector2>
     {
         [DataMember] public float X;
         [DataMember] public float Y;
@@ -180,7 +181,7 @@ namespace DXGame.Core.Primitives
 
         public override int GetHashCode()
         {
-            return X.GetHashCode() + Y.GetHashCode();
+            return Objects.HashCode(X, Y);
         }
 
         public Vector2 ToVector2()
@@ -191,6 +192,21 @@ namespace DXGame.Core.Primitives
         public override string ToString()
         {
             return $"{{ X:{X:N2}, Y:{Y:N2} }}";
+        }
+
+        public int CompareTo(DxVector2 other)
+        {
+            int magnitudeCompare = MagnitudeSquared.CompareTo(other.MagnitudeSquared);
+            if(magnitudeCompare != 0)
+            {
+                return magnitudeCompare;
+            }
+            int xCompare = X.CompareTo(other.X);
+            if(xCompare != 0)
+            {
+                return xCompare;
+            }
+            return Y.CompareTo(other.Y);
         }
     }
 }

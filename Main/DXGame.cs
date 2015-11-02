@@ -206,6 +206,11 @@ namespace DXGame.Main
             RemovedGameElements.Add(component);
         }
 
+        public void Remove(object element)
+        {
+            RemovedGameElements.Add(element);
+        }
+
         // TODO: Figure out a better way to remove shit from the game
         public void RemoveComponents(params Component[] components)
         {
@@ -274,7 +279,7 @@ namespace DXGame.Main
             {
                 Exit();
             }
-
+            
             switch (UpdateMode)
             {
                 case UpdateMode.Active:

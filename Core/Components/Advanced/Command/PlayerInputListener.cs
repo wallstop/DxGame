@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
@@ -108,7 +109,8 @@ namespace DXGame.Core.Components.Advanced.Command
             if (inputEvents.Any(keyEvent => keyEvent.Key == DxGame.Instance.Controls.Down && keyEvent.HeldDown) &&
                 (lastDroppedThroughPlatform_ + DROP_THROUGH_PLATFORM_DELAY) < gameTime.TotalGameTime)
             {
-                Parent?.BroadcastMessage(new DropThroughPlatformRequest());
+                Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.MoveDown});
+                Parent?.BroadcastMessage(new DropThroughPlatformRequest()); // TODO: Move out to somewhere else?
                 lastDroppedThroughPlatform_ = gameTime.TotalGameTime;
             }
         }
@@ -168,6 +170,7 @@ namespace DXGame.Core.Components.Advanced.Command
             if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Interact))
             {
                 Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.InteractWithEnvironment});
+                DxGame.Instance.BroadcastMessage(new EnvironmentInteractionMessage {Source = Parent, Time = gameTime}); // TODO: Move somewhere else?
             }
         }
     }

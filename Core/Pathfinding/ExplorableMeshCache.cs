@@ -1,4 +1,5 @@
-﻿using DXGame.Core.Map;
+﻿using DXGame.Core.Components.Advanced;
+using DXGame.Core.Map;
 using DXGame.Core.Utils;
 using System;
 using System.Collections.Generic;
@@ -11,8 +12,8 @@ namespace DXGame.Core.Pathfinding
 {
     public class ExplorableMeshCache
     {
-        private static readonly ThreadLocal<Dictionary<ImmutablePair<UniqueId, NavigableSurface>, ExplorableMesh>> CACHE = 
-            new ThreadLocal<Dictionary<ImmutablePair<UniqueId, NavigableSurface>, ExplorableMesh>>(() => new Dictionary<ImmutablePair<UniqueId, NavigableSurface>, ExplorableMesh>());
+        private static readonly ThreadLocal<Dictionary<ImmutablePair<EntityType, NavigableSurface>, ExplorableMesh>> CACHE = 
+            new ThreadLocal<Dictionary<ImmutablePair<EntityType, NavigableSurface>, ExplorableMesh>>(() => new Dictionary<ImmutablePair<EntityType, NavigableSurface>, ExplorableMesh>());
 
         public static ExplorableMesh MeshFor(GameObject entity, NavigableSurface surface)
         {
@@ -26,8 +27,10 @@ namespace DXGame.Core.Pathfinding
         private static ExplorableMesh PopulateOrRetrieveMesh(GameObject entity, NavigableSurface surface)
         {
             var cachedNavigationMesh = CACHE.Value;
-            var entityId = entity.Id;
-            var key = new ImmutablePair<UniqueId, NavigableSurface>(entityId, surface);
+            EntityTypeComponent entityTypeComponent = entity.ComponentOfType<EntityTypeComponent>();
+            EntityType entityType = entityTypeComponent.EntityType;
+
+            var key = new ImmutablePair<EntityType, NavigableSurface>(entityType, surface);
             if(cachedNavigationMesh.ContainsKey(key))
             {
                 return cachedNavigationMesh[key];

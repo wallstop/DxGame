@@ -129,6 +129,7 @@
     <Compile Include="Core\Components\Advanced\IEnvironmentComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapRotationTriggerComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapTransition.cs" />
+    <Compile Include="Core\Components\Advanced\TriggerComponent.cs" />
     <Compile Include="Core\Event.cs" />
     <Compile Include="Core\Messaging\EnvironmentInteractionMessage.cs" />
     <Compile Include="Core\Messaging\LevelEndRequest.cs" />

@@ -115,6 +115,12 @@ namespace DXGame.Main
             Content.RootDirectory = "Content";
         }
 
+        /**
+
+            <summary>
+                Broadcasts a message to all Models
+            </summary>
+        */
         public void BroadcastMessage<T>(T message) where T: Message
         {
             foreach (var model in models_)

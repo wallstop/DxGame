@@ -30,22 +30,24 @@ namespace DXGame.TowerGame.Enemies
         private class SimpleBoxSpawnFunction
         {
             private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-            private static readonly TimeSpan SPAWN_DELAY = TimeSpan.FromSeconds(1 / 10.0);
-            private static readonly int MAX_BOXES_IN_PLAY = 15;
             private TimeSpan lastSpawned_ = TimeSpan.Zero;
-            private int numSpawned_;
+
+            private bool hasFullySpawned_ = false;
+
+            private GameObject largeBox_ = null;
             
             public Tuple<bool, GameObject> Spawn(DxGameTime gameTime)
             {
-                var numBoxesInPlay = DxGame.Instance.DxGameElements.OfType<SimpleEnemyAI>().Count();
-
-                var totalTime = gameTime.TotalGameTime;
-                if (lastSpawned_ + SPAWN_DELAY < totalTime && numBoxesInPlay < MAX_BOXES_IN_PLAY)
+                if (ReferenceEquals(largeBox_, null))
                 {
-                    lastSpawned_ = totalTime;
-                    ++numSpawned_;
-                    LOG.Info($"Spawned {numSpawned_} boxes");
-                    return Tuple.Create(true, EnemyFactory.SmallBox());
+                    largeBox_ = EnemyFactory.LargeBox();
+                    return Tuple.Create(true, largeBox_);
+                }
+                if (!hasFullySpawned_)
+                {
+                    hasFullySpawned_ = true;
+                    GameObject levelEndTrigger = EnemyFactory.LevelEndOnDeadListener(largeBox_);
+                    return Tuple.Create(true, levelEndTrigger);
                 }
                 return Tuple.Create<bool, GameObject>(false, null);
             }

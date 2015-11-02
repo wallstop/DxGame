@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
+using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -44,6 +46,32 @@ namespace DXGame.Core.Components.Advanced.Map
         private void HandleLevelEndRequest(LevelEndRequest message)
         {
             Active = true;
+        }
+
+        private void CheckForLevelEndRequest(DxGameTime gameTime)
+        {
+            if (Active)
+            {
+                return;
+            }
+            EventModel eventModel = DxGame.Instance.Model<EventModel>();
+            if (ReferenceEquals(eventModel, null))
+            {
+                return;
+            }
+            EventRequest levelEndRequestRequest = EventRequest.Builder().WithType<LevelEndRequest>().Build();
+            List<Event> levelEndEvents = eventModel.EventsFor(levelEndRequestRequest, gameTime);
+            List<LevelEndRequest> levelEndRequests =
+                levelEndEvents.Select(endEvent => endEvent.Message as LevelEndRequest).ToList();
+            foreach (LevelEndRequest levelEndRequest in levelEndRequests)
+            {
+                HandleLevelEndRequest(levelEndRequest);
+            }
+        }
+
+        protected override void Update(DxGameTime gameTime)
+        {
+            CheckForLevelEndRequest(gameTime);
         }
 
         private void HandleEnvironmentInteraction(EnvironmentInteractionMessage message)

@@ -1,4 +1,6 @@
-﻿using DXGame.Core;
+﻿using System.Collections.Generic;
+using System.Linq;
+using DXGame.Core;
 using DXGame.Core.Animation;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Command;
@@ -8,9 +10,12 @@ using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Components.Developer;
+using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.State;
+using DXGame.Core.Utils;
+using DXGame.Main;
 using DXGame.TowerGame.Components;
 
 namespace DXGame.TowerGame.Enemies
@@ -96,6 +101,29 @@ namespace DXGame.TowerGame.Enemies
             enemyObject.AttachComponent(simpleAi);
 
             return enemyObject;
+        }
+
+        public static GameObject LevelEndOnDeadListener(GameObject gameObject)
+        {
+            TriggerComponent trigger = new TriggerComponent(() =>
+            {
+                EventModel eventModel = DxGame.Instance.Model<EventModel>();
+                if (ReferenceEquals(eventModel, null))
+                {
+                    return false;
+                }
+                EventRequest request = EventRequest.Builder().WithType<EntityDeathMessage>().Build();
+                List<Event> deathEvents = eventModel.EventsFor(request, DxGame.Instance.CurrentTime);
+                return
+                    deathEvents.Select(deathEvent => deathEvent.Message as EntityDeathMessage)
+                               .Any(deathMessage => Objects.Equals(gameObject, deathMessage.Entity));
+            }, () =>
+            {
+                LevelEndRequest levelEndRequest = new LevelEndRequest();
+                DxGame.Instance.BroadcastMessage(levelEndRequest);
+            });
+            GameObject triggerHolder = GameObject.Builder().WithComponent(trigger).Build();
+            return triggerHolder;
         }
     }
 }

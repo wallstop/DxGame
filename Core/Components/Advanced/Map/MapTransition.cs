@@ -54,6 +54,7 @@ namespace DXGame.Core.Components.Advanced.Map
             }
             MapRotationRequest mapRotationRequest = new MapRotationRequest();
             DxGame.Instance.BroadcastMessage<MapRotationRequest>(mapRotationRequest);
+            Active = false; // Disable once we're done so we don't accidentally double-trigger
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)

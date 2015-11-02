@@ -109,17 +109,22 @@ namespace DXGame.Core.Components.Advanced.Physics
                 var direction = traveledLine.Vector;
                 if(mapSpatial.CollidesWith(direction) && !mapTilesToIgnore_.Any(spatial => Equals(spatial.Item1, mapSpatial)))
                 {
-                    if(largestIntersection.Width >= largestIntersection.Height || Velocity.X.FuzzyCompare(0) == 0)
+                    if(largestIntersection.Width >= largestIntersection.Height || Velocity.X.FuzzyCompare(0, 0.01f) == 0)
                     {
                         if((previousPosition.Y  + dimensionScalar * Dimensions.Y) <= mapBlockPosition.Y && mapSpatial.CollidableDirections.Contains(CollidableDirection.Up))
                         {
                             Position = new DxVector2(Position.X, mapBlockPosition.Y - Dimensions.Y);
                             collision.CollisionDirections[Direction.South] = mapSpatial;
                         }
-                        else if(previousPosition.Y >= (mapBlockPosition.Y + dimensionScalar * mapBlockDimensions.Y) && mapSpatial.CollidableDirections.Contains(CollidableDirection.Down))
+                        else if (previousPosition.Y >= (mapBlockPosition.Y + dimensionScalar * mapBlockDimensions.Y) &&
+                                 mapSpatial.CollidableDirections.Contains(CollidableDirection.Down))
                         {
                             Position = new DxVector2(Position.X, mapBlockPosition.Y + mapBlockDimensions.Y);
                             collision.CollisionDirections[Direction.North] = mapSpatial;
+                        }
+                        else
+                        {
+                            mapTiles.Remove(mapSpatial);
                         }
                     }
                     else
@@ -134,13 +139,16 @@ namespace DXGame.Core.Components.Advanced.Physics
                             Position = new DxVector2(mapBlockPosition.X - Dimensions.X, Position.Y);
                             collision.CollisionDirections[Direction.West] = mapSpatial;
                         }
+                        else
+                        {
+                            mapTiles.Remove(mapSpatial);
+                        }
                     }
 
                     /* Since we just collided, recalculate our "collision space" */
                     traveledLine = new DxLine(previousPosition, Position);
                     collisionSpace = CollisionSpace(traveledLine);
                 }
-                
                 else
                 {
                     mapTiles.Remove(mapSpatial);

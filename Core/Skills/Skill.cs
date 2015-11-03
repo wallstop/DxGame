@@ -7,7 +7,7 @@ using DXGame.Core.Utils;
 
 namespace DXGame.Core.Skills
 {
-    public delegate void SkillFunction(GameObject parent, DxGameTime gameTime);
+    public delegate void SkillFunction(GameObject parent, DxGameTime startTime, DxGameTime currentTime);
 
     /**
         <summary> 
@@ -22,16 +22,16 @@ namespace DXGame.Core.Skills
     public class Skill
     {
         [DataMember]
-        private readonly SkillFunction skillFunction_;
+        protected readonly SkillFunction skillFunction_;
         [DataMember]
-        private TimeSpan lastActivated_;
+        protected TimeSpan lastActivated_;
         [DataMember]
         public TimeSpan Cooldown { get; private set; }
 
         [DataMember]
         public Commandment Ability { get; }
 
-        private Skill(SkillFunction skillFunction, TimeSpan cooldown, Commandment ability)
+        protected Skill(SkillFunction skillFunction, TimeSpan cooldown, Commandment ability)
         {
             skillFunction_ = skillFunction;
             Cooldown = cooldown;
@@ -50,14 +50,25 @@ namespace DXGame.Core.Skills
         /**
             <summary> Attempts to activate the skill. This will silently do nothing if the skill is on cooldown. </summary>
         */
-        public void Activate(GameObject parent, DxGameTime gameTime)
+        public virtual void Activate(GameObject parent, DxGameTime gameTime)
         {
             var totalGameTime = gameTime.TotalGameTime;
             if (lastActivated_ + Cooldown < totalGameTime)
             {
                 lastActivated_ = totalGameTime;
-                skillFunction_(parent, gameTime);
+                skillFunction_(parent, gameTime, gameTime);
             }
+        }
+
+        /**
+            <summary>
+                We might care about the case where we aren't activated - for example, if the longer we aren't activated, the more stuff we do. 
+                Or, conversely, a charged-type ability (that needs to know when the player stops pressing a key)
+            </summary>
+        */
+        public virtual void NoActivation(GameObject parent, DxGameTime gameTime)
+        {
+            // Normal skill - do nothing
         }
 
         public static SkillBuilder Builder()
@@ -67,16 +78,21 @@ namespace DXGame.Core.Skills
 
         public class SkillBuilder : IBuilder<Skill>
         {
-            private TimeSpan cooldown_;
-            private SkillFunction skillFunction_;
-            private Commandment ability_;
+            protected TimeSpan cooldown_;
+            protected SkillFunction skillFunction_;
+            protected Commandment ability_;
 
-            public Skill Build()
+            public virtual Skill Build()
+            {
+                ValidateArguments();
+                return new Skill(skillFunction_, cooldown_, ability_);
+            }
+
+            protected void ValidateArguments()
             {
                 Validate.IsNotNullOrDefault(cooldown_, StringUtils.GetFormattedNullOrDefaultMessage(this, "Cooldown"));
                 Validate.IsNotNull(skillFunction_, StringUtils.GetFormattedNullOrDefaultMessage(this, skillFunction_));
                 Validate.IsTrue(Commandments.ABILITY_COMMANDMENTS.Contains(ability_), $"{ability_ } was expected to be an ability-type {typeof(Commandment)}, but was not.");
-                return new Skill(skillFunction_, cooldown_, ability_);
             }
 
             public SkillBuilder WithCommandment(Commandment ability)

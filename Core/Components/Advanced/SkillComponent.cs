@@ -25,9 +25,6 @@ namespace DXGame.Core.Components.Advanced
         [DataMember]
         public ReadOnlyDictionary<Commandment, Skill> Skills { get; }
 
-        [DataMember]
-        private DxGameTime LatestGameTime { get; set; }
-
         public SkillComponent(params Skill[] skills)
             : this(skills.ToList())
         {
@@ -39,26 +36,29 @@ namespace DXGame.Core.Components.Advanced
             Validate.NoNullElements(skills, StringUtils.GetFormattedNullOrDefaultMessage(this, typeof (Skill)));
             Skills =
                 new ReadOnlyDictionary<Commandment, Skill>(skills.ToDictionary(skill => skill.Ability, skill => skill));
-            MessageHandler.RegisterMessageHandler<CommandMessage>(HandleSkillMessage);
         }
 
-        private void HandleSkillMessage(CommandMessage abilityCommand)
-        {
-            var commandment = abilityCommand.Commandment;
-            if(!Commandments.ABILITY_COMMANDMENTS.Contains(commandment))
-            {
-                return;
-            }
-
-            if (Skills.ContainsKey(commandment))
-            {
-                Skills[commandment].Activate(Parent, LatestGameTime);
-            }
-        }
-
+        /**
+            <summary>
+                Use a one-frame-delayed approach in order to properly accumulate all CommandMessages that may have been relayed so we can properly trigger Activate/NoActivate
+            </summary>
+        */
         protected override void Update(DxGameTime gameTime)
         {
-            LatestGameTime = gameTime;
+            HashSet<CommandMessage> commandMessages = Parent.CurrentMessages.OfType<CommandMessage>().ToHashSet();
+            foreach(var skillEntry in Skills)
+            {
+                // No skill message? Signal that we didn't get one
+                if(commandMessages.All(message => message.Commandment != skillEntry.Key))
+                {
+                    skillEntry.Value.NoActivation(Parent, gameTime);
+                }
+                else
+                {
+                    // Skill message? Signal that we did :^)
+                    skillEntry.Value.Activate(Parent, gameTime);
+                }
+            }
         }
     }
 }

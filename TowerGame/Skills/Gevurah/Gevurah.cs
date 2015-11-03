@@ -18,7 +18,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
 {
     public static class Gevurah
     {
-        public static void Shockwave(GameObject parent, DxGameTime gameTime)
+        public static void Shockwave(GameObject parent, DxGameTime startTime, DxGameTime gameTime)
         {
             var position = parent.ComponentOfType<SpatialComponent>().Center;
             var physicsMessage = new PhysicsMessage();
@@ -30,7 +30,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             DxGame.Instance.BroadcastMessage(physicsMessage);
         }
 
-        public static void RainOfArrows(GameObject parent, DxGameTime gameTime)
+        public static void RainOfArrows(GameObject parent, DxGameTime startTime, DxGameTime gameTime)
         {
             var position = parent.ComponentOfType<SpatialComponent>();
             var facing = parent.ComponentOfType<FacingComponent>();

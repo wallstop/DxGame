@@ -73,14 +73,21 @@ namespace DXGame.Core.Generators
                     .WithSkillFunction(Gevurah.RainOfArrows)
                     .WithCommandment(Commandment.Ability2)
                     .Build();
-            var playerSkillComponent = new SkillComponent(shockwaveSkill, arrowRainSkill);
+            Skill chargeShot =
+                ChargedSkill.Builder()
+                    .WithCooldown(TimeSpan.FromSeconds(5))
+                    .WithSkillFunction(Gevurah.ChargeShot)
+                    .WithCommandment(Commandment.Ability4)
+                    .Build();
+            var playerSkillComponent = new SkillComponent(shockwaveSkill, arrowRainSkill, chargeShot);
             playerObject.AttachComponent(playerSkillComponent);
             StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(playerObject, "Player");
             objects.Add(playerObject);
 
 
-            var simpleSpawner = SpawnerFactory.SimpleBoxSpawner();
-            var simpleSpawnerOwner = GameObject.Builder().WithComponent(simpleSpawner).Build();
+            var simpleLargeBoxSpawner = SpawnerFactory.SimpleLargeBoxSpawner();
+            var simpleSmallBoxSpawner = SpawnerFactory.SimpleSmallBoxSpawner();
+            var simpleSpawnerOwner = GameObject.Builder().WithComponents(simpleLargeBoxSpawner, simpleSmallBoxSpawner).Build();
             objects.Add(simpleSpawnerOwner);
 
             return objects;

@@ -9,7 +9,7 @@ namespace DXGame.Core.Pathfinding
     {
         public static readonly double SimpleSimulationUpperBound = 1;
         public static readonly double ComplexSimulationUpperBound = 5;
-        public static readonly double SimulationStep = 0.001;
+        public static readonly double SimulationStep = 0.01;
         public static readonly TimeSpan MaxComplexSimulationTime = TimeSpan.FromSeconds(ComplexSimulationUpperBound);
         public static readonly TimeSpan MaxSimpleSimulationTime = TimeSpan.FromSeconds(SimpleSimulationUpperBound);
         public static readonly TimeSpan SimulationTimeStep = TimeSpan.FromSeconds(SimulationStep);

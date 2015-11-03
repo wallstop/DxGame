@@ -19,13 +19,6 @@ namespace DXGame.Core.Skills
     [DataContract]
     public class ChargedSkill : Skill
     {
-        /**
-            <summary>
-                Maximum amount of time that this skill can charge (and do anything)
-            </summary>
-        */
-        [DataMember]
-        public TimeSpan ChargeTime { get; }
 
         /**
             <summary>
@@ -43,10 +36,9 @@ namespace DXGame.Core.Skills
         [DataMember]
         private DxGameTime InitialChargeTime { get; set; }
 
-        public ChargedSkill(SkillFunction skillFunction, TimeSpan cooldown, TimeSpan chargeTime, Commandment ability)
+        public ChargedSkill(SkillFunction skillFunction, TimeSpan cooldown, Commandment ability)
             : base(skillFunction, cooldown, ability)
         {
-            ChargeTime = chargeTime;
             Charging = false;
         }
 
@@ -78,19 +70,10 @@ namespace DXGame.Core.Skills
 
         public class ChargedSkillBuilder : SkillBuilder
         {
-            private TimeSpan chargeTime_;
-
-            public ChargedSkillBuilder WithChargeTime(TimeSpan chargeTime)
-            {
-                chargeTime_ = chargeTime;
-                return this;
-            }
             public override Skill Build()
             {
                 ValidateArguments();
-                Validate.IsNotNullOrDefault(chargeTime_,
-                    StringUtils.GetFormattedNullOrDefaultMessage(this, "chargeTime"));
-                return new ChargedSkill(skillFunction_, cooldown_, chargeTime_, ability_);
+                return new ChargedSkill(skillFunction_, cooldown_, ability_);
             }
         }
     }

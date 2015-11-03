@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using DXGame.Core;
 using DXGame.Core.Components.Advanced;
@@ -37,6 +38,45 @@ namespace DXGame.TowerGame.Skills.Gevurah
             var arrowRainLauncher = new ArrowRainLauncher(parent, position.Center, facing.Facing);
             var arrowRainObject = GameObject.Builder().WithComponent(arrowRainLauncher).Build();
             DxGame.Instance.AddAndInitializeGameObject(arrowRainObject);
+        }
+
+        public static void ChargeShot(GameObject parent, DxGameTime startTime, DxGameTime endTime)
+        {
+            SpatialComponent position = parent.ComponentOfType<SpatialComponent>();
+            FacingComponent facing = parent.ComponentOfType<FacingComponent>();
+            DxVector2 force = new DxVector2(15, 0);
+            if(facing.Facing == Direction.West)
+            {
+                force *= -1;
+            }
+            DxVector2 dimensions = new DxVector2(60, 20);
+            DxVector2 startPoint = position.Center;
+            switch(facing.Facing)
+            {
+                case Direction.West:
+                    startPoint.X -= dimensions.X;
+                    startPoint.Y = position.Center.Y;
+                    break;
+                case Direction.East:
+                    startPoint.X += position.Width;
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException(
+                        $"Could not determine starting point for charge shot while facing {facing.Facing}");
+
+            }
+
+            SpatialComponent spatial =
+                (SpatialComponent)SpatialComponent.Builder().WithDimensions(dimensions).WithPosition(startPoint).Build();
+
+            PhysicsComponent physics =
+                UnforcablePhysicsComponent.Builder().WithVelocity(force).WithSpatialComponent(spatial).Build();
+
+            ChargeShotComponent chargeShot = new ChargeShotComponent(spatial, facing.Facing,
+                endTime.TotalGameTime - startTime.TotalGameTime);
+
+            GameObject chargeShotObject = GameObject.Builder().WithComponents(spatial, physics, chargeShot).Build();
+            DxGame.Instance.AddAndInitializeGameObject(chargeShotObject);
         }
 
         private static Tuple<bool, double> ShockwaveDamage(GameObject source, GameObject destination)

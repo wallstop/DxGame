@@ -129,6 +129,7 @@
     <Compile Include="Core\Components\Advanced\IEnvironmentComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapRotationTriggerComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapTransition.cs" />
+    <Compile Include="Core\Components\Advanced\Physics\UnforcablePhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\TriggerComponent.cs" />
     <Compile Include="Core\Event.cs" />
     <Compile Include="Core\Messaging\EnvironmentInteractionMessage.cs" />
@@ -137,6 +138,8 @@
     <Compile Include="Core\Messaging\MapRotationRequest.cs" />
     <Compile Include="Core\Models\EnvironmentModel.cs" />
     <Compile Include="Core\Models\EventModel.cs" />
+    <Compile Include="Core\Skills\ChargedSkill.cs" />
+    <Compile Include="Core\Utils\SpringFunctions.cs" />
     <Compile Include="TowerGame\Enemies\SpawnerFactory.cs" />
     <Compile Include="Core\Components\Advanced\FacingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PathfindingInputComponent.cs" />
@@ -329,6 +332,7 @@
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />
     <Compile Include="TowerGame\PropertyMutators\InheritedHatred.cs" />
     <Compile Include="TowerGame\Skills\Gevurah\ArrowRainComponent.cs" />
+    <Compile Include="TowerGame\Skills\Gevurah\ChargeShotComponent.cs" />
     <Compile Include="TowerGame\Skills\Gevurah\Gevurah.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -394,6 +398,9 @@
     <Content Include="Content\Player\AbilityPlaceholders\Fourth.png" />
     <Content Include="Content\Player\AbilityPlaceholders\Second.png" />
     <Content Include="Content\Player\AbilityPlaceholders\Third.png" />
+    <Content Include="Content\Player\Archer\ArrowLeft.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Player\Archer\ArrowRain.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -401,6 +408,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Player\Archer\ArrowRainLaunchRight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Archer\ArrowRight.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Player\Blown Away.png">

@@ -46,8 +46,7 @@ namespace DXGame.Core.Physics
         */
         public static Force NullForce
             =>
-                new Force(DxVector2.EmptyVector, DxVector2.EmptyVector,
-                    ((velocity, acceleration, time) => Tuple.Create(true, DxVector2.EmptyVector)), "NullForce", true);
+                new Force(DxVector2.EmptyVector, DxVector2.EmptyVector, InstantDisipation, "NullForce", true);
 
         public Force(DxVector2 initialVelocity, DxVector2 acceleration, DissipationFunction dissipationFunction,
             string name, bool dissipated = false)
@@ -59,6 +58,12 @@ namespace DXGame.Core.Physics
             InitialVelocity = initialVelocity;
             Acceleration = acceleration;
             Name = name;
+        }
+
+        public static Tuple<bool, DxVector2> InstantDisipation(DxVector2 velocity, DxVector2 acceleration,
+            DxGameTime gameTime)
+        {
+            return Tuple.Create(true, DxVector2.EmptyVector);
         }
 
         public void Update(DxVector2 velocity, DxVector2 acceleration, DxGameTime gameTime)

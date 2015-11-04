@@ -39,6 +39,10 @@ namespace DXGame.Core.Components.Advanced.Physics
             {
                 var physics = new UnforcableMapCollidablePhysicsComponent(velocity_, acceleration_, space_,
                     updatePriority_);
+                foreach (Force force in forces_)
+                {
+                    physics.forces_.Add(force);
+                }
                 return physics;
             }
         }

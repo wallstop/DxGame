@@ -79,6 +79,35 @@ namespace DXGame.TowerGame.Skills.Gevurah
             DxGame.Instance.AddAndInitializeGameObject(chargeShotObject);
         }
 
+        public static void BearTrapRoll(GameObject parent, DxGameTime startTime, DxGameTime endTime)
+        {
+            FacingComponent facing = parent.ComponentOfType<FacingComponent>();
+            DxVector2 initialVelocity = new DxVector2(13, 0);
+            if (facing.Facing == Direction.West)
+            {
+                initialVelocity.X *= -1;
+            }
+
+            Force rollForce = new Force(initialVelocity, DxVector2.EmptyVector, Force.InstantDisipation, "Archer Roll");
+            PhysicsComponent physics = parent.ComponentOfType<PhysicsComponent>();
+            physics.AttachForce(rollForce);
+
+            DxVector2 bearTrapDimensions = new DxVector2(50, 20);
+            PositionalComponent entityPosition = parent.ComponentOfType<PositionalComponent>();
+            DxVector2 startPoint = entityPosition.Position;
+            SpatialComponent bearTrapSpatial =  (SpatialComponent) SpatialComponent.Builder().WithDimensions(bearTrapDimensions).WithPosition(startPoint).Build();
+            PhysicsComponent bearTrapPhysics =
+                UnforcableMapCollidablePhysicsComponent.Builder()
+                                                       .WithGravity()
+                                                       .WithSpatialComponent(bearTrapSpatial)
+                                                       .WithVelocity(new DxVector2(0, 7))
+                                                       .Build();
+            BearTrap bearTrap = new BearTrap(bearTrapSpatial);
+            GameObject bearTrapObject =
+                GameObject.Builder().WithComponents(bearTrapSpatial, bearTrapPhysics, bearTrap).Build();
+            DxGame.Instance.AddAndInitializeGameObject(bearTrapObject);
+        }
+
         private static Tuple<bool, double> ShockwaveDamage(GameObject source, GameObject destination)
         {
             if (source == destination)

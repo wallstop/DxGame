@@ -22,7 +22,6 @@ namespace DXGame.Core.Components.Advanced.Physics
     public class MapCollidablePhysicsComponent : PhysicsComponent
     {
         private const int MAX_COLLISION_CHECKS = 20;
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private static readonly DxRectangleAreaComparer DXRECTANGLE_AREA_COMPARER = new DxRectangleAreaComparer();
         private static readonly TimeSpan IGNORE_EXPIRY = TimeSpan.FromMilliseconds(30);
 

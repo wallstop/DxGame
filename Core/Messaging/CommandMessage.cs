@@ -64,7 +64,8 @@ namespace DXGame.Core.Messaging
                 Commandment.Ability1,
                 Commandment.Ability2,
                 Commandment.Ability3,
-                Commandment.Ability4
+                Commandment.Ability4,
+                Commandment.Movement
             });
 
         public static readonly ReadOnlyCollection<Commandment> MOVEMENT_COMMANDMENTS =

@@ -79,7 +79,13 @@ namespace DXGame.Core.Generators
                     .WithSkillFunction(Gevurah.ChargeShot)
                     .WithCommandment(Commandment.Ability4)
                     .Build();
-            var playerSkillComponent = new SkillComponent(shockwaveSkill, arrowRainSkill, chargeShot);
+            Skill archerRoll =
+                Skill.Builder()
+                     .WithCooldown(TimeSpan.FromSeconds(3))
+                     .WithSkillFunction(Gevurah.BearTrapRoll)
+                     .WithCommandment(Commandment.Movement)
+                     .Build();
+            var playerSkillComponent = new SkillComponent(shockwaveSkill, arrowRainSkill, chargeShot, archerRoll);
             playerObject.AttachComponent(playerSkillComponent);
             StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(playerObject, "Player");
             objects.Add(playerObject);

@@ -132,6 +132,8 @@
     <Compile Include="Core\Components\Advanced\Physics\UnforcablePhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\TriggerComponent.cs" />
     <Compile Include="Core\Event.cs" />
+    <Compile Include="Core\Map\MapTile.cs" />
+    <Compile Include="Core\Map\MapPiece.cs" />
     <Compile Include="Core\Messaging\EnvironmentInteractionMessage.cs" />
     <Compile Include="Core\Messaging\LevelEndRequest.cs" />
     <Compile Include="Core\Messaging\MapRotationNotification.cs" />
@@ -596,6 +598,7 @@
     <Folder Include="Network\" />
     <Folder Include="TowerGame\Actions\" />
     <Folder Include="TowerGame\Buffs\" />
+    <Folder Include="TowerGame\Skills\Archer\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

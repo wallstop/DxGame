@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced;
-using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 
@@ -21,16 +20,14 @@ namespace DXGame.Core.Map
     public class Platform
     {
         public static readonly ReadOnlyDictionary<PlatformType, ReadOnlyCollection<CollidableDirection>>
-            PLATFORM_COLLISIONS =
+            PlatformCollisions =
                 new ReadOnlyDictionary<PlatformType, ReadOnlyCollection<CollidableDirection>>(
                     new Dictionary<PlatformType, ReadOnlyCollection<CollidableDirection>>
                     {
                         {
                             PlatformType.Block,
                             new ReadOnlyCollection<CollidableDirection>(
-                                Enum.GetValues(typeof (CollidableDirection))
-                                    .ToEnumerable<CollidableDirection>()
-                                    .ToList())
+                                Enum.GetValues(typeof(CollidableDirection)).ToEnumerable<CollidableDirection>().ToList())
                         },
                         {
                             PlatformType.Platform,
@@ -39,18 +36,14 @@ namespace DXGame.Core.Map
                         }
                     });
 
-        [DataMember]
-        public PlatformType Type { get; set; }
-
-        [DataMember]
-        public DxRectangle BoundingBox { get; set; }
-
-        [IgnoreDataMember]
-        public IEnumerable<CollidableDirection> CollidableDirections => PLATFORM_COLLISIONS[Type];
-
         /* Only necessary for JSON Serialization */
-        private Platform()
+
+        private Platform() {}
+
+        public Platform(PlatformType platformType, DxRectangle boundingBox)
         {
+            Type = platformType;
+            BoundingBox = boundingBox;
         }
 
         public Platform(Platform copy)
@@ -66,20 +59,28 @@ namespace DXGame.Core.Map
             Type = type;
         }
 
+        [DataMember]
+        public PlatformType Type { get; }
+
+        [DataMember]
+        public DxRectangle BoundingBox { get; }
+
+        [IgnoreDataMember]
+        public IEnumerable<CollidableDirection> CollidableDirections => PlatformCollisions[Type];
+
         public override bool Equals(object other)
         {
             var platform = other as Platform;
-            if (ReferenceEquals(platform, null))
+            if(!ReferenceEquals(platform, null))
             {
-                return false;
+                return Type == platform.Type && BoundingBox == platform.BoundingBox;
             }
-
-            return Type == platform.Type && BoundingBox == platform.BoundingBox;
+            return false;
         }
 
         public override int GetHashCode()
         {
-            return Tuple.Create(Type, BoundingBox).GetHashCode();
+            return Objects.HashCode(Type, BoundingBox);
         }
 
         public override string ToString()

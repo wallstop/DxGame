@@ -1,6 +1,7 @@
 * Rain of arrows
 * Charge shot (more damage longer held down) (ultimate)
 * Homing missiles
-* Dodge + bear trap
+* Dodge caltrops
+* Beartraps three, snare + damage
 
 * Possibility: After beating final boss, you unlock an item that upgrades your ult. For the archer, this would enable her to charge shot in all directions at once (going through walls)

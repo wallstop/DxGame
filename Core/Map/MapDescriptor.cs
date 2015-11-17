@@ -16,15 +16,9 @@ namespace DXGame.Core.Map
         public override MapDescriptor Item => this;
 
         [DataMember]
-        public string Asset { get; set; }
-
-        [DataMember]
-        public List<Platform> Platforms { get; set; } = new List<Platform>();
-
-        [DataMember]
         public DxRectangle Size { get; set; }
 
         [DataMember]
-        public float Scale { get; set; } = 1.0f;
+        public List<MapTile> Platforms { get; set; } = new List<MapTile>();
     }
 }

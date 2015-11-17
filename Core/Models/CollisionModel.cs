@@ -21,21 +21,22 @@ namespace DXGame.Core.Models
 
         protected override void Update(DxGameTime gameTime)
         {
-            var physics = DxGame.Instance.DxGameElements.OfType<PhysicsComponent>().ToList();
+            List<PhysicsComponent> physics = DxGame.Instance.DxGameElements.OfType<PhysicsComponent>().ToList();
             Collidables = new RTree<PhysicsComponent>(physicsComponent => physicsComponent.Space, physics);
         }
 
         private void HandlePhysicsMessage(PhysicsMessage message)
         {
-            var affectedPhysicsComponents = new HashSet<PhysicsComponent>();
-            foreach (var area in message.AffectedAreas)
+            HashSet<PhysicsComponent> affectedPhysicsComponents = new HashSet<PhysicsComponent>();
+            /* We may have shapes that overlap - collect them into a set so we don't double-send messages */
+            foreach (IShape area in message.AffectedAreas)
             {
-                foreach (var physicsComponent in Collidables.InRange(area))
+                foreach (PhysicsComponent physicsComponent in Collidables.InRange(area))
                 {
                     affectedPhysicsComponents.Add(physicsComponent);
                 }
             }
-            foreach (var physicsComponent in affectedPhysicsComponents)
+            foreach (PhysicsComponent physicsComponent in affectedPhysicsComponents)
             {
                 message.Interaction(message.Source, physicsComponent);
             }

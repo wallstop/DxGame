@@ -141,7 +141,7 @@ namespace DXGame.Core.Map
         /**
 
             <summary>
-                Describes a static point that a MapCollidable Entity can "rest" on (and the MapPiece that the point belongs to)
+                Describes a static point that a MapCollidable Entity can "rest" on (and the MapTile that the point belongs to)
             </summary>
         */
         [Serializable]

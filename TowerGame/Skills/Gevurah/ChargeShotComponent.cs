@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Threading.Tasks;
 using DXGame.Core;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Physics;
@@ -13,6 +16,7 @@ using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
+using Component = DXGame.Core.Components.Basic.Component;
 
 namespace DXGame.TowerGame.Skills.Gevurah
 {
@@ -104,7 +108,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             {
                 // We're done here.
                 Dispose();
-                DxGame.Instance.RemoveGameObject(Parent);
+                Parent?.Dispose();
                 return;
             }
             

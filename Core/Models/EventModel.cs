@@ -27,6 +27,8 @@ namespace DXGame.Core.Models
         [DataMember]
         private readonly SortedList<Event> events_ = new SortedList<Event>();
 
+        public IEnumerable<Event> Events => events_;
+
         public EventModel()
         {
             MessageHandler.EnableAcceptAll();
@@ -42,7 +44,7 @@ namespace DXGame.Core.Models
 
         protected override void Update(DxGameTime gameTime)
         {
-            Event cutoffPoint = Event.NullEventFor(gameTime.TotalGameTime);
+            Event cutoffPoint = Event.NullEventFor(gameTime.TotalGameTime - Expiry);
             events_.RemoveBelow(cutoffPoint);
             base.Update(gameTime);
         }
@@ -146,7 +148,5 @@ namespace DXGame.Core.Models
                 return new EventRequest(types_, cutoff_);
             }
         }
-
-
     }
 }

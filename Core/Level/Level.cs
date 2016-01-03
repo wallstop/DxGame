@@ -44,18 +44,23 @@ namespace DXGame.Core.Level
             Spawners.ForEach(spawner => spawner.Dispose());
         }
 
-        public class Builder : IBuilder<Level>
+        public static LevelBuilder Builder()
+        {
+            return new LevelBuilder();
+        }
+
+        public class LevelBuilder : IBuilder<Level>
         {
             private Map.Map map_;
             private readonly HashSet<Spawner> spawners_ = new HashSet<Spawner>(); 
 
-            public Builder WithMap(Map.Map map)
+            public LevelBuilder WithMap(Map.Map map)
             {
                 map_ = map;
                 return this;
             }
 
-            public Builder WithSpawner(Spawner spawner)
+            public LevelBuilder WithSpawner(Spawner spawner)
             {
                 Validate.IsNotNull(spawner);
                 spawners_.Add(spawner);

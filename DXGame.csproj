@@ -131,6 +131,7 @@
     <Compile Include="Core\Components\Advanced\Map\MapRotationTriggerComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapTransition.cs" />
     <Compile Include="Core\Components\Advanced\Physics\UnforcablePhysicsComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Triggers\EntitySpawnObserver.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\TriggerComponent.cs" />
     <Compile Include="Core\Event.cs" />
     <Compile Include="Core\Level\Level.cs" />

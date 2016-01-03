@@ -19,13 +19,10 @@ namespace DXGame.Core.Messaging
 
         public virtual UniqueId Id { get; } = new UniqueId();
 
-        public virtual TimeSpan Emission { get; }
-
         public static Message EmptyMessage => EMPTY_MESSAGE;
 
         protected Message()
         {
-            Emission = DxGame.Instance.CurrentTime.TotalGameTime;
         }
     }
 }

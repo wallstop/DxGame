@@ -18,7 +18,7 @@ namespace DXGame.Core
 
         private Event(TimeSpan timeSpan)
         {
-            Message = new Message();
+            Message = Message.EmptyMessage;
             GameTime = new DxGameTime(timeSpan, DxGame.Instance.TargetElapsedTime);
         }
 

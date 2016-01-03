@@ -9,7 +9,6 @@ namespace DXGame.Core.Messaging
 {
     public delegate void TypedMessageHandler<in T>(T message) where T : Message;
 
-
     /**
         <summary>
             Abstraction layer for immediate-mode Message passing. An instance of this handles all
@@ -28,18 +27,18 @@ namespace DXGame.Core.Messaging
             new Dictionary<Type, List<object>>();
 
         [DataMember]
-        public bool AcceptAll { get; private set; } = false;
+        public bool AcceptAll { get; private set; }
 
         public void EnableAcceptAll()
         {
             Validate.IsFalse(AcceptAll, $"Expected {nameof(AcceptAll)} to be false, but it was not :(");
-            LOG.Info($"Enabling Accept-All mode");
+            LOG.Info("Enabling Accept-All mode");
             AcceptAll = true;
         }
 
         public void RegisterMessageHandler<T>(TypedMessageHandler<T> messageHandler) where T : Message
         {
-            var type = typeof (T);
+            Type type = typeof(T);
             Validate.IsNotNull(type, StringUtils.GetFormattedNullOrDefaultMessage(this, type));
             List<object> existingHandlers = ExistingMessageHandlers(type);
             Validate.IsFalse(existingHandlers.Contains(messageHandler),
@@ -50,9 +49,7 @@ namespace DXGame.Core.Messaging
 
         private List<object> ExistingMessageHandlers(Type type)
         {
-            return (typesToMessageHandlers_.ContainsKey(type)
-                ? typesToMessageHandlers_[type]
-                : new List<object>());
+            return (typesToMessageHandlers_.ContainsKey(type) ? typesToMessageHandlers_[type] : new List<object>());
         }
 
         public void DeregisterMessageHandlers(Type type)
@@ -63,11 +60,11 @@ namespace DXGame.Core.Messaging
 
         public void DeregisterMessageHandler<T>(TypedMessageHandler<T> messageHandler) where T : Message
         {
-            var type = typeof (T);
+            Type type = typeof(T);
             Validate.IsNotNull(type, StringUtils.GetFormattedNullOrDefaultMessage(this, type));
             List<object> existingMessageHandlers = ExistingMessageHandlers(type);
             Validate.IsTrue(existingMessageHandlers.Contains(messageHandler),
-                $"Cannot remove {typeof (MessageHandler)} {messageHandler}, as it is not associated with the provided type");
+                $"Cannot remove {typeof(MessageHandler)} {messageHandler}, as it is not associated with the provided type");
             existingMessageHandlers.Remove(messageHandler);
         }
 
@@ -75,11 +72,11 @@ namespace DXGame.Core.Messaging
         {
             if(AcceptAll)
             {
-                SpamMessageHandlers<T>(message);
+                SpamMessageHandlers(message);
             }
             else
             {
-                ActuallyHandleMessage<T>(message);
+                ActuallyHandleMessage(message);
             }
         }
 

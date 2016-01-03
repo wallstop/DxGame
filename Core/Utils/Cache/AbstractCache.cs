@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 
-namespace DXGame.Core.Utils
+namespace DXGame.Core.Utils.Cache
 {
     [Serializable]
     [DataContract]

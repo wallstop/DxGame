@@ -2,6 +2,7 @@
 using System.Linq;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
@@ -38,13 +39,15 @@ namespace DXGame.Core.Components.Advanced.Entities
             var spawnCheck = SpawnTrigger(gameTime);
             if (spawnCheck.Item1)
             {
-                var spawnedObject = spawnCheck.Item2;
+                GameObject spawnedObject = spawnCheck.Item2;
                 PositionalComponent position = spawnedObject.Components.OfType<PositionalComponent>().FirstOrDefault();
                 if (!ReferenceEquals(position, null))
                 {
                     position.Position = RandomPositionInSpawnArea();
                 }
                 DxGame.Instance.AddAndInitializeGameObject(spawnedObject);
+                EntitySpawnedMessage spawnMessage = new EntitySpawnedMessage(Id, spawnedObject);
+                DxGame.Instance.BroadcastMessage<EntitySpawnedMessage>(spawnMessage);
             }
             base.Update(gameTime);
         }

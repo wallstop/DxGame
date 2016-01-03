@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 using DXGame.Core.Utils;
+using DXGame.Core.Utils.Cache;
 
 namespace DXGame.Core
 {

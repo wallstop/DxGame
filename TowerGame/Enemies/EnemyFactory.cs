@@ -9,6 +9,7 @@ using DXGame.Core.Components.Advanced.Impulse;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
+using DXGame.Core.Components.Advanced.Triggers;
 using DXGame.Core.Components.Developer;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;

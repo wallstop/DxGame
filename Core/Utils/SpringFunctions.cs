@@ -13,6 +13,7 @@ namespace DXGame.Core.Utils
             get
             {
                 /* Rip every function that is a SpringFunction off of the class via Reflection (what could go wrong?) */
+                /* TODO: Cache */
                 var staticPublicMethods = typeof(SpringFunctions).GetMethods(BindingFlags.Static | BindingFlags.Public);
                 var springFunctions = new List<Tuple<SpringFunction, string>>(staticPublicMethods.Length);
                 foreach(var staticPublicMethod in staticPublicMethods)

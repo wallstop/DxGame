@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace DXGame.Core.Utils
+namespace DXGame.Core.Utils.Cache
 {
     /**
         <summary>

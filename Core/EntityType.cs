@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 ﻿using DXGame.Core.Utils;
+﻿using DXGame.Core.Utils.Cache;
 
 namespace DXGame.Core
 {

@@ -131,9 +131,10 @@
     <Compile Include="Core\Components\Advanced\Map\MapRotationTriggerComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapTransition.cs" />
     <Compile Include="Core\Components\Advanced\Physics\UnforcablePhysicsComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Triggers\EntitySpawnObserver.cs" />
+    <Compile Include="Core\Components\Advanced\Triggers\EventObserver.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\TriggerComponent.cs" />
-    <Compile Include="Core\Event.cs" />
+    <Compile Include="Core\Events\Event.cs" />
+    <Compile Include="Core\Events\EventListener.cs" />
     <Compile Include="Core\Level\Level.cs" />
     <Compile Include="Core\Level\LevelProgressionStrategy.cs" />
     <Compile Include="Core\Messaging\EntitySpawnedMessage.cs" />
@@ -167,7 +168,6 @@
     <Compile Include="Core\Components\Advanced\EntityTypeComponent.cs" />
     <Compile Include="Core\DataStructures\Tree.cs" />
     <Compile Include="Core\EntityType.cs" />
-    <Compile Include="Core\EventSystem.cs" />
     <Compile Include="Core\Frames\SingleElementFrame.cs" />
     <Compile Include="Core\Generators\PlayerGenerator.cs" />
     <Compile Include="Core\GraphicsWidgets\Graph.cs" />

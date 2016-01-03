@@ -5,8 +5,13 @@ using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
 
-namespace DXGame.Core
+namespace DXGame.Core.Events
 {
+    /**
+        <summary>
+            Events are lightweight wrappers around Messsages, describing a Message and when it occurred. 
+        </summary>
+    */
     [Serializable]
     [DataContract]
     public class Event : IComparable<Event>

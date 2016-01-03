@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Events;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;

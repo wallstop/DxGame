@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
+using DXGame.Core.Components.Basic;
 using DXGame.Core.DataStructures;
+using DXGame.Core.Events;
 using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
@@ -27,7 +29,7 @@ namespace DXGame.Core.Models
         [DataMember]
         private readonly SortedList<Event> events_ = new SortedList<Event>();
 
-        public IEnumerable<Event> Events => events_;
+        [DataMember] private readonly List<WeakReference<EventListener>> listeners_ = new List<WeakReference<EventListener>>(); 
 
         public EventModel()
         {
@@ -40,20 +42,53 @@ namespace DXGame.Core.Models
             DxGameTime currentGameTime = DxGame.Instance.CurrentTime;
             Event gameEvent = new Event(message, currentGameTime);
             events_.Add(gameEvent);
+            NotifyListeners(gameEvent);
         }
 
         protected override void Update(DxGameTime gameTime)
         {
             Event cutoffPoint = Event.NullEventFor(gameTime.TotalGameTime - Expiry);
             events_.RemoveBelow(cutoffPoint);
+            RemoveDeadListeners();
             base.Update(gameTime);
+        }
+
+        private void NotifyListeners(Event triggeredEvent)
+        {
+            /* Triggered */
+            listeners_.ForEach(listener =>
+            {
+                EventListener eventListener;
+                bool success = listener.TryGetTarget(out eventListener);
+                if(success)
+                {
+                    eventListener.OnEvent(triggeredEvent);
+                }
+            });
+        }
+
+        private void RemoveDeadListeners()
+        {
+            listeners_.RemoveAll(listener =>
+            {
+                EventListener eventListener;
+                bool stillAlive = listener.TryGetTarget(out eventListener);
+                return !stillAlive;
+            });
+        }
+
+        public void AttachEventListener(EventListener listener)
+        {
+            Validate.IsNotNullOrDefault(listener, $"Cannot attach a null {nameof(listener)} to the {typeof(EventModel)}");
+            listeners_.Add(new WeakReference<EventListener>(listener));
         }
 
         /**
 
             <summary>
                 Returns an unfiltered view of every kept event. 
-                Modifying this list will not modify the Event Model's backing list.
+                Modifying this list will not modify the Event Model's backing list. 
+                However, modifying references will.
             </summary>
         */
         public List<Event> AllEvents => events_.ToList(); 

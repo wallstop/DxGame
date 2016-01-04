@@ -12,6 +12,7 @@ namespace DXGame.Core.Components.Advanced.Triggers
             Encapsulates the question "Has this thing happened yet?"
         </summary>
     */
+
     public delegate bool Trigger();
 
     /**
@@ -20,22 +21,23 @@ namespace DXGame.Core.Components.Advanced.Triggers
             Waits for some condition to occur (specified by Trigger), then executes the provided Action and removes itself from the game.
         </summary>
     */
+
     [Serializable]
     [DataContract]
     public class TriggerComponent : Component
     {
+        private TimeSpan lastChecked_;
 
         [DataMember]
         private Trigger Trigger { get; }
 
         /* Executed when the trigger returns true */
+
         [DataMember]
-        private Action Action { get;  }
+        private Action Action { get; }
 
         [DataMember]
         private TimeSpan CheckFrequency { get; }
-
-        private TimeSpan lastChecked_;
 
         public TriggerComponent(Trigger trigger, Action action, TimeSpan checkFrequency = new TimeSpan())
         {
@@ -49,14 +51,14 @@ namespace DXGame.Core.Components.Advanced.Triggers
 
         protected override void Update(DxGameTime gameTime)
         {
-            if (!(lastChecked_ + CheckFrequency < gameTime.TotalGameTime))
+            if(!(lastChecked_ + CheckFrequency < gameTime.TotalGameTime))
             {
                 return;
             }
 
             lastChecked_ = gameTime.TotalGameTime;
             bool triggered = Trigger();
-            if (triggered)
+            if(triggered)
             {
                 Action();
                 Dispose();

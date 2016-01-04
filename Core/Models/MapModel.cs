@@ -13,6 +13,7 @@ using DXGame.Core.Messaging;
 
 namespace DXGame.Core.Models
 {
+    /* TODO: Rename to be LevelModel? */
     public class MapModel : Model
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();

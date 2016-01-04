@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Events;
 using DXGame.Core.Utils;
@@ -16,11 +12,13 @@ namespace DXGame.Core.Components.Advanced.Triggers
     {
         private Func<Event, bool> Acceptance { get; }
         private Action<Event> Action { get; }
+        public EventListener Listener { get; }
 
         private EventObserver(Func<Event, bool> acceptance, Action<Event> action)
         {
             Acceptance = acceptance;
             Action = action;
+            Listener = new EventListener(HandleEvent);
         }
 
         public void HandleEvent(Event gameEvent)
@@ -39,8 +37,16 @@ namespace DXGame.Core.Components.Advanced.Triggers
 
         public class Builder : IBuilder<EventObserver>
         {
-            private Func<Event, bool> eventAcceptance_;
             private Action<Event> action_;
+            private Func<Event, bool> eventAcceptance_;
+
+            public EventObserver Build()
+            {
+                Validate.IsNotNull(eventAcceptance_,
+                    StringUtils.GetFormattedNullOrDefaultMessage(this, "EventAcceptance"));
+                Validate.IsNotNull(action_, StringUtils.GetFormattedNullOrDefaultMessage(this, action_));
+                return new EventObserver(eventAcceptance_, action_);
+            }
 
             public Builder WithAction(Action<Event> action)
             {
@@ -52,13 +58,6 @@ namespace DXGame.Core.Components.Advanced.Triggers
             {
                 eventAcceptance_ = acceptanceFunction;
                 return this;
-            }
-
-            public EventObserver Build()
-            {
-                Validate.IsNotNull(eventAcceptance_, StringUtils.GetFormattedNullOrDefaultMessage(this, "EventAcceptance"));
-                Validate.IsNotNull(action_, StringUtils.GetFormattedNullOrDefaultMessage(this, action_));
-                return new EventObserver(eventAcceptance_, action_);
             }
         }
     }

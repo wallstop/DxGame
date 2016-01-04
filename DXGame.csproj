@@ -136,7 +136,7 @@
     <Compile Include="Core\Events\Event.cs" />
     <Compile Include="Core\Events\EventListener.cs" />
     <Compile Include="Core\Level\Level.cs" />
-    <Compile Include="Core\Level\LevelProgressionStrategy.cs" />
+    <Compile Include="Core\Level\ILevelProgressionStrategy.cs" />
     <Compile Include="Core\Messaging\EntitySpawnedMessage.cs" />
     <Compile Include="Core\Messaging\EnvironmentInteractionMessage.cs" />
     <Compile Include="Core\Messaging\LevelEndRequest.cs" />
@@ -334,6 +334,7 @@
     <Compile Include="TowerGame\Components\SimpleEnemyAI.cs" />
     <Compile Include="TowerGame\Enemies\EnemyFactory.cs" />
     <Compile Include="TowerGame\Enemies\EnemyPropertyFactory.cs" />
+    <Compile Include="TowerGame\Level\SimpleRotatingLevelProgression.cs" />
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />
     <Compile Include="TowerGame\PropertyMutators\InheritedHatred.cs" />
     <Compile Include="TowerGame\Skills\Gevurah\ArrowRainComponent.cs" />

@@ -2,14 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using DXGame.Core.Utils.ArrayExtensions;
 
 namespace DXGame.Core.Utils
 {
     public static class Objects
     {
-        private static readonly MethodInfo CloneMethod = typeof (object).GetMethod("MemberwiseClone",
+        private static readonly MethodInfo CloneMethod = typeof(object).GetMethod("MemberwiseClone",
             BindingFlags.NonPublic | BindingFlags.Instance);
+
+        public static T FromWeakReference<T>(WeakReference<T> weakReference) where T : class
+        {
+            T empty;
+            weakReference.TryGetTarget(out empty);
+            return empty;
+        }
 
         public static int HashCode(params object[] args)
         {
@@ -22,7 +28,7 @@ namespace DXGame.Core.Utils
 
         public static bool Equals<T, U>(T first, U second)
         {
-            if (ReferenceEquals(first, second))
+            if(ReferenceEquals(first, second))
             {
                 return true;
             }
@@ -51,26 +57,27 @@ namespace DXGame.Core.Utils
         {
             /* Copy over all fields */
             FieldInfo[] ps = source.GetType().GetFields();
-            foreach (var item in ps)
+            foreach(var item in ps)
             {
                 var o = item.GetValue(source);
                 var p = destination.GetType().GetField(item.Name);
-                if (p != null)
+                if(p != null)
                 {
                     Type t = Nullable.GetUnderlyingType(p.FieldType) ?? p.FieldType;
-                    object safeValue = (o == null) ? null : Convert.ChangeType(o, t);
+                    object safeValue = o == null ? null : Convert.ChangeType(o, t);
                     p.SetValue(destination, safeValue);
                 }
             }
             /* ... and properties */
-            PropertyInfo[] sourceProperties = source.GetType().GetProperties(
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
-            PropertyInfo[] destinationProperties = destination.GetType().GetProperties(
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty);
-            foreach (var property in sourceProperties)
+            PropertyInfo[] sourceProperties =
+                source.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
+            PropertyInfo[] destinationProperties =
+                destination.GetType()
+                    .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty);
+            foreach(var property in sourceProperties)
             {
                 var dest = destinationProperties.FirstOrDefault(x => x.Name == property.Name);
-                if (dest != null && dest.CanWrite)
+                if(dest != null && dest.CanWrite)
                 {
                     dest.SetValue(destination, property.GetValue(source, null), null);
                 }
@@ -87,7 +94,7 @@ namespace DXGame.Core.Utils
 
         public override int GetHashCode(object obj)
         {
-            if (obj == null)
+            if(obj == null)
             {
                 return 0;
             }
@@ -101,12 +108,12 @@ namespace DXGame.Core.Utils
         {
             public static void ForEach(this Array array, Action<Array, int[]> action)
             {
-                if (array.LongLength == 0)
+                if(array.LongLength == 0)
                 {
                     return;
                 }
                 ArrayTraverse walker = new ArrayTraverse(array);
-                do action(array, walker.Position); while (walker.Step());
+                do action(array, walker.Position); while(walker.Step());
             }
         }
 
@@ -118,7 +125,7 @@ namespace DXGame.Core.Utils
             public ArrayTraverse(Array array)
             {
                 maxLengths = new int[array.Rank];
-                for (int i = 0; i < array.Rank; ++i)
+                for(int i = 0; i < array.Rank; ++i)
                 {
                     maxLengths[i] = array.GetLength(i) - 1;
                 }
@@ -127,12 +134,12 @@ namespace DXGame.Core.Utils
 
             public bool Step()
             {
-                for (int i = 0; i < Position.Length; ++i)
+                for(int i = 0; i < Position.Length; ++i)
                 {
-                    if (Position[i] < maxLengths[i])
+                    if(Position[i] < maxLengths[i])
                     {
                         Position[i]++;
-                        for (int j = 0; j < i; j++)
+                        for(int j = 0; j < i; j++)
                         {
                             Position[j] = 0;
                         }

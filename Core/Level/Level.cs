@@ -7,6 +7,7 @@ using DXGame.Core.Components.Advanced.Triggers;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Events;
 using DXGame.Core.Messaging;
+using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -18,7 +19,6 @@ namespace DXGame.Core.Level
     public class Level : Component
     {
         private readonly ManagerComponent entityManager_ = new ManagerComponent();
-        private readonly EventObserver spawnObserver_;
         public Map.Map Map { get; }
 
         public TimeSpan LevelTime { get; private set; }
@@ -30,19 +30,21 @@ namespace DXGame.Core.Level
             Map = map;
             Spawners = spawners.ToList();
             LevelTime = TimeSpan.Zero;
+        }
+
+        public override void Initialize()
+        {
             DxGame.Instance.AddAndInitializeComponent(entityManager_);
-            spawnObserver_ =
+            EventObserver spawnObserver =
                 EventObserver.EventObserverBuilder()
                     .WithAcceptance(DetermineLevelSpawnEvent)
                     .WithAction(AddEntityToManagementPool)
                     .Build();
-            entityManager_.Manage(spawnObserver_);
-            DxGame.Instance.AddAndInitializeComponent(spawnObserver_);
-
-            // TODO: Do we need to add & initialize the spawners here, or will someone else take care of it?
+            entityManager_.Manage(spawnObserver);
+            DxGame.Instance.AddAndInitializeComponent(spawnObserver);
+            DxGame.Instance.Model<EventModel>().AttachEventListener(spawnObserver.Listener);
+            base.Initialize();
         }
-
-        public void OnLoad() {}
 
         protected override void Update(DxGameTime gameTime)
         {

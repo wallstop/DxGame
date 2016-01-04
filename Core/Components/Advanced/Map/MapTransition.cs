@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Events;
@@ -24,8 +21,6 @@ namespace DXGame.Core.Components.Advanced.Map
     {
         private static readonly TimeSpan PARTICLE_EMISSION_DELAY = TimeSpan.FromSeconds(0.01);
 
-        public DxVector2 Position => PositionalComponent.Position;
-
         [DataMember]
         private TimeSpan LastParticleEmission { get; set; }
 
@@ -41,9 +36,11 @@ namespace DXGame.Core.Components.Advanced.Map
             PositionalComponent = position;
             MessageHandler.RegisterMessageHandler<EnvironmentInteractionMessage>(HandleEnvironmentInteraction);
             MessageHandler.RegisterMessageHandler<LevelEndRequest>(HandleLevelEndRequest);
-            Active = false;
         }
 
+        public DxVector2 Position => PositionalComponent.Position;
+
+        // TODO: Clean this up (it should simply be spawned, not triggered alive)
         private void HandleLevelEndRequest(LevelEndRequest message)
         {
             Active = true;
@@ -51,12 +48,12 @@ namespace DXGame.Core.Components.Advanced.Map
 
         private void CheckForLevelEndRequest(DxGameTime gameTime)
         {
-            if (Active)
+            if(Active)
             {
                 return;
             }
             EventModel eventModel = DxGame.Instance.Model<EventModel>();
-            if (ReferenceEquals(eventModel, null))
+            if(ReferenceEquals(eventModel, null))
             {
                 return;
             }
@@ -64,7 +61,7 @@ namespace DXGame.Core.Components.Advanced.Map
             List<Event> levelEndEvents = eventModel.EventsFor(levelEndRequestRequest, gameTime);
             List<LevelEndRequest> levelEndRequests =
                 levelEndEvents.Select(endEvent => endEvent.Message as LevelEndRequest).ToList();
-            foreach (LevelEndRequest levelEndRequest in levelEndRequests)
+            foreach(LevelEndRequest levelEndRequest in levelEndRequests)
             {
                 HandleLevelEndRequest(levelEndRequest);
             }
@@ -82,7 +79,7 @@ namespace DXGame.Core.Components.Advanced.Map
                 return;
             }
             MapRotationRequest mapRotationRequest = new MapRotationRequest();
-            DxGame.Instance.BroadcastMessage<MapRotationRequest>(mapRotationRequest);
+            DxGame.Instance.BroadcastMessage(mapRotationRequest);
             Active = false; // Disable once we're done so we don't accidentally double-trigger
         }
 
@@ -92,7 +89,7 @@ namespace DXGame.Core.Components.Advanced.Map
             {
                 return;
             }
-            if (LastParticleEmission + PARTICLE_EMISSION_DELAY < gameTime.TotalGameTime)
+            if(LastParticleEmission + PARTICLE_EMISSION_DELAY < gameTime.TotalGameTime)
             {
                 EmitParticle();
                 LastParticleEmission = gameTime.TotalGameTime;

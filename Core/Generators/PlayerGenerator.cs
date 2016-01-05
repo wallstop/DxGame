@@ -89,13 +89,6 @@ namespace DXGame.Core.Generators
             playerObject.AttachComponent(playerSkillComponent);
             StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(playerObject, "Player");
             objects.Add(playerObject);
-
-
-            var simpleLargeBoxSpawner = SpawnerFactory.SimpleLargeBoxSpawner();
-            var simpleSmallBoxSpawner = SpawnerFactory.SimpleSmallBoxSpawner();
-            var simpleSpawnerOwner = GameObject.Builder().WithComponents(simpleLargeBoxSpawner, simpleSmallBoxSpawner).Build();
-            objects.Add(simpleSpawnerOwner);
-
             return objects;
         }
     }

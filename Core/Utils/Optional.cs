@@ -42,7 +42,7 @@ namespace DXGame.Core.Utils
         }
 
         public Optional(T value)
-            : this(value, !ReferenceEquals(null, value))
+            : this(value, !ReferenceEquals(value, default(T)))
         {
         }
 

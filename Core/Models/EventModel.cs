@@ -125,7 +125,7 @@ namespace DXGame.Core.Models
         public List<Event> EventsFor(EventRequest request, DxGameTime gameTime)
         {
             Validate.IsNotNull(request, $"Cannot retrieve {typeof(Event)}s for a null {typeof(EventRequest)}");
-            TimeSpan cutoff = gameTime.TotalGameTime - request.Cutoff;
+            TimeSpan cutoff = gameTime.TotalGameTime;
             return
                 events_.Where(
                     gameEvent =>

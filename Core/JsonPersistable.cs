@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization;
-using DXGame.Core.Map;
 using DXGame.Core.Utils;
 using NLog;
 
@@ -12,17 +11,12 @@ namespace DXGame.Core
     public abstract class JsonPersistable<T> : IPersistable<T>
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
         [IgnoreDataMember]
         public abstract string Extension { get; }
+
         [IgnoreDataMember]
         public abstract T Item { get; }
-
-        public static T StaticLoad(string fileName)
-        {
-            var settingsAsText = File.ReadAllText(fileName);
-            var settingsAsJsonByteArray = StringUtils.GetBytes(settingsAsText);
-            return Serializer<T>.JsonDeserialize(settingsAsJsonByteArray);
-        }
 
         public T Load(string fileName)
         {
@@ -37,11 +31,17 @@ namespace DXGame.Core
                 string directory = Path.GetDirectoryName(fileName);
                 Serializer<T>.WriteToJsonFile(Item, directory + Path.DirectorySeparatorChar + simpleName + Extension);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
-                LOG.Error(e,
-                    $"Caught unexpected exception while saving {typeof (MapDescriptor)} {this} at {fileName}");
+                LOG.Error(e, $"Caught unexpected exception while saving {GetType()} {this} at {fileName}");
             }
+        }
+
+        public static T StaticLoad(string fileName)
+        {
+            var settingsAsText = File.ReadAllText(fileName);
+            var settingsAsJsonByteArray = StringUtils.GetBytes(settingsAsText);
+            return Serializer<T>.JsonDeserialize(settingsAsJsonByteArray);
         }
     }
 }

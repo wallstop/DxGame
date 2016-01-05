@@ -12,6 +12,7 @@ using DXGame.Core.GraphicsWidgets.HUD;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using DXGame.Core.Messaging;
+using DXGame.TowerGame.Level;
 using NLog;
 using NLog.Fluent;
 
@@ -39,42 +40,16 @@ namespace DXGame.Core.Models
             // Do nothing with this, this Initialize will do all kinds of bad things (re-trigger map model spawning, for example)
         }
 
-        public GameModel()
-        {
-            MessageHandler.RegisterMessageHandler<MapRotationRequest>(HandleMapRotationRequest);
-        }
-
-        private void HandleMapRotationRequest(MapRotationRequest mapRotationRequest)
-        {
-            PlayerModel playerModel = DxGame.Instance.Model<PlayerModel>();
-            if (ReferenceEquals(playerModel, null))
-            {
-                LOG.Info(
-                    $"Received a {typeof (MapRotationRequest)}, but the {typeof (PlayerModel)} was not found, ignoring.");
-                return;
-            }
-            List<Player> players = playerModel.Players.ToList();
-            HashSet<object> thingsToKeep = new HashSet<object>();
-            foreach (Component component in players.Select(player => player.Object).SelectMany(playerObject => playerObject.Components))
-            {
-                thingsToKeep.Add(component);
-            }
-            foreach(Player player in players)
-            {
-                thingsToKeep.Add(player.Object);
-            }
-
-            GameElementCollection gameElements = DxGame.Instance.DxGameElements;
-            // TODO: Figure out a better way, this is crap
-            foreach (var gameElement in gameElements.Cast<object>().Where(gameElement => !thingsToKeep.Contains(gameElement) && !(gameElement is SpriteBatchInitializer) && !(gameElement is SpriteBatchEnder) && !(gameElement is Model) && !(gameElement is Spawner) && !(gameElement is TimePerFrameGraph)))
-            {
-                DxGame.Instance.Remove(gameElement);
-            }
-        }
-
         public override void Initialize()
         {
-            var mapModel = new MapModel();
+            EventModel eventModel = new EventModel();
+            DxGame.Instance.AttachModel(eventModel);
+
+            SimpleRotatingLevelProgression levelProgression = new SimpleRotatingLevelProgression();
+            levelProgression.LoadContent();
+            levelProgression.Initialize();
+
+            var mapModel = new MapModel(levelProgression);
             DxGame.Instance.AttachModel(mapModel);
             var developerModel = new DeveloperModel();
             DxGame.Instance.AttachModel(developerModel);
@@ -84,8 +59,7 @@ namespace DXGame.Core.Models
             DxGame.Instance.AttachModel(environmentModel);
             var pathfindingModel = new PathfindingModel();
             DxGame.Instance.AttachModel(pathfindingModel);
-            EventModel eventModel = new EventModel();
-            DxGame.Instance.AttachModel(eventModel);
+
             PlayerGenerator playerGenerator = new PlayerGenerator(mapModel.PlayerSpawn,
                 mapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;

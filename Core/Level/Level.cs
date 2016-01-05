@@ -34,6 +34,7 @@ namespace DXGame.Core.Level
 
         public override void Initialize()
         {
+            Spawners.ForEach(spawner => DxGame.Instance.AddAndInitializeComponent(spawner));
             DxGame.Instance.AddAndInitializeComponent(entityManager_);
             EventObserver spawnObserver =
                 EventObserver.EventObserverBuilder()
@@ -112,6 +113,15 @@ namespace DXGame.Core.Level
             public LevelBuilder WithMap(Map.Map map)
             {
                 map_ = map;
+                return this;
+            }
+
+            public LevelBuilder WithSpawners(params Spawner[] spawners)
+            {
+                foreach(Spawner spawner in spawners)
+                {
+                    WithSpawner(spawner);
+                }
                 return this;
             }
 

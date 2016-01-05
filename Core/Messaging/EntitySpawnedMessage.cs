@@ -33,9 +33,9 @@ namespace DXGame.Core.Messaging
             Validate.IsTrue(!ReferenceEquals(spawnedComponent, null) ^ !ReferenceEquals(spawnedObject, null),
                 "Expected only one of component / object to be spawned");
             SpawnerId = spawnerId;
-
-            SpawnedComponent = Optional<WeakReference<Component>>.Of(new WeakReference<Component>(spawnedComponent));
-            SpawnedObject = Optional<WeakReference<GameObject>>.Of(new WeakReference<GameObject>(spawnedObject));
+            /* We need to do these null checks - otherwise, each of these Optionals will "have" a value, which is not cool */
+            SpawnedComponent = Optional<WeakReference<Component>>.Of(spawnedComponent == null ? null : new WeakReference<Component>(spawnedComponent));
+            SpawnedObject = Optional<WeakReference<GameObject>>.Of(spawnedObject == null ? null : new WeakReference<GameObject>(spawnedObject));
         }
     }
 }

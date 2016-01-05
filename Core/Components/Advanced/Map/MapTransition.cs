@@ -35,42 +35,10 @@ namespace DXGame.Core.Components.Advanced.Map
             Validate.IsNotNull(position);
             PositionalComponent = position;
             MessageHandler.RegisterMessageHandler<EnvironmentInteractionMessage>(HandleEnvironmentInteraction);
-            MessageHandler.RegisterMessageHandler<LevelEndRequest>(HandleLevelEndRequest);
-        }
-
-        public DxVector2 Position => PositionalComponent.Position;
-
-        // TODO: Clean this up (it should simply be spawned, not triggered alive)
-        private void HandleLevelEndRequest(LevelEndRequest message)
-        {
             Active = true;
         }
 
-        private void CheckForLevelEndRequest(DxGameTime gameTime)
-        {
-            if(Active)
-            {
-                return;
-            }
-            EventModel eventModel = DxGame.Instance.Model<EventModel>();
-            if(ReferenceEquals(eventModel, null))
-            {
-                return;
-            }
-            EventRequest levelEndRequestRequest = EventRequest.Builder().WithType<LevelEndRequest>().Build();
-            List<Event> levelEndEvents = eventModel.EventsFor(levelEndRequestRequest, gameTime);
-            List<LevelEndRequest> levelEndRequests =
-                levelEndEvents.Select(endEvent => endEvent.Message as LevelEndRequest).ToList();
-            foreach(LevelEndRequest levelEndRequest in levelEndRequests)
-            {
-                HandleLevelEndRequest(levelEndRequest);
-            }
-        }
-
-        protected override void Update(DxGameTime gameTime)
-        {
-            CheckForLevelEndRequest(gameTime);
-        }
+        public DxVector2 Position => PositionalComponent.Position;
 
         private void HandleEnvironmentInteraction(EnvironmentInteractionMessage message)
         {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DXGame.Core.Level
+﻿namespace DXGame.Core.Level
 {
     /**
         <summary>
@@ -17,8 +11,10 @@ namespace DXGame.Core.Level
         </summary>
 
     */
+
     public interface ILevelProgressionStrategy
     {
+        Level InitialLevel { get; }
         Level DetermineNextLevel(Level currentLevel);
     }
 }

@@ -12,6 +12,7 @@ using DXGame.Core.Utils.Distance;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using NLog;
 
 namespace DXGame.Core.Map
 {
@@ -19,6 +20,8 @@ namespace DXGame.Core.Map
     [DataContract]
     public class Map : DrawableComponent
     {
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
         [NonSerialized] [IgnoreDataMember] private Texture2D mapTexture_;
 
         [DataMember]
@@ -69,7 +72,15 @@ namespace DXGame.Core.Map
 
         public override void LoadContent()
         {
-            MapTexture = DxGame.Instance.Content.Load<Texture2D>("Map/" + Path.GetFileNameWithoutExtension(MapDescriptor.Asset));
+            if(Check.IsNullOrDefault(MapDescriptor.Asset))
+            {
+                LOG.Info($"Attempted to {nameof(LoadContent)} for a null/empty Asset, defaulting to blank texture");
+                MapTexture = TextureFactory.TextureForColor(Color.Black);
+            }
+            else
+            {
+                MapTexture = DxGame.Instance.Content.Load<Texture2D>("Map/" + Path.GetFileNameWithoutExtension(MapDescriptor.Asset));
+            }
             base.LoadContent();
         }
 

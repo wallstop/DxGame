@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
-using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -21,11 +21,10 @@ namespace DXGame.Core.Components.Advanced.Entities
     [Serializable]
     public class Spawner : Component
     {
+        protected DxRectangle spawnArea_;
         protected SpawnTrigger SpawnTrigger { get; }
 
         protected virtual DxRectangle SpawnArea => spawnArea_;
-
-        protected DxRectangle spawnArea_;
 
         protected Spawner(DxRectangle spawnArea, SpawnTrigger spawnTrigger)
         {
@@ -34,20 +33,26 @@ namespace DXGame.Core.Components.Advanced.Entities
             spawnArea_ = spawnArea;
         }
 
+        public static SpawnTrigger ImmediateSpawnTriggerFor(GameObject gameObject)
+        {
+            SimpleImmediateSpawner immediateSpawner = new SimpleImmediateSpawner(gameObject);
+            return immediateSpawner.SpawnTrigger;
+        }
+
         protected override void Update(DxGameTime gameTime)
         {
             var spawnCheck = SpawnTrigger(gameTime);
-            if (spawnCheck.Item1)
+            if(spawnCheck.Item1)
             {
                 GameObject spawnedObject = spawnCheck.Item2;
                 PositionalComponent position = spawnedObject.Components.OfType<PositionalComponent>().FirstOrDefault();
-                if (!ReferenceEquals(position, null))
+                if(!ReferenceEquals(position, null))
                 {
                     position.Position = RandomPositionInSpawnArea();
                 }
                 DxGame.Instance.AddAndInitializeGameObject(spawnedObject);
                 EntitySpawnedMessage spawnMessage = new EntitySpawnedMessage(Id, spawnedObject);
-                DxGame.Instance.BroadcastMessage<EntitySpawnedMessage>(spawnMessage);
+                DxGame.Instance.BroadcastMessage(spawnMessage);
             }
             base.Update(gameTime);
         }
@@ -61,7 +66,7 @@ namespace DXGame.Core.Components.Advanced.Entities
             var maxY = spawnArea.Y + spawnArea.Height;
 
             var xCoordinate = ThreadLocalRandom.Current.NextFloat(minX, maxX);
-            var yCoordinate = ThreadLocalRandom.Current.NextFloat( minY, maxY);
+            var yCoordinate = ThreadLocalRandom.Current.NextFloat(minY, maxY);
             return new DxVector2(xCoordinate, yCoordinate);
         }
 
@@ -93,6 +98,38 @@ namespace DXGame.Core.Components.Advanced.Entities
                 spawnTrigger_ = trigger;
                 return this;
             }
+        }
+    }
+
+    /**
+        <summary>
+            Simple helper for determing if an entity has already spawned
+        </summary>
+    */
+
+    [DataContract]
+    [Serializable]
+    internal class SimpleImmediateSpawner
+    {
+        private readonly GameObject objectToSpawn_;
+        private bool alreadySpawned_;
+
+        public SimpleImmediateSpawner(GameObject objectToSpawn)
+        {
+            Validate.IsNotNullOrDefault(objectToSpawn,
+                StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(objectToSpawn)));
+            objectToSpawn_ = objectToSpawn;
+            alreadySpawned_ = false;
+        }
+
+        public Tuple<bool, GameObject> SpawnTrigger(DxGameTime gameTime)
+        {
+            if(alreadySpawned_)
+            {
+                return Tuple.Create<bool, GameObject>(false, null);
+            }
+            alreadySpawned_ = true;
+            return Tuple.Create(true, objectToSpawn_);
         }
     }
 }

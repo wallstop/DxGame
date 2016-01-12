@@ -38,7 +38,7 @@ namespace DXGame.TowerGame.Level
         private static readonly string MAP_PATH = "Content/Map/";
         private readonly List<Map> maps_ = new List<Map>();
 
-        private int currentMapIndex_ = 0;
+        private int currentMapIndex_ = -1;
 
         private Map CurrentMap => maps_[currentMapIndex_];
 
@@ -56,10 +56,7 @@ namespace DXGame.TowerGame.Level
 
         private Core.Level.Level GenerateLevel()
         {
-            return GenerateLastLevel();
-            /*
-            ++currentMapIndex_;
-            if(currentMapIndex_ == maps_.Count)
+            if(currentMapIndex_++ == maps_.Count)
             {
                 return GenerateLastLevel();
             }
@@ -75,7 +72,6 @@ namespace DXGame.TowerGame.Level
                     .Build();
 
             return generatedLevel;
-            */
         }
 
         private Core.Level.Level GenerateLastLevel()

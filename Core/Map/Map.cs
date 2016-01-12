@@ -22,20 +22,17 @@ namespace DXGame.Core.Map
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        [NonSerialized] [IgnoreDataMember] private Texture2D mapTexture_;
+        [NonSerialized] [IgnoreDataMember] private readonly Dictionary<Texture2D, int> mapTexturesAndLayers_ =
+            new Dictionary<Texture2D, int>();
 
         [DataMember]
         public MapDescriptor MapDescriptor { get; private set; }
 
         [IgnoreDataMember]
-        public DxRectangle ScaledBounds => MapDescriptor.Size*MapDescriptor.Scale;
+        public DxRectangle ScaledBounds => MapDescriptor.Size * MapDescriptor.Scale;
 
         [IgnoreDataMember]
-        public Texture2D MapTexture
-        {
-            get { return mapTexture_; }
-            private set { mapTexture_ = value; }
-        }
+        public Dictionary<Texture2D, int> MapTexturesAndLayers => mapTexturesAndLayers_;
 
         [DataMember]
         public ISpatialTree<MapCollidableComponent> Collidables { get; private set; }
@@ -55,9 +52,10 @@ namespace DXGame.Core.Map
                     /* TODO: Have this be some kind of chooseable algorithm or something (bundled in map descriptor? ) */
                     spawnLocation =
                         new DxRectangle(
-                            ThreadLocalRandom.Current.NextFloat(boundary.X, (boundary.X + boundary.Width - 250)),
-                            ThreadLocalRandom.Current.NextFloat(boundary.Y, (boundary.Y + boundary.Height - 250)), 250, 250);
-                } while (CollidesWithMap(spawnLocation));
+                            ThreadLocalRandom.Current.NextFloat(boundary.X, boundary.X + boundary.Width - 250),
+                            ThreadLocalRandom.Current.NextFloat(boundary.Y, boundary.Y + boundary.Height - 250), 250,
+                            250);
+                } while(CollidesWithMap(spawnLocation));
                 return spawnLocation;
             }
         }
@@ -72,53 +70,67 @@ namespace DXGame.Core.Map
 
         public override void LoadContent()
         {
-            if(Check.IsNullOrDefault(MapDescriptor.Asset))
+            mapTexturesAndLayers_.Clear();
+            if(!MapDescriptor.MapLayers.Any())
             {
                 LOG.Info($"Attempted to {nameof(LoadContent)} for a null/empty Asset, defaulting to blank texture");
-                MapTexture = TextureFactory.TextureForColor(Color.Black);
+                Texture2D simpleBlackBackground = TextureFactory.TextureForColor(Color.Black);
+                mapTexturesAndLayers_[simpleBlackBackground] = MapLayer.DEFAULT_LAYER;
             }
             else
             {
-                MapTexture = DxGame.Instance.Content.Load<Texture2D>("Map/" + Path.GetFileNameWithoutExtension(MapDescriptor.Asset));
+                foreach(MapLayer mapLayer in MapDescriptor.MapLayers)
+                {
+                    Texture2D mapImage =
+                        DxGame.Instance.Content.Load<Texture2D>("Map/" +
+                                                                Path.GetFileNameWithoutExtension(mapLayer.Asset));
+                    mapTexturesAndLayers_[mapImage] = mapLayer.Layer;
+                }
             }
             base.LoadContent();
         }
 
         public override void Initialize()
         {
-            List<MapCollidableComponent> mapSpatials =
-                MapDescriptor.Platforms.Select(
-                    platform =>
-                    {
-                        var spatial =
-                            (SpatialComponent)
-                                SpatialComponent.Builder().WithDimensions(new DxVector2(platform.BoundingBox.Width,
-                                    platform.BoundingBox.Height))
-                                    .WithPosition(new DxVector2(platform.BoundingBox.XY()))
-                                    .Build();
-                        return (MapCollidableComponent)
-                            MapCollidableComponent.Builder().WithPlatformType(platform.Type).
-                                WithCollidableDirections(platform.CollidableDirections).WithSpatial(spatial).Build();
-                    })
-                    .ToList();
+            List<MapCollidableComponent> mapSpatials = MapDescriptor.Platforms.Select(platform =>
+            {
+                var spatial =
+                    (SpatialComponent)
+                        SpatialComponent.Builder()
+                            .WithDimensions(new DxVector2(platform.BoundingBox.Width, platform.BoundingBox.Height))
+                            .WithPosition(new DxVector2(platform.BoundingBox.XY()))
+                            .Build();
+                return
+                    (MapCollidableComponent)
+                        MapCollidableComponent.Builder()
+                            .WithPlatformType(platform.Type)
+                            .WithCollidableDirections(platform.CollidableDirections)
+                            .WithSpatial(spatial)
+                            .Build();
+            }).ToList();
 
-            Collidables = new RTree<MapCollidableComponent>((spatial => spatial.Spatial.Space), mapSpatials);
+            Collidables = new RTree<MapCollidableComponent>(spatial => spatial.Spatial.Space, mapSpatials);
             PlayerSpawn = new DxVector2(RandomSpawnLocation.XY());
             base.Initialize();
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            var range = DxGame.Instance.ScreenRegion;
+            DxRectangle range = DxGame.Instance.ScreenRegion;
             /* 
                 Map is pretty special: We want actually want to draw whatever chunk of the map the screen is currently seeing. 
                 However, we've already set up a matrix translation on our camera for every object. So, we need to undo the translation (just flip x & y)
             */
-            var target = range;
+            DxRectangle target = range;
             target.X = -target.X;
             target.Y = -target.Y;
-            spriteBatch.Draw(MapTexture, (target).ToRectangle(), (target / MapDescriptor.Scale).ToRectangle(),
-                Color.White);
+            foreach(var mapLayerEntry in MapTexturesAndLayers)
+            {
+                Texture2D mapImage = mapLayerEntry.Key;
+                int layer = mapLayerEntry.Value;
+                spriteBatch.Draw(mapImage, target.ToRectangle(), (target / MapDescriptor.Scale).ToRectangle(),
+                    Color.White, 0, new Vector2(), SpriteEffects.None, layer);
+            }
         }
 
         private bool CollidesWithMap(DxRectangle region)

@@ -1,0 +1,8 @@
+9:06 PM - butt king funtimes: xp = monster base xp * monsters killed in floor decay multiplier
+9:07 PM - butt king funtimes: player needs base exp * level in the fibonacci sequence to level up
+9:07 PM - butt king funtimes: problem solved
+9:07 PM - wallstop: ez
+9:08 PM - butt king funtimes: xp *= floor multiplier too
+9:08 PM - butt king funtimes: so more exp from higher floors
+9:12 PM - wallstop: yea that sounds
+9:12 PM - wallstop: honestly pretty great

@@ -45,6 +45,8 @@ namespace DXGame.Core.Models
             components_.Add(timePerFrameBackground);
             var timePerFrameGraph = new TimePerFrameGraph();
             DxGame.Instance.AddAndInitializeComponents(timePerFrameGraph);
+            var keysPressed = new KeysPressedWidget();
+            components_.Add(keysPressed);
         }
 
         public override bool ShouldSerialize => false;

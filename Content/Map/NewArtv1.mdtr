@@ -1,0 +1,221 @@
+{
+	"Asset" : "",
+	"MapLayers" : [{"Asset" : "NewArtv1.png", "Layer" : 0}, {"Asset" : "NewArtv1-Foreground.png", "Layer" : 1}],
+	"Platforms" : [{
+			"BoundingBox" : {
+				"Height" : 272,
+				"Width" : 4450,
+				"X" : 1,
+				"Y" : 2230
+			},
+			"Type" : 0
+		}, {
+			"BoundingBox" : {
+				"Height" : 20,
+				"Width" : 141,
+				"X" : 907,
+				"Y" : 2086
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 17,
+				"Width" : 141,
+				"X" : 1114,
+				"Y" : 1980.00012
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 25,
+				"Width" : 141,
+				"X" : 1321,
+				"Y" : 1885
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 15,
+				"Width" : 143,
+				"X" : 1111,
+				"Y" : 1783
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 20,
+				"Width" : 141,
+				"X" : 907,
+				"Y" : 1682
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 10,
+				"Width" : 344,
+				"X" : 2241,
+				"Y" : 2126
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 7,
+				"Width" : 55,
+				"X" : 2957,
+				"Y" : 2007.99988
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 9,
+				"Width" : 35,
+				"X" : 3081,
+				"Y" : 2016
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 19,
+				"Width" : 142,
+				"X" : 2814,
+				"Y" : 1684
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 19,
+				"Width" : 142,
+				"X" : 2590,
+				"Y" : 1589
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 17,
+				"Width" : 140,
+				"X" : 3421,
+				"Y" : 1876
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 14,
+				"Width" : 143,
+				"X" : 3614,
+				"Y" : 1992.99988
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 13,
+				"Width" : 324,
+				"X" : 3295,
+				"Y" : 2164
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 19,
+				"Width" : 179,
+				"X" : 3396,
+				"Y" : 2071
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 11,
+				"Width" : 136,
+				"X" : 3247,
+				"Y" : 1995
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 7,
+				"Width" : 104,
+				"X" : 399,
+				"Y" : 1986
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 6,
+				"Width" : 311,
+				"X" : 0,
+				"Y" : 1983
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 9,
+				"Width" : 379.000031,
+				"X" : 0,
+				"Y" : 1893.00012
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 10,
+				"Width" : 214,
+				"X" : 1,
+				"Y" : 2059
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 3,
+				"Width" : 226,
+				"X" : 1844,
+				"Y" : 2077
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 48,
+				"Width" : 280,
+				"X" : 513,
+				"Y" : 1611
+			},
+			"Type" : 0
+		}, {
+			"BoundingBox" : {
+				"Height" : 64,
+				"Width" : 280,
+				"X" : 2207,
+				"Y" : 1446
+			},
+			"Type" : 0
+		}, {
+			"BoundingBox" : {
+				"Height" : 6,
+				"Width" : 184.000015,
+				"X" : 1504,
+				"Y" : 2109
+			},
+			"Type" : 0
+		}, {
+			"BoundingBox" : {
+				"Height" : 10,
+				"Width" : 107,
+				"X" : 3832,
+				"Y" : 1987
+			},
+			"Type" : 1
+		}, {
+			"BoundingBox" : {
+				"Height" : 9,
+				"Width" : 93,
+				"X" : 4359,
+				"Y" : 1977
+			},
+			"Type" : 1
+		}
+	],
+	"Scale" : 2.32,
+	"Size" : {
+		"Height" : 1080,
+		"Width" : 1920,
+		"X" : 0,
+		"Y" : 0
+	}
+}

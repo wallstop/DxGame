@@ -133,11 +133,13 @@
     <Compile Include="Core\Components\Advanced\Physics\UnforcablePhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\EventObserver.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\TriggerComponent.cs" />
+    <Compile Include="Core\Components\Developer\KeysPressedWidget.cs" />
     <Compile Include="Core\Events\Event.cs" />
     <Compile Include="Core\Events\EventListener.cs" />
     <Compile Include="Core\GraphicsWidgets\TextComponent.cs" />
     <Compile Include="Core\Level\Level.cs" />
     <Compile Include="Core\Level\ILevelProgressionStrategy.cs" />
+    <Compile Include="Core\Map\MapLayer.cs" />
     <Compile Include="Core\Messaging\EntitySpawnedMessage.cs" />
     <Compile Include="Core\Messaging\EnvironmentInteractionMessage.cs" />
     <Compile Include="Core\Messaging\LevelEndRequest.cs" />
@@ -393,10 +395,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Map\Sample.png">
+    <Content Include="Content\Map\NewArtv1-Foreground.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Map\WideMap.png">
+    <Content Include="Content\Map\NewArtv1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\MousePointer.png">
@@ -553,15 +555,6 @@
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Map\Generated.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <None Include="Content\Map\GeneratedMapDescriptor.mdtr">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\Map\Sample.mdtr">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Content Include="Content\Player\Idle.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -577,7 +570,7 @@
     <Content Include="Content\Player\Walk_Right.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Content\Map\WideMap.mdtr">
+    <None Include="Content\Map\NewArtv1.mdtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Player\Archer\ArrowRainLaunchLeft.adtr">

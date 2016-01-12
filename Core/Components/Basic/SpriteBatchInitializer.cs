@@ -19,7 +19,7 @@ namespace DXGame.Core.Components.Basic
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             // TODO: Change this ugly color
-            DxGame.Instance.GraphicsDevice.Clear(Color.CornflowerBlue);
+            DxGame.Instance.GraphicsDevice.Clear(Color.DarkGray);
 
             DxRectangle screen = DxGame.Instance.ScreenRegion;
 
@@ -36,7 +36,7 @@ namespace DXGame.Core.Components.Basic
                 Assigning SamplerState to PointClamp mode here allows us to preserve pixel-perfect clarity while scaling images both up
                 and down, giving us that sweet pixel look that we're aiming for.
             */
-            spriteBatch.Begin(0, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, cameraShift);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, cameraShift);
         }
     }
 }

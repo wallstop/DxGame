@@ -20,7 +20,7 @@ namespace DXGame.Core.Components.Developer
 
     public class TeamCounterWidget : DrawableComponent
     {
-        private static readonly int PIXEL_OFFSET = 5;
+        private static readonly DxVector2 OFFSET = new DxVector2(5, 5);
         private static readonly TimeSpan UPDATE_INTERVAL = TimeSpan.FromSeconds(1.0);
         protected readonly Dictionary<Team, int> teamCounts_ = new Dictionary<Team, int>();
         private TimeSpan lastUpdated_ = TimeSpan.Zero;
@@ -67,11 +67,7 @@ namespace DXGame.Core.Components.Developer
             teamCountsSortedByLength.Sort(Comparer<string>.Create((first, second) => second.Length - first.Length));
 
             var size = spriteFont_.MeasureString(teamCountsSortedByLength[0]);
-            var screenRegion = DxGame.Instance.ScreenRegion;
-
-            // TODO: Fix whatever weird math is being done with the screen region to make drawing things "sane"
-            var drawLocation = new Vector2(Math.Abs(screenRegion.X) + PIXEL_OFFSET,
-                Math.Abs(screenRegion.Y) + PIXEL_OFFSET);
+            Vector2 drawLocation = DxGame.Instance.OffsetFromScreen(OFFSET);
 
             var textHeight = size.Y;
             var drawSize = new Vector2(size.X, size.Y * teamCountsSortedByLength.Count);

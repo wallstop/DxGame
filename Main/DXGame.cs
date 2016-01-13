@@ -86,6 +86,22 @@ namespace DXGame.Main
             }
         }
 
+        /**
+            <summary>
+                Given some DxVector2 that represents an offset from the screen, not an actual point in space, 
+                returns the coordinates that represent that offset from the Screen in "real world" (map) coordinates.
+                
+                This is incredibly useful for drawing HUD-type widgets.
+            </summary>
+        */
+        public Vector2 OffsetFromScreen(DxVector2 offset)
+        {
+            DxRectangle screenRegion = ScreenRegion;
+            Vector2 drawLocation = new Vector2(Math.Abs(screenRegion.X) + offset.X,
+                Math.Abs(screenRegion.Y) + offset.Y);
+            return drawLocation;
+        }
+
         public GameSettings GameSettings { get; }
         public Controls Controls { get; }
 

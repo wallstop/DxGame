@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Advanced.Entities;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
@@ -27,6 +27,7 @@ namespace DXGame.Core
         public PhysicsComponent Physics => Object.ComponentOfType<PhysicsComponent>();
         public AnimationComponent Animation => Object.ComponentOfType<AnimationComponent>();
         public SkillComponent Abilities => Object.ComponentOfType<SkillComponent>();
+        public LevelComponent Level => Object.ComponentOfType<LevelComponent>();
 
         [DataMember]
         public string Name { get; private set; }

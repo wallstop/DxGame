@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Input;
@@ -12,10 +11,15 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Components.Developer
 {
+    /**
+        <summary>
+            Takes all of the keys that are currently being pressed, converts them to a string, and draws them.
+            This is very useful for video-capture demons, when it is hard to tell "what is going on"
+        </summary>
+    */
     public class KeysPressedWidget : DrawableComponent
     {
-        private static readonly int PIXEL_X_OFFSET = 250;
-        private static readonly int PIXEL_Y_OFFSET = 5;
+        private static readonly DxVector2 OFFSET = new DxVector2(250, 5);
         private List<KeyboardEvent> currentEvents_ = new List<KeyboardEvent>();
 
         protected SpriteFont spriteFont_;
@@ -38,9 +42,7 @@ namespace DXGame.Core.Components.Developer
                     .Select(key => key.ToString())
                     .Aggregate("", (i, j) => i + " " + j);
 
-            var screenRegion = DxGame.Instance.ScreenRegion;
-            var drawLocation = new Vector2(Math.Abs(screenRegion.X) + PIXEL_X_OFFSET,
-                Math.Abs(screenRegion.Y) + PIXEL_Y_OFFSET);
+            Vector2 drawLocation = DxGame.Instance.OffsetFromScreen(OFFSET);
 
             Vector2 drawSize = spriteFont_.MeasureString(keyText);
             Texture2D blackTexture = TextureFactory.TextureForColor(Color.Black);

@@ -5,6 +5,7 @@ using DXGame.Core.Animation;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Command;
 using DXGame.Core.Components.Advanced.Damage;
+using DXGame.Core.Components.Advanced.Entities;
 using DXGame.Core.Components.Advanced.Impulse;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
@@ -12,6 +13,7 @@ using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Components.Advanced.Triggers;
 using DXGame.Core.Components.Developer;
 using DXGame.Core.Events;
+using DXGame.Core.Experience;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
@@ -39,7 +41,9 @@ namespace DXGame.TowerGame.Enemies
                 MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(enemySpatial).Build();
 
             /* TODO: Configure properties */
-            var enemyProperties = new EntityPropertiesComponent(EnemyPropertyFactory.PropertiesFor(entityType));
+            var enemyProperties = new EntityPropertiesComponent(EnemyPropertyFactory.PropertiesFor(entityType),
+                EntityPropertiesComponent.NullLevelUpResponse);
+            ExperienceDropperComponent experienceDropper = new ExperienceDropperComponent(new Experience(50));
             var floatingHealthBar =
                 FloatingHealthIndicator.Builder()
                     .WithEntityProperties(enemyProperties)
@@ -53,7 +57,7 @@ namespace DXGame.TowerGame.Enemies
             var enemyObject =
                 GameObject.Builder()
                     .WithComponents(enemySpatial, enemyPhysics, enemyProperties, floatingHealthBar, deathExploder,
-                        damageComponent, teamComponent, pathfinding, platformDropper, pathDrawer, entityTypeComponent)
+                        damageComponent, teamComponent, pathfinding, platformDropper, pathDrawer, entityTypeComponent, experienceDropper)
                     .Build();
             // Create a state machine for the enemy in question
             // Horrifically complex; weep, gnash teeth
@@ -79,7 +83,8 @@ namespace DXGame.TowerGame.Enemies
                 MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(enemySpatial).Build();
 
             /* TODO: Configure properties */
-            var enemyProperties = new EntityPropertiesComponent(EnemyPropertyFactory.PropertiesFor(entityType));
+            var enemyProperties = new EntityPropertiesComponent(EnemyPropertyFactory.PropertiesFor(entityType), EntityPropertiesComponent.NullLevelUpResponse);
+            ExperienceDropperComponent experienceDropper = new ExperienceDropperComponent(new Experience(50));
             var floatingHealthBar =
                 FloatingHealthIndicator.Builder()
                     .WithEntityProperties(enemyProperties)
@@ -93,7 +98,7 @@ namespace DXGame.TowerGame.Enemies
             var enemyObject =
                 GameObject.Builder()
                     .WithComponents(enemySpatial, enemyPhysics, enemyProperties, floatingHealthBar, deathExploder,
-                        damageComponent, teamComponent, pathfinding, platformDropper, entityTypeComponent)
+                        damageComponent, teamComponent, pathfinding, platformDropper, entityTypeComponent, experienceDropper)
                     .Build();
             // Create a state machine for the enemy in question
             // Horrifically complex; weep, gnash teeth

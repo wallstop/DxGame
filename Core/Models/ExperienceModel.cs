@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
@@ -72,7 +73,7 @@ namespace DXGame.Core.Models
                 only ever going to be (some small number of players), so we may as well do 
                 direct, simple distance compares
             */
-            foreach(KeyValuePair<Player, int> playerAndEntityCount in entitiesContributingToExperienceByPlayer_)
+            foreach(KeyValuePair<Player, int> playerAndEntityCount in entitiesContributingToExperienceByPlayer_.ToList())
             {
                 Player player = playerAndEntityCount.Key;
                 DxVector2 playerPosition = player.Position.Center;

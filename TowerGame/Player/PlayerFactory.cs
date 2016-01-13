@@ -1,5 +1,6 @@
 ﻿using DXGame.Core.Properties;
 using System;
+using DXGame.Core.Messaging;
 
 namespace DXGame.TowerGame.Player
 {
@@ -11,6 +12,28 @@ namespace DXGame.TowerGame.Player
             defense: new Property<int>(1, "Defense"),
             moveSpeed: new Property<float>(6.5f, "MoveSpeed"),
             jumpSpeed: new Property<float>(13.0f, "JumpSpeed"),
-            attackSpeed: new Property<TimeSpan>(TimeSpan.FromMilliseconds(300), "AttackSpeed"));
+            attackSpeed: new Property<int>(10, "AttackSpeed"),
+            attackDamage: new Property<int>(5, "AttackDamage"));
+
+        public static void GenericLevelUp(EntityProperties properties, LeveledUpMessage levelUpMessage)
+        {
+
+            const int healthGain = 4;
+            properties.MaxHealth.CurrentValue += healthGain;
+
+            const int attackSpeedGain = 5;
+            properties.AttackSpeed.CurrentValue += attackSpeedGain;
+
+            const int attackDamageGain = 2;
+            properties.AttackDamage.CurrentValue += attackDamageGain;
+
+            /* Only increase defense if the new level is a multiple of 3 */
+            if(levelUpMessage.NewLevel % 3 == 0)
+            {
+                const int defenseGain = 1;
+                properties.Defense.CurrentValue += defenseGain;
+            }
+
+        }
     }
 }

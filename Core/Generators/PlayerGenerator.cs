@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DXGame.Core.Behavior.Goals;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Command;
+using DXGame.Core.Components.Advanced.Entities;
 using DXGame.Core.Components.Advanced.Impulse;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
@@ -33,7 +34,7 @@ namespace DXGame.Core.Generators
             physics_ =
                 MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(PlayerSpace).Build();
 
-            playerProperties_ = new EntityPropertiesComponent(PlayerFactory.BasicPlayerProperties);
+            playerProperties_ = new EntityPropertiesComponent(PlayerFactory.BasicPlayerProperties, PlayerFactory.GenericLevelUp);
             /* Fuck with the health so we can check if the hp bar works */
             playerProperties_.EntityProperties.Health.CurrentValue -= 3;
             // TODO: Need to add state machine in (how?)
@@ -57,9 +58,10 @@ namespace DXGame.Core.Generators
             var inputListener = new PlayerInputListener();
             var facingComponent = new FacingComponent();
             var teamComponent = new TeamComponent(Team.PlayerTeam);
+            LevelComponent levelComponent = new LevelComponent();
             
             playerBuilder.WithComponents(PlayerSpace, physics_, 
-                    playerProperties_, healthBar_, inputListener, facingComponent, teamComponent);
+                    playerProperties_, healthBar_, inputListener, facingComponent, teamComponent, levelComponent);
             var playerObject = playerBuilder.Build();
             var shockwaveSkill =
                 Skill.Builder()

@@ -56,10 +56,11 @@ namespace DXGame.TowerGame.Level
 
         private Core.Level.Level GenerateLevel()
         {
-            if(currentMapIndex_++ == maps_.Count)
+            if(currentMapIndex_ == maps_.Count)
             {
                 return GenerateLastLevel();
             }
+            ++currentMapIndex_;
 
             Spawner smallBoxSpawner = SpawnerFactory.SimpleSmallBoxSpawner();
             Spawner largeBoxSpawner = SpawnerFactory.SimpleLargeBoxSpawner();

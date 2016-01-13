@@ -59,6 +59,8 @@ namespace DXGame.Core.Models
             DxGame.Instance.AttachModel(environmentModel);
             var pathfindingModel = new PathfindingModel();
             DxGame.Instance.AttachModel(pathfindingModel);
+            ExperienceModel experienceModel = new ExperienceModel();
+            DxGame.Instance.AttachModel(experienceModel);
 
             PlayerGenerator playerGenerator = new PlayerGenerator(mapModel.PlayerSpawn,
                 mapModel.MapBounds);

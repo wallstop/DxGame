@@ -1,23 +1,28 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Physics;
+using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
 using DXGame.Core.Properties;
-using DXGame.Main;
-using NLog;
-using Component = DXGame.Core.Components.Basic.Component;
 using DXGame.Core.Utils;
+using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Properties
 {
+    /**
+        <summary>
+            Answers the question "What do I do with all of these properties when I levelup?"
+        </summary>
+    */
+
+    public delegate void LevelUpResponse(EntityProperties properties, LeveledUpMessage levelUpNotification);
+
     [Serializable]
     [DataContract]
     public class EntityPropertiesComponent : Component
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         /*
             TODO: Modify access of these properties. In general, we should leave it up to OTHER components to decide what to do with this information. 
             Properties classes should be a dump data store.
@@ -26,13 +31,19 @@ namespace DXGame.Core.Components.Advanced.Properties
         [DataMember]
         public EntityProperties EntityProperties { get; }
 
-        public EntityPropertiesComponent(EntityProperties entityProperties)
-        {
-            Validate.IsNotNull(entityProperties, StringUtils.GetFormattedNullOrDefaultMessage(this, entityProperties));
-            EntityProperties = entityProperties;
-        }
+        [DataMember]
+        protected LevelUpResponse LevelUpResponse { get; }
 
         protected virtual DxVector2 InitialJumpAcceleration => DxVector2.EmptyVector;
+
+        public EntityPropertiesComponent(EntityProperties entityProperties, LevelUpResponse levelUpResponse)
+        {
+            Validate.IsNotNull(entityProperties, StringUtils.GetFormattedNullOrDefaultMessage(this, entityProperties));
+            Validate.IsNotNullOrDefault(levelUpResponse, StringUtils.GetFormattedNullOrDefaultMessage(this, levelUpResponse));
+            EntityProperties = entityProperties;
+            LevelUpResponse = levelUpResponse;
+            MessageHandler.RegisterMessageHandler<LeveledUpMessage>(HandleLevelUp);
+        }
 
         public override void Initialize()
         {
@@ -40,9 +51,24 @@ namespace DXGame.Core.Components.Advanced.Properties
             EntityProperties.Health.AttachListener(EntityDeathListener);
         }
 
+        /* Takes your sweet properties and the level up notification and does absolutely nothing with them. */
+        public static void NullLevelUpResponse(EntityProperties entityProperties, LeveledUpMessage levelUpMessage)
+        {
+            
+        }
+
+        private void HandleLevelUp(LeveledUpMessage levelUp)
+        {
+            var leveledUpEntity = levelUp.Entity;
+            if(Objects.Equals(Parent, leveledUpEntity))
+            {
+                LevelUpResponse(EntityProperties, levelUp);
+            }
+        }
+
         public virtual Force MovementForceFor(Commandment commandment)
         {
-            switch (commandment)
+            switch(commandment)
             {
                 case Commandment.MoveLeft:
                     return MoveLeftForce();
@@ -80,7 +106,7 @@ namespace DXGame.Core.Components.Advanced.Properties
         protected virtual void EntityDeathListener(int previousHealth, int currentHealth)
         {
             /* Have we received lethal damage? */
-            if (currentHealth <= 0 && previousHealth > 0)
+            if(currentHealth <= 0 && previousHealth > 0)
             {
                 /* If so, tell everyone that we've died. */
                 var entityDeathMessage = new EntityDeathMessage {Entity = Parent};
@@ -92,17 +118,16 @@ namespace DXGame.Core.Components.Advanced.Properties
 
         protected virtual DissipationFunction JumpDissipation()
         {
-            DissipationFunction dissipation =
-                (externalVelocity, acceleration, gameTime) =>
+            DissipationFunction dissipation = (externalVelocity, acceleration, gameTime) =>
+            {
+                /* If our jumping force is applying a (down into the ground) acceleration, we're done! */
+                var done = externalVelocity.Y >= 0;
+                if(done)
                 {
-                    /* If our jumping force is applying a (down into the ground) acceleration, we're done! */
-                    var done = externalVelocity.Y >= 0;
-                    if (done)
-                    {
-                        return Tuple.Create(true, new DxVector2());
-                    }
-                    return Tuple.Create(false, acceleration);
-                };
+                    return Tuple.Create(true, new DxVector2());
+                }
+                return Tuple.Create(false, acceleration);
+            };
             return dissipation;
         }
     }
@@ -111,18 +136,18 @@ namespace DXGame.Core.Components.Advanced.Properties
     [DataContract]
     internal sealed class Movement
     {
-        [DataMember]
-        private bool dissipated_;
+        [DataMember] private bool dissipated_;
+
         [DataMember]
         public Force Force { get; }
+
         [DataMember]
         private DxVector2 Direction { get; }
 
         public Movement(DxVector2 directionalForceVector, string forceName)
         {
             Direction = directionalForceVector;
-            Force = new Force(DxVector2.EmptyVector, directionalForceVector,
-                DissipationFunction, forceName);
+            Force = new Force(DxVector2.EmptyVector, directionalForceVector, DissipationFunction, forceName);
         }
 
         /* Honestly I do not remember wtf any of this is, seems pretty complicated & cool */

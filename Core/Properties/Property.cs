@@ -48,7 +48,7 @@ namespace DXGame.Core.Properties
             new SortedDictionary<PropertyMutator<T>, int>(new PropertyMutatorPriorityComparer<T>());
 
         // TODO: Figure out how to properly serialize / hide name (why?)
-        [DataMember] public readonly string Name;
+        [DataMember] public string Name { get; }
         [DataMember] private T currentValue_;
 
         [DataMember]
@@ -62,7 +62,7 @@ namespace DXGame.Core.Properties
             {
                 var previous = currentValue_;
                 currentValue_ = value;
-                foreach (var listener in listeners_)
+                foreach(var listener in listeners_)
                 {
                     listener.Invoke(previous, currentValue_);
                 }
@@ -83,7 +83,7 @@ namespace DXGame.Core.Properties
             BaseValue = copy.BaseValue;
             Name = copy.Name;
             listeners_.AddRange(copy.listeners_);
-            foreach (var entry in copy.mutatorCounts_)
+            foreach(var entry in copy.mutatorCounts_)
             {
                 mutatorCounts_[entry.Key] = entry.Value;
             }
@@ -92,7 +92,7 @@ namespace DXGame.Core.Properties
         public void AttachListener(PropertyListener<T> listener)
         {
             Validate.IsNotNullOrDefault(listener,
-                $"Cannot attach a null {typeof (PropertyListener<T>)} to a {typeof (Property<T>)} ({Name})");
+                $"Cannot attach a null {typeof(PropertyListener<T>)} to a {typeof(Property<T>)} ({Name})");
             listeners_.Add(listener);
         }
 
@@ -103,15 +103,14 @@ namespace DXGame.Core.Properties
 
         public void AddMutator(PropertyMutator<T> mutator)
         {
-            if (mutator == null)
+            if(mutator == null)
             {
-                LOG.Error(
-                    $"Attempted to find a null {GetType()} from Property {Name}");
+                LOG.Error($"Attempted to find a null {GetType()} from Property {Name}");
                 return;
             }
 
             InternalAddMutator(mutator);
-            if (LOG.IsDebugEnabled)
+            if(LOG.IsDebugEnabled)
             {
                 LOG.Debug(
                     $"Added {1} {GetType()} count for a total of {mutatorCounts_[mutator]} of PropertyMutator {mutator} to {Name}");
@@ -120,14 +119,13 @@ namespace DXGame.Core.Properties
 
         public void RemoveMutator(PropertyMutator<T> mutator)
         {
-            if (mutator == null || !mutatorCounts_.ContainsKey(mutator))
+            if(mutator == null || !mutatorCounts_.ContainsKey(mutator))
             {
-                LOG.Error(
-                    $"Attempted to remove non-existing {mutator} from Property {Name}");
+                LOG.Error($"Attempted to remove non-existing {mutator} from Property {Name}");
                 return;
             }
 
-            if (LOG.IsDebugEnabled)
+            if(LOG.IsDebugEnabled)
             {
                 LOG.Debug(
                     $"Decremented Instance Count of PropertyMutator {mutator} from {mutatorCounts_[mutator]} to {mutatorCounts_[mutator] - 1} for Property {Name}");
@@ -143,9 +141,7 @@ namespace DXGame.Core.Properties
         private void InternalAddMutator(PropertyMutator<T> mutator)
         {
             ApplyDeMutatorChain();
-            mutatorCounts_[mutator] = (mutatorCounts_.ContainsKey(mutator)
-                ? mutatorCounts_[mutator] + 1
-                : 1);
+            mutatorCounts_[mutator] = mutatorCounts_.ContainsKey(mutator) ? mutatorCounts_[mutator] + 1 : 1;
             ApplyMutatorChain();
         }
 
@@ -159,7 +155,7 @@ namespace DXGame.Core.Properties
         private void InternalRemoveMutator(PropertyMutator<T> mutator)
         {
             ApplyDeMutatorChain();
-            if (mutatorCounts_[mutator] > 1)
+            if(mutatorCounts_[mutator] > 1)
             {
                 --mutatorCounts_[mutator];
             }
@@ -173,15 +169,13 @@ namespace DXGame.Core.Properties
         private void ApplyMutatorChain()
         {
             CurrentValue = mutatorCounts_.Aggregate(BaseValue,
-                (current, mutatorCountPair) =>
-                    mutatorCountPair.Key.Mutate(current, mutatorCountPair.Value));
+                (current, mutatorCountPair) => mutatorCountPair.Key.Mutate(current, mutatorCountPair.Value));
         }
 
         private void ApplyDeMutatorChain()
         {
             BaseValue = mutatorCounts_.Aggregate(CurrentValue,
-                (current, mutatorCountPair) =>
-                    mutatorCountPair.Key.DeMutate(current, mutatorCountPair.Value));
+                (current, mutatorCountPair) => mutatorCountPair.Key.DeMutate(current, mutatorCountPair.Value));
         }
     }
 }

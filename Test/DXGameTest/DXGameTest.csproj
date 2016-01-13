@@ -113,6 +113,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Core\Components\Advanced\Entities\LevelComponentTest.cs" />
     <Compile Include="Core\Network\ComplexNetworkSerialization.cs" />
     <Compile Include="Core\Network\NetworkMessageMarshalling.cs" />
     <Compile Include="Core\Network\SimpleNetworkSerialization.cs" />
@@ -154,9 +155,7 @@
       <Name>DXGame</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\Components\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

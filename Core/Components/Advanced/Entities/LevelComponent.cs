@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Main;
+using NLog;
 
 namespace DXGame.Core.Components.Advanced.Entities
 {
@@ -10,7 +11,9 @@ namespace DXGame.Core.Components.Advanced.Entities
     [Serializable]
     public class LevelComponent : Component
     {
-        private static readonly int BASE_EXPERIENCE_TO_LEVEL = 100;
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
+        public static readonly int BASE_EXPERIENCE_TO_LEVEL = 100;
 
         [DataMember]
         public int Level { get; private set; }
@@ -27,6 +30,9 @@ namespace DXGame.Core.Components.Advanced.Entities
         public LevelComponent()
         {
             MessageHandler.RegisterMessageHandler<ExperiencedReceivedMessage>(HandleExperienceReceivedMessage);
+            Level = 0;
+            CurrentExperience = 0;
+            ExperienceToLevel = DetermineExperienceForNextLeveL(Level);
         }
 
         private void HandleExperienceReceivedMessage(ExperiencedReceivedMessage experienceReceived)
@@ -42,25 +48,39 @@ namespace DXGame.Core.Components.Advanced.Entities
                 ++Level;
                 CurrentExperience -= ExperienceToLevel;
                 ExperienceToLevel = DetermineExperienceForNextLeveL(Level);
-                PlayerLeveledUpMessage playerLeveledUp = new PlayerLeveledUpMessage(Parent, Level);
-                DxGame.Instance.BroadcastMessage<PlayerLeveledUpMessage>(playerLeveledUp);
+                LeveledUpMessage leveledUp = new LeveledUpMessage(Parent, Level);
+                LOG.Info("Wow I leveled up!");
+                Parent?.BroadcastMessage<LeveledUpMessage>(leveledUp);
+                DxGame.Instance.BroadcastMessage(leveledUp);
             }
         }
 
-        private static int DetermineExperienceForNextLeveL(int currentLevel)
+        public static int DetermineExperienceForNextLeveL(int currentLevel)
         {
             /*
                 https://en.wikipedia.org/wiki/Fibonacci_number#Relation_to_the_golden_ratio
                 Closed-form enough ish
             */
+            const int offset = 2;
+            /* 
+                Offset the level by 2 - the following formula is assuming the following fibonacci mapping:
+                    0: 0
+                    1: 1
+                    2: 1
+                    3: 2
+                    4: 3
+                    ...
+                So we want to actually start at the second fibonacci number, but our level starts out 0, so we need the offset
+            */
+            currentLevel += offset;
             double sqrtFive = Math.Sqrt(5);
             double alpha = (1 + sqrtFive) / 2;
             double theta = (1 - sqrtFive) / 2;
 
             return
                 (int)
-                    (Math.Round((Math.Pow(alpha, currentLevel) - Math.Pow(theta, currentLevel)) / sqrtFive *
-                                BASE_EXPERIENCE_TO_LEVEL);
+                    Math.Round((Math.Pow(alpha, currentLevel) - Math.Pow(theta, currentLevel)) / sqrtFive *
+                               BASE_EXPERIENCE_TO_LEVEL);
         }
     }
 }

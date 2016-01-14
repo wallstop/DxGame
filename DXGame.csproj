@@ -157,6 +157,7 @@
     <Compile Include="Core\Models\ExperienceModel.cs" />
     <Compile Include="Core\Skills\ChargedSkill.cs" />
     <Compile Include="Core\Utils\SpringFunctions.cs" />
+    <Compile Include="TowerGame\Components\PropertyModifiers\TimedPropertyModifier.cs" />
     <Compile Include="TowerGame\Enemies\SpawnerFactory.cs" />
     <Compile Include="Core\Components\Advanced\FacingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PathfindingInputComponent.cs" />
@@ -345,6 +346,8 @@
     <Compile Include="TowerGame\Components\SimpleEnemyAI.cs" />
     <Compile Include="TowerGame\Enemies\EnemyFactory.cs" />
     <Compile Include="TowerGame\Enemies\EnemyPropertyFactory.cs" />
+    <Compile Include="TowerGame\Items\ItemComponent.cs" />
+    <Compile Include="TowerGame\Items\PandorasBox.cs" />
     <Compile Include="TowerGame\Level\SimpleRotatingLevelProgression.cs" />
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />
     <Compile Include="TowerGame\PropertyMutators\InheritedHatred.cs" />
@@ -603,7 +606,6 @@
     <Folder Include="Core\GraphicsWidgets\Utils\" />
     <Folder Include="Network\" />
     <Folder Include="TowerGame\Actions\" />
-    <Folder Include="TowerGame\Buffs\" />
     <Folder Include="TowerGame\Physics\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

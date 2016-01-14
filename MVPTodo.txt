@@ -1,8 +1,13 @@
 * Items
-* Leveling mechanic
+-- Leveling mechanic
 * Enemy spawns
 * Items drop from enemies
 * Player death / damage
 * Some kind of UI / feedback to inform player of leveling
 * Need some kind of basic attack for players
-* Need some kind of basic attack for enemies
+* Waves
+
+MVP:
+* Waves
+* Item drops
+* Basic attack

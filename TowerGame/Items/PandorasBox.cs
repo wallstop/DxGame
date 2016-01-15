@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core;
 using DXGame.Core.Components.Advanced;
@@ -98,6 +97,8 @@ namespace DXGame.TowerGame.Items
     [Serializable]
     internal sealed class AttachedPandorasBox
     {
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
         [DataMember] private readonly EntityProperties playerProperties_;
 
         [DataMember] private readonly GameObject source_;
@@ -107,6 +108,9 @@ namespace DXGame.TowerGame.Items
         [DataMember] private readonly double triggerThreshold_;
 
         [DataMember] private Optional<TimeSpan> lastTriggered_;
+
+        [DataMember]
+        public bool Active { get; set; }
 
         private int MaxHealth => playerProperties_.MaxHealth.CurrentValue;
 
@@ -123,18 +127,9 @@ namespace DXGame.TowerGame.Items
             triggerThreshold_ = triggerThreshold;
             playerProperties_ = playerProperties;
             lastTriggered_ = Optional<TimeSpan>.Empty;
-
-            /* 
-                Potential issue: We only check on health changed - we never check on current health. 
-                This raises the following scenario:
-                * Pandora's Box triggers, heals player up, goes on cooldown.
-                * Player loses a ton of health (below threshold), then takes no damage
-                * Pandora's Box comes off CD.
-
-                From here, the only way that Pandora's Box will trigger is if the player takes damage (or rather, his health changes)
-                ...Not sure of the best way to fix
-            */
             playerProperties_.Health.AttachListener(CheckForTrigger);
+
+            Active = false;
         }
 
         public void CheckForTrigger(int previous, int current)
@@ -144,9 +139,10 @@ namespace DXGame.TowerGame.Items
             {
                 return;
             }
-            /* Only check for declines in health (poor-man's validation) */
-            if(current > previous)
+            if(Active)
             {
+                LOG.Info(
+                    $"Received trigger event for health transition [{previous}->{current}], but was already activate (ignoring)");
                 return;
             }
 
@@ -154,6 +150,7 @@ namespace DXGame.TowerGame.Items
             if(!lastTriggered_.HasValue || lastTriggered_.Value + triggerDelay_ <= currentTime)
             {
                 lastTriggered_ = Optional<TimeSpan>.Of(currentTime);
+                Active = true;
                 Trigger();
             }
         }
@@ -173,7 +170,7 @@ namespace DXGame.TowerGame.Items
 
             TimedTriggeredActionComponent<EntityProperties> pandoraHealthRegen =
                 new TimedTriggeredActionComponent<EntityProperties>(duration, tickRate, playerProperties_,
-                    attachedHealer.Tick);
+                    attachedHealer.Tick, properties => Active = false);
             DxGame.Instance.AddAndInitializeComponent(pandoraHealthRegen);
             source_.AttachComponent(pandoraHealthRegen);
         }

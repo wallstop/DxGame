@@ -7,6 +7,12 @@ using NLog;
 
 namespace DXGame.Core.Properties
 {
+
+    public interface IProperty
+    {
+        void TriggerListeners();
+    }
+
     /**
         <summary> 
             "Listens" to changes in a property, possibly reacting if so.
@@ -39,7 +45,7 @@ namespace DXGame.Core.Properties
 
     [Serializable]
     [DataContract]
-    public sealed class Property<T>
+    public sealed class Property<T> : IProperty
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         [DataMember] private readonly List<PropertyListener<T>> listeners_ = new List<PropertyListener<T>>();
@@ -86,6 +92,17 @@ namespace DXGame.Core.Properties
             foreach(var entry in copy.mutatorCounts_)
             {
                 mutatorCounts_[entry.Key] = entry.Value;
+            }
+        }
+
+        /* Manually trigger event listeners. This is useful for things that are "sleeping" when a condition happens */
+        public void TriggerListeners()
+        {
+            T previous = CurrentValue;
+            T current = CurrentValue;
+            foreach(var listener in listeners_)
+            {
+                listener.Invoke(previous, current);
             }
         }
 

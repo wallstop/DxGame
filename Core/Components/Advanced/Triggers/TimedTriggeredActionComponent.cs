@@ -19,6 +19,11 @@ namespace DXGame.Core.Components.Advanced.Triggers
     {
         public TimedTriggeredActionComponent(TimeSpan duration, TimeSpan tickRate, T source, Action<T> action)
             : base(new EndTrigger(duration).IsEnded, new TickRate(tickRate).DetermineNumTicks, source, action) {}
+
+        public TimedTriggeredActionComponent(TimeSpan duration, TimeSpan tickRate, T source, Action<T> action,
+            Action<T> finalAction)
+            : base(
+                new EndTrigger(duration).IsEnded, new TickRate(tickRate).DetermineNumTicks, source, action, finalAction) {}
     }
 
     [DataContract]

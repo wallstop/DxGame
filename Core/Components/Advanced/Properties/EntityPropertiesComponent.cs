@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Basic;
@@ -23,10 +25,42 @@ namespace DXGame.Core.Components.Advanced.Properties
     [DataContract]
     public class EntityPropertiesComponent : Component
     {
+        private static readonly TimeSpan FORCED_NOTIFICATION_TRIGGER_DELAY = TimeSpan.FromSeconds(1 / 2.0);
+
+        [DataMember] private TimeSpan lastTriggerNotification_;
+
         /*
             TODO: Modify access of these properties. In general, we should leave it up to OTHER components to decide what to do with this information. 
             Properties classes should be a dump data store.
         */
+
+        [IgnoreDataMember] private List<IProperty> properties_;
+
+        public IEnumerable<IProperty> Properties
+        {
+            get
+            {
+                if(!ReferenceEquals(properties_, null))
+                {
+                    return properties_;
+                }
+                PropertyInfo[] entityProperties =
+                    typeof(EntityProperties).GetProperties(BindingFlags.Instance | BindingFlags.Public);
+                List<IProperty> properties = new List<IProperty>(entityProperties.Length);
+                foreach(var entityProperty in entityProperties)
+                {
+                    if(!typeof(IProperty).IsAssignableFrom(entityProperty.PropertyType))
+                    {
+                        continue;
+                    }
+
+                    IProperty property = (IProperty) entityProperty.GetValue(EntityProperties);
+                    properties.Add(property);
+                }
+                properties_ = properties;
+                return properties_;
+            }
+        }
 
         [DataMember]
         public EntityProperties EntityProperties { get; }
@@ -39,7 +73,8 @@ namespace DXGame.Core.Components.Advanced.Properties
         public EntityPropertiesComponent(EntityProperties entityProperties, LevelUpResponse levelUpResponse)
         {
             Validate.IsNotNull(entityProperties, StringUtils.GetFormattedNullOrDefaultMessage(this, entityProperties));
-            Validate.IsNotNullOrDefault(levelUpResponse, StringUtils.GetFormattedNullOrDefaultMessage(this, levelUpResponse));
+            Validate.IsNotNullOrDefault(levelUpResponse,
+                StringUtils.GetFormattedNullOrDefaultMessage(this, levelUpResponse));
             EntityProperties = entityProperties;
             LevelUpResponse = levelUpResponse;
             MessageHandler.RegisterMessageHandler<LeveledUpMessage>(HandleLevelUp);
@@ -51,11 +86,24 @@ namespace DXGame.Core.Components.Advanced.Properties
             EntityProperties.Health.AttachListener(EntityDeathListener);
         }
 
-        /* Takes your sweet properties and the level up notification and does absolutely nothing with them. */
-        public static void NullLevelUpResponse(EntityProperties entityProperties, LeveledUpMessage levelUpMessage)
+        protected override void Update(DxGameTime gameTime)
         {
-            
+            TimeSpan currentTime = gameTime.TotalGameTime;
+            if(currentTime <= lastTriggerNotification_ + FORCED_NOTIFICATION_TRIGGER_DELAY)
+            {
+                return;
+            }
+
+            lastTriggerNotification_ = currentTime;
+            foreach(IProperty property in Properties)
+            {
+                property.TriggerListeners();
+            }
         }
+
+        /* Takes your sweet properties and the level up notification and does absolutely nothing with them. */
+
+        public static void NullLevelUpResponse(EntityProperties entityProperties, LeveledUpMessage levelUpMessage) {}
 
         private void HandleLevelUp(LeveledUpMessage levelUp)
         {

@@ -21,11 +21,21 @@ using DXGame.Core.State;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using DXGame.TowerGame.Components;
+using DXGame.TowerGame.Items;
 
 namespace DXGame.TowerGame.Enemies
 {
     public static class EnemyFactory
     {
+        /* TODO: Remove / refactor */
+
+        private static List<GameObject> SpawnPandorasBox(DxVector2 position)
+        {
+            GameObject pandorasBox = PandorasBox.Generate(position);
+            List<GameObject> spawnedObjects = new List<GameObject> {pandorasBox};
+            return spawnedObjects;
+        } 
+
         public static GameObject SmallBox()
         {
             string entityName = "SmallBox";
@@ -44,6 +54,8 @@ namespace DXGame.TowerGame.Enemies
             var enemyProperties = new EntityPropertiesComponent(EnemyPropertyFactory.PropertiesFor(entityType),
                 EntityPropertiesComponent.NullLevelUpResponse);
             ExperienceDropperComponent experienceDropper = new ExperienceDropperComponent(new Experience(50));
+
+            ItemDropperComponent itemDropper = new ItemDropperComponent(.25, SpawnPandorasBox);
             var floatingHealthBar =
                 FloatingHealthIndicator.Builder()
                     .WithEntityProperties(enemyProperties)
@@ -57,7 +69,7 @@ namespace DXGame.TowerGame.Enemies
             var enemyObject =
                 GameObject.Builder()
                     .WithComponents(enemySpatial, enemyPhysics, enemyProperties, floatingHealthBar, deathExploder,
-                        damageComponent, teamComponent, pathfinding, platformDropper, pathDrawer, entityTypeComponent, experienceDropper)
+                        damageComponent, teamComponent, pathfinding, platformDropper, pathDrawer, entityTypeComponent, experienceDropper, itemDropper)
                     .Build();
             // Create a state machine for the enemy in question
             // Horrifically complex; weep, gnash teeth

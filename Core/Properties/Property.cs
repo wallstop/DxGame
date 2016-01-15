@@ -60,7 +60,7 @@ namespace DXGame.Core.Properties
             get { return currentValue_; }
             set
             {
-                var previous = currentValue_;
+                T previous = currentValue_;
                 currentValue_ = value;
                 foreach(var listener in listeners_)
                 {

@@ -16,8 +16,8 @@ namespace DXGame.Core.Menus
 
         protected Menu()
         {
-            var mousePosition = new MouseTrackingComponent();
-            var mouseSprite = new SimpleSpriteComponent().WithAsset("MousePointer").WithPosition(mousePosition);
+            MouseTrackingComponent mousePosition = new MouseTrackingComponent();
+            SimpleSpriteComponent mouseSprite = SimpleSpriteComponent.Builder().WithAsset("MousePointer").WithPosition(mousePosition).Build();
             mousePointer_ = GameObject.Builder().WithComponents(mousePosition, mouseSprite).Build();
             DxGame.Instance.AddAndInitializeComponents(mousePosition, mouseSprite);
         }

@@ -7,7 +7,6 @@ using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using NLog;
 
 namespace DXGame.Core.Components.Advanced
 {
@@ -15,7 +14,6 @@ namespace DXGame.Core.Components.Advanced
     [DataContract]
     public class SimpleSpriteComponent : DrawableComponent
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         [DataMember] protected string assetName_;
         [DataMember] protected DxRectangle boundingBox_;
         [DataMember] protected PositionalComponent position_;
@@ -35,32 +33,13 @@ namespace DXGame.Core.Components.Advanced
             set { assetName_ = value; }
         }
 
-        public SimpleSpriteComponent()
+        private SimpleSpriteComponent(string asset, PositionalComponent position, DxRectangle boundingBox)
         {
-        }
-
-        public SimpleSpriteComponent WithAsset(string assetName)
-        {
-            Validate.IsNotNullOrDefault(assetName,
-                $"Cannot initialize {GetType()} with a null/default {nameof(assetName)}");
-            assetName_ = assetName;
-            return this;
-        }
-
-        public SimpleSpriteComponent WithPosition(PositionalComponent position)
-        {
-            Validate.IsNotNullOrDefault(position,
-                $"Cannot initialize {GetType()} with a null/default {nameof(position)}");
+            Validate.IsNotNullOrDefault(asset, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(asset)));
+            assetName_ = asset;
+            Validate.IsNotNullOrDefault(position, StringUtils.GetFormattedNullOrDefaultMessage(this, position));
             position_ = position;
-            return this;
-        }
-
-        public SimpleSpriteComponent WithBoundingBox(DxRectangle boundingBox)
-        {
-            Validate.IsNotNullOrDefault(boundingBox,
-                $"Cannot initialize {GetType()} with a null/default {nameof(boundingBox)}");
             boundingBox_ = boundingBox;
-            return this;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
@@ -71,15 +50,50 @@ namespace DXGame.Core.Components.Advanced
 
         public override void Initialize()
         {
-            Validate.IsNotNull(DxGame.Instance.Content, StringUtils.GetFormattedNullOrDefaultMessage(this, DxGame.Instance.Content));
+            Validate.IsNotNull(DxGame.Instance.Content,
+                StringUtils.GetFormattedNullOrDefaultMessage(this, DxGame.Instance.Content));
             texture_ = DxGame.Instance.Content.Load<Texture2D>(assetName_);
             // Assign boundingBox to be the shape of the texture only if it hasn't been custom-set
             // TODO: Change to an isLoaded bool flag / state
-            if (Check.IsNullOrDefault(boundingBox_))
+            if(Check.IsNullOrDefault(boundingBox_))
             {
                 boundingBox_ = new DxRectangle(0, 0, texture_.Width, texture_.Height);
             }
-            base.Initialize();
+        }
+
+        public static SimpleSpriteComponentBuilder Builder()
+        {
+            return new SimpleSpriteComponentBuilder();
+        }
+
+        public class SimpleSpriteComponentBuilder : IBuilder<SimpleSpriteComponent>
+        {
+            private string asset_;
+            private DxRectangle boundingBox_;
+            private PositionalComponent position_;
+
+            public SimpleSpriteComponent Build()
+            {
+                return new SimpleSpriteComponent(asset_, position_, boundingBox_);
+            }
+
+            public SimpleSpriteComponentBuilder WithAsset(string asset)
+            {
+                asset_ = asset;
+                return this;
+            }
+
+            public SimpleSpriteComponentBuilder WithPosition(PositionalComponent position)
+            {
+                position_ = position;
+                return this;
+            }
+
+            public SimpleSpriteComponentBuilder WithBoundingBox(DxRectangle boundingBox)
+            {
+                boundingBox_ = boundingBox;
+                return this;
+            }
         }
     }
 }

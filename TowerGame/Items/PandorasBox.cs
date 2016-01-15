@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core;
+using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Advanced.Physics;
+using DXGame.Core.Components.Advanced.Position;
+using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Components.Advanced.Triggers;
 using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Properties;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using Microsoft.Xna.Framework.Graphics;
+using NLog;
 
 namespace DXGame.TowerGame.Items
 {
@@ -15,18 +20,73 @@ namespace DXGame.TowerGame.Items
     [Serializable]
     public class PandorasBox : ItemComponent
     {
-        public override DxVector2 Position { get; }
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
+        [DataMember] private SpatialComponent spatial_;
+
+        public override DxVector2 Position => spatial_.Center;
+
+        [DataMember]
+        private bool Activated { get; set; }
+
+        public PandorasBox(SpatialComponent spatial)
         {
-            throw new NotImplementedException();
+            Validate.IsNotNullOrDefault(spatial, StringUtils.GetFormattedNullOrDefaultMessage(this, spatial));
+            spatial_ = spatial;
+            Activated = false;
         }
 
-        protected override void HandleEnvironmentInteractionMessage(EnvironmentInteractionMessage environmentInteraction)
+        /* TODO: How to generalize? Maybe some kind of registration based... thing..*/
+
+        public static GameObject Generate(DxVector2 position)
         {
+            DxVector2 itemSize = new DxVector2(25, 25);
+            MapBoundedSpatialComponent spatialAspect = new MapBoundedSpatialComponent(position, itemSize);
+            SimpleSpriteComponent spriteAspect =
+                SimpleSpriteComponent.Builder()
+                    .WithAsset("Items/PandorasBox")
+                    .WithPosition(spatialAspect)
+                    .WithBoundingBox(new DxRectangle(0, 0, itemSize.X, itemSize.Y))
+                    .Build();
+            PhysicsComponent gravityAspect =
+                MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(spatialAspect).Build();
 
+            PandorasBox pandoraAspect = new PandorasBox(spatialAspect);
 
-            throw new NotImplementedException();
+            GameObject pandorasBox =
+                GameObject.Builder().WithComponents(spatialAspect, spriteAspect, gravityAspect, pandoraAspect).Build();
+            return pandorasBox;
+        }
+
+        protected override void HandleEnvironmentInteraction(EnvironmentInteractionMessage environmentInteraction)
+        {
+            GameObject source = environmentInteraction.Source;
+            TeamComponent teamComponent = source.ComponentOfType<TeamComponent>();
+            Team interactionTeam = teamComponent.Team;
+            if(!Equals(interactionTeam, Team.PlayerTeam))
+            {
+                return;
+            }
+
+            if(Activated)
+            {
+                LOG.Info($"{typeof(PandorasBox)} had a double activate call, ignoring");
+                Dispose();
+                return;
+            }
+
+            Activated = true;
+
+            TimeSpan cooldown = TimeSpan.FromSeconds(1);
+            const double triggerThreshold = .2;
+
+            EntityPropertiesComponent entityPropertiesComponent = source.ComponentOfType<EntityPropertiesComponent>();
+            EntityProperties properties = entityPropertiesComponent.EntityProperties;
+
+            /* Simply create one - it will sit and listen for events on this player */
+            AttachedPandorasBox attachedBox = new AttachedPandorasBox(cooldown, triggerThreshold, source, properties);
+
+            Dispose();
         }
     }
 
@@ -59,6 +119,8 @@ namespace DXGame.TowerGame.Items
             triggerThreshold_ = triggerThreshold;
             playerProperties_ = playerProperties;
             lastTriggered_ = Optional<TimeSpan>.Empty;
+
+            playerProperties_.Health.AttachListener(CheckForTrigger);
         }
 
         public void CheckForTrigger(int previous, int current)
@@ -73,9 +135,8 @@ namespace DXGame.TowerGame.Items
             if(!lastTriggered_.HasValue || lastTriggered_.Value + triggerDelay_ <= currentTime)
             {
                 lastTriggered_ = Optional<TimeSpan>.Of(currentTime);
+                Trigger();
             }
-
-            Trigger();
         }
 
         private void Trigger()
@@ -94,7 +155,7 @@ namespace DXGame.TowerGame.Items
             TimedTriggeredActionComponent<EntityProperties> pandoraHealthRegen =
                 new TimedTriggeredActionComponent<EntityProperties>(duration, tickRate, playerProperties_,
                     attachedHealer.Tick);
-
+            DxGame.Instance.AddAndInitializeComponent(pandoraHealthRegen);
             source_.AttachComponent(pandoraHealthRegen);
         }
     }
@@ -119,9 +180,10 @@ namespace DXGame.TowerGame.Items
         {
             Validate.IsTrue(amountToHeal >= 0,
                 $"Cannot create an {typeof(AttachedHealer)} with an {nameof(amountToHeal)} of {amountToHeal}");
+            AmountToHeal = amountToHeal;
             Validate.IsTrue(numTicks > 0,
                 $"Cannot create an {typeof(AttachedHealer)} with a {nameof(numTicks)} of {numTicks}");
-            AmountToHeal = amountToHeal;
+            NumTicks = numTicks;
         }
 
         public void Tick(EntityProperties entityProperties)

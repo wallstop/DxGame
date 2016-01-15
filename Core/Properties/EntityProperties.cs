@@ -70,7 +70,7 @@ namespace DXGame.Core.Properties
                 return;
             }
 
-            double growth = (double) previousMax / currentMax;
+            double growth = (double) currentMax / previousMax;
             Health.CurrentValue = (int) Math.Round(Health.CurrentValue * growth);
         }
     }

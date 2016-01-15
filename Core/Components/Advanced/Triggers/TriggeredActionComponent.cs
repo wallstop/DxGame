@@ -43,7 +43,7 @@ namespace DXGame.Core.Components.Advanced.Triggers
             tickTrigger_ = tickTrigger;
             source_ = source;
             action_ = action;
-            Initialized = DxGame.Instance.CurrentTime.ElapsedGameTime;
+            Initialized = DxGame.Instance.CurrentTime.TotalGameTime;
         }
 
         protected override void Update(DxGameTime gameTime)

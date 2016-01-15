@@ -22,6 +22,8 @@ namespace DXGame.Core.Components.Advanced.Triggers
         </summary>
     */
 
+    /* TODO: Fully replace with TriggeredActionComponent */
+
     [Serializable]
     [DataContract]
     public class TriggerComponent : Component

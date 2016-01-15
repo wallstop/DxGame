@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using DXGame.Core;
+using DXGame.Core.Components.Advanced.Triggers;
 using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Properties;
@@ -18,6 +15,8 @@ namespace DXGame.TowerGame.Items
     [Serializable]
     public class PandorasBox : ItemComponent
     {
+        public override DxVector2 Position { get; }
+
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             throw new NotImplementedException();
@@ -25,34 +24,36 @@ namespace DXGame.TowerGame.Items
 
         protected override void HandleEnvironmentInteractionMessage(EnvironmentInteractionMessage environmentInteraction)
         {
+
+
             throw new NotImplementedException();
         }
-
-        public override DxVector2 Position { get; }
     }
 
     [DataContract]
     [Serializable]
     internal sealed class AttachedPandorasBox
     {
-        [DataMember]
-        private Optional<TimeSpan> lastTriggered_;
-
-        [DataMember] private readonly TimeSpan triggerDelay_;
-
         [DataMember] private readonly EntityProperties playerProperties_;
 
         [DataMember] private readonly GameObject source_;
 
+        [DataMember] private readonly TimeSpan triggerDelay_;
+
         [DataMember] private readonly double triggerThreshold_;
+
+        [DataMember] private Optional<TimeSpan> lastTriggered_;
 
         private int MaxHealth => playerProperties_.MaxHealth.CurrentValue;
 
-        public AttachedPandorasBox(TimeSpan triggerDelay, double triggerThreshold, GameObject source, EntityProperties playerProperties)
+        public AttachedPandorasBox(TimeSpan triggerDelay, double triggerThreshold, GameObject source,
+            EntityProperties playerProperties)
         {
-            Validate.IsInOpenInterval(triggerThreshold, 0, 1, $"Cannot create an {typeof(AttachedPandorasBox)} with a {nameof(triggerThreshold)} of {triggerThreshold})");
+            Validate.IsInOpenInterval(triggerThreshold, 0, 1,
+                $"Cannot create an {typeof(AttachedPandorasBox)} with a {nameof(triggerThreshold)} of {triggerThreshold})");
             Validate.IsNotNull(source, StringUtils.GetFormattedNullOrDefaultMessage(this, source));
-            Validate.IsNotNull(playerProperties, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(playerProperties)));
+            Validate.IsNotNull(playerProperties,
+                StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(playerProperties)));
             source_ = source;
             triggerDelay_ = triggerDelay;
             triggerThreshold_ = triggerThreshold;
@@ -74,8 +75,65 @@ namespace DXGame.TowerGame.Items
                 lastTriggered_ = Optional<TimeSpan>.Of(currentTime);
             }
 
-            // Trigger
+            Trigger();
         }
 
+        private void Trigger()
+        {
+            const int durationSeconds = 10;
+            const int numTicks = 10;
+
+            TimeSpan duration = TimeSpan.FromSeconds(durationSeconds);
+            TimeSpan tickRate = TimeSpan.FromSeconds((double) durationSeconds / numTicks);
+
+            int amountToHeal =
+                (int) Math.Round(playerProperties_.MaxHealth.CurrentValue * 0.5 - playerProperties_.Health.CurrentValue);
+
+            AttachedHealer attachedHealer = new AttachedHealer(amountToHeal, numTicks);
+
+            TimedTriggeredActionComponent<EntityProperties> pandoraHealthRegen =
+                new TimedTriggeredActionComponent<EntityProperties>(duration, tickRate, playerProperties_,
+                    attachedHealer.Tick);
+
+            source_.AttachComponent(pandoraHealthRegen);
+        }
+    }
+
+    [DataContract]
+    [Serializable]
+    internal sealed class AttachedHealer
+    {
+        [DataMember] private int amountHealed_;
+
+        [DataMember] private int ticks_;
+
+        [DataMember]
+        private int AmountToHeal { get; }
+
+        [DataMember]
+        private int NumTicks { get; }
+
+        private double HealPerTick => AmountToHeal / (1.0 * NumTicks);
+
+        public AttachedHealer(int amountToHeal, int numTicks)
+        {
+            Validate.IsTrue(amountToHeal >= 0,
+                $"Cannot create an {typeof(AttachedHealer)} with an {nameof(amountToHeal)} of {amountToHeal}");
+            Validate.IsTrue(numTicks > 0,
+                $"Cannot create an {typeof(AttachedHealer)} with a {nameof(numTicks)} of {numTicks}");
+            AmountToHeal = amountToHeal;
+        }
+
+        public void Tick(EntityProperties entityProperties)
+        {
+            ++ticks_;
+            Validate.IsTrue(ticks_ <= NumTicks, "Ticked too many times!");
+
+            int target = (int) Math.Round(ticks_ * HealPerTick);
+            int amountToHeal = target - amountHealed_;
+
+            entityProperties.Health.CurrentValue += amountToHeal;
+            amountHealed_ += target;
+        }
     }
 }

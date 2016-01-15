@@ -133,6 +133,7 @@
     <Compile Include="Core\Components\Advanced\Map\MapRotationTriggerComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapTransition.cs" />
     <Compile Include="Core\Components\Advanced\Physics\UnforcablePhysicsComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Triggers\TriggeredActionComponent.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\EventObserver.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\TriggerComponent.cs" />
     <Compile Include="Core\Components\Developer\KeysPressedWidget.cs" />
@@ -157,7 +158,7 @@
     <Compile Include="Core\Models\ExperienceModel.cs" />
     <Compile Include="Core\Skills\ChargedSkill.cs" />
     <Compile Include="Core\Utils\SpringFunctions.cs" />
-    <Compile Include="TowerGame\Components\PropertyModifiers\TimedPropertyModifier.cs" />
+    <Compile Include="Core\Components\Advanced\Triggers\TimedTriggeredActionComponent.cs" />
     <Compile Include="TowerGame\Enemies\SpawnerFactory.cs" />
     <Compile Include="Core\Components\Advanced\FacingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PathfindingInputComponent.cs" />
@@ -606,6 +607,7 @@
     <Folder Include="Core\GraphicsWidgets\Utils\" />
     <Folder Include="Network\" />
     <Folder Include="TowerGame\Actions\" />
+    <Folder Include="TowerGame\Components\PropertyModifiers\" />
     <Folder Include="TowerGame\Physics\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -76,8 +76,12 @@ namespace DXGame.TowerGame.Items
             }
 
             Activated = true;
-
-            TimeSpan cooldown = TimeSpan.FromSeconds(1);
+            /* 
+                Note: We need a smarter mechanism of determining when ... things are in effect. 
+                Right now, if the cooldown of this ability isn't long enough, it has the high potential
+                of double-triggering
+            */
+            TimeSpan cooldown = TimeSpan.FromSeconds(45);
             const double triggerThreshold = .2;
 
             EntityPropertiesComponent entityPropertiesComponent = source.ComponentOfType<EntityPropertiesComponent>();
@@ -120,6 +124,16 @@ namespace DXGame.TowerGame.Items
             playerProperties_ = playerProperties;
             lastTriggered_ = Optional<TimeSpan>.Empty;
 
+            /* 
+                Potential issue: We only check on health changed - we never check on current health. 
+                This raises the following scenario:
+                * Pandora's Box triggers, heals player up, goes on cooldown.
+                * Player loses a ton of health (below threshold), then takes no damage
+                * Pandora's Box comes off CD.
+
+                From here, the only way that Pandora's Box will trigger is if the player takes damage (or rather, his health changes)
+                ...Not sure of the best way to fix
+            */
             playerProperties_.Health.AttachListener(CheckForTrigger);
         }
 
@@ -127,6 +141,11 @@ namespace DXGame.TowerGame.Items
         {
             /* If the new value doesn't trigger us, nothing to do, bail */
             if(current > Math.Round(triggerThreshold_ * MaxHealth))
+            {
+                return;
+            }
+            /* Only check for declines in health (poor-man's validation) */
+            if(current > previous)
             {
                 return;
             }
@@ -192,10 +211,10 @@ namespace DXGame.TowerGame.Items
             Validate.IsTrue(ticks_ <= NumTicks, "Ticked too many times!");
 
             int target = (int) Math.Round(ticks_ * HealPerTick);
-            int amountToHeal = target - amountHealed_;
+            int amountToHeal = Math.Max(0, target - amountHealed_);
 
             entityProperties.Health.CurrentValue += amountToHeal;
-            amountHealed_ += target;
+            amountHealed_ += amountToHeal;
         }
     }
 }

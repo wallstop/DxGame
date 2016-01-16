@@ -36,6 +36,7 @@ namespace DXGame.Core.Components.Advanced.Properties
 
         [IgnoreDataMember] private List<IProperty> properties_;
 
+        /* TODO: Move into EntityProperties */
         public IEnumerable<IProperty> Properties
         {
             get

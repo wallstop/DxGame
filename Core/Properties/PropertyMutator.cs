@@ -83,6 +83,7 @@ namespace DXGame.Core.Properties
         public delegate T Mutator(T input);
 
         // TODO: Figure out how to properly deserialize these. Deserializing readonly properties is hard :(
+        /* TODO: Do we even need a DeMutator? */
         [DataMember] protected readonly DeMutator deMutator_;
         [DataMember] protected readonly Mutator mutator_;
         [DataMember] public string Name { get; }

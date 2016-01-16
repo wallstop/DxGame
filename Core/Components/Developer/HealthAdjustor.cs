@@ -38,11 +38,11 @@ namespace DXGame.Core.Components.Developer
             {
                 if(keyboardEvent.Key == HEALTH_DOWN)
                 {
-                    entityProperties.Health.CurrentValue -= HEALTH_SCALE;
+                    entityProperties.Health.BaseValue -= HEALTH_SCALE;
                 }
                 else if(keyboardEvent.Key == HEALTH_UP)
                 {
-                    entityProperties.Health.CurrentValue += HEALTH_SCALE;
+                    entityProperties.Health.BaseValue += HEALTH_SCALE;
                 }
             }
         }

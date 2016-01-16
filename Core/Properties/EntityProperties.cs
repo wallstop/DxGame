@@ -57,7 +57,7 @@ namespace DXGame.Core.Properties
             {
                 return;
             }
-            Health.CurrentValue = MaxHealth.CurrentValue;
+            Health.BaseValue = MaxHealth.CurrentValue;
         }
 
         /* Ensures that if MaxHealth grows / shrinks, then the current health values grows / shrinks along with it */
@@ -71,7 +71,7 @@ namespace DXGame.Core.Properties
             }
 
             double growth = (double) currentMax / previousMax;
-            Health.CurrentValue = (int) Math.Round(Health.CurrentValue * growth);
+            Health.BaseValue = (int) Math.Round(Health.CurrentValue * growth);
         }
     }
 }

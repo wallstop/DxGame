@@ -59,7 +59,7 @@ namespace DXGame.Core.Components.Advanced.Triggers
         {
             /* 
                 We don't want to gaurantee only one trigger per update - there may be multiple. 
-                Check how many, and trigger that many times 
+                Check how many, and invoke the trigger that many times 
             */
             int numTriggers = tickTrigger_.Invoke(gameTime);
             for(int i = 0; i < numTriggers; ++i)

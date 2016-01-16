@@ -33,7 +33,7 @@ namespace DXGame.Core.Behavior.Goals
             /* Regardless of the entity, the result is that the target has been destroyed! */
             var targetCopy = Target;
             var targetHealth = targetCopy.ComponentOfType<EntityPropertiesComponent>().EntityProperties.Health;
-            targetHealth.CurrentValue = 0;
+            targetHealth.BaseValue = 0;
             return SingleElementFrame.Builder().WithGameObject(targetCopy).Build();
         }
 

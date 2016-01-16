@@ -40,7 +40,7 @@ namespace DXGame.Core.Components.Advanced.Damage
 
             var damageAmount = damageReceived.Item2;
             /* Othwerise, directly modify health */
-            EntityProperties.EntityProperties.Health.CurrentValue -= (int) (Math.Ceiling(damageAmount));
+            EntityProperties.EntityProperties.Health.BaseValue -= (int) (Math.Ceiling(damageAmount));
         }
 
         public static DamageComponentBuilder Builder()

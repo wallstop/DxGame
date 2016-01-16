@@ -36,7 +36,7 @@ namespace DXGame.Core.Generators
 
             playerProperties_ = new EntityPropertiesComponent(PlayerFactory.BasicPlayerProperties, PlayerFactory.GenericLevelUp);
             /* Fuck with the health so we can check if the hp bar works */
-            playerProperties_.EntityProperties.Health.CurrentValue -= 3;
+            playerProperties_.EntityProperties.Health.BaseValue -= 3;
             // TODO: Need to add state machine in (how?)
             
 

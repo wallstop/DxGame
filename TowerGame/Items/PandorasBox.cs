@@ -15,27 +15,30 @@ using NLog;
 
 namespace DXGame.TowerGame.Items
 {
+    /**
+        <summary>
+            Based on preliminary Item designs 2016-01-15
+
+            Pandora's Box is a last-chance item. Activates when the owner's Health falls beneath some threshold.
+            Rapidly regenates the owner's Health up to 50%. 45 second cooldown (to be tweaked)
+        </summary>
+
+        <description>
+            It's already been opened... all that's left is Hope.
+        </description>
+    */
     [DataContract]
     [Serializable]
     public class PandorasBox : ItemComponent
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        [DataMember] private SpatialComponent spatial_;
-
-        public override DxVector2 Position => spatial_.Center;
-
-        [DataMember]
-        private bool Activated { get; set; }
-
         public PandorasBox(SpatialComponent spatial)
+            : base(spatial)
         {
-            Validate.IsNotNullOrDefault(spatial, StringUtils.GetFormattedNullOrDefaultMessage(this, spatial));
-            spatial_ = spatial;
-            Activated = false;
         }
 
-        /* TODO: How to generalize? Maybe some kind of registration based... thing..*/
+        /* TODO: How to generalize Item creation / generation? Maybe some kind of registration based... thing..*/
 
         public static GameObject Generate(DxVector2 position)
         {
@@ -75,11 +78,6 @@ namespace DXGame.TowerGame.Items
             }
 
             Activated = true;
-            /* 
-                Note: We need a smarter mechanism of determining when ... things are in effect. 
-                Right now, if the cooldown of this ability isn't long enough, it has the high potential
-                of double-triggering
-            */
             TimeSpan cooldown = TimeSpan.FromSeconds(45);
             const double triggerThreshold = .2;
 
@@ -93,6 +91,11 @@ namespace DXGame.TowerGame.Items
         }
     }
 
+    /**
+        <summary>
+            Network-serializable object that represents the "Attached" Pandora's Box to the player
+        </summary>
+    */
     [DataContract]
     [Serializable]
     internal sealed class AttachedPandorasBox
@@ -139,6 +142,7 @@ namespace DXGame.TowerGame.Items
             {
                 return;
             }
+
             if(Active)
             {
                 LOG.Info(
@@ -176,6 +180,11 @@ namespace DXGame.TowerGame.Items
         }
     }
 
+    /**
+        <summary>
+            Network-serializable healer that gets created on Pandora's Box trigger (heals for some duration)
+        </summary>
+    */
     [DataContract]
     [Serializable]
     internal sealed class AttachedHealer
@@ -210,7 +219,7 @@ namespace DXGame.TowerGame.Items
             int target = (int) Math.Round(ticks_ * HealPerTick);
             int amountToHeal = Math.Max(0, target - amountHealed_);
 
-            entityProperties.Health.CurrentValue += amountToHeal;
+            entityProperties.Health.BaseValue += amountToHeal;
             amountHealed_ += amountToHeal;
         }
     }

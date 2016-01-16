@@ -7,7 +7,6 @@ using NLog;
 
 namespace DXGame.Core.Properties
 {
-
     public interface IProperty
     {
         void TriggerListeners();
@@ -53,39 +52,36 @@ namespace DXGame.Core.Properties
         [DataMember] private readonly SortedDictionary<PropertyMutator<T>, int> mutatorCounts_ =
             new SortedDictionary<PropertyMutator<T>, int>(new PropertyMutatorPriorityComparer<T>());
 
-        // TODO: Figure out how to properly serialize / hide name (why?)
-        [DataMember] public string Name { get; }
+        [DataMember] private T baseValue_;
         [DataMember] private T currentValue_;
 
+        // TODO: Figure out how to properly serialize / hide name (why?)
         [DataMember]
-        public T BaseValue { get; private set; }
+        public string Name { get; }
 
         [DataMember]
-        public T CurrentValue
+        public T BaseValue
         {
-            get { return currentValue_; }
+            get { return baseValue_; }
             set
             {
-                T previous = currentValue_;
-                currentValue_ = value;
-                foreach(var listener in listeners_)
-                {
-                    listener.Invoke(previous, currentValue_);
-                }
+                baseValue_ = value;
+                ApplyMutatorChain();
             }
         }
+
+        [DataMember]
+        public T CurrentValue => currentValue_;
 
         public Property(T value, string name)
         {
             BaseValue = value;
-            CurrentValue = value;
             Name = name;
         }
 
         public Property(Property<T> copy)
         {
             Validate.IsNotNull(copy, StringUtils.GetFormattedNullOrDefaultMessage(this, copy));
-            CurrentValue = copy.CurrentValue;
             BaseValue = copy.BaseValue;
             Name = copy.Name;
             listeners_.AddRange(copy.listeners_);
@@ -96,10 +92,16 @@ namespace DXGame.Core.Properties
         }
 
         /* Manually trigger event listeners. This is useful for things that are "sleeping" when a condition happens */
+
         public void TriggerListeners()
         {
             T previous = CurrentValue;
             T current = CurrentValue;
+            InternalTriggerListeners(previous, current);
+        }
+
+        private void InternalTriggerListeners(T previous, T current)
+        {
             foreach(var listener in listeners_)
             {
                 listener.Invoke(previous, current);
@@ -157,7 +159,6 @@ namespace DXGame.Core.Properties
 
         private void InternalAddMutator(PropertyMutator<T> mutator)
         {
-            ApplyDeMutatorChain();
             mutatorCounts_[mutator] = mutatorCounts_.ContainsKey(mutator) ? mutatorCounts_[mutator] + 1 : 1;
             ApplyMutatorChain();
         }
@@ -171,7 +172,6 @@ namespace DXGame.Core.Properties
 
         private void InternalRemoveMutator(PropertyMutator<T> mutator)
         {
-            ApplyDeMutatorChain();
             if(mutatorCounts_[mutator] > 1)
             {
                 --mutatorCounts_[mutator];
@@ -185,14 +185,10 @@ namespace DXGame.Core.Properties
 
         private void ApplyMutatorChain()
         {
-            CurrentValue = mutatorCounts_.Aggregate(BaseValue,
+            T previous = currentValue_;
+            currentValue_ = mutatorCounts_.Aggregate(BaseValue,
                 (current, mutatorCountPair) => mutatorCountPair.Key.Mutate(current, mutatorCountPair.Value));
-        }
-
-        private void ApplyDeMutatorChain()
-        {
-            BaseValue = mutatorCounts_.Aggregate(CurrentValue,
-                (current, mutatorCountPair) => mutatorCountPair.Key.DeMutate(current, mutatorCountPair.Value));
+            InternalTriggerListeners(previous, currentValue_);
         }
     }
 }

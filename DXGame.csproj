@@ -350,10 +350,10 @@
     <Compile Include="TowerGame\Enemies\EnemyPropertyFactory.cs" />
     <Compile Include="TowerGame\Items\Gram.cs" />
     <Compile Include="TowerGame\Items\ItemComponent.cs" />
+    <Compile Include="TowerGame\Items\ItemFactory.cs" />
     <Compile Include="TowerGame\Items\PandorasBox.cs" />
     <Compile Include="TowerGame\Level\SimpleRotatingLevelProgression.cs" />
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />
-    <Compile Include="TowerGame\PropertyMutators\InheritedHatred.cs" />
     <Compile Include="TowerGame\Skills\Gevurah\ArrowRainComponent.cs" />
     <Compile Include="TowerGame\Skills\Gevurah\BearTrap.cs" />
     <Compile Include="TowerGame\Skills\Gevurah\ChargeShotComponent.cs" />

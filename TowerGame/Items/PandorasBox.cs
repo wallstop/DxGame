@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DXGame.Core;
-using DXGame.Core.Components.Advanced;
-using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Components.Advanced.Triggers;
 using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
 using DXGame.Core.Properties;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -27,55 +24,22 @@ namespace DXGame.TowerGame.Items
             It's already been opened... all that's left is Hope.
         </description>
     */
+
     [DataContract]
     [Serializable]
     public class PandorasBox : ItemComponent
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-
-        public PandorasBox(SpatialComponent spatial)
-            : base(spatial)
-        {
-        }
-
-        /* TODO: How to generalize Item creation / generation? Maybe some kind of registration based... thing..*/
-
-        public static GameObject Generate(DxVector2 position)
-        {
-            DxVector2 itemSize = new DxVector2(25, 25);
-            MapBoundedSpatialComponent spatialAspect = new MapBoundedSpatialComponent(position, itemSize);
-            SimpleSpriteComponent spriteAspect =
-                SimpleSpriteComponent.Builder()
-                    .WithAsset("Items/PandorasBox")
-                    .WithPosition(spatialAspect)
-                    .WithBoundingBox(new DxRectangle(0, 0, itemSize.X, itemSize.Y))
-                    .Build();
-            PhysicsComponent gravityAspect =
-                MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(spatialAspect).Build();
-
-            PandorasBox pandoraAspect = new PandorasBox(spatialAspect);
-
-            GameObject pandorasBox =
-                GameObject.Builder().WithComponents(spatialAspect, spriteAspect, gravityAspect, pandoraAspect).Build();
-            return pandorasBox;
-        }
+        public PandorasBox(SpatialComponent spatial) : base(spatial) {}
 
         protected override void HandleEnvironmentInteraction(EnvironmentInteractionMessage environmentInteraction)
         {
-            GameObject source = environmentInteraction.Source;
-            TeamComponent teamComponent = source.ComponentOfType<TeamComponent>();
-            Team interactionTeam = teamComponent.Team;
-            if(!Equals(interactionTeam, Team.PlayerTeam))
+            bool relevant = CheckIsRelevantEnvironmentInteraction(environmentInteraction);
+            if(!relevant)
             {
                 return;
             }
 
-            if(Activated)
-            {
-                LOG.Info($"{typeof(PandorasBox)} had a double activate call, ignoring");
-                Dispose();
-                return;
-            }
+            GameObject source = environmentInteraction.Source;
 
             Activated = true;
             TimeSpan cooldown = TimeSpan.FromSeconds(45);
@@ -96,6 +60,7 @@ namespace DXGame.TowerGame.Items
             Network-serializable object that represents the "Attached" Pandora's Box to the player
         </summary>
     */
+
     [DataContract]
     [Serializable]
     internal sealed class AttachedPandorasBox
@@ -185,6 +150,7 @@ namespace DXGame.TowerGame.Items
             Network-serializable healer that gets created on Pandora's Box trigger (heals for some duration)
         </summary>
     */
+
     [DataContract]
     [Serializable]
     internal sealed class AttachedHealer

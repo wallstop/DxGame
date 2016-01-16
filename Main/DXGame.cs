@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Threading;
 using DXGame.Core;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Menus;
@@ -28,6 +25,7 @@ namespace DXGame.Main
         In Passive mode, no action that we take has any effect. Our state is treated as "read only" from our point of view. This is useful for things like "spectating" or
         simple network tests.
     */
+
     public enum UpdateMode
     {
         Active,
@@ -35,15 +33,12 @@ namespace DXGame.Main
         Passive
     }
 
-
     public class DxGame : Game
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        private static readonly Lazy<DxGame> singleton_ =
-            new Lazy<DxGame>(() => new DxGame());
+        private static readonly Lazy<DxGame> singleton_ = new Lazy<DxGame>(() => new DxGame());
 
-        private readonly List<Model> models_ = new List<Model>();
         public Rectangle Screen { get; protected set; }
         public SpriteBatch SpriteBatch { get; private set; }
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
@@ -59,22 +54,21 @@ namespace DXGame.Main
         public UpdateMode UpdateMode { get; set; } = UpdateMode.Active;
 
         /* TODO: Remove public access to this, this was made public for network testing */
-        public List<Model> Models => models_;
+        public List<Model> Models { get; } = new List<Model>();
 
         public DxRectangle ScreenRegion
         {
             get
             {
                 GameModel gameModel = Model<GameModel>();
-                if (Check.IsNullOrDefault(gameModel))
+                if(Check.IsNullOrDefault(gameModel))
                 {
                     return new DxRectangle(Screen);
                 }
                 var mapModel = Model<MapModel>();
                 float x = Screen.Width / 2.0f - gameModel.FocalPoint.Position.X;
                 x = MathHelper.Clamp(x,
-                    Math.Max(float.MinValue,
-                        -(mapModel.MapBounds.X + mapModel.MapBounds.Width - Screen.Width)),
+                    Math.Max(float.MinValue, -(mapModel.MapBounds.X + mapModel.MapBounds.Width - Screen.Width)),
                     mapModel.MapBounds.X);
 
                 float y = Screen.Height / 2.0f - gameModel.FocalPoint.Position.Y;
@@ -84,22 +78,6 @@ namespace DXGame.Main
 
                 return new DxRectangle(x, y, Screen.Width, Screen.Height);
             }
-        }
-
-        /**
-            <summary>
-                Given some DxVector2 that represents an offset from the screen, not an actual point in space, 
-                returns the coordinates that represent that offset from the Screen in "real world" (map) coordinates.
-                
-                This is incredibly useful for drawing HUD-type widgets.
-            </summary>
-        */
-        public Vector2 OffsetFromScreen(DxVector2 offset)
-        {
-            DxRectangle screenRegion = ScreenRegion;
-            Vector2 drawLocation = new Vector2(Math.Abs(screenRegion.X) + offset.X,
-                Math.Abs(screenRegion.Y) + offset.Y);
-            return drawLocation;
         }
 
         public GameSettings GameSettings { get; }
@@ -132,14 +110,31 @@ namespace DXGame.Main
         }
 
         /**
+            <summary>
+                Given some DxVector2 that represents an offset from the screen, not an actual point in space, 
+                returns the coordinates that represent that offset from the Screen in "real world" (map) coordinates.
+                
+                This is incredibly useful for drawing HUD-type widgets.
+            </summary>
+        */
+
+        public Vector2 OffsetFromScreen(DxVector2 offset)
+        {
+            DxRectangle screenRegion = ScreenRegion;
+            Vector2 drawLocation = new Vector2(Math.Abs(screenRegion.X) + offset.X, Math.Abs(screenRegion.Y) + offset.Y);
+            return drawLocation;
+        }
+
+        /**
 
             <summary>
                 Broadcasts a message to all Models
             </summary>
         */
-        public void BroadcastMessage<T>(T message) where T: Message
+
+        public void BroadcastMessage<T>(T message) where T : Message
         {
-            foreach (var model in models_)
+            foreach(var model in Models)
             {
                 model.MessageHandler.HandleMessage(message);
             }
@@ -147,20 +142,20 @@ namespace DXGame.Main
 
         public T Model<T>() where T : Model
         {
-            return models_.OfType<T>().FirstOrDefault();
+            return Models.OfType<T>().FirstOrDefault();
         }
 
         public bool AttachModel(Model model)
         {
-            bool alreadyExists = models_.Contains(model);
-            if (!alreadyExists)
+            bool alreadyExists = Models.Contains(model);
+            if(!alreadyExists)
             {
-                models_.Add(model);
+                Models.Add(model);
                 AddAndInitializeComponent(model);
             }
             else
             {
-                LOG.Error($"{nameof(AttachModel)} failed. Model {model} already exists in {models_}");
+                LOG.Error($"{nameof(AttachModel)} failed. Model {model} already exists in {Models}");
             }
 
             return !alreadyExists;
@@ -176,7 +171,7 @@ namespace DXGame.Main
 
         public void AddAndInitializeComponents(params Component[] components)
         {
-            foreach (var component in components)
+            foreach(var component in components)
             {
                 AddAndInitializeComponent(component);
             }
@@ -184,7 +179,7 @@ namespace DXGame.Main
 
         public void AddAndInitializeComponents(IEnumerable<Component> components)
         {
-            foreach (var component in components)
+            foreach(var component in components)
             {
                 AddAndInitializeComponent(component);
             }
@@ -192,7 +187,7 @@ namespace DXGame.Main
 
         public void AddAndInitializeGameObjects(IEnumerable<GameObject> gameObjects)
         {
-            foreach (var gameObject in gameObjects)
+            foreach(var gameObject in gameObjects)
             {
                 AddAndInitializeGameObject(gameObject);
             }
@@ -200,7 +195,7 @@ namespace DXGame.Main
 
         public void AddAndInitializeGameObject(GameObject gameObject)
         {
-            foreach (var component in gameObject.Components)
+            foreach(var component in gameObject.Components)
             {
                 AddAndInitializeComponent(component);
             }
@@ -209,14 +204,14 @@ namespace DXGame.Main
 
         public void RemoveGameObject(GameObject gameObject)
         {
-            if (ReferenceEquals(gameObject, null))
+            if(ReferenceEquals(gameObject, null))
             {
                 LOG.Warn($"{nameof(RemoveGameObject)} called with null {typeof(GameObject)}");
                 return;
             }
 
             gameObject.Dispose();
-            foreach (var component in gameObject.Components)
+            foreach(var component in gameObject.Components)
             {
                 RemovedGameElements.Add(component);
             }
@@ -236,7 +231,7 @@ namespace DXGame.Main
         // TODO: Figure out a better way to remove shit from the game
         public void RemoveComponents(params Component[] components)
         {
-            foreach (var component in components)
+            foreach(var component in components)
             {
                 RemoveComponent(component);
             }
@@ -274,12 +269,12 @@ namespace DXGame.Main
 
         private void UpdateElements()
         {
-            foreach (var newGameElement in NewGameElements)
+            foreach(var newGameElement in NewGameElements)
             {
                 DxGameElements.Add(newGameElement);
             }
             NewGameElements.Clear();
-            foreach (var removedGameElement in RemovedGameElements)
+            foreach(var removedGameElement in RemovedGameElements)
             {
                 DxGameElements.Remove(removedGameElement);
             }
@@ -297,12 +292,12 @@ namespace DXGame.Main
             CurrentTime = dxGameTime;
 
             // Querying Gamepad.GetState(...) requires xinput1_3.dll (The xbox 360 controller driver). Interesting fact...
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if(Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
                 Exit();
             }
-            
-            switch (UpdateMode)
+
+            switch(UpdateMode)
             {
                 case UpdateMode.Active:
                     ActiveUpdate(dxGameTime);
@@ -339,7 +334,7 @@ namespace DXGame.Main
             // Should probably thread this... but wait until we have perf testing :)
             networkModel.ReceiveData(gameTime);
             /* We may end up modifying these as we iterate over them, so take an immutable copy */
-            foreach (var processable in DxGameElements.Processables)
+            foreach(var processable in DxGameElements.Processables)
             {
                 processable.Process(gameTime);
             }
@@ -357,7 +352,7 @@ namespace DXGame.Main
         {
             var dxGameTime = new DxGameTime(gameTime);
             /* We may end up modifying these as we iterate over them, so take an immutable copy */
-            foreach (var drawable in DxGameElements.Drawables)
+            foreach(var drawable in DxGameElements.Drawables)
             {
                 drawable.Draw(SpriteBatch, dxGameTime);
             }

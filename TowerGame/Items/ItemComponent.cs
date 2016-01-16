@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Windows.Forms;
+using DXGame.Core;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
+using NLog;
 
 namespace DXGame.TowerGame.Items
 {
@@ -19,13 +21,38 @@ namespace DXGame.TowerGame.Items
     [Serializable]
     public abstract class ItemComponent : Component, IEnvironmentComponent
     {
-        [DataMember] protected SpatialComponent Spatial
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
+        [DataMember]
+        protected SpatialComponent Spatial { get; set; }
+
+        [DataMember]
+        protected bool Activated { get; set; }
+
+        public static SpatialComponent GenerateSpatial(DxVector2 position)
         {
-            get;
-            set;
+            DxVector2 itemSize = new DxVector2(25, 25);
+            MapBoundedSpatialComponent spatialAspect = new MapBoundedSpatialComponent(position, itemSize);
+            return spatialAspect;
         }
 
-        [DataMember] protected bool Activated { get; set; }
+        public static GameObject Generate(ItemComponent itemComponent)
+        {
+            Validate.IsNotNullOrDefault(itemComponent,
+                $"Cannot generate a {typeof(GameObject)} from a null {typeof(ItemComponent)}");
+            SimpleSpriteComponent spriteAspect =
+                SimpleSpriteComponent.Builder()
+                    .WithAsset("Items/PandorasBox")
+                    .WithPosition(itemComponent.Spatial)
+                    .WithBoundingBox(itemComponent.Spatial.Space)
+                    .Build();
+            PhysicsComponent gravityAspect =
+                MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(itemComponent.Spatial).Build();
+            
+            GameObject pandorasBox =
+                GameObject.Builder().WithComponents(itemComponent.Spatial, spriteAspect, gravityAspect, itemComponent).Build();
+            return pandorasBox;
+        }
 
         protected ItemComponent(SpatialComponent spatial)
         {
@@ -36,6 +63,25 @@ namespace DXGame.TowerGame.Items
         }
 
         public virtual DxVector2 Position => Spatial.Center;
+
+        protected bool CheckIsRelevantEnvironmentInteraction(EnvironmentInteractionMessage environmentInteraction)
+        {
+            GameObject source = environmentInteraction.Source;
+            TeamComponent teamComponent = source.ComponentOfType<TeamComponent>();
+            Team interactionTeam = teamComponent.Team;
+            if(!Equals(interactionTeam, Team.PlayerTeam))
+            {
+                return false;
+            }
+
+            if(Activated)
+            {
+                LOG.Info($"{GetType()} had a double activate call, ignoring");
+                Dispose();
+                return false;
+            }
+            return true;
+        }
 
         public override void Dispose()
         {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
-using DXGame.Core.Utils.Distance;
 
 namespace DXGame.Core.Properties
 {
@@ -78,36 +77,31 @@ namespace DXGame.Core.Properties
     public class PropertyMutator<T> : IEquatable<PropertyMutator<T>>
     {
         // TODO: Come up with a way to handle equality comparisons for lambda expressions
-        public delegate T DeMutator(T input);
-
         public delegate T Mutator(T input);
 
         // TODO: Figure out how to properly deserialize these. Deserializing readonly properties is hard :(
-        /* TODO: Do we even need a DeMutator? */
-        [DataMember] protected readonly DeMutator deMutator_;
         [DataMember] protected readonly Mutator mutator_;
-        [DataMember] public string Name { get; }
-        [DataMember] public MutatePriority Priority { get;}
 
-        public PropertyMutator(Mutator mutator, DeMutator demutator, string name,
+        [DataMember]
+        public string Name { get; }
+
+        [DataMember]
+        public MutatePriority Priority { get; }
+
+        public PropertyMutator(Mutator mutator, string name,
             MutatePriority priority = MutatePriority.Medium)
         {
             // TODO: Remove these or do property validation checks
             Validate.IsNotNull(mutator, $"Cannot initialize {GetType()} with a null {nameof(mutator)}");
-            Validate.IsNotNull(demutator, $"Cannot intialize {GetType()} with a null {nameof(demutator)}");
             Validate.IsNotNullOrDefault(name, $"Cannot initialize {GetType()} with a null/default {nameof(name)}");
             mutator_ = mutator;
-            deMutator_ = demutator;
             Name = name;
             Priority = priority;
         }
 
         public bool Equals(PropertyMutator<T> other)
         {
-            return !ReferenceEquals(other, null) &&
-                   deMutator_ == other.deMutator_ &&
-                   mutator_ == other.mutator_ &&
-                   Name == other.Name &&
+            return !ReferenceEquals(other, null) && mutator_ == other.mutator_ && Name == other.Name &&
                    Priority == other.Priority;
         }
 
@@ -115,18 +109,9 @@ namespace DXGame.Core.Properties
             Default behavior is to Apply the Mutate & DeMutate functions $Count times
         */
 
-        public virtual T DeMutate(T input, int count)
-        {
-            for (int i = 0; i < count; ++i)
-            {
-                input = deMutator_(input);
-            }
-            return input;
-        }
-
         public virtual T Mutate(T input, int count)
         {
-            for (int i = 0; i < count; ++i)
+            for(int i = 0; i < count; ++i)
             {
                 input = mutator_(input);
             }
@@ -135,7 +120,7 @@ namespace DXGame.Core.Properties
 
         public static bool operator ==(PropertyMutator<T> lhs, PropertyMutator<T> rhs)
         {
-            if (ReferenceEquals(lhs, null))
+            if(ReferenceEquals(lhs, null))
             {
                 return ReferenceEquals(rhs, null);
             }
@@ -157,9 +142,7 @@ namespace DXGame.Core.Properties
         public override int GetHashCode()
         {
             // TOOD: Come up with a nice, generic hashCode function
-            return LambdaUtils.DelegateHashCode(deMutator_) ^ LambdaUtils.DelegateHashCode(mutator_)
-                   ^
-                   Name.GetHashCode() ^ Priority.GetHashCode();
+            return Objects.HashCode(LambdaUtils.DelegateHashCode(mutator_), Name, Priority);
         }
 
         public override string ToString()
@@ -174,11 +157,11 @@ namespace DXGame.Core.Properties
     {
         public int Compare(PropertyMutator<T> lhs, PropertyMutator<T> rhs)
         {
-            if (ReferenceEquals(rhs, null))
+            if(ReferenceEquals(rhs, null))
             {
                 return 1;
             }
-            if (ReferenceEquals(lhs, null))
+            if(ReferenceEquals(lhs, null))
             {
                 return -1;
             }

@@ -8,6 +8,11 @@ using DXGame.Core.Primitives;
 
 namespace DXGame.TowerGame.Items
 {
+    /**
+        <summary>
+            Provides a simple interface for generating types of items automagically
+        </summary>
+    */
     public class ItemFactory
     {
         private static readonly Lazy<ItemFactory> INSTANCE = new Lazy<ItemFactory>(() => new ItemFactory());

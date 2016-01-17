@@ -348,6 +348,7 @@
     <Compile Include="TowerGame\Components\SimpleEnemyAI.cs" />
     <Compile Include="TowerGame\Enemies\EnemyFactory.cs" />
     <Compile Include="TowerGame\Enemies\EnemyPropertyFactory.cs" />
+    <Compile Include="TowerGame\Items\Fragarach.cs" />
     <Compile Include="TowerGame\Items\Gram.cs" />
     <Compile Include="TowerGame\Items\ItemComponent.cs" />
     <Compile Include="TowerGame\Items\ItemFactory.cs" />

@@ -42,7 +42,7 @@ namespace DXGame.TowerGame.Items
                 $"Cannot generate a {typeof(GameObject)} from a null {typeof(ItemComponent)}");
             SimpleSpriteComponent spriteAspect =
                 SimpleSpriteComponent.Builder()
-                    .WithAsset("Items/PandorasBox")
+                    .WithAsset("Items/" + itemComponent.GetType().Name)
                     .WithPosition(itemComponent.Spatial)
                     .WithBoundingBox(itemComponent.Spatial.Space)
                     .Build();

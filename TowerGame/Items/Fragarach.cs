@@ -12,21 +12,27 @@ namespace DXGame.TowerGame.Items
         <summary>
             Based on preliminary Item designs 2016-01-15
 
-            Gram is a simple damage buff.
-            TODO: Figure out how to add ... specific triggers when specific events happen? (Dealing damage to dragons, for example)
+            Fragarach is an attack speed steroid
         </summary>
         <description>
-            A blade sharp enough to slay a dragon.
+            The wielder of this blade becomes as swift as the wind.
         </description>
     */
+
     [DataContract]
     [Serializable]
-    public class Gram : ItemComponent
+    public class Fragarach : ItemComponent
     {
-        private static readonly PropertyMutator<int> GRAM_DAMAGE_BUFF = new PropertyMutator<int>(GramIncreasedDamage,
-            "Gram");
+        private static readonly PropertyMutator<int> FRAGARACH_ATTACK_SPEED_BUFF =
+            new PropertyMutator<int>(FragarachIncreasedAttackSpeed, "Fragarach");
 
-        public Gram(SpatialComponent spatial) : base(spatial) {}
+        public Fragarach(SpatialComponent spatial) : base(spatial) {}
+
+        private static int FragarachIncreasedAttackSpeed(int originalAttackSpeed)
+        {
+            const double scaleFactor = 1.3; // (30% increased attack speed)
+            return (int) Math.Round(originalAttackSpeed * scaleFactor);
+        }
 
         protected override void HandleEnvironmentInteraction(EnvironmentInteractionMessage environmentInteraction)
         {
@@ -39,16 +45,10 @@ namespace DXGame.TowerGame.Items
             Activated = true;
             GameObject source = environmentInteraction.Source;
             EntityProperties playerProperties = source.ComponentOfType<EntityPropertiesComponent>().EntityProperties;
-            PropertyMutator<int> gramDamageBuff = GRAM_DAMAGE_BUFF;
-            playerProperties.AttackDamage.AddMutator(gramDamageBuff);
+            PropertyMutator<int> fragarachAttackSpeedBuff = FRAGARACH_ATTACK_SPEED_BUFF;
+            playerProperties.AttackSpeed.AddMutator(fragarachAttackSpeedBuff);
 
             Dispose();
-        }
-
-        private static int GramIncreasedDamage(int originalDamage)
-        {
-            const double scaleFactor = 1.3; // (30% increased damage)
-            return (int) Math.Round(originalDamage * scaleFactor);
         }
     }
 }

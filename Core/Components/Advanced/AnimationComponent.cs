@@ -39,17 +39,17 @@ namespace DXGame.Core.Components.Advanced
 
         public override void Initialize()
         {
-            foreach (var pair in animationsForStates_)
+            foreach (Animation.Animation animation in animationsForStates_.Values)
             {
-                pair.Value.LoadContent(DxGame.Instance.Content);
+                animation.LoadContent(DxGame.Instance.Content);
             }
         }
 
         public override void LoadContent()
         {
-            foreach (var pair in animationsForStates_)
+            foreach (Animation.Animation animation in animationsForStates_.Values)
             {
-                pair.Value.LoadContent(DxGame.Instance.Content);
+                animation.LoadContent(DxGame.Instance.Content);
             }
         }
 

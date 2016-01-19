@@ -340,6 +340,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
         private static Tuple<bool, double> ArrowRainDamage(GameObject source, GameObject destination)
         {
+            /* Should probably check teams... */
             if (source == destination)
             {
                 return Tuple.Create(false, 0.0);

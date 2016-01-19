@@ -1,0 +1,4 @@
+Questions:
+* Attacking while moving / jumping / etc
+* Same with abilities
+    - Do we do it? Do we need separate animations for it?

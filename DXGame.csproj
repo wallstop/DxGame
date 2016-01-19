@@ -147,6 +147,7 @@
     <Compile Include="Core\Level\Level.cs" />
     <Compile Include="Core\Level\ILevelProgressionStrategy.cs" />
     <Compile Include="Core\Map\MapLayer.cs" />
+    <Compile Include="Core\Messaging\AttackBuilder.cs" />
     <Compile Include="Core\Messaging\EntitySpawnedMessage.cs" />
     <Compile Include="Core\Messaging\EnvironmentInteractionMessage.cs" />
     <Compile Include="Core\Messaging\ExperiencedReceivedMessage.cs" />

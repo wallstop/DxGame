@@ -105,13 +105,13 @@ namespace DXGame.Core.State
                 return new State(transitions_, name_, action_, onEnter_, onExit_);
             }
 
-            public StateBuilder WithOnEnter(Action onEnter)
+            public StateBuilder WithEntrance(Action onEnter)
             {
                 onEnter_ = onEnter;
                 return this;
             }
 
-            public StateBuilder WithOnExit(Action onExit)
+            public StateBuilder WithExit(Action onExit)
             {
                 onExit_ = onExit;
                 return this;

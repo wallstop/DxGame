@@ -11,18 +11,27 @@ namespace DXGame.Core.Messaging
             TODO: Make interface? Abstract? Core... message ...methods? This isn't ideal.
         </summary>
     */
+
     [Serializable]
     [DataContract]
     public class Message : IIdentifiable
     {
-        private static readonly Message EMPTY_MESSAGE = new Message();
+        [DataMember]
+        public TimeSpan TimeStamp { get; }
 
-        public virtual UniqueId Id { get; } = new UniqueId();
+        public virtual bool Global => false;
 
-        public static Message EmptyMessage => EMPTY_MESSAGE;
+        public static Message EmptyMessage { get; } = new Message(TimeSpan.Zero);
 
-        protected Message()
+        protected Message() : this(DxGame.Instance.CurrentTime.TotalGameTime) {}
+
+        protected Message(TimeSpan timeSpan)
         {
+            Id = new UniqueId();
+            TimeStamp = timeSpan;
         }
+
+        [DataMember]
+        public UniqueId Id { get; }
     }
 }

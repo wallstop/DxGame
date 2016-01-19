@@ -66,7 +66,7 @@ namespace DXGame.Core.State
                 State.Builder()
                     .WithName("Idle")
                     .WithAction(actionResolver.IdleAction)
-                    .WithOnEnter(actionResolver.OnIdleEnterAction)
+                    .WithEntrance(actionResolver.OnIdleEnterAction)
                     .Build();
             var moveLeftState = State.Builder().WithName("MovingLeft").WithAction(actionResolver.MoveLeftAction).Build();
             var moveRightState =
@@ -75,7 +75,7 @@ namespace DXGame.Core.State
                 State.Builder()
                     .WithName("Jumping")
                     .WithAction(actionResolver.JumpAction)
-                    .WithOnEnter(actionResolver.OnJumpEnterAction)
+                    .WithEntrance(actionResolver.OnJumpEnterAction)
                     .Build();
             var jumpNormalState =
                 State.Builder().WithName("NormalJumping").WithAction(actionResolver.IdleAction).Build();

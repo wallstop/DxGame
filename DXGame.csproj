@@ -131,6 +131,7 @@
     <Compile Include="Core\Components\Advanced\Entities\RandomSpawner.cs" />
     <Compile Include="Core\Components\Advanced\Entities\Spawner.cs" />
     <Compile Include="Core\Components\Advanced\IEnvironmentComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Impulse\AttackCommandResponder.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapRotationTriggerComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapTransition.cs" />
     <Compile Include="Core\Components\Advanced\Physics\UnforcablePhysicsComponent.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="Core\Level\ILevelProgressionStrategy.cs" />
     <Compile Include="Core\Map\MapLayer.cs" />
     <Compile Include="Core\Messaging\AttackBuilder.cs" />
+    <Compile Include="Core\Messaging\AttackRequest.cs" />
     <Compile Include="Core\Messaging\EntitySpawnedMessage.cs" />
     <Compile Include="Core\Messaging\EnvironmentInteractionMessage.cs" />
     <Compile Include="Core\Messaging\ExperiencedReceivedMessage.cs" />
@@ -360,6 +362,7 @@
     <Compile Include="TowerGame\Skills\Gevurah\BearTrap.cs" />
     <Compile Include="TowerGame\Skills\Gevurah\ChargeShotComponent.cs" />
     <Compile Include="TowerGame\Skills\Gevurah\Gevurah.cs" />
+    <Compile Include="TowerGame\Skills\Gevurah\GevurahBasicAttack.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GeoAPI, Version=1.7.3.0, Culture=neutral, PublicKeyToken=a1a0da7def465678, processorArchitecture=MSIL">

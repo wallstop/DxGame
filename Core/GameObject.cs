@@ -144,6 +144,10 @@ namespace DXGame.Core
             {
                 component.MessageHandler.HandleMessage(message);
             }
+            if(message.Global)
+            {
+                DxGame.Instance.BroadcastMessage<T>(message);
+            }
         }
 
         public class GameObjectBuilder : IBuilder<GameObject>

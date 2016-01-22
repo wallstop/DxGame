@@ -32,7 +32,7 @@ namespace DXGame.Core.Components.Advanced.Entities
             MessageHandler.RegisterMessageHandler<ExperiencedReceivedMessage>(HandleExperienceReceivedMessage);
             Level = 0;
             CurrentExperience = 0;
-            ExperienceToLevel = DetermineExperienceForNextLeveL(Level);
+            ExperienceToLevel = DetermineExperienceForNextLevel(Level);
         }
 
         private void HandleExperienceReceivedMessage(ExperiencedReceivedMessage experienceReceived)
@@ -47,14 +47,14 @@ namespace DXGame.Core.Components.Advanced.Entities
             {
                 ++Level;
                 CurrentExperience -= ExperienceToLevel;
-                ExperienceToLevel = DetermineExperienceForNextLeveL(Level);
+                ExperienceToLevel = DetermineExperienceForNextLevel(Level);
                 LeveledUpMessage leveledUp = new LeveledUpMessage(Parent, Level);
                 Parent?.BroadcastMessage<LeveledUpMessage>(leveledUp);
                 DxGame.Instance.BroadcastMessage(leveledUp);
             }
         }
 
-        public static int DetermineExperienceForNextLeveL(int currentLevel)
+        public static int DetermineExperienceForNextLevel(int currentLevel)
         {
             /*
                 https://en.wikipedia.org/wiki/Fibonacci_number#Relation_to_the_golden_ratio

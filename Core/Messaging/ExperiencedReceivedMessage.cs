@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DXGame.Core.Utils;
 
 namespace DXGame.Core.Messaging
 {
@@ -19,7 +18,6 @@ namespace DXGame.Core.Messaging
 
         public ExperiencedReceivedMessage(Experience.Experience experience)
         {
-            Validate.IsNotNullOrDefault(experience, StringUtils.GetFormattedNullOrDefaultMessage(this, experience));
             Experience = experience;
         }
     }

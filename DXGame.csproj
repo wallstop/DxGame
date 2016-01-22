@@ -164,6 +164,7 @@
     <Compile Include="Core\Skills\ChargedSkill.cs" />
     <Compile Include="Core\Utils\SpringFunctions.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\TimedTriggeredActionComponent.cs" />
+    <Compile Include="TowerGame\Components\WaveNotifier.cs" />
     <Compile Include="TowerGame\Enemies\SpawnerFactory.cs" />
     <Compile Include="Core\Components\Advanced\FacingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PathfindingInputComponent.cs" />
@@ -357,6 +358,7 @@
     <Compile Include="TowerGame\Items\ItemFactory.cs" />
     <Compile Include="TowerGame\Items\PandorasBox.cs" />
     <Compile Include="TowerGame\Level\SimpleRotatingLevelProgression.cs" />
+    <Compile Include="TowerGame\Messaging\NewWaveMessage.cs" />
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />
     <Compile Include="TowerGame\Skills\Gevurah\ArrowRainComponent.cs" />
     <Compile Include="TowerGame\Skills\Gevurah\BearTrap.cs" />

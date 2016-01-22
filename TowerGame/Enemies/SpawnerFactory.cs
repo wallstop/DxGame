@@ -13,6 +13,18 @@ namespace DXGame.TowerGame.Enemies
 {
     public static class SpawnerFactory
     {
+        public static Spawner WaveCounterSpawner()
+        {
+            // TODO
+            return null;
+        }
+
+        public static Spawner WaveBasedSmallBoxSpawner()
+        {
+            // TODO
+            return null;
+        }
+
         public static Spawner SimpleLargeBoxSpawner()
         {
             var spawnFunction = new SimpleLargeBoxSpawnFunction();
@@ -98,6 +110,15 @@ namespace DXGame.TowerGame.Enemies
                 }
                 return Tuple.Create<bool, GameObject>(false, null);
             }
+        }
+
+        [Serializable]
+        private class SimpleSmallBoxWaveSpawnFunction
+        {
+            private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+            private static readonly TimeSpan WAVE_DELAY = TimeSpan.FromSeconds(30.0);
+
+
         }
     }
 }

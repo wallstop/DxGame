@@ -34,7 +34,16 @@ namespace DXGame.TowerGame.Enemies
             GameObject item = ItemFactory.Generate<T>(position);
             List<GameObject> spawnedObjects = new List<GameObject> { item };
             return spawnedObjects;
-        } 
+        }
+
+        public static GameObject WaveWatcher()
+        {
+            //return null;
+
+
+
+
+        }
 
         public static GameObject SmallBox()
         {

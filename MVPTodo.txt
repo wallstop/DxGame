@@ -11,3 +11,6 @@ MVP:
 * Waves
 * Item drops
 * Basic attack
+
+Want:
+* Come up with a way for a component to remove its parent game object and all owned components from the game state

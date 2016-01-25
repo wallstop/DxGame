@@ -7,8 +7,6 @@ using NLog;
 
 namespace DXGame.Core.Messaging
 {
-    public delegate void TypedMessageHandler<in T>(T message) where T : Message;
-
     /**
         <summary>
             Abstraction layer for immediate-mode Message passing. An instance of this handles all
@@ -23,8 +21,8 @@ namespace DXGame.Core.Messaging
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        [DataMember] private readonly Dictionary<Type, List<object>> typesToMessageHandlers_ =
-            new Dictionary<Type, List<object>>();
+        [DataMember] private readonly Dictionary<Type, List<dynamic>> typesToMessageHandlers_ =
+            new Dictionary<Type, List<dynamic>>();
 
         [DataMember]
         public bool AcceptAll { get; private set; }
@@ -36,7 +34,7 @@ namespace DXGame.Core.Messaging
             AcceptAll = true;
         }
 
-        public void RegisterMessageHandler<T>(TypedMessageHandler<T> messageHandler) where T : Message
+        public void RegisterMessageHandler<T>(Action<T> messageHandler) where T : Message
         {
             Type type = typeof(T);
             List<object> existingHandlers = ExistingMessageHandlers(type);
@@ -46,9 +44,9 @@ namespace DXGame.Core.Messaging
             typesToMessageHandlers_[type] = existingHandlers;
         }
 
-        private List<object> ExistingMessageHandlers(Type type)
+        private List<dynamic> ExistingMessageHandlers(Type type)
         {
-            return (typesToMessageHandlers_.ContainsKey(type) ? typesToMessageHandlers_[type] : new List<object>());
+            return (typesToMessageHandlers_.ContainsKey(type) ? typesToMessageHandlers_[type] : new List<dynamic>());
         }
 
         public void DeregisterMessageHandlers(Type type)
@@ -57,10 +55,10 @@ namespace DXGame.Core.Messaging
             existingHandlers.Clear();
         }
 
-        public void DeregisterMessageHandler<T>(TypedMessageHandler<T> messageHandler) where T : Message
+        public void DeregisterMessageHandler<T>(Action<T> messageHandler) where T : Message
         {
             Type type = typeof(T);
-            List<object> existingMessageHandlers = ExistingMessageHandlers(type);
+            List<dynamic> existingMessageHandlers = ExistingMessageHandlers(type);
             Validate.IsTrue(existingMessageHandlers.Contains(messageHandler),
                 $"Cannot remove {typeof(MessageHandler)} {messageHandler}, as it is not associated with the provided type");
             existingMessageHandlers.Remove(messageHandler);
@@ -82,13 +80,13 @@ namespace DXGame.Core.Messaging
         {
             foreach(object messageHandler in typesToMessageHandlers_.Values.SelectMany(values => values))
             {
-                ((TypedMessageHandler<T>) (messageHandler))(message);
+                ((Action<dynamic>) (messageHandler))(message);
             }
         }
 
         private void ActuallyHandleMessage<T>(T message) where T : Message
         {
-            var type = typeof(T);
+            var type = message.GetType();
             if(!typesToMessageHandlers_.ContainsKey(type))
             {
                 return;
@@ -98,7 +96,7 @@ namespace DXGame.Core.Messaging
             foreach(var messageHandler in messageHandlers)
             {
                 /* They're really TypedMessageHandlers, I promise! */
-                ((TypedMessageHandler<T>) (messageHandler))(message);
+                ((Action<dynamic>) (messageHandler))(message);
             }
         }
     }

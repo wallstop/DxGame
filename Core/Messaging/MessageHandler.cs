@@ -64,7 +64,18 @@ namespace DXGame.Core.Messaging
             existingMessageHandlers.Remove(messageHandler);
         }
 
+        public void HandleMessage(Message message)
+        {
+            dynamic trueMessageType = message;
+            InternalHandleMessage(trueMessageType);
+        }
+
         public void HandleMessage<T>(T message) where T : Message
+        {
+            InternalHandleMessage(message);
+        }
+
+        private void InternalHandleMessage<T>(T message) where T : Message
         {
             if(AcceptAll)
             {
@@ -78,9 +89,9 @@ namespace DXGame.Core.Messaging
 
         private void SpamMessageHandlers<T>(T message) where T : Message
         {
-            foreach(object messageHandler in typesToMessageHandlers_.Values.SelectMany(values => values))
+            foreach(var messageHandler in typesToMessageHandlers_.Values.SelectMany(values => values))
             {
-                ((Action<dynamic>) (messageHandler))(message);
+                ((Action<T>) (messageHandler))(message);
             }
         }
 
@@ -96,7 +107,7 @@ namespace DXGame.Core.Messaging
             foreach(var messageHandler in messageHandlers)
             {
                 /* They're really TypedMessageHandlers, I promise! */
-                ((Action<dynamic>) (messageHandler))(message);
+                ((Action<T>) (messageHandler))(message);
             }
         }
     }

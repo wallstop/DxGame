@@ -2,10 +2,13 @@
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Events;
+using DXGame.Core.Models;
 using DXGame.Core.Utils;
+using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Triggers
 {
+    // TODO: This is kind of annoying to use. Can we... do something better?
     [DataContract]
     [Serializable]
     public class EventObserver : Component
@@ -19,6 +22,7 @@ namespace DXGame.Core.Components.Advanced.Triggers
             Acceptance = acceptance;
             Action = action;
             Listener = new EventListener(HandleEvent);
+            DxGame.Instance.Model<EventModel>().AttachEventListener(Listener);
         }
 
         public void HandleEvent(Event gameEvent)

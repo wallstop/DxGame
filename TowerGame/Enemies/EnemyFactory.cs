@@ -36,15 +36,6 @@ namespace DXGame.TowerGame.Enemies
             return spawnedObjects;
         }
 
-        public static GameObject WaveWatcher()
-        {
-            //return null;
-
-
-
-
-        }
-
         public static GameObject SmallBox()
         {
             string entityName = "SmallBox";

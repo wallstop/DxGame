@@ -39,7 +39,6 @@ namespace DXGame.Core.Messaging
         public void RegisterMessageHandler<T>(TypedMessageHandler<T> messageHandler) where T : Message
         {
             Type type = typeof(T);
-            Validate.IsNotNull(type, StringUtils.GetFormattedNullOrDefaultMessage(this, type));
             List<object> existingHandlers = ExistingMessageHandlers(type);
             Validate.IsFalse(existingHandlers.Contains(messageHandler),
                 StringUtils.GetFormattedAlreadyContainsMessage(this, messageHandler, existingHandlers));
@@ -61,7 +60,6 @@ namespace DXGame.Core.Messaging
         public void DeregisterMessageHandler<T>(TypedMessageHandler<T> messageHandler) where T : Message
         {
             Type type = typeof(T);
-            Validate.IsNotNull(type, StringUtils.GetFormattedNullOrDefaultMessage(this, type));
             List<object> existingMessageHandlers = ExistingMessageHandlers(type);
             Validate.IsTrue(existingMessageHandlers.Contains(messageHandler),
                 $"Cannot remove {typeof(MessageHandler)} {messageHandler}, as it is not associated with the provided type");

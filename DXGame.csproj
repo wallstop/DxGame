@@ -164,7 +164,8 @@
     <Compile Include="Core\Skills\ChargedSkill.cs" />
     <Compile Include="Core\Utils\SpringFunctions.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\TimedTriggeredActionComponent.cs" />
-    <Compile Include="TowerGame\Components\WaveNotifier.cs" />
+    <Compile Include="TowerGame\Components\Waves\WaveEmitter.cs" />
+    <Compile Include="TowerGame\Components\Waves\WaveChangeNotifier.cs" />
     <Compile Include="TowerGame\Enemies\SpawnerFactory.cs" />
     <Compile Include="Core\Components\Advanced\FacingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PathfindingInputComponent.cs" />
@@ -620,6 +621,7 @@
     <Folder Include="Network\" />
     <Folder Include="TowerGame\Actions\" />
     <Folder Include="TowerGame\Components\PropertyModifiers\" />
+    <Folder Include="TowerGame\Components\Widgets\" />
     <Folder Include="TowerGame\Physics\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

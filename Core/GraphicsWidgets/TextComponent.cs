@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
@@ -20,6 +16,9 @@ namespace DXGame.Core.GraphicsWidgets
         [DataMember] private readonly PositionalComponent position_;
 
         [DataMember] private readonly SpriteFont spriteFont_;
+
+        [DataMember]
+        public float AlphaBlend { get; set; } = 1.0f;
 
         [DataMember]
         public string Text { get; set; }

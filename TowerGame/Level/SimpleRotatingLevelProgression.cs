@@ -19,6 +19,8 @@ using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using DXGame.TowerGame.Components;
+using DXGame.TowerGame.Components.Waves;
 using DXGame.TowerGame.Enemies;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -62,14 +64,16 @@ namespace DXGame.TowerGame.Level
             }
             ++currentMapIndex_;
 
-            Spawner smallBoxSpawner = SpawnerFactory.SimpleSmallBoxSpawner();
-            Spawner largeBoxSpawner = SpawnerFactory.SimpleLargeBoxSpawner();
+
             Spawner levelEndSpawner = GenerateMapTransitionSpawner();
+            Spawner waveBasedBoxSpawner = SpawnerFactory.WaveBasedSmallBoxSpawner();
+            Spawner waveNotifierSpawner = GenerateWaveChangeNotifierSpawner();
+            Spawner waveEmitterSpawner = GenerateWaveEmitterSpawner();
 
             Core.Level.Level generatedLevel =
                 Core.Level.Level.Builder()
                     .WithMap(CurrentMap)
-                    .WithSpawners(smallBoxSpawner, largeBoxSpawner, levelEndSpawner)
+                    .WithSpawners(levelEndSpawner, waveNotifierSpawner, waveEmitterSpawner, waveBasedBoxSpawner)
                     .Build();
 
             return generatedLevel;
@@ -108,6 +112,31 @@ namespace DXGame.TowerGame.Level
                 Core.Level.Level.Builder().WithMap(winningMap).WithSpawner(textSpawner).Build();
 
             return winningLevel;
+        }
+
+        private Spawner GenerateWaveChangeNotifierSpawner()
+        {
+            Spawner.SpawnerBuilder waveNotifierSpawnerBuilder = Spawner.Builder();
+
+            WaveChangeNotifier waveChangeNotifier = new WaveChangeNotifier();
+            GameObject waveNotifierObject = GameObject.Builder().WithComponent(waveChangeNotifier).Build();
+            WaveNotifierTrigger waveNotifierTrigger = new WaveNotifierTrigger(waveNotifierObject);
+            SpawnTrigger spawnTrigger = waveNotifierTrigger.CheckForInitialSpawn;
+
+            waveNotifierSpawnerBuilder.WithSpawnTrigger(spawnTrigger);
+            return waveNotifierSpawnerBuilder.Build();
+        }
+
+        private Spawner GenerateWaveEmitterSpawner()
+        {
+            Spawner.SpawnerBuilder waveNotifierSpawnerBuilder = Spawner.Builder();
+            
+            GameObject waveNotifierObject = WaveEmitter.NewWaveEmitter();
+            WaveNotifierTrigger waveNotifierTrigger = new WaveNotifierTrigger(waveNotifierObject);
+            SpawnTrigger spawnTrigger = waveNotifierTrigger.CheckForInitialSpawn;
+
+            waveNotifierSpawnerBuilder.WithSpawnTrigger(spawnTrigger);
+            return waveNotifierSpawnerBuilder.Build();
         }
 
         private Spawner GenerateMapTransitionSpawner()
@@ -170,7 +199,7 @@ namespace DXGame.TowerGame.Level
 
     [DataContract]
     [Serializable]
-    internal class RandomTextMover
+    internal sealed class RandomTextMover
     {
         private static readonly TimeSpan DIRECTION_CHANGE_DELAY = TimeSpan.FromSeconds(1);
         private static readonly float FORCE = 2.0f;
@@ -245,7 +274,7 @@ namespace DXGame.TowerGame.Level
 
     [DataContract]
     [Serializable]
-    internal class LevelEndTrigger
+    internal sealed class LevelEndTrigger
     {
         private readonly GameObject mapTransitionObject_;
         private bool alreadyTriggered_;
@@ -278,6 +307,31 @@ namespace DXGame.TowerGame.Level
                 return Tuple.Create(true, mapTransitionObject_);
             }
             return Tuple.Create<bool, GameObject>(false, null);
+        }
+    }
+
+    [DataContract]
+    [Serializable]
+    internal sealed class WaveNotifierTrigger
+    {
+        private readonly GameObject waveNotifier_;
+        private bool alreadyActivated_;
+
+        public WaveNotifierTrigger(GameObject waveNotifier)
+        {
+            Validate.IsNotNullOrDefault(waveNotifier, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(waveNotifier)));
+            waveNotifier_ = waveNotifier;
+            alreadyActivated_ = false;
+        }
+
+        public Tuple<bool, GameObject> CheckForInitialSpawn(DxGameTime gameTime)
+        {
+            if(alreadyActivated_)
+            {
+                return Tuple.Create<bool, GameObject>(false, null);
+            }
+            alreadyActivated_ = true;
+            return Tuple.Create<bool, GameObject>(true, waveNotifier_);
         }
     }
 }

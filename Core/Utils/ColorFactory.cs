@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using DXGame.Core.Utils.Cache;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Utils
@@ -20,12 +20,17 @@ namespace DXGame.Core.Utils
     {
         private static readonly int NUM_PRECISION_DIGITS = 2;
         private static readonly Lazy<ColorFactory> SINGLETON = new Lazy<ColorFactory>(() => new ColorFactory());
-        private readonly Dictionary<float, Color> transparencies_;
+        private readonly UnboundedLoadingCache<Tuple<float, Color>, Color> coloredTransparencies_;
+        private readonly UnboundedLoadingCache<float, Color> transparencies_;
         public static ColorFactory Instance => SINGLETON.Value;
 
         private ColorFactory()
         {
-            transparencies_ = new Dictionary<float, Color>();
+            transparencies_ =
+                new UnboundedLoadingCache<float, Color>(scalar => new Color(Color.White.ToVector4() * scalar));
+            coloredTransparencies_ =
+                new UnboundedLoadingCache<Tuple<float, Color>, Color>(
+                    tuple => new Color(tuple.Item2.ToVector4() * tuple.Item1));
         }
 
         /**
@@ -37,16 +42,26 @@ namespace DXGame.Core.Utils
 
         public static Color Transparency(float transparencyWeight)
         {
-            /* transparencyWeight to nearest 0.01 so we don't get infinite keys */
-            transparencyWeight = (float) Math.Round(transparencyWeight, NUM_PRECISION_DIGITS);
-            if (Instance.transparencies_.ContainsKey(transparencyWeight))
-            {
-                return Instance.transparencies_[transparencyWeight];
-            }
-            Validate.IsTrue(transparencyWeight >= 0.0f && transparencyWeight <= 1.0f, $"Cannot create a transparency of {transparencyWeight}");
-            var color = new Color(Color.White.ToVector4() * transparencyWeight);
-            Instance.transparencies_[transparencyWeight] = color;
-            return color;
+            transparencyWeight = RoundTransparencyWeight(transparencyWeight);
+            return Instance.transparencies_.Get(transparencyWeight);
+        }
+
+        /**
+            <summary>
+                Retrieves an already cached color of the specified transparency, or creates a new one, caches it, and returns it.
+            </summary>
+        */
+        public static Color Transparency(float transparencyWeight, Color color)
+        {
+            transparencyWeight = RoundTransparencyWeight(transparencyWeight);
+            return Instance.coloredTransparencies_.Get(Tuple.Create(transparencyWeight, color));
+        }
+
+        private static float RoundTransparencyWeight(float transparencyWeight)
+        {
+            Validate.IsInOpenInterval(transparencyWeight, 0, 1.001);
+            /* Clamp transparencyWeight to nearest 0.01 so we reduce the space of our possible key set (by some) */
+            return (float) Math.Round(transparencyWeight, NUM_PRECISION_DIGITS);
         }
     }
 }

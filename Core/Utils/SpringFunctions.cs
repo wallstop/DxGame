@@ -37,7 +37,7 @@ namespace DXGame.Core.Utils
 
         public static double Linear(double start, double end, double instant, double duration)
         {
-            return end * instant / duration + start;
+            return (instant / duration) * (end - start) + start;
         }
 
         public static double ExponentialEaseOut(double start, double end, double instant, double duration)

@@ -3,26 +3,25 @@ using System.Linq;
 using DXGame.Core;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Entities;
+using DXGame.Core.Events;
+using DXGame.Core.Messaging;
+using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using DXGame.TowerGame.Components;
+using DXGame.TowerGame.Messaging;
 using NLog;
 
 namespace DXGame.TowerGame.Enemies
 {
     public static class SpawnerFactory
     {
-        public static Spawner WaveCounterSpawner()
-        {
-            // TODO
-            return null;
-        }
 
         public static Spawner WaveBasedSmallBoxSpawner()
         {
-            // TODO
-            return null;
+            var spawnFunction = new SimpleSmallBoxWaveSpawnFunction();
+            return RandomSpawner.Builder().WithSpawnTrigger(spawnFunction.Spawn).Build();
         }
 
         public static Spawner SimpleLargeBoxSpawner()
@@ -113,12 +112,49 @@ namespace DXGame.TowerGame.Enemies
         }
 
         [Serializable]
-        private class SimpleSmallBoxWaveSpawnFunction
+        internal sealed class SimpleSmallBoxWaveSpawnFunction
         {
             private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-            private static readonly TimeSpan WAVE_DELAY = TimeSpan.FromSeconds(30.0);
 
+            private static readonly int NUM_BOXES_PER_WAVE = 1;
 
+            private int numBoxesSpawned_ = 0;
+
+            private EventListener EventListener { get; }
+
+            public SimpleSmallBoxWaveSpawnFunction()
+            {
+                EventModel eventModel = DxGame.Instance.Model<EventModel>();
+                EventListener = new EventListener(ProcessEvent);
+                eventModel.AttachEventListener(EventListener);
+                numBoxesSpawned_ = 0;
+            }
+
+            private void ProcessEvent(Event gameEvent)
+            {
+                Message eventMessage = gameEvent.Message;
+                NewWaveMessage maybeNewWaveMessage = eventMessage as NewWaveMessage;
+                if(ReferenceEquals(maybeNewWaveMessage, null))
+                {
+                    return;
+                }
+
+                LOG.Info($"Received New Wave notification {maybeNewWaveMessage} - triggering spawn");
+                numBoxesSpawned_ = 0;
+            }
+
+            public Tuple<bool, GameObject> Spawn(DxGameTime gameTime)
+            {
+                if(numBoxesSpawned_ >= NUM_BOXES_PER_WAVE)
+                {
+                    return Tuple.Create<bool, GameObject>(false, null);
+                }
+
+                ++numBoxesSpawned_;
+
+                GameObject smallBox = EnemyFactory.SmallBox();
+                return Tuple.Create(true, smallBox);
+            }
         }
     }
 }

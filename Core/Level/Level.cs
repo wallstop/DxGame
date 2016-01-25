@@ -43,7 +43,6 @@ namespace DXGame.Core.Level
                     .Build();
             entityManager_.Manage(spawnObserver);
             DxGame.Instance.AddAndInitializeComponent(spawnObserver);
-            DxGame.Instance.Model<EventModel>().AttachEventListener(spawnObserver.Listener);
             base.Initialize();
         }
 

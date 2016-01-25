@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DXGame.Core.Primitives;
+using DXGame.Core.Utils;
 using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Triggers
@@ -26,6 +27,21 @@ namespace DXGame.Core.Components.Advanced.Triggers
                 new EndTrigger(duration).IsEnded, new TickRate(tickRate).DetermineNumTicks, source, action, finalAction) {}
     }
 
+    /**
+        TODO: Refactor somehow
+    */
+
+    [DataContract]
+    [Serializable]
+    public class TimedTriggeredActionComponent : TriggeredActionComponent
+    {
+        public TimedTriggeredActionComponent(TimeSpan duration, TimeSpan tickRate, Action action)
+            : base(new EndTrigger(duration).IsEnded, new TickRate(tickRate).DetermineNumTicks, action) {}
+
+        public TimedTriggeredActionComponent(TimeSpan duration, TimeSpan tickRate, Action action, Action finalAction)
+            : base(new EndTrigger(duration).IsEnded, new TickRate(tickRate).DetermineNumTicks, action, finalAction) {}
+    }
+
     [DataContract]
     [Serializable]
     internal sealed class TickRate
@@ -37,6 +53,7 @@ namespace DXGame.Core.Components.Advanced.Triggers
 
         public TickRate(TimeSpan tickRate)
         {
+            Validate.IsNotNullOrDefault(tickRate, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(tickRate)));
             Rate = tickRate;
             /* TODO: Find a better way of passing in "last ticked". Maybe we want to immediately tick? */
             lastTicked_ = DxGame.Instance.CurrentTime.TotalGameTime;

@@ -132,11 +132,19 @@ namespace DXGame.Main
             </summary>
         */
 
-        public void BroadcastMessage<T>(T message) where T : Message
+        public void BroadcastMessage(Message message)
         {
             foreach(var model in Models)
             {
                 model.MessageHandler.HandleMessage(message);
+            }
+        }
+
+        public void BroadcastMessage<T>(T message) where T : Message
+        {
+            foreach(var model in Models)
+            {
+                model.MessageHandler.HandleMessage<T>(message);
             }
         }
 

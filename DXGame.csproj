@@ -358,6 +358,7 @@
     <Compile Include="TowerGame\Items\ItemComponent.cs" />
     <Compile Include="TowerGame\Items\ItemFactory.cs" />
     <Compile Include="TowerGame\Items\PandorasBox.cs" />
+    <Compile Include="TowerGame\Items\TheFirstFlame.cs" />
     <Compile Include="TowerGame\Level\SimpleRotatingLevelProgression.cs" />
     <Compile Include="TowerGame\Messaging\NewWaveMessage.cs" />
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />

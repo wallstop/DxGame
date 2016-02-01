@@ -361,6 +361,7 @@
     <Compile Include="TowerGame\Items\TheFirstFlame.cs" />
     <Compile Include="TowerGame\Level\SimpleRotatingLevelProgression.cs" />
     <Compile Include="TowerGame\Messaging\NewWaveMessage.cs" />
+    <Compile Include="TowerGame\Player\BasicAttackComponent.cs" />
     <Compile Include="TowerGame\Player\PlayerFactory.cs" />
     <Compile Include="TowerGame\Skills\Gevurah\ArrowRainComponent.cs" />
     <Compile Include="TowerGame\Skills\Gevurah\BearTrap.cs" />

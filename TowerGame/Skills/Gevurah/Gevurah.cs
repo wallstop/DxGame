@@ -175,7 +175,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
                 }
             }
 
-            public Tuple<bool, DxVector2> ShockwaveDissipation(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime)
+            private Tuple<bool, DxVector2> ShockwaveDissipation(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime)
             {
                 TimeSpan totalElapsed = gameTime.TotalGameTime - InitialTime;
                 return Tuple.Create(DURATION < totalElapsed, initialAcceleration_ * 0.01);

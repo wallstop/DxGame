@@ -59,9 +59,11 @@ namespace DXGame.Core.Generators
             var facingComponent = new FacingComponent();
             var teamComponent = new TeamComponent(Team.PlayerTeam);
             LevelComponent levelComponent = new LevelComponent();
-            
+            BasicAttackComponent basicAttackListener = new BasicAttackComponent();
+            GevurahBasicAttack gevurahBasicAttack = new GevurahBasicAttack();
+
             playerBuilder.WithComponents(PlayerSpace, physics_, 
-                    playerProperties_, healthBar_, inputListener, facingComponent, teamComponent, levelComponent);
+                    playerProperties_, healthBar_, inputListener, facingComponent, teamComponent, levelComponent, basicAttackListener, gevurahBasicAttack);
             var playerObject = playerBuilder.Build();
             var shockwaveSkill =
                 Skill.Builder()
@@ -87,7 +89,8 @@ namespace DXGame.Core.Generators
                      .WithSkillFunction(Gevurah.BearTrapRoll)
                      .WithCommandment(Commandment.Movement)
                      .Build();
-            var playerSkillComponent = new SkillComponent(shockwaveSkill, arrowRainSkill, chargeShot, archerRoll);
+
+            SkillComponent playerSkillComponent = new SkillComponent(shockwaveSkill, arrowRainSkill, chargeShot, archerRoll);
             playerObject.AttachComponent(playerSkillComponent);
             StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(playerObject, "Player");
             objects.Add(playerObject);

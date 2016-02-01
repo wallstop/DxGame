@@ -24,12 +24,8 @@ namespace DXGame.TowerGame.Skills.Gevurah
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        [DataMember]
-        public TimeSpan LastAttacked { get; private set; }
-
         public GevurahBasicAttack()
         {
-            LastAttacked = TimeSpan.Zero;
             MessageHandler.RegisterMessageHandler<AttackRequest>(HandleAttackRequest);
         }
 
@@ -42,16 +38,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
                     $"No {typeof(EntityPropertiesComponent)} found for {Parent}, ignoring request for {typeof(GevurahBasicAttack)}");
                 return;
             }
-            // TODO: Come up with Attack Speed / Damage / etc types
-            int attackSpeed = entityProperties.AttackSpeed.CurrentValue;
-            TimeSpan attackTime = TimeSpan.FromSeconds(60.0 / attackSpeed);
-            TimeSpan currentTime = DxGame.Instance.CurrentTime.TotalGameTime;
-            if(currentTime <= LastAttacked + attackTime)
-            {
-                return;
-            }
 
-            LastAttacked = currentTime;
             DxRectangle attackArea = DetermineAttackArea();
 
             /* TODO: Need to deal with states / animation */
@@ -61,7 +48,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             List<PhysicsMessage> attacks = attackBuilder.Build();
             foreach(PhysicsMessage attack in attacks)
             {
-                Parent.BroadcastMessage(attack);
+                DxGame.Instance.BroadcastMessage(attack);
             }
         }
 
@@ -97,11 +84,6 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
         private void AttackInteraction(GameObject source, PhysicsComponent destination)
         {
-            if(Parent == source)
-            {
-                return;
-            }
-
             GameObject affectedEntity = destination.Parent;
             if(ReferenceEquals(affectedEntity, null))
             {

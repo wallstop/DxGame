@@ -47,6 +47,8 @@ namespace DXGame.Core.Properties
     public sealed class Property<T> : IProperty
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
+        // TODO: Convert these to weak references (Similar to EventModel?)
         [DataMember] private readonly List<PropertyListener<T>> listeners_ = new List<PropertyListener<T>>();
 
         [DataMember] private readonly SortedDictionary<PropertyMutator<T>, int> mutatorCounts_ =
@@ -54,8 +56,7 @@ namespace DXGame.Core.Properties
 
         [DataMember] private T baseValue_;
         [DataMember] private T currentValue_;
-
-        // TODO: Figure out how to properly serialize / hide name (why?)
+        
         [DataMember]
         public string Name { get; }
 

@@ -16,6 +16,17 @@ using DXGame.Core.Utils;
 
 namespace DXGame.TowerGame.Items
 {
+    /**
+        <summary>
+            Based on preliminary Item designs 2016-01-15
+
+            TheFirstFlame is an attack modifier - has a chance to activate for each enemy hit
+        </summary>
+        <description>
+            The first flame brought to Earth by a Titan still burns strong.
+        </description>
+    */
+
     [DataContract]
     [Serializable]
     public class TheFirstFlame : ItemComponent
@@ -79,6 +90,7 @@ namespace DXGame.TowerGame.Items
 
         protected override void HandleEnvironmentInteraction(EnvironmentInteractionMessage environmentInteraction)
         {
+            // TODO
             throw new NotImplementedException();
         }
     }

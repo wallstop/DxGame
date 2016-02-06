@@ -13,12 +13,13 @@ namespace DXGame.TowerGame.Items
             Provides a simple interface for generating types of items automagically
         </summary>
     */
+
     public class ItemFactory
     {
         private static readonly Lazy<ItemFactory> INSTANCE = new Lazy<ItemFactory>(() => new ItemFactory());
 
-        private readonly Dictionary<Type, Func<DxVector2, GameObject>> initilizerMappings_ =
-            new Dictionary<Type, Func<DxVector2, GameObject>>();
+        private readonly Dictionary<Type, Func<ItemComponent>> initilizerMappings_ =
+            new Dictionary<Type, Func<ItemComponent>>();
 
         private ItemFactory()
         {
@@ -36,25 +37,22 @@ namespace DXGame.TowerGame.Items
 
         private void Initialize()
         {
+            // TODO: Something like this, but *NOT* this
+
             Type itemComponentType = typeof(ItemComponent);
-            Type[] expectedConstructorArgs = {typeof(SpatialComponent)};
             initilizerMappings_.Clear();
-            foreach(Type foundItemComponentSubclass in
+            foreach(Type foundItemComponentInstance in
                 Assembly.GetAssembly(itemComponentType)
                     .GetTypes()
                     .Where(
                         foundType =>
-                            foundType.IsClass && !foundType.IsAbstract && foundType.IsSubclassOf(itemComponentType)))
+                            foundType.IsClass && !foundType.IsAbstract && itemComponentType.IsAssignableFrom(foundType))
+                )
             {
-                initilizerMappings_.Add(foundItemComponentSubclass, position =>
-                {
-                    SpatialComponent itemSpatial = ItemComponent.GenerateSpatial(position);
-                    ItemComponent itemComponent =
+                initilizerMappings_.Add(foundItemComponentInstance,
+                    () =>
                         (ItemComponent)
-                            foundItemComponentSubclass.GetConstructor(expectedConstructorArgs)
-                                .Invoke(new object[] {itemSpatial});
-                    return ItemComponent.Generate(itemComponent);
-                });
+                            foundItemComponentInstance.GetConstructor(Type.EmptyTypes).Invoke(new object[] {}));
             }
         }
 
@@ -64,9 +62,26 @@ namespace DXGame.TowerGame.Items
             </summary>
         */
 
-        public static GameObject Generate<T>(DxVector2 position) where T : ItemComponent
+        public static GameObject GenerateVisible<T>(DxVector2 position) where T : ItemComponent
         {
-            return INSTANCE.Value.initilizerMappings_[typeof(T)].Invoke(position);
+            return GenerateVisible(position, typeof(T));
+        }
+
+        public static GameObject GenerateVisible(DxVector2 position, Type itemComponentType)
+        {
+            SpatialComponent spatialAspect = VisibleItemComponent.GenerateSpatial(position);
+            VisibleItemComponent visibleItemAspect = new VisibleItemComponent(spatialAspect, itemComponentType);
+            return VisibleItemComponent.Generate(visibleItemAspect);
+        }
+
+        public static ItemComponent Generate(Type itemComponentType)
+        {
+            return INSTANCE.Value.initilizerMappings_[itemComponentType].Invoke();
+        }
+
+        public static ItemComponent Generate<T>() where T : ItemComponent
+        {
+            return Generate(typeof(T));
         }
     }
 }

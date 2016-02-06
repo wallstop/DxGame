@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using DXGame.Core;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Messaging;
@@ -27,29 +28,6 @@ namespace DXGame.TowerGame.Items
     [Serializable]
     public class Svalinn : ItemComponent
     {
-        private static readonly float TRIGGER_CHANCE = 0.1f;
-
-        [DataMember] private bool bound_;
-
-        public Svalinn(SpatialComponent spatial) : base(spatial)
-        {
-            bound_ = false;
-        }
-
-        protected override void Update(DxGameTime gameTime)
-        {
-            if(!bound_)
-            {
-                AttemptToBindDamageListener();
-            }
-        }
-
-        private void AttemptToBindDamageListener()
-        {
-            EntityPropertiesComponent entityProperties = Parent.ComponentOfType<EntityPropertiesComponent>();
-            entityProperties.EntityProperties.Health.AttachListener(DamageCheckListener);
-        }
-
         private void DamageCheckListener(int previousHealth, int currentHealth)
         {
             if(previousHealth <= currentHealth)
@@ -58,8 +36,15 @@ namespace DXGame.TowerGame.Items
                 return;
             }
 
+            const double baseTriggerChance = 0.05;
+            const double maxTriggerChance = 0.9;
+            const int maxStacks = 100;
+
+            double chance = SpringFunctions.ExponentialEaseOutIn(baseTriggerChance, maxTriggerChance,
+                Math.Min(StackCount, maxStacks), maxStacks);
+
             float rng = ThreadLocalRandom.Current.NextFloat();
-            if(rng > TRIGGER_CHANCE)
+            if(rng > chance)
             {
                 /* Didn't meat trigger requirements - bail */
                 return;
@@ -71,9 +56,16 @@ namespace DXGame.TowerGame.Items
 
         }
 
-        protected override void HandleEnvironmentInteraction(EnvironmentInteractionMessage environmentInteraction)
+        protected override void InternalAttach(GameObject parent)
         {
-            throw new NotImplementedException();
+            EntityPropertiesComponent entityProperties = parent.ComponentOfType<EntityPropertiesComponent>();
+            entityProperties.EntityProperties.Health.AttachListener(DamageCheckListener);
+        }
+
+        protected override void InternalDetach(GameObject parent)
+        {
+            EntityPropertiesComponent entityProperties = parent.ComponentOfType<EntityPropertiesComponent>();
+            entityProperties.EntityProperties.Health.RemoveListener(DamageCheckListener);
         }
     }
 

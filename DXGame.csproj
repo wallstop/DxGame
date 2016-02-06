@@ -356,7 +356,9 @@
     <Compile Include="TowerGame\Items\Fragarach.cs" />
     <Compile Include="TowerGame\Items\Gram.cs" />
     <Compile Include="TowerGame\Items\ItemComponent.cs" />
+    <Compile Include="TowerGame\Items\VisibleItemComponent.cs" />
     <Compile Include="TowerGame\Items\ItemFactory.cs" />
+    <Compile Include="TowerGame\Items\ItemManager.cs" />
     <Compile Include="TowerGame\Items\PandorasBox.cs" />
     <Compile Include="TowerGame\Items\Svalinn.cs" />
     <Compile Include="TowerGame\Items\TheFirstFlame.cs" />

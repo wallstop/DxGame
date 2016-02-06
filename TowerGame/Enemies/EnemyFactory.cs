@@ -31,7 +31,7 @@ namespace DXGame.TowerGame.Enemies
 
         private static List<GameObject> Spawn<T>(DxVector2 position) where T : ItemComponent
         {
-            GameObject item = ItemFactory.Generate<T>(position);
+            GameObject item = ItemFactory.GenerateVisible<T>(position);
             List<GameObject> spawnedObjects = new List<GameObject> { item };
             return spawnedObjects;
         }
@@ -55,7 +55,7 @@ namespace DXGame.TowerGame.Enemies
                 EntityPropertiesComponent.NullLevelUpResponse);
             ExperienceDropperComponent experienceDropper = new ExperienceDropperComponent(new Experience(50));
 
-            ItemDropperComponent itemDropper = new ItemDropperComponent(.25, Spawn<PandorasBox>);
+            ItemDropperComponent itemDropper = new ItemDropperComponent(1.0, Spawn<PandorasBox>);
             var floatingHealthBar =
                 FloatingHealthIndicator.Builder()
                     .WithEntityProperties(enemyProperties)

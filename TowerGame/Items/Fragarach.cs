@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DXGame.Core;
-using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
-using DXGame.Core.Messaging;
 using DXGame.Core.Properties;
+using DXGame.Core.Utils;
 
 namespace DXGame.TowerGame.Items
 {
@@ -13,6 +12,8 @@ namespace DXGame.TowerGame.Items
             Based on preliminary Item designs 2016-01-15
 
             Fragarach is an attack speed steroid
+
+            TODO: Implement increased damage to dragooooons
         </summary>
         <description>
             The wielder of this blade becomes as swift as the wind.
@@ -26,29 +27,29 @@ namespace DXGame.TowerGame.Items
         private static readonly PropertyMutator<int> FRAGARACH_ATTACK_SPEED_BUFF =
             new PropertyMutator<int>(FragarachIncreasedAttackSpeed, "Fragarach");
 
-        public Fragarach(SpatialComponent spatial) : base(spatial) {}
-
-        private static int FragarachIncreasedAttackSpeed(int originalAttackSpeed)
+        private static int FragarachIncreasedAttackSpeed(int originalAttackSpeed, int fragarachCount)
         {
-            const double scaleFactor = 1.3; // (30% increased attack speed)
-            return (int) Math.Round(originalAttackSpeed * scaleFactor);
+            /* TODO: Pull out this scaling into somewhere more common (maybe?) */
+            const int maxFragarachStacks = 100;
+
+            const double baseAttackSpeedIncrease = .3;
+            const double maxAttackSpeedIncrease = 2.0;
+            double fragarachScaleFactor = SpringFunctions.ExponentialEaseOutIn(baseAttackSpeedIncrease,
+                maxAttackSpeedIncrease, Math.Min(maxFragarachStacks, fragarachCount), maxFragarachStacks);
+
+            return (int) Math.Round(originalAttackSpeed * (1.0 + fragarachScaleFactor));
         }
 
-        protected override void HandleEnvironmentInteraction(EnvironmentInteractionMessage environmentInteraction)
+        protected override void InternalAttach(GameObject parent)
         {
-            bool relevant = CheckIsRelevantEnvironmentInteraction(environmentInteraction);
-            if(!relevant)
-            {
-                return;
-            }
+            EntityProperties playerProperties = parent.ComponentOfType<EntityPropertiesComponent>().EntityProperties;
+            playerProperties.AttackSpeed.AddMutator(FRAGARACH_ATTACK_SPEED_BUFF);
+        }
 
-            Activated = true;
-            GameObject source = environmentInteraction.Source;
-            EntityProperties playerProperties = source.ComponentOfType<EntityPropertiesComponent>().EntityProperties;
-            PropertyMutator<int> fragarachAttackSpeedBuff = FRAGARACH_ATTACK_SPEED_BUFF;
-            playerProperties.AttackSpeed.AddMutator(fragarachAttackSpeedBuff);
-
-            Dispose();
+        protected override void InternalDetach(GameObject parent)
+        {
+            EntityProperties playerProperties = parent.ComponentOfType<EntityPropertiesComponent>().EntityProperties;
+            playerProperties.AttackSpeed.RemoveMutator(FRAGARACH_ATTACK_SPEED_BUFF);
         }
     }
 }

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DXGame.Core;
-using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Components.Advanced.Triggers;
-using DXGame.Core.Messaging;
 using DXGame.Core.Properties;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -29,29 +27,33 @@ namespace DXGame.TowerGame.Items
     [Serializable]
     public class PandorasBox : ItemComponent
     {
-        public PandorasBox(SpatialComponent spatial) : base(spatial) {}
+        [DataMember]
+        private AttachedPandorasBox AttachedPandorasBox { get; set; }
 
-        protected override void HandleEnvironmentInteraction(EnvironmentInteractionMessage environmentInteraction)
+        protected override void InternalAttach(GameObject parent)
         {
-            bool relevant = CheckIsRelevantEnvironmentInteraction(environmentInteraction);
-            if(!relevant)
+            if(AttachedPandorasBox == null)
             {
-                return;
+                TimeSpan cooldown = TimeSpan.FromSeconds(45);
+                const double triggerThreshold = .2;
+
+                EntityPropertiesComponent entityPropertiesComponent =
+                    parent.ComponentOfType<EntityPropertiesComponent>();
+                EntityProperties properties = entityPropertiesComponent.EntityProperties;
+
+                /* Simply create one - it will sit and listen for events on this player */
+                AttachedPandorasBox = new AttachedPandorasBox(cooldown, triggerThreshold, parent, properties);
             }
+            else
+            {
+                AttachedPandorasBox.IncreaseStackCount();
+            }
+        }
 
-            GameObject source = environmentInteraction.Source;
-
-            Activated = true;
-            TimeSpan cooldown = TimeSpan.FromSeconds(45);
-            const double triggerThreshold = .2;
-
-            EntityPropertiesComponent entityPropertiesComponent = source.ComponentOfType<EntityPropertiesComponent>();
-            EntityProperties properties = entityPropertiesComponent.EntityProperties;
-
-            /* Simply create one - it will sit and listen for events on this player */
-            AttachedPandorasBox attachedBox = new AttachedPandorasBox(cooldown, triggerThreshold, source, properties);
-
-            Dispose();
+        protected override void InternalDetach(GameObject parent)
+        {
+            Validate.IsNotNullOrDefault(AttachedPandorasBox);
+            AttachedPandorasBox.DecreaseStackCount();
         }
     }
 
@@ -78,6 +80,9 @@ namespace DXGame.TowerGame.Items
         [DataMember] private Optional<TimeSpan> lastTriggered_;
 
         [DataMember]
+        private int StackCount { get; set; } = 1;
+
+        [DataMember]
         public bool Active { get; set; }
 
         private int MaxHealth => playerProperties_.MaxHealth.CurrentValue;
@@ -98,6 +103,18 @@ namespace DXGame.TowerGame.Items
             playerProperties_.Health.AttachListener(CheckForTrigger);
 
             Active = false;
+        }
+
+        public void IncreaseStackCount()
+        {
+            ++StackCount;
+        }
+
+        public void DecreaseStackCount()
+        {
+            Validate.IsTrue(StackCount > 0,
+                $"Cannot decrease the stack count of a {nameof(AttachedPandorasBox)} below 0!");
+            --StackCount;
         }
 
         public void CheckForTrigger(int previous, int current)
@@ -132,8 +149,17 @@ namespace DXGame.TowerGame.Items
             TimeSpan duration = TimeSpan.FromSeconds(durationSeconds);
             TimeSpan tickRate = TimeSpan.FromSeconds((double) durationSeconds / numTicks);
 
+            const double baseTargetPercentage = .5;
+            const double maxTargetPercentage = 1.5;
+            const int maxStacks = 100;
+
+            double targetHealthPercentage = SpringFunctions.ExponentialEaseOutIn(baseTargetPercentage,
+                maxTargetPercentage, Math.Min(StackCount, maxStacks), maxStacks);
+
             int amountToHeal =
-                (int) Math.Round(playerProperties_.MaxHealth.CurrentValue * 0.5 - playerProperties_.Health.CurrentValue);
+                (int)
+                    Math.Round(playerProperties_.MaxHealth.CurrentValue * targetHealthPercentage -
+                               playerProperties_.Health.CurrentValue);
 
             AttachedHealer attachedHealer = new AttachedHealer(amountToHeal, numTicks);
 

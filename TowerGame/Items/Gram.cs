@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DXGame.Core;
-using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
-using DXGame.Core.Messaging;
 using DXGame.Core.Properties;
+using DXGame.Core.Utils;
 
 namespace DXGame.TowerGame.Items
 {
@@ -13,12 +12,12 @@ namespace DXGame.TowerGame.Items
             Based on preliminary Item designs 2016-01-15
 
             Gram is a simple damage buff.
-            TODO: Figure out how to add ... specific triggers when specific events happen? (Dealing damage to dragons, for example)
         </summary>
         <description>
             A blade sharp enough to slay a dragon.
         </description>
     */
+
     [DataContract]
     [Serializable]
     public class Gram : ItemComponent
@@ -26,29 +25,29 @@ namespace DXGame.TowerGame.Items
         private static readonly PropertyMutator<int> GRAM_DAMAGE_BUFF = new PropertyMutator<int>(GramIncreasedDamage,
             "Gram");
 
-        public Gram(SpatialComponent spatial) : base(spatial) {}
-
-        protected override void HandleEnvironmentInteraction(EnvironmentInteractionMessage environmentInteraction)
+        private static int GramIncreasedDamage(int originalDamage, int stackCount)
         {
-            bool relevant = CheckIsRelevantEnvironmentInteraction(environmentInteraction);
-            if(!relevant)
-            {
-                return;
-            }
+            const int maxGramStacks = 100;
 
-            Activated = true;
-            GameObject source = environmentInteraction.Source;
-            EntityProperties playerProperties = source.ComponentOfType<EntityPropertiesComponent>().EntityProperties;
-            PropertyMutator<int> gramDamageBuff = GRAM_DAMAGE_BUFF;
-            playerProperties.AttackDamage.AddMutator(gramDamageBuff);
+            const double maxDamageIncrease = 5.0;
+            const double baseDamageIncrease = 0.3;
 
-            Dispose();
+            double damageIncrease = SpringFunctions.ExponentialEaseOutIn(baseDamageIncrease, maxDamageIncrease,
+                Math.Min(stackCount, maxGramStacks), maxGramStacks);
+
+            return (int) Math.Round(originalDamage * (1.0 + damageIncrease));
         }
 
-        private static int GramIncreasedDamage(int originalDamage)
+        protected override void InternalAttach(GameObject parent)
         {
-            const double scaleFactor = 1.3; // (30% increased damage)
-            return (int) Math.Round(originalDamage * scaleFactor);
+            EntityProperties playerProperties = parent.ComponentOfType<EntityPropertiesComponent>().EntityProperties;
+            playerProperties.AttackDamage.AddMutator(GRAM_DAMAGE_BUFF);
+        }
+
+        protected override void InternalDetach(GameObject parent)
+        {
+            EntityProperties playerProperties = parent.ComponentOfType<EntityPropertiesComponent>().EntityProperties;
+            playerProperties.AttackDamage.RemoveMutator(GRAM_DAMAGE_BUFF);
         }
     }
 }

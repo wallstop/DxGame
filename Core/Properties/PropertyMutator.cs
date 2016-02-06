@@ -77,7 +77,7 @@ namespace DXGame.Core.Properties
     public class PropertyMutator<T> : IEquatable<PropertyMutator<T>>
     {
         // TODO: Come up with a way to handle equality comparisons for lambda expressions
-        public delegate T Mutator(T input);
+        public delegate T Mutator(T input, int mutatorStackCount);
 
         // TODO: Figure out how to properly deserialize these. Deserializing readonly properties is hard :(
         [DataMember] protected readonly Mutator mutator_;
@@ -111,10 +111,7 @@ namespace DXGame.Core.Properties
 
         public virtual T Mutate(T input, int count)
         {
-            for(int i = 0; i < count; ++i)
-            {
-                input = mutator_(input);
-            }
+            input = mutator_(input, count);
             return input;
         }
 

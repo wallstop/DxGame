@@ -5,7 +5,6 @@ using System.Runtime.Serialization;
 using DXGame.Core;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Physics;
-using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Components.Advanced.Triggers;
 using DXGame.Core.Components.Basic;
@@ -31,9 +30,7 @@ namespace DXGame.TowerGame.Items
     [Serializable]
     public class TheFirstFlame : ItemComponent
     {
-        private static readonly float TRIGGER_THRESHOLD = 0.2f;
-
-        public TheFirstFlame(SpatialComponent spatial) : base(spatial)
+        public TheFirstFlame()
         {
             MessageHandler.RegisterMessageHandler<AttackBuilder>(HandleAttackBuilderRequest);
         }
@@ -65,9 +62,16 @@ namespace DXGame.TowerGame.Items
                 return;
             }
 
+            const double baseTriggerThreshold = 0.15;
+            const double maxTriggerThreshold = 0.85;
+            const int maxStacks = 100;
+
+            double threshold = SpringFunctions.ExponentialEaseOutIn(baseTriggerThreshold, maxTriggerThreshold,
+                Math.Min(StackCount, maxStacks), maxStacks);
+
             /* Check random trigger chance */
             float rng = ThreadLocalRandom.Current.NextFloat();
-            if(rng > TRIGGER_THRESHOLD)
+            if(rng > threshold)
             {
                 return;
             }
@@ -88,10 +92,14 @@ namespace DXGame.TowerGame.Items
             return burnTicker;
         }
 
-        protected override void HandleEnvironmentInteraction(EnvironmentInteractionMessage environmentInteraction)
+        protected override void InternalAttach(GameObject parent)
         {
-            // TODO
-            throw new NotImplementedException();
+            // No-op
+        }
+
+        protected override void InternalDetach(GameObject parent)
+        {
+            // No-op
         }
     }
 }

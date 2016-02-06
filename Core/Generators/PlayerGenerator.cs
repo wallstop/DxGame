@@ -15,6 +15,7 @@ using DXGame.Core.Skills;
 using DXGame.Core.State;
 using DXGame.Main;
 using DXGame.TowerGame.Enemies;
+using DXGame.TowerGame.Items;
 using DXGame.TowerGame.Skills.Gevurah;
 using Microsoft.Xna.Framework;
 using DXGame.TowerGame.Player;
@@ -61,9 +62,10 @@ namespace DXGame.Core.Generators
             LevelComponent levelComponent = new LevelComponent();
             BasicAttackComponent basicAttackListener = new BasicAttackComponent();
             GevurahBasicAttack gevurahBasicAttack = new GevurahBasicAttack();
+            ItemManager itemManager = new ItemManager();
 
             playerBuilder.WithComponents(PlayerSpace, physics_, 
-                    playerProperties_, healthBar_, inputListener, facingComponent, teamComponent, levelComponent, basicAttackListener, gevurahBasicAttack);
+                    playerProperties_, healthBar_, inputListener, facingComponent, teamComponent, levelComponent, basicAttackListener, gevurahBasicAttack, itemManager);
             var playerObject = playerBuilder.Build();
             var shockwaveSkill =
                 Skill.Builder()

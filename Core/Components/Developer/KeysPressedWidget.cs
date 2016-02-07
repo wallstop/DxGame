@@ -24,6 +24,8 @@ namespace DXGame.Core.Components.Developer
 
         protected SpriteFont spriteFont_;
 
+        public override bool ShouldSerialize => false;
+
         public override void LoadContent()
         {
             spriteFont_ = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Pericles");

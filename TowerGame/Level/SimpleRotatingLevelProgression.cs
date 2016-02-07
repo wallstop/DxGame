@@ -84,10 +84,10 @@ namespace DXGame.TowerGame.Level
             SpriteFont comicSans = DxGame.Instance.Content.Load<SpriteFont>("Fonts/ComicSans");
             /* Force to be spatial so we can abuse PhysicsComponents */
             SpatialComponent space = new MapBoundedSpatialComponent(DxVector2.EmptyVector, new DxVector2(200, 20));
-            TextComponent winningText = new TextComponent(space, comicSans)
+            TextComponent winningText = new TextComponent(space, comicSans, "Fonts/ComicSans")
             {
                 Text = "WOW YOU WON GOOD JOB",
-                Color = Color.Pink
+                DxColor = new DxColor(Color.Pink)
             };
 
             RandomTextMover randomTextMover = new RandomTextMover();

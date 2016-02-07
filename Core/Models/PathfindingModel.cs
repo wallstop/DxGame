@@ -24,6 +24,8 @@ namespace DXGame.Core.Models
         /* Small offset to make sure that our rectangles & collision checks encompass all points that they should */
         private const float FudgeFactor = 0.01f;
 
+        public override bool ShouldSerialize => false;
+
         public PathfindingResult Pathfind(GameObject entity, DxVector2 target)
         {
             var entityIsNull = Check.IsNullOrDefault(entity);

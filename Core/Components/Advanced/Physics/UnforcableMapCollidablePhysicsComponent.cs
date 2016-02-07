@@ -13,8 +13,8 @@ namespace DXGame.Core.Components.Advanced.Physics
         </summary>
     */
 
-    [Serializable]
     [DataContract]
+    [Serializable]
     public class UnforcableMapCollidablePhysicsComponent : MapCollidablePhysicsComponent
     {
         protected UnforcableMapCollidablePhysicsComponent(DxVector2 velocity, DxVector2 acceleration,

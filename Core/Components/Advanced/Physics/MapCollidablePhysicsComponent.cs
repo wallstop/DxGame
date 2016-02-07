@@ -17,8 +17,8 @@ using NLog;
 
 namespace DXGame.Core.Components.Advanced.Physics
 {
-    [Serializable]
     [DataContract]
+    [Serializable]
     public class MapCollidablePhysicsComponent : PhysicsComponent
     {
         private const int MAX_COLLISION_CHECKS = 20;

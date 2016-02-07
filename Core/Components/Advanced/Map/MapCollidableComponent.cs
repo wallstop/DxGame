@@ -15,8 +15,8 @@ namespace DXGame.Core.Components.Advanced.Map
         </summary>
         TODO: Rename this, it is garbage
     */
-    [Serializable]
     [DataContract]
+    [Serializable]
     public class MapCollidableComponent : CollidableComponent
     {
         [DataMember]

@@ -20,8 +20,8 @@ namespace DXGame.Core.Components.Advanced.Physics
         </summary>
     */
 
-    [Serializable]
     [DataContract]
+    [Serializable]
     public class PhysicsComponent : Component
     {
         /* Currently acting forces on this object. This will typically include gravity & air resistance */

@@ -1,15 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core.Primitives;
 
 namespace DXGame.Core.Utils.Distance
 {
+    [DataContract]
+    [Serializable]
     internal class QuadTreeNode<T>
     {
         private static readonly int NUM_CHILDREN = 4;
+
+        [DataMember]
         public List<QuadTreeNode<T>> Children { get; }
+        [DataMember]
         public DxRectangle Boundary { get; }
+        [DataMember]
         public List<T> Points { get; }
+        [DataMember]
         public bool Terminal { get; }
 
         public QuadTreeNode(DxRectangle boundary, Coordinate<T> coordinate, List<T> pointsInSpace, int bucketSize)
@@ -39,11 +48,16 @@ namespace DXGame.Core.Utils.Distance
         }
     }
 
+    [DataContract]
+    [Serializable]
     public class QuadTree<T> : ISpatialTree<T>
     {
         private static readonly int DEFAULT_BUCKET_SIZE = 12;
+        [DataMember]
         private readonly DxRectangle boundary_;
+        [DataMember]
         private readonly Coordinate<T> coordinate_;
+        [DataMember]
         private readonly QuadTreeNode<T> head_;
 
         public QuadTree(Coordinate<T> coordinate, DxRectangle boundary, IEnumerable<T> points)

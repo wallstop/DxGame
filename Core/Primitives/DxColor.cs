@@ -1,16 +1,44 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+using DXGame.Core.Utils;
+using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Primitives
 {
+    /**
+        <summary>
+            Serializable and json-able wrapper around an XNA color
+        </summary>
+    */
+
     [Serializable]
     [DataContract]
-    public class DxColor
+    public struct DxColor
     {
-        // TODO: Need to provide a serializable XNA Color wrapper
+        [DataMember] private uint colorAsInt_;
+
+        // TODO: Cache created color
+
+        [IgnoreDataMember]
+        public Color Color
+        {
+            get
+            {
+                Color color = new Color
+                {
+                    A = colorAsInt_.A(),
+                    B = colorAsInt_.B(),
+                    G = colorAsInt_.C(),
+                    R = colorAsInt_.D()
+                };
+                return color;
+            }
+            set { colorAsInt_ = value.PackedValue; }
+        }
+
+        public DxColor(Color color)
+        {
+            colorAsInt_ = color.PackedValue;
+        }
     }
 }

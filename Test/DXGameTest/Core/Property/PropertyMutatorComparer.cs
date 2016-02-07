@@ -56,7 +56,7 @@ namespace DXGameTest.Core.Property
             Assert.Greater(0, priorityComparer.Compare(mediumPriorityMutator, lowPriorityMutator));
         }
 
-        private static int SimpleMutator(int input)
+        private static int SimpleMutator(int input, int count)
         {
             return input + 2;
         }

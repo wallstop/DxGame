@@ -31,7 +31,8 @@ namespace DXGame.TowerGame.Components.Waves
 
         [DataMember] private TimeSpan lastWaveNotification_;
 
-        [DataMember] private SpriteFont spriteFont_;
+        [NonSerialized]
+        [IgnoreDataMember] private SpriteFont spriteFont_;
 
         [DataMember]
         private TextComponent WaveText { get; set; }
@@ -87,12 +88,12 @@ namespace DXGame.TowerGame.Components.Waves
         {
             // TODO: Make a FontCache
             spriteFont_ = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Pericles");
-            WaveText = new TextComponent(Position, spriteFont_);
+            WaveText = new TextComponent(Position, spriteFont_, "Fonts/Pericles");
         }
 
         private static Color DetermineColorFade(TimeSpan currentTime, TimeSpan max)
         {
-            double current = currentTime.TotalMilliseconds;
+            double current = Math.Max(0, currentTime.TotalMilliseconds);
             double end = max.TotalMilliseconds;
             double scalar = SpringFunctions.Linear(1, 0, current, end);
             Color transparentColor = ColorFactory.Transparency((float) scalar, Color.Purple);
@@ -107,7 +108,7 @@ namespace DXGame.TowerGame.Components.Waves
             }
             Color fadedColor = DetermineColorFade(gameTime.TotalGameTime - lastWaveNotification_,
                 DISPLAY_TIME);
-            WaveText.Color = fadedColor;
+            WaveText.DxColor = new DxColor(fadedColor);
             WaveText.Draw(spriteBatch, gameTime);
         }
 

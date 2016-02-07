@@ -29,7 +29,9 @@ namespace DXGame.Core.Models
         [DataMember]
         private readonly SortedList<Event> events_ = new SortedList<Event>();
 
-        [DataMember] private readonly List<WeakReference<EventListener>> listeners_ = new List<WeakReference<EventListener>>(); 
+        [DataMember] private readonly List<WeakReference<EventListener>> listeners_ = new List<WeakReference<EventListener>>();
+
+        public override bool ShouldSerialize => false;
 
         public EventModel()
         {

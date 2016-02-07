@@ -11,8 +11,8 @@ namespace DXGame.Core.Components.Advanced.Physics
             Just like a PhysicsComponent, except that no forces can affect it (after the initial forces)
         </summary>
     */
-    [Serializable]
     [DataContract]
+    [Serializable]
     public class UnforcablePhysicsComponent : PhysicsComponent
     {
         public UnforcablePhysicsComponent(DxVector2 velocity, DxVector2 acceleration, SpatialComponent position, UpdatePriority updatePriority) 

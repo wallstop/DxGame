@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using DXGame.Core.Primitives;
@@ -9,12 +10,19 @@ namespace DXGame.Core.Utils.Distance
 {
     public delegate float Axis<in T>(T point);
 
+    [DataContract]
+    [Serializable]
     internal class KDTreeNode<T>
     {
+        [DataMember]
         public KDTreeNode<T> Left { get; }
+        [DataMember]
         public KDTreeNode<T> Right { get; }
+        [DataMember]
         public DxRectangle Boundary { get; }
+        [DataMember]
         public List<T> Points { get; }
+        [DataMember]
         public bool Terminal { get; }
 
         public KDTreeNode(DxRectangle boundary, Coordinate<T> coordinate, List<T> pointsInSpace, int bucketSize,
@@ -61,11 +69,16 @@ namespace DXGame.Core.Utils.Distance
         }
     }
 
+    [DataContract]
+    [Serializable]
     public class KDTree<T> : ISpatialTree<T>
     {
         private static readonly int DEFAULT_BUCKET_SIZE = 12;
+        [DataMember]
         private readonly DxRectangle boundary_;
+        [DataMember]
         private readonly Coordinate<T> coordinate_;
+        [DataMember]
         private readonly KDTreeNode<T> head_;
 
         public List<T> Elements

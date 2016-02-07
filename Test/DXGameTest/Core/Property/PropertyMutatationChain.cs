@@ -17,7 +17,7 @@ namespace DXGameTest.Core.Property
             Assert.AreEqual(propertyName, property.Name);
 
             // Make sure a simple pass-through mutator has no effect on the data
-            var mutator = new PropertyMutator<int>(input => input, "NoOpMutator");
+            var mutator = new PropertyMutator<int>((input, count) => input, "NoOpMutator");
             property.AddMutator(mutator);
 
             Assert.AreEqual(baseValue, property.BaseValue);
@@ -32,7 +32,7 @@ namespace DXGameTest.Core.Property
             Assert.AreEqual(propertyName, property.Name);
 
             // Make sure a simple + 1 mutator properly effects the state
-            mutator = new PropertyMutator<int>(input => input + 1, "NoOpMutator");
+            mutator = new PropertyMutator<int>((input, count) => input + 1, "NoOpMutator");
 
             property.AddMutator(mutator);
 
@@ -55,7 +55,7 @@ namespace DXGameTest.Core.Property
             const string propertyName = "TestIntegerProperty";
             Property<int> property = new Property<int>(baseValue, propertyName);
 
-            var mutator = new PropertyMutator<int>(input => input + 1, "NoOpMutator");
+            var mutator = new PropertyMutator<int>((input, count) => input + 1, "NoOpMutator");
 
             property.AddMutator(mutator);
 
@@ -87,7 +87,7 @@ namespace DXGameTest.Core.Property
             const string propertyName = "TestIntegerProperty";
             Property<int> property = new Property<int>(baseValue, propertyName);
 
-            var mutator = new PropertyMutator<int>(input => input + 1, "NoOpMutator");
+            var mutator = new PropertyMutator<int>((input, count) => input + 1, "NoOpMutator");
 
             const int numMutators = 1000;
             for(int i = 0; i < numMutators; ++i)
@@ -162,7 +162,7 @@ namespace DXGameTest.Core.Property
             Assert.AreEqual(baseValue, property.CurrentValue);
             Assert.AreEqual(propertyName, property.Name);
 
-            var mutator = new PropertyMutator<int>(input => input + 1, "NoOpMutator");
+            var mutator = new PropertyMutator<int>((input, count) => input + 1, "NoOpMutator");
 
             // Just check to see if no exception is thrown
             property.RemoveMutator(mutator);

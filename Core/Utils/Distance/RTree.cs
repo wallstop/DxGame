@@ -1,15 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core.Primitives;
 
 namespace DXGame.Core.Utils.Distance
 {
+    [DataContract]
+    [Serializable]
     internal class RTreeNode<T>
     {
+        [DataMember]
         public DxRectangle Boundary { get; }
+        [DataMember]
         public bool Terminal { get; }
+        [DataMember]
         public List<T> Rectangles { get; }
+        [DataMember]
         public List<RTreeNode<T>> Children { get; }
 
         public RTreeNode(BoundingBox<T> boundingBox, List<T> rectangles, int bucketSize, int branchFactor)
@@ -67,12 +74,18 @@ namespace DXGame.Core.Utils.Distance
         }
     }
 
+    [DataContract]
+    [Serializable]
     public class RTree<T> : ISpatialTree<T>
     {
         private static readonly int DEFAULT_BUCKET_SIZE = 10;
         private static readonly int DEFAULT_BRANCH_FACTOR = 4;
+
+        [DataMember]
         private readonly DxRectangle boundary_;
+        [DataMember]
         private readonly BoundingBox<T> boundingBox_;
+        [DataMember]
         private readonly RTreeNode<T> head_;
 
         public List<T> Elements {

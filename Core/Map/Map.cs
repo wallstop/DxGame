@@ -22,8 +22,7 @@ namespace DXGame.Core.Map
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        [NonSerialized] [IgnoreDataMember] private readonly Dictionary<Texture2D, int> mapTexturesAndLayers_ =
-            new Dictionary<Texture2D, int>();
+        [NonSerialized] [IgnoreDataMember] private Dictionary<Texture2D, int> mapTexturesAndLayers_;
 
         [DataMember]
         public MapDescriptor MapDescriptor { get; private set; }
@@ -70,7 +69,7 @@ namespace DXGame.Core.Map
 
         public override void LoadContent()
         {
-            mapTexturesAndLayers_.Clear();
+            mapTexturesAndLayers_ = new Dictionary<Texture2D, int>();
             if(!MapDescriptor.MapLayers.Any())
             {
                 LOG.Info($"Attempted to {nameof(LoadContent)} for a null/empty Asset, defaulting to blank texture");

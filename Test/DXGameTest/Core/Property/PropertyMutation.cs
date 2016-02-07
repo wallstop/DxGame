@@ -9,7 +9,7 @@ namespace DXGameTest.Core.Property
         [Test]
         public void SimpleMutation()
         {
-            PropertyMutator<int> intMutator = new PropertyMutator<int>(input => input * 2, "SimplePropertyMutator");
+            PropertyMutator<int> intMutator = new PropertyMutator<int>((input, count) => input * 2, "SimplePropertyMutator");
 
             const int original = 200;
             const int expected = 400;
@@ -20,7 +20,7 @@ namespace DXGameTest.Core.Property
         [Test]
         public void MultipleMutations()
         {
-            PropertyMutator<int> intMutator = new PropertyMutator<int>(input => input * 2, "SimplePropertyMutator");
+            PropertyMutator<int> intMutator = new PropertyMutator<int>((input, count) => input * 2, "SimplePropertyMutator");
 
             const int original = 200;
             // Since we've increased the count, we should be expecting a much larger number than the original (5x larger, in fact!)
@@ -49,8 +49,8 @@ namespace DXGameTest.Core.Property
         {
             // Make sure we aren't accidentally equal with any other kinds of objects...
             PropertyMutator<int> intMutator = new PropertyMutator<int>(SimpleMutatorVersion1, "SimplePropertyMutator");
-            PropertyMutator<string> stringMutator = new PropertyMutator<string>(input => input, "SimplePropertyMutator");
-            PropertyMutator<long> otherIntMutator = new PropertyMutator<long>(input => input, "SimplePropertyMutator");
+            PropertyMutator<string> stringMutator = new PropertyMutator<string>((input, count) => input, "SimplePropertyMutator");
+            PropertyMutator<long> otherIntMutator = new PropertyMutator<long>((input, count) => input, "SimplePropertyMutator");
 
             Assert.False(intMutator.Equals(stringMutator));
             Assert.False(intMutator.Equals(otherIntMutator));
@@ -153,12 +153,12 @@ namespace DXGameTest.Core.Property
             Assert.True(intMutator.ToString().Contains("SimplePropertyMutator"));
         }
 
-        private static int SimpleMutatorVersion1(int input)
+        private static int SimpleMutatorVersion1(int input, int count)
         {
             return input * 2;
         }
 
-        private static int SimpleMutatorVersion2(int input)
+        private static int SimpleMutatorVersion2(int input, int count)
         {
             return input * 3;
         }

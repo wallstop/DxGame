@@ -89,7 +89,7 @@ namespace DXGame.Core.Components.Network
             finally
             {
                 Validate.IsNotNull(networkMessage,
-                    $"Could not properly format a NetworkMessage from NetIncomingMessage {networkMessage}");
+                    $"Could not properly format a NetworkMessage from NetIncomingMessage {message}");
             }
 
             switch (networkMessage.MessageType)

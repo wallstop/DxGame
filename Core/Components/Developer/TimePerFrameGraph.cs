@@ -50,6 +50,8 @@ namespace DXGame.Core.Components.Developer
         [DataMember]
         private Graph Graph { get; set; }
 
+        public override bool ShouldSerialize => false;
+
         public TimePerFrameGraph()
         {
             GameTimes = new LinkedList<DxGameTime>();

@@ -27,6 +27,8 @@ namespace DXGame.Core.Models
 
         public ExperienceModel() : this(SimpleExponentialEaseInOut) {}
 
+        public override bool ShouldSerialize => false;
+
         public ExperienceModel(ExperienceFunction experienceFunction)
         {
             Validate.IsNotNullOrDefault(experienceFunction,

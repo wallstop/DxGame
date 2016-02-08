@@ -10,11 +10,10 @@ namespace DXGame.Core.DataStructures
 {
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class SortedList<T> : IList<T>
     {
-        [DataMember] [ProtoMember(1)] private readonly IComparer<T> comparer_;
-        [DataMember] [ProtoMember(2)] private readonly List<T> list_;
+        [DataMember] private readonly IComparer<T> comparer_;
+        [DataMember] private readonly List<T> list_;
 
         public SortedList()
         {

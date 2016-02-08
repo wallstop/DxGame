@@ -2,21 +2,17 @@
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
-using ProtoBuf;
 
 namespace DXGame.Core.Primitives
 {
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public struct DxCircle : IEquatable<DxCircle>, IShape
     {
         [DataMember]
-        [ProtoMember(1)]
         public DxVector2 Center { get; }
 
         [DataMember]
-        [ProtoMember(2)]
         public float Radius { get; }
 
         public DxCircle(DxVector2 center, float radius)

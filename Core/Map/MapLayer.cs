@@ -13,17 +13,14 @@ namespace DXGame.Core.Map
 
     [DataContract]
     [Serializable]
-    [ProtoContract]
     public class MapLayer
     {
         public static readonly int DEFAULT_LAYER = 0;
 
         [DataMember]
-        [ProtoMember(1)]
         public string Asset { get; set; }
 
         [DataMember]
-        [ProtoMember(2)]
         public int Layer { get; set; }
 
         public MapLayer(string asset) : this(asset, DEFAULT_LAYER) {}

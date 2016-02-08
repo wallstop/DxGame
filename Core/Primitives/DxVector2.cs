@@ -2,7 +2,6 @@
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
-using ProtoBuf;
 
 namespace DXGame.Core.Primitives
 {
@@ -15,11 +14,10 @@ namespace DXGame.Core.Primitives
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public struct DxVector2 : IEquatable<DxVector2>, IEquatable<Vector2>, IComparable<DxVector2>
     {
-        [DataMember] [ProtoMember(1)] public float X;
-        [DataMember] [ProtoMember(2)] public float Y;
+        [DataMember] public float X;
+        [DataMember] public float Y;
         public float MagnitudeSquared => X * X + Y * Y;
         public float Magnitude => (float) Math.Sqrt(MagnitudeSquared);
         public DxRadian Radian => new DxRadian(this);

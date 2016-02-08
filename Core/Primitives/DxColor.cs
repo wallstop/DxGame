@@ -2,7 +2,6 @@
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
-using ProtoBuf;
 
 namespace DXGame.Core.Primitives
 {
@@ -14,10 +13,9 @@ namespace DXGame.Core.Primitives
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public struct DxColor
     {
-        [DataMember] [ProtoMember(1)] private uint colorAsInt_;
+        [DataMember] private uint colorAsInt_;
 
         // TODO: Cache created color
 

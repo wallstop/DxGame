@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
-using ProtoBuf;
 
 namespace DXGame.Core.Primitives
 {
@@ -23,7 +22,6 @@ namespace DXGame.Core.Primitives
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public struct DxRadian : IEquatable<DxRadian>
     {
         public static DxRadian East => new DxRadian(3 * Math.PI / 2);
@@ -33,7 +31,7 @@ namespace DXGame.Core.Primitives
         public static float MinValue => 0.0f;
         public static float MaxValue => (float) Math.PI * 2;
 
-        [DataMember] [ProtoMember(1)] public float Value;
+        [DataMember] public float Value;
         public DxDegree Degree => new DxDegree(this);
         /* Note: Math.(cool trig methods) are based around radians, not degrees */
         /* What the shit? http://stackoverflow.com/questions/2276855/xna-2d-vector-angles-whats-the-correct-way-to-calculate */

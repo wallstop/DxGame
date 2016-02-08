@@ -14,23 +14,6 @@ namespace DXGame.Core
 
         // TODO: Move all of these to thread-local storage
 
-        public static byte[] ProtobufSerialize(T input)
-        {
-            using(MemoryStream memoryStream = new MemoryStream())
-            {
-                Serializer.Serialize(memoryStream, input);
-                return memoryStream.ToArray();
-            }
-        }
-
-        public static T ProtobufDeserialize(byte[] data)
-        {
-            using(MemoryStream memoryStream = new MemoryStream(data))
-            {
-                return Serializer.Deserialize<T>(memoryStream);
-            }
-        }
-
         public static byte[] NetSerializer(T input)
         {
             using(MemoryStream memoryStream = new MemoryStream())

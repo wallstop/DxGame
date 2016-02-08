@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
-using ProtoBuf;
 
 namespace DXGame.Core.Primitives
 {
@@ -13,18 +12,14 @@ namespace DXGame.Core.Primitives
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class DxGameTime : IEquatable<DxGameTime>, IComparable<DxGameTime>
     {
-        [ProtoMember(1)]
         [DataMember]
         public TimeSpan TotalGameTime { get; }
-
-        [ProtoMember(2)]
+        
         [DataMember]
         public TimeSpan ElapsedGameTime { get; }
-
-        [ProtoMember(3)]
+        
         [DataMember]
         public bool IsRunningSlowly { get; }
 

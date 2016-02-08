@@ -18,7 +18,6 @@ namespace DXGame.Core.Map
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class Platform
     {
         public static readonly ReadOnlyDictionary<PlatformType, ReadOnlyCollection<CollidableDirection>>
@@ -39,11 +38,9 @@ namespace DXGame.Core.Map
                     });
 
         [DataMember]
-        [ProtoMember(1)]
         public PlatformType Type { get; set; }
 
         [DataMember]
-        [ProtoMember(2)]
         public DxRectangle BoundingBox { get; set; }
 
         [IgnoreDataMember]

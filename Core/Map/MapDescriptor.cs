@@ -19,7 +19,6 @@ namespace DXGame.Core.Map
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class MapDescriptor : JsonPersistable<MapDescriptor>
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
@@ -35,23 +34,18 @@ namespace DXGame.Core.Map
         /* Legacy field so I don't have to fuck with MapEditor right now */
 
         [DataMember]
-        [ProtoMember(1)]
         public string Asset { get; set; }
 
         [DataMember]
-        [ProtoMember(2)]
         public List<MapLayer> MapLayers { get; set; } = new List<MapLayer>();
 
         [DataMember]
-        [ProtoMember(3)]
         public List<Platform> Platforms { get; set; } = new List<Platform>();
 
         [DataMember]
-        [ProtoMember(4)]
         public DxRectangle Size { get; set; }
 
         [DataMember]
-        [ProtoMember(5)]
         public float Scale { get; set; } = 1.0f;
 
         public static MapDescriptorBuilder Builder()

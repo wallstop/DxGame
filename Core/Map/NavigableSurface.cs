@@ -27,7 +27,6 @@ namespace DXGame.Core.Map
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class NavigableSurface
     {
         /* How many pixels lie between each Node on the same Edge */
@@ -43,7 +42,7 @@ namespace DXGame.Core.Map
         private static readonly ThreadLocal<Dictionary<UniqueId, NavigableSurface>> CACHE =
             new ThreadLocal<Dictionary<UniqueId, NavigableSurface>>(() => new Dictionary<UniqueId, NavigableSurface>());
 
-        [DataMember] [ProtoMember(1)]
+        [DataMember]
         public ISpatialTree<Node> NodeQuery { get; }
 
         private NavigableSurface(MapModel mapModel)
@@ -149,14 +148,13 @@ namespace DXGame.Core.Map
         */
         [Serializable]
         [DataContract]
-        [ProtoContract]
         public class Node : IComparable<Node>
         {
             public static Node EmptyNode = new Node(new DxVector2(int.MinValue, int.MinValue), null);
 
-            [DataMember] [ProtoMember(1)]
+            [DataMember]
             public DxVector2 Position { get; }
-            [DataMember] [ProtoMember(2)]
+            [DataMember] 
             public MapCollidableComponent MapTile { get; }
 
             [IgnoreDataMember]

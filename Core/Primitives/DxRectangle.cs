@@ -3,20 +3,18 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
-using ProtoBuf;
 
 namespace DXGame.Core.Primitives
 {
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public struct DxRectangle : IEquatable<DxRectangle>, IEquatable<Rectangle>, IShape
     {
         private const float TOLERANCE = 0.000001f;
-        [DataMember] [ProtoMember(1)] public float Height;
-        [DataMember] [ProtoMember(2)] public float Width;
-        [DataMember] [ProtoMember(3)] public float X;
-        [DataMember] [ProtoMember(4)] public float Y;
+        [DataMember] public float Height;
+        [DataMember] public float Width;
+        [DataMember] public float X;
+        [DataMember] public float Y;
         public float Area => Width * Height;
         public static DxRectangle EmptyRectangle => new DxRectangle();
         public float Left => X;

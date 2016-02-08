@@ -1,33 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
-using DXGame.Core.Events;
 using DXGame.Core.Messaging;
-using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Map
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class MapTransition : DrawableComponent, IEnvironmentComponent
     {
         private static readonly TimeSpan PARTICLE_EMISSION_DELAY = TimeSpan.FromSeconds(0.01);
 
         [DataMember]
+        [ProtoMember(1)]
         private TimeSpan LastParticleEmission { get; set; }
 
         [DataMember]
+        [ProtoMember(2)]
         private PositionalComponent PositionalComponent { get; }
 
         [DataMember]
+        [ProtoMember(3)]
         public bool Active { get; private set; }
 
         public MapTransition(PositionalComponent position)

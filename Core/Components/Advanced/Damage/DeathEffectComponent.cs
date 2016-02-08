@@ -7,6 +7,7 @@ using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Damage
 {
@@ -28,14 +29,14 @@ namespace DXGame.Core.Components.Advanced.Damage
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class DeathEffectComponent : Component
     {
-        [DataMember] protected DeathEffect deathEffect_;
+        [DataMember] [ProtoMember(1)] protected DeathEffect deathEffect_;
 
         public DeathEffectComponent(DeathEffect deathEffect)
         {
-            Validate.IsNotNull(deathEffect, StringUtils.GetFormattedNullOrDefaultMessage(this,
-                nameof(DeathEffect)));
+            Validate.IsNotNull(deathEffect, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(DeathEffect)));
             deathEffect_ = deathEffect;
             MessageHandler.RegisterMessageHandler<EntityDeathMessage>(HandleEntityDeath);
         }
@@ -47,7 +48,7 @@ namespace DXGame.Core.Components.Advanced.Damage
                 If there is a spatial, trigger the death effect. 
                 If there isn't one, we can't reliably determine the space that the entity died at, so don't trigger it. 
             */
-            if (!ReferenceEquals(spatial, null))
+            if(!ReferenceEquals(spatial, null))
             {
                 deathEffect_.Invoke(spatial.Space);
             }
@@ -58,7 +59,7 @@ namespace DXGame.Core.Components.Advanced.Damage
         public static void SimpleEnemyBloodParticles(DxRectangle deathSpace)
         {
             /* Make sure we didn't accidentally get a bogus space */
-            if (Check.IsNullOrDefault(deathSpace))
+            if(Check.IsNullOrDefault(deathSpace))
             {
                 return;
             }
@@ -87,7 +88,7 @@ namespace DXGame.Core.Components.Advanced.Damage
                 space at varying speeds, accelerations, TTLs, all that good stuff 
             */
             var numParticles = ThreadLocalRandom.Current.Next(minNumParticles, maxNumParticles);
-            for (int i = 0; i < numParticles; ++i)
+            for(int i = 0; i < numParticles; ++i)
             {
                 var position =
                     new DxVector2(ThreadLocalRandom.Current.NextFloat(deathSpace.X, deathSpace.X + deathSpace.Width),
@@ -101,24 +102,24 @@ namespace DXGame.Core.Components.Advanced.Damage
                 particleVelocity *= force;
 
                 var acceleration = particleVelocity.UnitVector *
-                                   (ThreadLocalRandom.Current.NextFloat(minAcceleration, maxAcceleration));
-                var timeToLive =
-                    TimeSpan.FromSeconds(ThreadLocalRandom.Current.NextFloat(minTimeToLive, maxTimeToLive));
+                                   ThreadLocalRandom.Current.NextFloat(minAcceleration, maxAcceleration);
+                var timeToLive = TimeSpan.FromSeconds(ThreadLocalRandom.Current.NextFloat(minTimeToLive, maxTimeToLive));
                 var growRate = ThreadLocalRandom.Current.NextFloat(minGrowRate, maxGrowRate);
                 var radius = ThreadLocalRandom.Current.NextFloat(minRadius, maxRadius);
                 var maximumDistance = ThreadLocalRandom.Current.NextFloat(minDistance, maxDistance);
                 var transparencyWeight = ThreadLocalRandom.Current.NextFloat(0.1f, 1.0f);
-                var particle = Particle.Particle.Builder()
-                    .WithPosition(position)
-                    .WithVelocity(particleVelocity)
-                    .WithAcceleration(acceleration)
-                    .WithColor(deathColor)
-                    .WithTimeToLive(timeToLive)
-                    .WithGrowRate(growRate)
-                    .WithRadius(radius)
-                    .WithMaxDistance(maximumDistance)
-                    .WithTransparencyWeight(transparencyWeight)
-                    .Build();
+                var particle =
+                    Particle.Particle.Builder()
+                        .WithPosition(position)
+                        .WithVelocity(particleVelocity)
+                        .WithAcceleration(acceleration)
+                        .WithColor(deathColor)
+                        .WithTimeToLive(timeToLive)
+                        .WithGrowRate(growRate)
+                        .WithRadius(radius)
+                        .WithMaxDistance(maximumDistance)
+                        .WithTransparencyWeight(transparencyWeight)
+                        .Build();
 
                 DxGame.Instance.AddAndInitializeComponents(particle);
             }

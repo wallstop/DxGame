@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Triggers
 {
@@ -26,19 +27,23 @@ namespace DXGame.Core.Components.Advanced.Triggers
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class TriggerComponent : Component
     {
-        private TimeSpan lastChecked_;
+        [DataMember] [ProtoMember(1)] private TimeSpan lastChecked_;
 
         [DataMember]
+        [ProtoMember(2)]
         private Trigger Trigger { get; }
 
         /* Executed when the trigger returns true */
 
         [DataMember]
+        [ProtoMember(3)]
         private Action Action { get; }
 
         [DataMember]
+        [ProtoMember(4)]
         private TimeSpan CheckFrequency { get; }
 
         public TriggerComponent(Trigger trigger, Action action, TimeSpan checkFrequency = new TimeSpan())

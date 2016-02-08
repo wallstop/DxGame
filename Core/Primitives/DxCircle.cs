@@ -2,17 +2,21 @@
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
+using ProtoBuf;
 
 namespace DXGame.Core.Primitives
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public struct DxCircle : IEquatable<DxCircle>, IShape
     {
         [DataMember]
+        [ProtoMember(1)]
         public DxVector2 Center { get; }
 
         [DataMember]
+        [ProtoMember(2)]
         public float Radius { get; }
 
         public DxCircle(DxVector2 center, float radius)
@@ -28,7 +32,7 @@ namespace DXGame.Core.Primitives
 
         public bool Contains(DxVector2 point)
         {
-            return (Center - point).MagnitudeSquared < (Radius * Radius);
+            return (Center - point).MagnitudeSquared < Radius * Radius;
         }
 
         public bool Intersects(DxRectangle rectangle)
@@ -71,7 +75,7 @@ namespace DXGame.Core.Primitives
 
         public override bool Equals(object other)
         {
-            if (ReferenceEquals(null, other))
+            if(ReferenceEquals(null, other))
             {
                 return false;
             }

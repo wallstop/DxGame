@@ -7,6 +7,7 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Entities
 {
@@ -18,10 +19,15 @@ namespace DXGame.Core.Components.Advanced.Entities
 
     public delegate Tuple<bool, GameObject> SpawnTrigger(DxGameTime gameTime);
 
+    [DataContract]
     [Serializable]
+    [ProtoContract]
     public class Spawner : Component
     {
-        protected DxRectangle spawnArea_;
+        [DataMember] [ProtoMember(1)] protected DxRectangle spawnArea_;
+
+        [DataMember]
+        [ProtoMember(2)]
         protected SpawnTrigger SpawnTrigger { get; }
 
         protected virtual DxRectangle SpawnArea => spawnArea_;
@@ -109,9 +115,14 @@ namespace DXGame.Core.Components.Advanced.Entities
 
     [DataContract]
     [Serializable]
+    [ProtoContract]
     internal class SimpleImmediateSpawner
     {
+        [DataMember]
+        [ProtoMember(1)]
         private readonly GameObject objectToSpawn_;
+        [DataMember]
+        [ProtoMember(2)]
         private bool alreadySpawned_;
 
         public SimpleImmediateSpawner(GameObject objectToSpawn)

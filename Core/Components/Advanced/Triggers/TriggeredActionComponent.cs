@@ -4,6 +4,7 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Triggers
 {
@@ -16,20 +17,22 @@ namespace DXGame.Core.Components.Advanced.Triggers
 
     [DataContract]
     [Serializable]
+    [ProtoContract]
     public class TriggeredActionComponent<T> : Component
     {
-        [DataMember] private readonly Action<T> action_;
+        [ProtoMember(1)] [DataMember] private readonly Action<T> action_;
 
         /* Determines whether or not this should stop based off of (original time invoked) (current GameTime) */
-        [DataMember] private readonly Func<TimeSpan, DxGameTime, bool> endTrigger_;
+        [ProtoMember(2)] [DataMember] private readonly Func<TimeSpan, DxGameTime, bool> endTrigger_;
 
         /* Triggered once the Action has ended */
-        [DataMember] private readonly Action<T> finalAction_;
+        [ProtoMember(3)] [DataMember] private readonly Action<T> finalAction_;
 
-        [DataMember] private readonly T source_;
+        [ProtoMember(4)] [DataMember] private readonly T source_;
 
-        [DataMember] private readonly Func<DxGameTime, int> tickTrigger_;
+        [ProtoMember(5)] [DataMember] private readonly Func<DxGameTime, int> tickTrigger_;
 
+        [ProtoMember(6)]
         [DataMember]
         public TimeSpan Initialized { get; }
 
@@ -87,20 +90,22 @@ namespace DXGame.Core.Components.Advanced.Triggers
 
     [DataContract]
     [Serializable]
+    [ProtoContract]
     public class TriggeredActionComponent : Component
     {
-        [DataMember] private readonly Action action_;
+        [ProtoMember(1)] [DataMember] private readonly Action action_;
 
         /* Determines whether or not this should stop based off of (original time invoked) (current GameTime) */
 
-        [DataMember] private readonly Func<TimeSpan, DxGameTime, bool> endTrigger_;
+        [ProtoMember(2)] [DataMember] private readonly Func<TimeSpan, DxGameTime, bool> endTrigger_;
 
         /* Triggered once the Action has ended */
 
-        [DataMember] private readonly Action finalAction_;
+        [ProtoMember(3)] [DataMember] private readonly Action finalAction_;
 
-        [DataMember] private readonly Func<DxGameTime, int> tickTrigger_;
+        [ProtoMember(4)] [DataMember] private readonly Func<DxGameTime, int> tickTrigger_;
 
+        [ProtoMember(5)]
         [DataMember]
         public TimeSpan Initialized { get; }
 

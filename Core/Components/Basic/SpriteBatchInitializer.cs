@@ -4,11 +4,13 @@ using DXGame.Core.Primitives;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Basic
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class SpriteBatchInitializer : DrawableComponent
     {
         public SpriteBatchInitializer()
@@ -36,10 +38,8 @@ namespace DXGame.Core.Components.Basic
                 Assigning SamplerState to PointClamp mode here allows us to preserve pixel-perfect clarity while scaling images both up
                 and down, giving us that sweet pixel look that we're aiming for.
             */
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, cameraShift);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null,
+                cameraShift);
         }
     }
 }
- 
- 
- 

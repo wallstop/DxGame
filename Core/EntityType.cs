@@ -1,38 +1,32 @@
-
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-﻿using DXGame.Core.Utils;
-﻿using DXGame.Core.Utils.Cache;
+using DXGame.Core.Utils;
+using DXGame.Core.Utils.Cache;
+using ProtoBuf;
 
 namespace DXGame.Core
 {
-
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public sealed class EntityType : IEquatable<EntityType>
     {
-
-        private static readonly UnboundedLoadingCache<string, EntityType> ENTITY_TYPE_CACHE = new UnboundedLoadingCache<string, EntityType>(name => new EntityType(name));
+        private static readonly UnboundedLoadingCache<string, EntityType> ENTITY_TYPE_CACHE =
+            new UnboundedLoadingCache<string, EntityType>(name => new EntityType(name));
 
         public static IReadOnlyCollection<EntityType> EntityTypes => ENTITY_TYPE_CACHE.Elements;
 
-        public string Name
-        {
-            get;
-        }
+        [DataMember]
+        [ProtoMember(1)]
+        public string Name { get; }
 
         private EntityType(string name)
         {
             Name = name;
         }
 
-        [NonSerialized]
-        [IgnoreDataMember]
-        private int hash_;
+        [NonSerialized] [IgnoreDataMember] private int hash_;
 
         public static EntityType EntityTypeFor(string name)
         {
@@ -67,6 +61,6 @@ namespace DXGame.Core
         public override string ToString()
         {
             return Name;
-}
+        }
     }
 }

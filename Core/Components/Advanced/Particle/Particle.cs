@@ -7,6 +7,7 @@ using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Particle
 {
@@ -19,6 +20,7 @@ namespace DXGame.Core.Components.Advanced.Particle
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class Particle : DrawableComponent
     {
         protected Color Color { get; }

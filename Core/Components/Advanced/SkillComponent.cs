@@ -8,7 +8,7 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Skills;
 using DXGame.Core.Utils;
-using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced
 {
@@ -20,20 +20,19 @@ namespace DXGame.Core.Components.Advanced
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class SkillComponent : Component
     {
+        [ProtoMember(1)]
         [DataMember]
         public ReadOnlyDictionary<Commandment, Skill> Skills { get; }
 
-        public SkillComponent(params Skill[] skills)
-            : this(skills.ToList())
-        {
-        }
+        public SkillComponent(params Skill[] skills) : this(skills.ToList()) {}
 
         public SkillComponent(List<Skill> skills)
         {
             Validate.IsNotNull(skills, StringUtils.GetFormattedNullOrDefaultMessage(this, skills));
-            Validate.NoNullElements(skills, StringUtils.GetFormattedNullOrDefaultMessage(this, typeof (Skill)));
+            Validate.NoNullElements(skills, StringUtils.GetFormattedNullOrDefaultMessage(this, typeof(Skill)));
             Skills =
                 new ReadOnlyDictionary<Commandment, Skill>(skills.ToDictionary(skill => skill.Ability, skill => skill));
         }
@@ -43,6 +42,7 @@ namespace DXGame.Core.Components.Advanced
                 Use a one-frame-delayed approach in order to properly accumulate all CommandMessages that may have been relayed so we can properly trigger Activate/NoActivate
             </summary>
         */
+
         protected override void Update(DxGameTime gameTime)
         {
             HashSet<CommandMessage> commandMessages = Parent.CurrentMessages.OfType<CommandMessage>().ToHashSet();

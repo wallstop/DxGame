@@ -1,19 +1,18 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Developer;
 using DXGame.Core.Messaging;
-using DXGame.Core.Models;
 using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
 using DXGame.Main;
-using System.Runtime.Serialization;
+using ProtoBuf;
 
 namespace DXGame.TowerGame.Skills.Gevurah
 {
@@ -26,8 +25,9 @@ namespace DXGame.TowerGame.Skills.Gevurah
             physicsMessage.AffectedAreas.Add(new DxCircle(position, 100));
             physicsMessage.Source = parent;
             // TODO: Hmmm this super sucks make better pls
-            physicsMessage.Interaction = (gameObject, destination) =>
-                new ShockwaveClosure(gameTime.TotalGameTime).ShockwaveInteraction(gameObject, destination);
+            physicsMessage.Interaction =
+                (gameObject, destination) =>
+                    new ShockwaveClosure(gameTime.TotalGameTime).ShockwaveInteraction(gameObject, destination);
             DxGame.Instance.BroadcastMessage(physicsMessage);
         }
 
@@ -63,11 +63,11 @@ namespace DXGame.TowerGame.Skills.Gevurah
                 default:
                     throw new InvalidEnumArgumentException(
                         $"Could not determine starting point for charge shot while facing {facing.Facing}");
-
             }
 
             SpatialComponent spatial =
-                (SpatialComponent)SpatialComponent.Builder().WithDimensions(dimensions).WithPosition(startPoint).Build();
+                (SpatialComponent)
+                    SpatialComponent.Builder().WithDimensions(dimensions).WithPosition(startPoint).Build();
 
             PhysicsComponent physics =
                 UnforcablePhysicsComponent.Builder().WithVelocity(force).WithSpatialComponent(spatial).Build();
@@ -83,7 +83,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
         {
             FacingComponent facing = parent.ComponentOfType<FacingComponent>();
             DxVector2 initialVelocity = new DxVector2(13, 0);
-            if (facing.Facing == Direction.West)
+            if(facing.Facing == Direction.West)
             {
                 initialVelocity.X *= -1;
             }
@@ -95,13 +95,15 @@ namespace DXGame.TowerGame.Skills.Gevurah
             DxVector2 bearTrapDimensions = new DxVector2(50, 20);
             PositionalComponent entityPosition = parent.ComponentOfType<PositionalComponent>();
             DxVector2 startPoint = entityPosition.Position;
-            SpatialComponent bearTrapSpatial =  (SpatialComponent) SpatialComponent.Builder().WithDimensions(bearTrapDimensions).WithPosition(startPoint).Build();
+            SpatialComponent bearTrapSpatial =
+                (SpatialComponent)
+                    SpatialComponent.Builder().WithDimensions(bearTrapDimensions).WithPosition(startPoint).Build();
             PhysicsComponent bearTrapPhysics =
                 UnforcableMapCollidablePhysicsComponent.Builder()
-                                                       .WithGravity()
-                                                       .WithSpatialComponent(bearTrapSpatial)
-                                                       .WithVelocity(new DxVector2(0, 7))
-                                                       .Build();
+                    .WithGravity()
+                    .WithSpatialComponent(bearTrapSpatial)
+                    .WithVelocity(new DxVector2(0, 7))
+                    .Build();
             BearTrap bearTrap = new BearTrap(bearTrapSpatial);
             GameObject bearTrapObject =
                 GameObject.Builder().WithComponents(bearTrapSpatial, bearTrapPhysics, bearTrap).Build();
@@ -110,7 +112,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
         private static Tuple<bool, double> ShockwaveDamage(GameObject source, GameObject destination)
         {
-            if (source == destination)
+            if(source == destination)
             {
                 return Tuple.Create(false, 0.0);
             }
@@ -119,18 +121,16 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
         [Serializable]
         [DataContract]
+        [ProtoContract]
         private class ShockwaveClosure
         {
             private static readonly TimeSpan DURATION = TimeSpan.FromSeconds(0.75);
 
-            [DataMember]
-            private DxVector2 initialAcceleration_;
+            [DataMember] [ProtoMember(1)] private DxVector2 initialAcceleration_;
 
             [DataMember]
-            private TimeSpan InitialTime
-            {
-                get;
-            }
+            [ProtoMember(2)]
+            private TimeSpan InitialTime { get; }
 
             public ShockwaveClosure(TimeSpan initial)
             {
@@ -163,7 +163,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
                 destination.AttachForce(force);
 
                 /* ...and then damage (if we can) */
-                var damageDealt = new DamageMessage { Source = source, DamageCheck = ShockwaveDamage };
+                var damageDealt = new DamageMessage {Source = source, DamageCheck = ShockwaveDamage};
                 destination.Parent?.BroadcastMessage(damageDealt);
 
                 /* ... and attach a life sucker (just to be evil) */
@@ -175,7 +175,8 @@ namespace DXGame.TowerGame.Skills.Gevurah
                 }
             }
 
-            private Tuple<bool, DxVector2> ShockwaveDissipation(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime)
+            private Tuple<bool, DxVector2> ShockwaveDissipation(DxVector2 externalVelocity,
+                DxVector2 currentAcceleration, DxGameTime gameTime)
             {
                 TimeSpan totalElapsed = gameTime.TotalGameTime - InitialTime;
                 return Tuple.Create(DURATION < totalElapsed, initialAcceleration_ * 0.01);

@@ -5,17 +5,20 @@ using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.State
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class StateMachine : Component
     {
+        [ProtoMember(1)]
         [DataMember]
         public State InitialState { get; private set; }
 
+        [ProtoMember(2)]
         [DataMember]
         public State CurrentState { get; private set; }
 
@@ -33,15 +36,15 @@ namespace DXGame.Core.State
                 do
                 {
                     var currentState = statesToVisit.Dequeue();
-                    foreach (var transition in currentState.Transitions)
+                    foreach(var transition in currentState.Transitions)
                     {
                         var state = transition.State;
-                        if (!seenStates.Add(state))
+                        if(!seenStates.Add(state))
                         {
                             statesToVisit.Enqueue(transition.State);
                         }
                     }
-                } while (statesToVisit.Any());
+                } while(statesToVisit.Any());
                 return seenStates.Count;
             }
         }
@@ -57,13 +60,12 @@ namespace DXGame.Core.State
             /*
                 Find the first transition that has had it's trigger activated. 
             */
-            var nextState = CurrentState.Transitions.FirstOrDefault(
-                transition => transition.ShouldTransition(Parent, gameTime))
-                ?.State ?? CurrentState;
+            var nextState =
+                CurrentState.Transitions.FirstOrDefault(transition => transition.ShouldTransition(Parent, gameTime))?
+                    .State ?? CurrentState;
             /* Are we transitioning? Fire the enter and exit functions, boys! Land ho! */
-            if (!ReferenceEquals(nextState, CurrentState))
+            if(!ReferenceEquals(nextState, CurrentState))
             {
-
                 CurrentState.OnExit?.Invoke(gameTime);
                 nextState.OnEnter?.Invoke(gameTime);
                 CurrentState = nextState;

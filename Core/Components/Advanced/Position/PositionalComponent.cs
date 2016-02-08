@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Position
 {
@@ -28,9 +28,10 @@ namespace DXGame.Core.Components.Advanced.Position
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class PositionalComponent : Component
     {
-        [DataMember] protected DxVector2 position_;
+        [ProtoMember(1)] [DataMember] protected DxVector2 position_;
         /**
         <summary>
             The Position property of a PositionalComponent is likely to be overriden by derived classes.

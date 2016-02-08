@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Threading;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Cache;
+using ProtoBuf;
 
 namespace DXGame.Core
 {
@@ -19,10 +17,16 @@ namespace DXGame.Core
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public sealed class Team : IEquatable<Team>
     {
-        private static readonly UnboundedLoadingCache<string, Team> TEAM_CACHE = new UnboundedLoadingCache<string, Team>(name => new Team(name));
+        private static readonly UnboundedLoadingCache<string, Team> TEAM_CACHE =
+            new UnboundedLoadingCache<string, Team>(name => new Team(name));
+
+        [DataMember]
+        [ProtoMember(1)]
         public string Name { get; }
+
         public static Team PlayerTeam { get; } = TeamFor("Player");
         public static Team EnemyTeam { get; } = TeamFor("Enemy");
 
@@ -35,7 +39,7 @@ namespace DXGame.Core
 
         public bool Equals(Team other)
         {
-            if (ReferenceEquals(null, other))
+            if(ReferenceEquals(null, other))
             {
                 return false;
             }
@@ -58,17 +62,17 @@ namespace DXGame.Core
 
         public static Team TeamFor(string name)
         {
-            Validate.IsNotEmpty(name, $"Cannot have {typeof (Team)}s with null/empty Names");
+            Validate.IsNotEmpty(name, $"Cannot have {typeof(Team)}s with null/empty Names");
             return TEAM_CACHE.Get(name);
         }
 
         public override bool Equals(object other)
         {
-            if (ReferenceEquals(null, other))
+            if(ReferenceEquals(null, other))
             {
                 return false;
             }
-            if (ReferenceEquals(this, other))
+            if(ReferenceEquals(this, other))
             {
                 return true;
             }

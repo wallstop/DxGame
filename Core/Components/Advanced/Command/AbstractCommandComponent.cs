@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
-using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Command
 {
@@ -15,6 +15,7 @@ namespace DXGame.Core.Components.Advanced.Command
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public abstract class AbstractCommandComponent : Component
     {
         protected AbstractCommandComponent()

@@ -14,12 +14,14 @@ using DXGame.Core.Properties;
 using DXGame.Core.Utils.Distance;
 using DXGame.Main;
 using NLog;
+using ProtoBuf;
 using Component = DXGame.Core.Components.Basic.Component;
 
 namespace DXGame.TowerGame.Skills.Gevurah
 {
     [DataContract]
     [Serializable]
+    [ProtoContract]
     public class GevurahBasicAttack : Component
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();

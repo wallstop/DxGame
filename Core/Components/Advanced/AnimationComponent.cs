@@ -9,18 +9,22 @@ using DXGame.Core.State;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class AnimationComponent : DrawableComponent
     {
-        [DataMember] private readonly Dictionary<State.State, Animation.Animation> animationsForStates_;
+        [ProtoMember(1)] [DataMember] private readonly Dictionary<State.State, Animation.Animation> animationsForStates_;
 
+        [ProtoMember(2)]
         [DataMember]
         public PositionalComponent Position { get; }
 
+        [ProtoMember(3)]
         [DataMember]
         public StateMachine StateMachine { get; }
 
@@ -39,7 +43,7 @@ namespace DXGame.Core.Components.Advanced
 
         public override void Initialize()
         {
-            foreach (Animation.Animation animation in animationsForStates_.Values)
+            foreach(Animation.Animation animation in animationsForStates_.Values)
             {
                 animation.LoadContent(DxGame.Instance.Content);
             }
@@ -47,7 +51,7 @@ namespace DXGame.Core.Components.Advanced
 
         public override void LoadContent()
         {
-            foreach (Animation.Animation animation in animationsForStates_.Values)
+            foreach(Animation.Animation animation in animationsForStates_.Values)
             {
                 animation.LoadContent(DxGame.Instance.Content);
             }
@@ -85,7 +89,7 @@ namespace DXGame.Core.Components.Advanced
 
             public AnimationComponentBuilder WithPosition(PositionalComponent position)
             {
-                Validate.IsNull(position_, $"Cannot double-assign a {typeof (PositionalComponent)} to a {GetType()}");
+                Validate.IsNull(position_, $"Cannot double-assign a {typeof(PositionalComponent)} to a {GetType()}");
                 position_ = position;
                 return this;
             }
@@ -99,7 +103,7 @@ namespace DXGame.Core.Components.Advanced
             public AnimationComponentBuilder WithStateAndAsset(State.State state, AnimationDescriptor descriptor)
             {
                 Validate.IsNotNull(position_,
-                    $"Creating {typeof (Animation.Animation)} requires that the {typeof (PositionalComponent)} be set first");
+                    $"Creating {typeof(Animation.Animation)} requires that the {typeof(PositionalComponent)} be set first");
                 Validate.IsNotNullOrDefault(state,
                     StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(descriptor)));
                 Validate.IsFalse(animationsForStates_.ContainsKey(state),

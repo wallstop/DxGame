@@ -7,7 +7,7 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using NetTopologySuite.IO;
+using ProtoBuf;
 
 namespace DXGame.Core
 {
@@ -25,17 +25,20 @@ namespace DXGame.Core
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public sealed class GameObject : IIdentifiable, IEquatable<GameObject>, IProcessable, IDisposable
     {
         // DataMembers can't be readonly :(
-        [DataMember] private List<Component> components_;
-        [DataMember] private UniqueId id_ = new UniqueId();
-        [DataMember] public volatile bool Removed;
+        [ProtoMember(1)] [DataMember] private List<Component> components_;
+        [ProtoMember(2)] [DataMember] private UniqueId id_ = new UniqueId();
+        [ProtoMember(3)] [DataMember] public volatile bool Removed;
         public IEnumerable<Component> Components => components_;
 
+        [ProtoMember(4)]
         [DataMember]
         public List<Message> CurrentMessages { get; private set; } = new List<Message>();
 
+        [ProtoMember(5)]
         [DataMember]
         public List<Message> FutureMessages { get; private set; } = new List<Message>();
 
@@ -69,13 +72,13 @@ namespace DXGame.Core
 
         public void AttachComponent(Component component)
         {
-            if (Removed)
+            if(Removed)
             {
                 return;
             }
             Validate.IsNotNull(component, StringUtils.GetFormattedNullOrDefaultMessage(this, component));
             Validate.IsFalse(components_.Contains(component),
-                $"Cannot add a {typeof (Component)} that already exists to a {typeof (GameObject)} ");
+                $"Cannot add a {typeof(Component)} that already exists to a {typeof(GameObject)} ");
             component.Parent = this;
             components_.Add(component);
         }
@@ -88,6 +91,7 @@ namespace DXGame.Core
                 simulate the object, but not have the copy itself attempt to pathfind and simulate.
             </summary>
         */
+
         public void RemoveComponents<T>() where T : Component
         {
             components_.RemoveAll(component => component is T);
@@ -95,7 +99,7 @@ namespace DXGame.Core
 
         public void RemoveComponents(Component component)
         {
-            if (components_.Contains(component))
+            if(components_.Contains(component))
             {
                 components_.Remove(component);
                 component.Parent = null;
@@ -140,13 +144,13 @@ namespace DXGame.Core
         {
             FutureMessages.Add(message);
             var components = components_.ToArray();
-            foreach (var component in components)
+            foreach(var component in components)
             {
                 component.MessageHandler.HandleMessage(message);
             }
             if(message.Global)
             {
-                DxGame.Instance.BroadcastMessage<T>(message);
+                DxGame.Instance.BroadcastMessage(message);
             }
         }
 
@@ -157,7 +161,7 @@ namespace DXGame.Core
             public GameObject Build()
             {
                 GameObject createdObject = new GameObject(components_);
-                foreach (var component in components_)
+                foreach(var component in components_)
                 {
                     component.Parent = createdObject;
                 }
@@ -175,7 +179,7 @@ namespace DXGame.Core
             {
                 var enumerable = components as Component[] ?? components.ToArray();
                 Validate.IsNotNull(enumerable, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(components)));
-                foreach (var component in enumerable)
+                foreach(var component in enumerable)
                 {
                     WithComponent(component);
                 }

@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Entities
 {
@@ -17,11 +18,17 @@ namespace DXGame.Core.Components.Advanced.Entities
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class ManagerComponent : Component
     {
-        private readonly List<WeakReference<Component>> members_ = new List<WeakReference<Component>>();
+        [DataMember] [ProtoMember(1)] private readonly List<WeakReference<Component>> members_ =
+            new List<WeakReference<Component>>();
 
-        public List<Component> ManagedEntites => members_.Select(Objects.FromWeakReference).Where(reference => !ReferenceEquals(reference, null)).ToList();
+        public List<Component> ManagedEntites
+            =>
+                members_.Select<WeakReference<Component>, Component>(Objects.FromWeakReference)
+                    .Where(reference => !ReferenceEquals(reference, null))
+                    .ToList();
 
         public void Manage(Component entity)
         {

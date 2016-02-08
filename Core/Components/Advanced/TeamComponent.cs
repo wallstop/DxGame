@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
-using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class TeamComponent : Component
     {
+        [ProtoMember(1)]
         [DataMember]
         public Team Team { get; }
 

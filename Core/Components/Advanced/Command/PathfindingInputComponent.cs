@@ -1,25 +1,32 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Pathfinding;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Command
 {
     [Serializable]
+    [DataContract]
+    [ProtoContract]
     public class PathfindingInputComponent : AbstractCommandComponent
     {
-        private LinkedList<ImmutablePair<TimeSpan, CommandChain>> currentPath_ = new LinkedList<ImmutablePair<TimeSpan, CommandChain>>();
-        private LinkedList<DxVector2> waypoints_  = new LinkedList<DxVector2>();
-        private TimeSpan currentTimeout_;
-        private TimeSpan timeOnCurrentCommandment_;
-        private TimeSpan totalTime_;
+        [DataMember] [ProtoMember(1)] private LinkedList<ImmutablePair<TimeSpan, CommandChain>> currentPath_ =
+            new LinkedList<ImmutablePair<TimeSpan, CommandChain>>();
 
-        public IEnumerable<DxVector2> WayPoints => waypoints_; 
+        [DataMember] [ProtoMember(2)] private LinkedList<DxVector2> waypoints_ = new LinkedList<DxVector2>();
+
+        [DataMember] [ProtoMember(3)] private TimeSpan currentTimeout_;
+        [DataMember] [ProtoMember(4)] private TimeSpan timeOnCurrentCommandment_;
+        [DataMember] [ProtoMember(5)] private TimeSpan totalTime_;
+
+        public IEnumerable<DxVector2> WayPoints => waypoints_;
 
         public PathfindingInputComponent()
         {
@@ -41,12 +48,12 @@ namespace DXGame.Core.Components.Advanced.Command
 
         protected override void Update(DxGameTime gameTime)
         {
-            if (!currentPath_.Any())
+            if(!currentPath_.Any())
             {
                 return;
             }
             totalTime_ += gameTime.ElapsedGameTime;
-            if (totalTime_ > currentTimeout_)
+            if(totalTime_ > currentTimeout_)
             {
                 ResetState();
                 return;
@@ -58,7 +65,7 @@ namespace DXGame.Core.Components.Advanced.Command
 
         private void CullStaleDirections()
         {
-            if (!currentPath_.Any())
+            if(!currentPath_.Any())
             {
                 return;
             }
@@ -67,7 +74,7 @@ namespace DXGame.Core.Components.Advanced.Command
             do
             {
                 var currentInstruction = currentPath_.First();
-                if (timeOnCurrentCommandment_ < currentInstruction.Key)
+                if(timeOnCurrentCommandment_ < currentInstruction.Key)
                 {
                     onTrack = true;
                 }
@@ -77,16 +84,16 @@ namespace DXGame.Core.Components.Advanced.Command
                     currentPath_.RemoveFirst();
                     waypoints_.RemoveFirst();
                 }
-            } while (currentPath_.Any() && !onTrack);
+            } while(currentPath_.Any() && !onTrack);
         }
 
         private void ResetState()
         {
-            if (currentPath_.Any())
+            if(currentPath_.Any())
             {
                 currentPath_.Clear();
             }
-            if (waypoints_.Any())
+            if(waypoints_.Any())
             {
                 waypoints_.Clear();
             }
@@ -97,13 +104,13 @@ namespace DXGame.Core.Components.Advanced.Command
 
         private void ExecuteDirection()
         {
-            if (!currentPath_.Any())
+            if(!currentPath_.Any())
             {
                 return;
             }
             var commandments = currentPath_.First();
             currentTimeout_ = commandments.Key;
-            foreach (Commandment commandment in commandments.Value.Commandments)
+            foreach(Commandment commandment in commandments.Value.Commandments)
             {
                 var commandMessage = new CommandMessage {Commandment = commandment};
                 Parent?.BroadcastMessage(commandMessage);

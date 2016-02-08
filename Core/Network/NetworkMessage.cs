@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using Lidgren.Network;
 using NLog;
+using ProtoBuf;
 
 namespace DXGame.Core.Network
 {
@@ -30,26 +31,28 @@ namespace DXGame.Core.Network
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class NetworkMessage
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
         [DataMember]
+        [ProtoMember(1)]
         public MessageType MessageType { get; set; }
 
         public static NetworkMessage FromNetIncomingMessage(NetIncomingMessage message)
         {
             Validate.IsNotNull(message,
-                $"Cannot create a {typeof (NetworkMessage)} from a null {typeof (NetIncomingMessage)}!");
+                $"Cannot create a {typeof(NetworkMessage)} from a null {typeof(NetIncomingMessage)}!");
             try
             {
                 return Serializer<NetworkMessage>.BinaryDeserialize(message.PeekDataBuffer());
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 // TODO: Log metrics on this
                 var logMessage =
-                    $"Could not create a {typeof (NetworkMessage)} for unknown type, something went horribly wrong.";
+                    $"Could not create a {typeof(NetworkMessage)} for unknown type, something went horribly wrong.";
                 LOG.Error(e, logMessage);
                 throw;
             }

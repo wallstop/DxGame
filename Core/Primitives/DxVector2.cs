@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using Microsoft.Xna.Framework;
 using DXGame.Core.Utils;
+using Microsoft.Xna.Framework;
+using ProtoBuf;
 
 namespace DXGame.Core.Primitives
 {
-
     public enum Orientation
     {
         Colinear,
@@ -15,12 +15,13 @@ namespace DXGame.Core.Primitives
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public struct DxVector2 : IEquatable<DxVector2>, IEquatable<Vector2>, IComparable<DxVector2>
     {
-        [DataMember] public float X;
-        [DataMember] public float Y;
-        public float MagnitudeSquared => (X * X) + (Y * Y);
-        public float Magnitude => unchecked((float) Math.Sqrt(MagnitudeSquared));
+        [DataMember] [ProtoMember(1)] public float X;
+        [DataMember] [ProtoMember(2)] public float Y;
+        public float MagnitudeSquared => X * X + Y * Y;
+        public float Magnitude => (float) Math.Sqrt(MagnitudeSquared);
         public DxRadian Radian => new DxRadian(this);
         public DxDegree Degree => new DxDegree(this);
         public static DxVector2 EmptyVector => new DxVector2();
@@ -58,10 +59,7 @@ namespace DXGame.Core.Primitives
             Y = y;
         }
 
-        public DxVector2(double x, double y)
-            : this((float)x, (float)y)
-        {
-        }
+        public DxVector2(double x, double y) : this((float) x, (float) y) {}
 
         public DxVector2(float value)
         {
@@ -137,9 +135,9 @@ namespace DXGame.Core.Primitives
 
         public static Orientation Orientation(DxVector2 point1, DxVector2 point2, DxVector2 point3)
         {
-            int orientation = (int) ((point2.Y - point1.Y) * (point3.X - point2.X) -
-                                     (point2.X - point1.X) * (point3.Y - point2.Y));
-            if (orientation == 0)
+            int orientation =
+                (int) ((point2.Y - point1.Y) * (point3.X - point2.X) - (point2.X - point1.X) * (point3.Y - point2.Y));
+            if(orientation == 0)
             {
                 return Primitives.Orientation.Colinear;
             }
@@ -168,11 +166,11 @@ namespace DXGame.Core.Primitives
 
         public override bool Equals(object other)
         {
-            if (other is DxVector2)
+            if(other is DxVector2)
             {
                 return Equals((DxVector2) other);
             }
-            if (other is Vector2)
+            if(other is Vector2)
             {
                 return Equals((Vector2) other);
             }

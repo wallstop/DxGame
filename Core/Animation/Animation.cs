@@ -7,19 +7,20 @@ using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using ProtoBuf;
 
 namespace DXGame.Core.Animation
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class Animation : IDrawable, IProcessable
     {
-        [DataMember] private int currentFrame_;
-        [DataMember] private DrawPriority drawPriority_;
-        [DataMember] private TimeSpan lastUpdated_ = TimeSpan.FromSeconds(0);
-        [DataMember] protected PositionalComponent position_;
-        [NonSerialized] [IgnoreDataMember]
-        private Texture2D spriteSheet_;
+        [ProtoMember(1)] [DataMember] private int currentFrame_;
+        [ProtoMember(2)] [DataMember] private DrawPriority drawPriority_;
+        [ProtoMember(3)] [DataMember] private TimeSpan lastUpdated_ = TimeSpan.FromSeconds(0);
+        [ProtoMember(4)] [DataMember] protected PositionalComponent position_;
+        [NonSerialized] [IgnoreDataMember] private Texture2D spriteSheet_;
         public TimeSpan TimePerFrame => TimeSpan.FromSeconds(1.0f / AnimationDescriptor.FramesPerSecond);
 
         [DataMember]
@@ -31,7 +32,7 @@ namespace DXGame.Core.Animation
         */
 
         private int TotalFrames => AnimationDescriptor.FrameCount;
-        private float Scale => (float)AnimationDescriptor.Scale;
+        private float Scale => (float) AnimationDescriptor.Scale;
 
         public Animation(AnimationDescriptor descriptor, DrawPriority drawPriority = DrawPriority.NORMAL)
         {
@@ -55,8 +56,7 @@ namespace DXGame.Core.Animation
             int frameWidth = spriteSheet_.Width / TotalFrames;
             Rectangle frameOutline = new Rectangle(frameWidth * currentFrame_, 0, frameWidth, spriteSheet_.Height);
             spriteBatch.Draw(spriteSheet_, position_.Position.ToVector2(), frameOutline, Color.White, 0.0f, Vector2.Zero,
-                Scale,
-                SpriteEffects.None, 0);
+                Scale, SpriteEffects.None, 0);
         }
 
         public int CompareTo(IDrawable other)
@@ -73,10 +73,10 @@ namespace DXGame.Core.Animation
 
         public void Process(DxGameTime gameTime)
         {
-            if (gameTime.TotalGameTime >= (lastUpdated_ + TimePerFrame))
+            if(gameTime.TotalGameTime >= lastUpdated_ + TimePerFrame)
             {
                 lastUpdated_ = gameTime.TotalGameTime;
-                currentFrame_ = MathUtils.WrappedAdd(currentFrame_, 1, TotalFrames);
+                currentFrame_ = currentFrame_.WrappedAdd(1, TotalFrames);
             }
         }
 

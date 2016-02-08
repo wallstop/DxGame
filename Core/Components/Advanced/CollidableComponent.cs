@@ -7,7 +7,7 @@ using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced
 {
@@ -21,8 +21,10 @@ namespace DXGame.Core.Components.Advanced
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class CollidableComponent : Component
     {
+        [ProtoMember(1)]
         [DataMember]
         public ReadOnlyCollection<CollidableDirection> CollidableDirections { get; }
 
@@ -32,9 +34,9 @@ namespace DXGame.Core.Components.Advanced
             get
             {
                 var collisionLines = new List<DxLine>(CollidableDirections.Count);
-                foreach (var collisionDirection in CollidableDirections)
+                foreach(var collisionDirection in CollidableDirections)
                 {
-                    switch (collisionDirection)
+                    switch(collisionDirection)
 
                     {
                         case CollidableDirection.Down:
@@ -56,10 +58,10 @@ namespace DXGame.Core.Components.Advanced
         }
 
         [DataMember]
+        [ProtoMember(2)]
         public SpatialComponent Spatial { get; }
 
-        protected CollidableComponent(IList<CollidableDirection> collidableDirections,
-            SpatialComponent spatial)
+        protected CollidableComponent(IList<CollidableDirection> collidableDirections, SpatialComponent spatial)
         {
             CollidableDirections = new ReadOnlyCollection<CollidableDirection>(collidableDirections);
             Spatial = spatial;
@@ -94,20 +96,20 @@ namespace DXGame.Core.Components.Advanced
             /* Should only be able to collide a max of two directions at once */
             int maxCollisionDirections = 2;
             List<CollidableDirection> collisions = new List<CollidableDirection>(maxCollisionDirections);
-            if (velocity.X > 0)
+            if(velocity.X > 0)
             {
                 collisions.Add(CollidableDirection.Left);
             }
-            else if (velocity.X < 0)
+            else if(velocity.X < 0)
             {
                 collisions.Add(CollidableDirection.Right);
             }
 
-            if (velocity.Y < 0)
+            if(velocity.Y < 0)
             {
                 collisions.Add(CollidableDirection.Down);
             }
-            else if (velocity.Y > 0)
+            else if(velocity.Y > 0)
             {
                 collisions.Add(CollidableDirection.Up);
             }

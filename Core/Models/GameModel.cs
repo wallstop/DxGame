@@ -1,20 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using DXGame.Core.Components.Advanced.Entities;
-using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
-using DXGame.Core.Components.Basic;
-using DXGame.Core.Components.Developer;
 using DXGame.Core.Generators;
-using DXGame.Core.GraphicsWidgets.HUD;
-using DXGame.Core.Utils;
 using DXGame.Main;
-using DXGame.Core.Messaging;
 using DXGame.TowerGame.Level;
 using NLog;
-using NLog.Fluent;
+using ProtoBuf;
 
 namespace DXGame.Core.Models
 {
@@ -26,12 +18,16 @@ namespace DXGame.Core.Models
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class GameModel : Model
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
+        [ProtoMember(1)]
         [DataMember]
         public float GameSpeed { get; set; }
+
+        [ProtoMember(2)]
         [DataMember]
         public SpatialComponent FocalPoint { get; protected set; }
 
@@ -62,8 +58,7 @@ namespace DXGame.Core.Models
             ExperienceModel experienceModel = new ExperienceModel();
             DxGame.Instance.AttachModel(experienceModel);
 
-            PlayerGenerator playerGenerator = new PlayerGenerator(mapModel.PlayerSpawn,
-                mapModel.MapBounds);
+            PlayerGenerator playerGenerator = new PlayerGenerator(mapModel.PlayerSpawn, mapModel.MapBounds);
             FocalPoint = playerGenerator.PlayerSpace;
             var generatedObjects = playerGenerator.Generate();
             var player = generatedObjects.First();

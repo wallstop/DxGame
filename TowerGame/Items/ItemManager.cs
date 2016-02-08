@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
+using ProtoBuf;
 
 namespace DXGame.TowerGame.Items
 {
@@ -18,11 +19,13 @@ namespace DXGame.TowerGame.Items
             update loops. If this changes, we'll have to bake that functionality into the ItemManager 
         </summary>
     */
+
     [DataContract]
     [Serializable]
+    [ProtoContract]
     public class ItemManager : Component
     {
-        [DataMember] private readonly Dictionary<Type, ItemComponent> itemsByType_;
+        [ProtoMember(1)] [DataMember] private readonly Dictionary<Type, ItemComponent> itemsByType_;
 
         public ItemManager()
         {
@@ -30,7 +33,6 @@ namespace DXGame.TowerGame.Items
             MessageHandler.EnableAcceptAll();
             MessageHandler.RegisterMessageHandler<Message>(BroadcastMessageToComponents);
         }
-
 
         private void BroadcastMessageToComponents(Message message)
         {

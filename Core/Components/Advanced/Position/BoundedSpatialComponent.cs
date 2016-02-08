@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Main;
 using Microsoft.Xna.Framework;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Position
 {
@@ -20,13 +19,12 @@ namespace DXGame.Core.Components.Advanced.Position
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class BoundedSpatialComponent : SpatialComponent
     {
         [DataMember]
-        public virtual DxRectangle Bounds
-        {
-            get;
-        }
+        [ProtoMember(1)]
+        public virtual DxRectangle Bounds { get; }
 
         [IgnoreDataMember]
         public override DxVector2 Position
@@ -41,25 +39,21 @@ namespace DXGame.Core.Components.Advanced.Position
                 float y = MathHelper.Clamp(value.Y, bounds.Y, bounds.Y + bounds.Height - height);
                 var newPosition = new DxVector2(x, y);
                 position_ = newPosition;
-                if (newPosition != value)
+                if(newPosition != value)
                 {
                     Parent.BroadcastMessage(new CollisionMessage(value - newPosition, this));
                 }
             }
         }
 
-        protected BoundedSpatialComponent(DxVector2 position, DxVector2 dimensions, DxVector2 xBounds,
-            DxVector2 yBounds)
+        protected BoundedSpatialComponent(DxVector2 position, DxVector2 dimensions, DxVector2 xBounds, DxVector2 yBounds)
             : base(position, dimensions)
         {
             Bounds = new DxRectangle(xBounds.X, xBounds.Y - xBounds.X, yBounds.X, yBounds.Y - yBounds.X);
         }
 
         /* Useful for subclasses that have their own special bound logic */
-        protected BoundedSpatialComponent(DxVector2 position, DxVector2 dimensions)
-            : base(position, dimensions)
-        {
-        }
+        protected BoundedSpatialComponent(DxVector2 position, DxVector2 dimensions) : base(position, dimensions) {}
 
         public new static BoundedSpatialComponentBuilder Builder()
         {

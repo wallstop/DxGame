@@ -156,6 +156,9 @@ namespace DXGame.Core.Components.Network
                 case MessageType.SERVER_DATA_KEYFRAME:
                     demarshall = HandleServerDataKeyframe;
                     break;
+                case MessageType.INVALID:
+                    LOG.Warn($"Received an invalid message ({message}) from a client, ignoring");
+                    return;
                 default:
                     demarshall = HandleUnhandledType;
                     break;

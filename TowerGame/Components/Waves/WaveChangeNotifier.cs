@@ -12,6 +12,7 @@ using DXGame.Main;
 using DXGame.TowerGame.Messaging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ProtoBuf;
 
 namespace DXGame.TowerGame.Components.Waves
 {
@@ -23,27 +24,30 @@ namespace DXGame.TowerGame.Components.Waves
 
     [DataContract]
     [Serializable]
+    [ProtoContract]
     public class WaveChangeNotifier : DrawableComponent
     {
         private static readonly TimeSpan DISPLAY_TIME = TimeSpan.FromSeconds(2.5);
 
         private static readonly string WAVE_TEXT_BASE = "Wave ";
 
-        [DataMember] private TimeSpan lastWaveNotification_;
+        [ProtoMember(1)] [DataMember] private TimeSpan lastWaveNotification_;
 
-        [NonSerialized]
-        [IgnoreDataMember] private SpriteFont spriteFont_;
+        [NonSerialized] [IgnoreDataMember] private SpriteFont spriteFont_;
 
+        [ProtoMember(3)]
         [DataMember]
         private TextComponent WaveText { get; set; }
 
+        [ProtoMember(3)]
         [DataMember]
         private PositionalComponent Position { get; }
 
+        [ProtoMember(4)]
         [DataMember]
         private EventObserver WaveMessageObserver { get; }
 
-        private bool Active => DxGame.Instance.CurrentTime.TotalGameTime < (lastWaveNotification_ + DISPLAY_TIME);
+        private bool Active => DxGame.Instance.CurrentTime.TotalGameTime < lastWaveNotification_ + DISPLAY_TIME;
 
         public WaveChangeNotifier()
         {
@@ -106,8 +110,7 @@ namespace DXGame.TowerGame.Components.Waves
             {
                 return;
             }
-            Color fadedColor = DetermineColorFade(gameTime.TotalGameTime - lastWaveNotification_,
-                DISPLAY_TIME);
+            Color fadedColor = DetermineColorFade(gameTime.TotalGameTime - lastWaveNotification_, DISPLAY_TIME);
             WaveText.DxColor = new DxColor(fadedColor);
             WaveText.Draw(spriteBatch, gameTime);
         }

@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.Serialization;
+using ProtoBuf;
 
 namespace DXGame.Core.Primitives
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public struct DxLine
     {
         [DataMember]
+        [ProtoMember(1)]
         public DxVector2 Start { get; set; }
 
         [DataMember]
+        [ProtoMember(2)]
         public DxVector2 End { get; set; }
 
         public DxVector2 Vector => new DxVector2(End.X - Start.X, End.Y - Start.Y);

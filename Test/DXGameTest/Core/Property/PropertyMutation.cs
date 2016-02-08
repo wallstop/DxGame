@@ -20,7 +20,7 @@ namespace DXGameTest.Core.Property
         [Test]
         public void MultipleMutations()
         {
-            PropertyMutator<int> intMutator = new PropertyMutator<int>((input, count) => input * 2, "SimplePropertyMutator");
+            PropertyMutator<int> intMutator = new PropertyMutator<int>((input, count) => input * (int)Math.Pow(2, count), "SimplePropertyMutator");
 
             const int original = 200;
             // Since we've increased the count, we should be expecting a much larger number than the original (5x larger, in fact!)

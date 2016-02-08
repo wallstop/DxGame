@@ -3,13 +3,14 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
-using DXGame.Core.Utils;
 using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class CollisionDestructibleComponent : Component
     {
         public CollisionDestructibleComponent(DxGame game)
@@ -19,7 +20,7 @@ namespace DXGame.Core.Components.Advanced
 
         protected void HandleCollision(CollisionMessage collisionMessage)
         {
-            if (collisionMessage.CollisionDirections.Any())
+            if(collisionMessage.CollisionDirections.Any())
             {
                 DxGame.Instance.RemoveGameObject(Parent);
             }

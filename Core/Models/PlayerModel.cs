@@ -6,18 +6,22 @@ using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using NLog;
+using ProtoBuf;
 
 namespace DXGame.Core.Models
 {
     [DataContract]
     [Serializable]
+    [ProtoContract]
     public class PlayerModel : Model
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
+        [ProtoMember(1)]
         [DataMember]
         public Player ActivePlayer { get; private set; }
 
+        [ProtoMember(2)]
         [DataMember]
         public ICollection<Player> Players { get; private set; } = new List<Player>();
 
@@ -26,16 +30,16 @@ namespace DXGame.Core.Models
             MessageHandler.RegisterMessageHandler<MapRotationNotification>(HandleMapRotationNotification);
         }
 
-
         private void HandleMapRotationNotification(MapRotationNotification mapRotationNotification)
         {
             MapModel mapModel = DxGame.Instance.Model<MapModel>();
             DxVector2 playerSpawn = mapModel.PlayerSpawn;
-            foreach (Player player in Players)
+            foreach(Player player in Players)
             {
                 player.Position.Position = playerSpawn;
             }
         }
+
         /* 
             Do we need this distinction?
         */
@@ -58,7 +62,7 @@ namespace DXGame.Core.Models
 
             LOG.Info("Initialized ");
             Players = players;
-            if (Check.IsNotNullOrDefault(ActivePlayer))
+            if(Check.IsNotNullOrDefault(ActivePlayer))
             {
                 Players.Add(ActivePlayer);
             }

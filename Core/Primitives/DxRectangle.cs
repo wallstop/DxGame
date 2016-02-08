@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
-using System.Windows.Forms;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
+using ProtoBuf;
 
 namespace DXGame.Core.Primitives
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public struct DxRectangle : IEquatable<DxRectangle>, IEquatable<Rectangle>, IShape
     {
         private const float TOLERANCE = 0.000001f;
-        [DataMember] public float Height;
-        [DataMember] public float Width;
-        [DataMember] public float X;
-        [DataMember] public float Y;
+        [DataMember] [ProtoMember(1)] public float Height;
+        [DataMember] [ProtoMember(2)] public float Width;
+        [DataMember] [ProtoMember(3)] public float X;
+        [DataMember] [ProtoMember(4)] public float Y;
         public float Area => Width * Height;
         public static DxRectangle EmptyRectangle => new DxRectangle();
         public float Left => X;
@@ -35,10 +35,10 @@ namespace DXGame.Core.Primitives
                 |
             III | IV
         */
-        public DxRectangle QuadrantOne => new DxRectangle(X + (Width / 2), Y, Width / 2, Height / 2);
+        public DxRectangle QuadrantOne => new DxRectangle(X + Width / 2, Y, Width / 2, Height / 2);
         public DxRectangle QuadrantTwo => new DxRectangle(X, Y, Width / 2, Height / 2);
-        public DxRectangle QuadrantThree => new DxRectangle(X, Y + (Height / 2), Width / 2, Height / 2);
-        public DxRectangle QuadrantFour => new DxRectangle(X + (Width / 2), Y + (Height / 2), Width / 2, Height / 2);
+        public DxRectangle QuadrantThree => new DxRectangle(X, Y + Height / 2, Width / 2, Height / 2);
+        public DxRectangle QuadrantFour => new DxRectangle(X + Width / 2, Y + Height / 2, Width / 2, Height / 2);
 
         public DxLine LeftBorder => new DxLine(X, Y, X, Y + Height);
         public DxLine RightBorder => new DxLine(X + Width, Y, X + Width, Y + Height);
@@ -52,7 +52,7 @@ namespace DXGame.Core.Primitives
             get
             {
                 const int numLines = 4;
-                var lines = new List<DxLine>(numLines) { TopBorder, BottomBorder, LeftBorder, RightBorder};
+                var lines = new List<DxLine>(numLines) {TopBorder, BottomBorder, LeftBorder, RightBorder};
                 return lines;
             }
         }
@@ -82,9 +82,7 @@ namespace DXGame.Core.Primitives
         }
 
         public DxRectangle(double x, double y, double width, double height)
-            : this((float)x, (float)y, (float)width, (float)height)
-        {
-        }
+            : this((float) x, (float) y, (float) width, (float) height) {}
 
         public bool Equals(DxRectangle rhs)
         {
@@ -118,10 +116,9 @@ namespace DXGame.Core.Primitives
 
         public static bool operator ==(DxRectangle lhs, DxRectangle rhs)
         {
-            return lhs.X.FuzzyCompare(rhs.X, TOLERANCE) == 0
-                   && lhs.Y.FuzzyCompare(rhs.Y, TOLERANCE) == 0
-                   && lhs.Width.FuzzyCompare(rhs.Width, TOLERANCE) == 0
-                   && lhs.Height.FuzzyCompare(rhs.Height, TOLERANCE) == 0;
+            return lhs.X.FuzzyCompare(rhs.X, TOLERANCE) == 0 && lhs.Y.FuzzyCompare(rhs.Y, TOLERANCE) == 0 &&
+                   lhs.Width.FuzzyCompare(rhs.Width, TOLERANCE) == 0 &&
+                   lhs.Height.FuzzyCompare(rhs.Height, TOLERANCE) == 0;
         }
 
         public static bool operator !=(DxRectangle lhs, DxRectangle rhs)
@@ -168,7 +165,7 @@ namespace DXGame.Core.Primitives
 
         public bool Contains(float x, float y)
         {
-            return X <= x && x < (X + Width) && Y <= y && y < (Y + Height);
+            return X <= x && x < X + Width && Y <= y && y < Y + Height;
         }
 
         public bool Contains(DxVector2 point)
@@ -201,11 +198,11 @@ namespace DXGame.Core.Primitives
             var numXSections = Width / maxWidth;
             var numYSections = Height / maxHeight;
             List<DxRectangle> dividedRegions = new List<DxRectangle>((int) Math.Max(1, numXSections * numYSections));
-            for (int i = 0; i < numXSections; ++i)
+            for(int i = 0; i < numXSections; ++i)
             {
                 float startX = X + maxWidth * i;
                 float endX = X + Math.Min(maxWidth * (i + 1), Width);
-                for (int j = 0; j < numYSections; ++j)
+                for(int j = 0; j < numYSections; ++j)
                 {
                     float startY = Y + maxHeight * j;
                     float endY = Y + Math.Min(maxHeight * (j + 1), Height);
@@ -225,7 +222,7 @@ namespace DXGame.Core.Primitives
 
         private static void Intersect(DxRectangle lhs, DxRectangle rhs, out DxRectangle output)
         {
-            if (lhs.Intersects(rhs))
+            if(lhs.Intersects(rhs))
             {
                 float widthDifference = Math.Min(lhs.X + lhs.Width, rhs.X + rhs.Width);
                 float x = Math.Max(lhs.X, rhs.X);
@@ -248,7 +245,7 @@ namespace DXGame.Core.Primitives
 
         private static void Intersect(DxRectangle lhs, Rectangle rhs, out DxRectangle output)
         {
-            if (lhs.Intersects(rhs))
+            if(lhs.Intersects(rhs))
             {
                 float widthDifference = Math.Min(lhs.X + lhs.Width, rhs.X + rhs.Width);
                 float x = Math.Max(lhs.X, rhs.X);
@@ -269,7 +266,7 @@ namespace DXGame.Core.Primitives
                 var rectangle = (DxRectangle) rhs;
                 return Equals(rectangle);
             }
-            catch (Exception)
+            catch(Exception)
             {
                 // Suprress any class cast exceptions
             }
@@ -284,15 +281,7 @@ namespace DXGame.Core.Primitives
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hash = 17;
-                hash = hash * 23 + X.GetHashCode();
-                hash = hash * 23 + Y.GetHashCode();
-                hash = hash * 23 + Width.GetHashCode();
-                hash = hash * 23 + Height.GetHashCode();
-                return hash;
-            }
+            return Objects.HashCode(X, Y, Width, Height);
         }
     }
 }

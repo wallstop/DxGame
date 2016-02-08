@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Command
 {
@@ -31,6 +31,7 @@ namespace DXGame.Core.Components.Advanced.Command
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class PlayerInputListener : AbstractCommandComponent
     {
         // TODO: Configify (this should be in player properties or some shit)
@@ -38,7 +39,7 @@ namespace DXGame.Core.Components.Advanced.Command
 
         [IgnoreDataMember] private List<ActionCheck> cachedActionChecks_;
 
-        [DataMember] private TimeSpan lastDroppedThroughPlatform_ = TimeSpan.FromSeconds(0);
+        [DataMember] [ProtoMember(1)] private TimeSpan lastDroppedThroughPlatform_ = TimeSpan.FromSeconds(0);
 
         private IEnumerable<ActionCheck> ActionChecks
         {

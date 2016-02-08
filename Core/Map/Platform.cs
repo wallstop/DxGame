@@ -4,9 +4,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced;
-using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
+using ProtoBuf;
 
 namespace DXGame.Core.Map
 {
@@ -18,6 +18,7 @@ namespace DXGame.Core.Map
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class Platform
     {
         public static readonly ReadOnlyDictionary<PlatformType, ReadOnlyCollection<CollidableDirection>>
@@ -28,9 +29,7 @@ namespace DXGame.Core.Map
                         {
                             PlatformType.Block,
                             new ReadOnlyCollection<CollidableDirection>(
-                                Enum.GetValues(typeof (CollidableDirection))
-                                    .ToEnumerable<CollidableDirection>()
-                                    .ToList())
+                                Enum.GetValues(typeof(CollidableDirection)).ToEnumerable<CollidableDirection>().ToList())
                         },
                         {
                             PlatformType.Platform,
@@ -40,18 +39,18 @@ namespace DXGame.Core.Map
                     });
 
         [DataMember]
+        [ProtoMember(1)]
         public PlatformType Type { get; set; }
 
         [DataMember]
+        [ProtoMember(2)]
         public DxRectangle BoundingBox { get; set; }
 
         [IgnoreDataMember]
         public IEnumerable<CollidableDirection> CollidableDirections => PLATFORM_COLLISIONS[Type];
 
         /* Only necessary for JSON Serialization */
-        private Platform()
-        {
-        }
+        private Platform() {}
 
         public Platform(Platform copy)
         {
@@ -69,7 +68,7 @@ namespace DXGame.Core.Map
         public override bool Equals(object other)
         {
             var platform = other as Platform;
-            if (ReferenceEquals(platform, null))
+            if(ReferenceEquals(platform, null))
             {
                 return false;
             }

@@ -4,17 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
+using ProtoBuf;
 
 namespace DXGame.Core.DataStructures
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class SortedList<T> : IList<T>
     {
-        [DataMember]
-        private readonly IComparer<T> comparer_;
-        [DataMember]
-        private readonly List<T> list_;
+        [DataMember] [ProtoMember(1)] private readonly IComparer<T> comparer_;
+        [DataMember] [ProtoMember(2)] private readonly List<T> list_;
 
         public SortedList()
         {
@@ -40,8 +40,7 @@ namespace DXGame.Core.DataStructures
             list_ = new List<T>(copy.list_);
         }
 
-        public SortedList(IEnumerable<T> collection)
-            : this(collection?.Count() ?? 0)
+        public SortedList(IEnumerable<T> collection) : this(collection?.Count() ?? 0)
         {
             var collectionAsArray = collection.ToArray();
             Array.Sort(collectionAsArray, comparer_);
@@ -61,7 +60,7 @@ namespace DXGame.Core.DataStructures
         public void Add(T item)
         {
             int index = list_.BinarySearch(item, comparer_);
-            if (index < 0)
+            if(index < 0)
             {
                 index = ~index;
             }
@@ -124,7 +123,7 @@ namespace DXGame.Core.DataStructures
 
         public void RemoveBelow(T item)
         {
-            while (Count > 0 && comparer_.Compare(list_[0], item) < 0)
+            while(Count > 0 && comparer_.Compare(list_[0], item) < 0)
             {
                 RemoveAt(0);
             }
@@ -132,7 +131,7 @@ namespace DXGame.Core.DataStructures
 
         public void RemoveAbove(T item)
         {
-            while (Count > 0 && comparer_.Compare(list_[Count - 1], item) > 0)
+            while(Count > 0 && comparer_.Compare(list_[Count - 1], item) > 0)
             {
                 RemoveAt(Count - 1);
             }

@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using ProtoBuf;
 
 namespace DXGame.Core.Network
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class ClientConnectionRequest : NetworkMessage
     {
-        [DataMember] public string PlayerName = "";
+        [DataMember] [ProtoMember(1)] public string PlayerName = "";
 
         public ClientConnectionRequest()
         {

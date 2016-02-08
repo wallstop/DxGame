@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DXGame.Core.Components.Advanced.Impulse;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Utils;
-using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Behavior
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class BehaviorComponent : Component
     {
+        [DataMember]
+        [ProtoMember(1)]
         public Team Team { get; }
 
         protected BehaviorComponent(Team team)
@@ -30,7 +32,7 @@ namespace DXGame.Core.Components.Advanced.Behavior
             public BehaviorComponent Build()
             {
                 Validate.IsNotNull(team_, StringUtils.GetFormattedNullOrDefaultMessage(this, team_));
-                
+
                 return new BehaviorComponent(team_);
             }
 
@@ -39,7 +41,6 @@ namespace DXGame.Core.Components.Advanced.Behavior
                 team_ = team;
                 return this;
             }
-
         }
     }
 }

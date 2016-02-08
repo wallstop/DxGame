@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
-using DXGame.Main;
 using NLog;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Position
 {
@@ -15,10 +14,12 @@ namespace DXGame.Core.Components.Advanced.Position
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class SpatialComponent : PositionalComponent
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
+        [ProtoMember(1)]
         [DataMember]
         public DxVector2 Dimensions { get; }
 
@@ -39,8 +40,7 @@ namespace DXGame.Core.Components.Advanced.Position
 
         public virtual DxVector2 Center => position_ + Dimensions / 2.0f;
 
-        protected SpatialComponent(DxVector2 position, DxVector2 dimensions)
-            : base(position)
+        protected SpatialComponent(DxVector2 position, DxVector2 dimensions) : base(position)
         {
             Dimensions = dimensions;
         }

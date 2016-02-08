@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using ProtoBuf;
 
 namespace DXGame.Core.Primitives
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public struct DxDegree
     {
-        [DataMember] public float Value;
+        [DataMember] [ProtoMember(1)] public float Value;
 
         public DxRadian DxRadian => new DxRadian(this);
         public DxVector2 UnitVector => DxRadian.UnitVector;
 
-        public DxDegree(double value)
-            : this((float) value)
-        {
-        }
+        public DxDegree(double value) : this((float) value) {}
 
         public DxDegree(float value)
         {

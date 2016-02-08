@@ -1,14 +1,11 @@
-﻿using DXGame.Core.Components.Basic;
+﻿using System;
+using System.Runtime.Serialization;
+using DXGame.Core.Components.Basic;
+using DXGame.Core.Messaging;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using DXGame.Core.Primitives;
-using DXGame.Core.Messaging;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Map
 {
@@ -16,23 +13,21 @@ namespace DXGame.Core.Components.Advanced.Map
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class MapRotationTriggerComponent : Component
     {
         [DataMember]
-        public bool Triggered
-        {
-            get; private set;
-        }
+        [ProtoMember(1)]
+        public bool Triggered { get; private set; }
 
         [DataMember]
-        private MapRotationTrigger Trigger
-        {
-            get;
-        }
+        [ProtoMember(1)]
+        private MapRotationTrigger Trigger { get; }
 
         public MapRotationTriggerComponent(MapRotationTrigger mapRotationTrigger, bool triggered = false)
         {
-            Validate.IsNotNull(mapRotationTrigger, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(mapRotationTrigger)));
+            Validate.IsNotNull(mapRotationTrigger,
+                StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(mapRotationTrigger)));
             Trigger = mapRotationTrigger;
             Triggered = triggered;
         }
@@ -45,11 +40,10 @@ namespace DXGame.Core.Components.Advanced.Map
                 if(shouldTrigger)
                 {
                     MapRotationRequest mapRotationRequest = new MapRotationRequest();
-                    DxGame.Instance.BroadcastMessage<MapRotationRequest>(mapRotationRequest);
+                    DxGame.Instance.BroadcastMessage(mapRotationRequest);
                 }
                 Triggered = shouldTrigger;
             }
         }
-
     }
 }

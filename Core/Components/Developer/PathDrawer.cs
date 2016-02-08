@@ -11,11 +11,13 @@ using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Developer
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class PathDrawer : DrawableComponent
     {
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)

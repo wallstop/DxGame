@@ -3,11 +3,13 @@ using System.IO;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using NLog;
+using ProtoBuf;
 
 namespace DXGame.Core
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public abstract class JsonPersistable<T> : IPersistable<T>
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();

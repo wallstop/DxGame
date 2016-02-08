@@ -13,11 +13,13 @@ using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
+using ProtoBuf;
 
 namespace DXGame.Core.Map
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class Map : DrawableComponent
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
@@ -25,6 +27,7 @@ namespace DXGame.Core.Map
         [NonSerialized] [IgnoreDataMember] private Dictionary<Texture2D, int> mapTexturesAndLayers_;
 
         [DataMember]
+        [ProtoMember(1)]
         public MapDescriptor MapDescriptor { get; private set; }
 
         [IgnoreDataMember]
@@ -34,9 +37,11 @@ namespace DXGame.Core.Map
         public Dictionary<Texture2D, int> MapTexturesAndLayers => mapTexturesAndLayers_;
 
         [DataMember]
+        [ProtoMember(2)]
         public ISpatialTree<MapCollidableComponent> Collidables { get; private set; }
 
         [DataMember]
+        [ProtoMember(3)]
         public DxVector2 PlayerSpawn { get; private set; }
 
         public DxRectangle RandomSpawnLocation

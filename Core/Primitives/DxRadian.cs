@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
+using ProtoBuf;
 
 namespace DXGame.Core.Primitives
 {
@@ -23,25 +23,23 @@ namespace DXGame.Core.Primitives
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public struct DxRadian : IEquatable<DxRadian>
     {
         public static DxRadian East => new DxRadian(3 * Math.PI / 2);
         public static DxRadian South => new DxRadian(Math.PI);
-        public static DxRadian West => new DxRadian( Math.PI / 2);
+        public static DxRadian West => new DxRadian(Math.PI / 2);
         public static DxRadian North => new DxRadian(0);
         public static float MinValue => 0.0f;
-        public static float MaxValue => (float)Math.PI * 2;
+        public static float MaxValue => (float) Math.PI * 2;
 
-        [DataMember] public float Value;
+        [DataMember] [ProtoMember(1)] public float Value;
         public DxDegree Degree => new DxDegree(this);
         /* Note: Math.(cool trig methods) are based around radians, not degrees */
         /* What the shit? http://stackoverflow.com/questions/2276855/xna-2d-vector-angles-whats-the-correct-way-to-calculate */
         public DxVector2 UnitVector => new DxVector2((float) Math.Sin(Value), -(float) Math.Cos(Value));
 
-        public DxRadian(double value)
-            : this((float) (value))
-        {
-        }
+        public DxRadian(double value) : this((float) value) {}
 
         public DxRadian(float value)
         {
@@ -63,7 +61,7 @@ namespace DXGame.Core.Primitives
             Value = (float) Math.Atan2(vector.X, -vector.Y);
         }
 
-        public static DxRadian operator*(DxRadian radian, double scalar)
+        public static DxRadian operator *(DxRadian radian, double scalar)
         {
             return new DxRadian(radian.Value * scalar);
         }
@@ -100,7 +98,7 @@ namespace DXGame.Core.Primitives
 
         public override bool Equals(object other)
         {
-            if (other is DxRadian)
+            if(other is DxRadian)
             {
                 return Equals((DxRadian) other);
             }

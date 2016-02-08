@@ -49,7 +49,7 @@ namespace DXGame.Main
         public GameElementCollection NewGameElements { get; } = new GameElementCollection();
         public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
 
-        public DxGameTime CurrentTime { get; private set; }
+        public DxGameTime CurrentTime { get; private set; } = new DxGameTime();
 
         public UpdateMode UpdateMode { get; set; } = UpdateMode.Active;
 

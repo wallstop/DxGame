@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Physics
 {
@@ -11,12 +12,14 @@ namespace DXGame.Core.Components.Advanced.Physics
             Just like a PhysicsComponent, except that no forces can affect it (after the initial forces)
         </summary>
     */
+
     [DataContract]
     [Serializable]
+    [ProtoContract]
     public class UnforcablePhysicsComponent : PhysicsComponent
     {
-        public UnforcablePhysicsComponent(DxVector2 velocity, DxVector2 acceleration, SpatialComponent position, UpdatePriority updatePriority) 
-            : base(velocity, acceleration, position, updatePriority) {}
+        public UnforcablePhysicsComponent(DxVector2 velocity, DxVector2 acceleration, SpatialComponent position,
+            UpdatePriority updatePriority) : base(velocity, acceleration, position, updatePriority) {}
 
         public override void AttachForce(Force force)
         {
@@ -32,8 +35,7 @@ namespace DXGame.Core.Components.Advanced.Physics
         {
             public override PhysicsComponent Build()
             {
-                var physics = new UnforcablePhysicsComponent(velocity_, acceleration_, space_,
-                    updatePriority_);
+                var physics = new UnforcablePhysicsComponent(velocity_, acceleration_, space_, updatePriority_);
                 foreach(Force force in forces_)
                 {
                     physics.forces_.Add(force);

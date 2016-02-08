@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
-using DXGame.Core.Utils;
 using DXGame.Main;
 using NLog;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Basic
 {
@@ -59,14 +58,17 @@ namespace DXGame.Core.Components.Basic
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public abstract class Component : IIdentifiable, IComparable<Component>, IProcessable, IDisposable
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        [DataMember] protected bool initialized_;
+        [ProtoMember(1)] [DataMember] protected bool initialized_;
 
+        [ProtoMember(2)]
         [DataMember]
         public MessageHandler MessageHandler { get; protected set; } = new MessageHandler();
 
+        [ProtoMember(3)]
         [DataMember]
         public GameObject Parent { get; set; }
 
@@ -83,9 +85,11 @@ namespace DXGame.Core.Components.Basic
             return UpdatePriority.CompareTo(other?.UpdatePriority);
         }
 
+        [ProtoMember(4)]
         [DataMember]
         public UniqueId Id { get; } = new UniqueId();
 
+        [ProtoMember(5)]
         [DataMember]
         public UpdatePriority UpdatePriority { protected set; get; }
 
@@ -117,21 +121,17 @@ namespace DXGame.Core.Components.Basic
             DxGame.Instance.RemoveComponent(this);
         }
 
-        protected virtual void Update(DxGameTime gameTime)
-        {
-        }
+        protected virtual void Update(DxGameTime gameTime) {}
 
         public virtual void Initialize()
         {
-            if (!initialized_)
+            if(!initialized_)
             {
                 initialized_ = true;
             }
         }
 
-        public virtual void LoadContent()
-        {
-        }
+        public virtual void LoadContent() {}
 
         [OnDeserialized]
         private void BaseDeSerialize(StreamingContext context)
@@ -139,6 +139,7 @@ namespace DXGame.Core.Components.Basic
             DeSerialize();
         }
 
+        [ProtoAfterDeserialization]
         protected virtual void DeSerialize()
         {
             Initialize(); // Left as an exercise to the reader to determine specific behavior (wat)

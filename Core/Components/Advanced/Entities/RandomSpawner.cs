@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Entities
 {
@@ -17,11 +13,14 @@ namespace DXGame.Core.Components.Advanced.Entities
             A spawner that repositions the spawn location of every entity to somewhere (hopefully) reachable on the map
         </summary>
     */
+
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class RandomSpawner : Spawner
     {
-        protected override DxRectangle SpawnArea {
+        protected override DxRectangle SpawnArea
+        {
             get
             {
                 MapModel mapModel = DxGame.Instance.Model<MapModel>();
@@ -29,17 +28,14 @@ namespace DXGame.Core.Components.Advanced.Entities
             }
         }
 
-        public RandomSpawner(DxRectangle spawnArea, SpawnTrigger spawnTrigger) 
-            : base(spawnArea, spawnTrigger)
-        {
-        }
+        public RandomSpawner(DxRectangle spawnArea, SpawnTrigger spawnTrigger) : base(spawnArea, spawnTrigger) {}
 
         public new static RandomSpawnerBuilder Builder()
         {
             return new RandomSpawnerBuilder();
         }
 
-        public class RandomSpawnerBuilder : Spawner.SpawnerBuilder
+        public class RandomSpawnerBuilder : SpawnerBuilder
         {
             public override Spawner Build()
             {

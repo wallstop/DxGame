@@ -7,22 +7,30 @@ using DXGame.Core.Components.Advanced.Triggers;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Events;
 using DXGame.Core.Messaging;
-using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Level
 {
     [DataContract]
     [Serializable]
+    [ProtoContract]
     public class Level : Component
     {
-        private readonly ManagerComponent entityManager_ = new ManagerComponent();
+        [DataMember] [ProtoMember(1)] private readonly ManagerComponent entityManager_ = new ManagerComponent();
+
+        [DataMember]
+        [ProtoMember(2)]
         public Map.Map Map { get; }
 
+        [DataMember]
+        [ProtoMember(3)]
         public TimeSpan LevelTime { get; private set; }
 
+        [DataMember]
+        [ProtoMember(4)]
         public List<Spawner> Spawners { get; }
 
         private Level(Map.Map map, IEnumerable<Spawner> spawners)

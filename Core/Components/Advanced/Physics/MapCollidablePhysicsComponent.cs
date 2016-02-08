@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Components.Advanced.Position;
-using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Utils;
 using DXGame.Core.Map;
 using DXGame.Core.Messaging;
@@ -13,26 +12,26 @@ using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
 using DXGame.Main;
-using NLog;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Physics
 {
     [DataContract]
     [Serializable]
+    [ProtoContract]
     public class MapCollidablePhysicsComponent : PhysicsComponent
     {
         private const int MAX_COLLISION_CHECKS = 20;
         private static readonly DxRectangleAreaComparer DXRECTANGLE_AREA_COMPARER = new DxRectangleAreaComparer();
         private static readonly TimeSpan IGNORE_EXPIRY = TimeSpan.FromMilliseconds(30);
 
-        [DataMember] private readonly List<Tuple<MapCollidableComponent, TimeSpan>> mapTilesToIgnore_ =
+        [ProtoMember(1)] [DataMember] private readonly List<Tuple<MapCollidableComponent, TimeSpan>> mapTilesToIgnore_ =
             new List<Tuple<MapCollidableComponent, TimeSpan>>();
 
         private DxVector2 Dimensions => space_.Dimensions;
 
-        protected MapCollidablePhysicsComponent(DxVector2 velocity, DxVector2 acceleration,
-            SpatialComponent space, UpdatePriority updatePriority)
-            : base(velocity, acceleration, space, updatePriority)
+        protected MapCollidablePhysicsComponent(DxVector2 velocity, DxVector2 acceleration, SpatialComponent space,
+            UpdatePriority updatePriority) : base(velocity, acceleration, space, updatePriority)
         {
             MessageHandler.RegisterMessageHandler<DropThroughPlatformRequest>(HandleDropThroughPlatformRequest);
         }
@@ -61,6 +60,7 @@ namespace DXGame.Core.Components.Advanced.Physics
             this allows us the freedom of "fuzzier" collision detection. IE, the case when we have a REALLY
             long frame that we end up traveling VERY far in, like, through the map.
         */
+
         private DxRectangle CollisionSpace(DxLine travelArc)
         {
             var startX = Math.Min(travelArc.Start.X, travelArc.End.X);
@@ -88,15 +88,15 @@ namespace DXGame.Core.Components.Advanced.Physics
 
             List<MapCollidableComponent> mapTiles = map.Map.Collidables.InRange(collisionSpace);
             mapTilesToIgnore_.RemoveAll(
-                mapTile => !mapTiles.Contains(mapTile.Item1) && (mapTile.Item2 + IGNORE_EXPIRY) < gameTime.TotalGameTime);
+                mapTile => !mapTiles.Contains(mapTile.Item1) && mapTile.Item2 + IGNORE_EXPIRY < gameTime.TotalGameTime);
 
             var collision = new CollisionMessage();
 
             // TODO: Properly handle buggy collisions (failsafe for now)
-            for (int i = 0; i < MAX_COLLISION_CHECKS; ++i)
+            for(int i = 0; i < MAX_COLLISION_CHECKS; ++i)
             {
                 var largestIntersectionTuple = FindLargestIntersection(mapTiles, collisionSpace, previousPosition);
-                if (largestIntersectionTuple == null)
+                if(largestIntersectionTuple == null)
                 {
                     break;
                 }
@@ -106,17 +106,19 @@ namespace DXGame.Core.Components.Advanced.Physics
                 var mapBlockDimensions = mapSpatial.Spatial.Dimensions;
                 const float dimensionScalar = 0.9f;
                 var direction = traveledLine.Vector;
-                if(mapSpatial.CollidesWith(direction) && !mapTilesToIgnore_.Any(spatial => Equals(spatial.Item1, mapSpatial)))
+                if(mapSpatial.CollidesWith(direction) &&
+                   !mapTilesToIgnore_.Any(spatial => Equals(spatial.Item1, mapSpatial)))
                 {
                     if(largestIntersection.Width >= largestIntersection.Height || Velocity.X.FuzzyCompare(0, 0.01f) == 0)
                     {
-                        if((previousPosition.Y  + dimensionScalar * Dimensions.Y) <= mapBlockPosition.Y && mapSpatial.CollidableDirections.Contains(CollidableDirection.Up))
+                        if(previousPosition.Y + dimensionScalar * Dimensions.Y <= mapBlockPosition.Y &&
+                           mapSpatial.CollidableDirections.Contains(CollidableDirection.Up))
                         {
                             Position = new DxVector2(Position.X, mapBlockPosition.Y - Dimensions.Y);
                             collision.CollisionDirections[Direction.South] = mapSpatial;
                         }
-                        else if (previousPosition.Y >= (mapBlockPosition.Y + dimensionScalar * mapBlockDimensions.Y) &&
-                                 mapSpatial.CollidableDirections.Contains(CollidableDirection.Down))
+                        else if(previousPosition.Y >= mapBlockPosition.Y + dimensionScalar * mapBlockDimensions.Y &&
+                                mapSpatial.CollidableDirections.Contains(CollidableDirection.Down))
                         {
                             Position = new DxVector2(Position.X, mapBlockPosition.Y + mapBlockDimensions.Y);
                             collision.CollisionDirections[Direction.North] = mapSpatial;
@@ -128,12 +130,14 @@ namespace DXGame.Core.Components.Advanced.Physics
                     }
                     else
                     {
-                        if((previousPosition.X >= (mapBlockPosition.X + dimensionScalar * mapBlockDimensions.X) && mapSpatial.CollidableDirections.Contains(CollidableDirection.Right)))
+                        if(previousPosition.X >= mapBlockPosition.X + dimensionScalar * mapBlockDimensions.X &&
+                           mapSpatial.CollidableDirections.Contains(CollidableDirection.Right))
                         {
                             Position = new DxVector2(mapBlockPosition.X + mapBlockDimensions.X, Position.Y);
                             collision.CollisionDirections[Direction.West] = mapSpatial;
                         }
-                        else if((previousPosition.X + dimensionScalar * Dimensions.X) <= mapBlockPosition.X && mapSpatial.CollidableDirections.Contains(CollidableDirection.Left))
+                        else if(previousPosition.X + dimensionScalar * Dimensions.X <= mapBlockPosition.X &&
+                                mapSpatial.CollidableDirections.Contains(CollidableDirection.Left))
                         {
                             Position = new DxVector2(mapBlockPosition.X - Dimensions.X, Position.Y);
                             collision.CollisionDirections[Direction.West] = mapSpatial;
@@ -155,27 +159,26 @@ namespace DXGame.Core.Components.Advanced.Physics
             }
 
             // Let everyone else know we collided (only if we collided with anything)
-            if (collision.CollisionDirections.Any())
+            if(collision.CollisionDirections.Any())
             {
                 Parent?.BroadcastMessage(collision);
             }
         }
 
         private static Tuple<DxRectangle, MapCollidableComponent> FindLargestIntersection(
-            IEnumerable<MapCollidableComponent> mapTiles,
-            DxRectangle currentSpace, DxVector2 originalSpace)
+            IEnumerable<MapCollidableComponent> mapTiles, DxRectangle currentSpace, DxVector2 originalSpace)
         {
             Tuple<DxRectangle, MapCollidableComponent> largestIntersection = null;
-            foreach (var mapTile in mapTiles)
+            foreach(var mapTile in mapTiles)
             {
-                if (!currentSpace.Intersects(mapTile.Spatial.Space))
+                if(!currentSpace.Intersects(mapTile.Spatial.Space))
                 {
                     continue;
                 }
                 // There's a bug here that causes like infinite collision detection, fix pls
                 DxRectangle intersection = DxRectangle.Intersect(mapTile.Spatial.Space, currentSpace);
-                if (largestIntersection == null || DXRECTANGLE_AREA_COMPARER.Compare(intersection,
-                    largestIntersection.Item1) <= 0)
+                if(largestIntersection == null ||
+                   DXRECTANGLE_AREA_COMPARER.Compare(intersection, largestIntersection.Item1) <= 0)
                 {
                     largestIntersection = Tuple.Create(intersection, mapTile);
                 }
@@ -188,7 +191,7 @@ namespace DXGame.Core.Components.Advanced.Physics
             public override PhysicsComponent Build()
             {
                 var physics = new MapCollidablePhysicsComponent(velocity_, acceleration_, space_, updatePriority_);
-                foreach (var force in forces_)
+                foreach(var force in forces_)
                 {
                     physics.AttachForce(force);
                 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.DataStructures;
+using ProtoBuf;
 
 namespace DXGame.Core.Utils
 {
@@ -18,19 +19,20 @@ namespace DXGame.Core.Utils
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class GameElementCollection : IEnumerable
         /* Should we deal with having this implement the ICollection interface? */
     {
-        [DataMember]
-        private readonly SortedList<IDrawable> drawables_;
+        [ProtoMember(1)] [DataMember] private readonly SortedList<IDrawable> drawables_;
 
-        [DataMember]
-        private readonly SortedList<IProcessable> processables_;
+        [ProtoMember(3)] [DataMember] private readonly SortedList<IProcessable> processables_;
 
         [IgnoreDataMember]
         public int Count => processables_.Count;
+
         [IgnoreDataMember]
         public IEnumerable<IProcessable> Processables => processables_;
+
         [IgnoreDataMember]
         public IEnumerable<IDrawable> Drawables => drawables_;
 
@@ -51,11 +53,11 @@ namespace DXGame.Core.Utils
         {
             // TODO: Make this not suck
             var allOwnedElements = new HashSet<object>();
-            foreach (var processable in processables_.Where(processable => !allOwnedElements.Contains(processable)))
+            foreach(var processable in processables_.Where(processable => !allOwnedElements.Contains(processable)))
             {
                 allOwnedElements.Add(processable);
             }
-            foreach (var drawable in drawables_.Where(drawable => !allOwnedElements.Contains(drawable)))
+            foreach(var drawable in drawables_.Where(drawable => !allOwnedElements.Contains(drawable)))
             {
                 allOwnedElements.Add(drawable);
             }
@@ -72,13 +74,13 @@ namespace DXGame.Core.Utils
         public void Add(object component)
         {
             IProcessable processable = component as IProcessable;
-            if (processable != null)
+            if(processable != null)
             {
                 processables_.Add(processable);
             }
 
             IDrawable drawable = component as IDrawable;
-            if (drawable != null)
+            if(drawable != null)
             {
                 drawables_.Add(drawable);
             }
@@ -93,13 +95,13 @@ namespace DXGame.Core.Utils
         public void Remove(object component)
         {
             IProcessable processable = component as IProcessable;
-            if (processable != null)
+            if(processable != null)
             {
                 processables_.Remove(processable);
             }
 
             IDrawable drawable = component as IDrawable;
-            if (drawable != null)
+            if(drawable != null)
             {
                 drawables_.Remove(drawable);
             }

@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Triggers
 {
@@ -16,6 +17,7 @@ namespace DXGame.Core.Components.Advanced.Triggers
 
     [DataContract]
     [Serializable]
+    [ProtoContract]
     public class TimedTriggeredActionComponent<T> : TriggeredActionComponent<T>
     {
         public TimedTriggeredActionComponent(TimeSpan duration, TimeSpan tickRate, T source, Action<T> action)
@@ -33,6 +35,7 @@ namespace DXGame.Core.Components.Advanced.Triggers
 
     [DataContract]
     [Serializable]
+    [ProtoContract]
     public class TimedTriggeredActionComponent : TriggeredActionComponent
     {
         public TimedTriggeredActionComponent(TimeSpan duration, TimeSpan tickRate, Action action)
@@ -44,10 +47,12 @@ namespace DXGame.Core.Components.Advanced.Triggers
 
     [DataContract]
     [Serializable]
+    [ProtoContract]
     internal sealed class TickRate
     {
-        [DataMember] private TimeSpan lastTicked_;
+        [ProtoMember(1)] [DataMember] private TimeSpan lastTicked_;
 
+        [ProtoMember(2)]
         [DataMember]
         private TimeSpan Rate { get; }
 
@@ -73,8 +78,10 @@ namespace DXGame.Core.Components.Advanced.Triggers
 
     [DataContract]
     [Serializable]
+    [ProtoContract]
     internal sealed class EndTrigger
     {
+        [ProtoMember(1)]
         [DataMember]
         private TimeSpan Duration { get; }
 

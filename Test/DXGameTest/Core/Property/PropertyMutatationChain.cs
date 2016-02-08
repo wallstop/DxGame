@@ -87,7 +87,7 @@ namespace DXGameTest.Core.Property
             const string propertyName = "TestIntegerProperty";
             Property<int> property = new Property<int>(baseValue, propertyName);
 
-            var mutator = new PropertyMutator<int>((input, count) => input + 1, "NoOpMutator");
+            var mutator = new PropertyMutator<int>((input, count) => input + count, "NoOpMutator");
 
             const int numMutators = 1000;
             for(int i = 0; i < numMutators; ++i)

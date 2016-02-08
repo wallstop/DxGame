@@ -7,6 +7,7 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Entities
 {
@@ -14,7 +15,6 @@ namespace DXGame.Core.Components.Advanced.Entities
         TODO: Change to have a more generic trigger mechanism (and maybe a more generic dropping mechanism)
     */
 
-    
     /**
         <summary>
             Given a percentage chance (in terms of success, ie .25 will result in a 25% chance of this triggering), 
@@ -22,14 +22,18 @@ namespace DXGame.Core.Components.Advanced.Entities
             in response to entity death
         </summary>
     */
+
     [DataContract]
     [Serializable]
+    [ProtoContract]
     public class ItemDropperComponent : Component
     {
         [DataMember]
+        [ProtoMember(1)]
         private double PercentChance { get; }
 
         [DataMember]
+        [ProtoMember(2)]
         private Func<DxVector2, List<GameObject>> ItemProduction { get; }
 
         public ItemDropperComponent(double percentChance, Func<DxVector2, List<GameObject>> itemProduction)

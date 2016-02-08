@@ -4,7 +4,7 @@ using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
-using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Damage
 {
@@ -18,9 +18,11 @@ namespace DXGame.Core.Components.Advanced.Damage
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class DamageComponent : Component
     {
         [DataMember]
+        [ProtoMember(1)]
         protected EntityPropertiesComponent EntityProperties { get; }
 
         protected DamageComponent(EntityPropertiesComponent entityProperties)
@@ -33,14 +35,14 @@ namespace DXGame.Core.Components.Advanced.Damage
         {
             var damageReceived = damageMessage.DamageCheck(damageMessage.Source, Parent);
             /* If our owner wasn't damaged, don't do anything */
-            if (!damageReceived.Item1)
+            if(!damageReceived.Item1)
             {
                 return;
             }
 
             var damageAmount = damageReceived.Item2;
             /* Othwerise, directly modify health */
-            EntityProperties.EntityProperties.Health.BaseValue -= (int) (Math.Ceiling(damageAmount));
+            EntityProperties.EntityProperties.Health.BaseValue -= (int) Math.Ceiling(damageAmount);
         }
 
         public static DamageComponentBuilder Builder()

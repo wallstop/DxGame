@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
@@ -9,7 +8,7 @@ using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
-using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Physics
 {
@@ -22,12 +21,13 @@ namespace DXGame.Core.Components.Advanced.Physics
 
     [DataContract]
     [Serializable]
+    [ProtoContract]
     public class PhysicsComponent : Component
     {
         /* Currently acting forces on this object. This will typically include gravity & air resistance */
-        [DataMember] protected readonly List<Force> forces_ = new List<Force>();
-        [DataMember] protected SpatialComponent space_;
-        [DataMember] protected DxVector2 velocity_;
+        [ProtoMember(1)] [DataMember] protected readonly List<Force> forces_ = new List<Force>();
+        [ProtoMember(2)] [DataMember] protected SpatialComponent space_;
+        [ProtoMember(3)] [DataMember] protected DxVector2 velocity_;
         public IEnumerable<Force> Forces => forces_;
 
         public virtual DxVector2 Velocity
@@ -65,22 +65,22 @@ namespace DXGame.Core.Components.Advanced.Physics
         {
             return new PhysicsComponentBuilder();
         }
-        
+
         public static Tuple<DxVector2, DxVector2> ForceComputation(DxGameTime gameTime, DxVector2 position,
             DxVector2 velocity, List<Force> forces)
         {
             var scaleAmount = gameTime.ScaleFactor;
             var acceleration = new DxVector2();
-            foreach (var force in forces)
+            foreach(var force in forces)
             {
                 force.Update(velocity, acceleration, gameTime);
-                if (!force.Dissipated)
+                if(!force.Dissipated)
                 {
                     acceleration += force.Acceleration;
                 }
             }
-            velocity += (acceleration * scaleAmount);
-            position += (velocity * scaleAmount);
+            velocity += acceleration * scaleAmount;
+            position += velocity * scaleAmount;
             return Tuple.Create(position, velocity);
         }
 
@@ -95,16 +95,14 @@ namespace DXGame.Core.Components.Advanced.Physics
         protected void HandleCollisionMessage(CollisionMessage message)
         {
             var collisionDirections = message.CollisionDirections;
-            var velocity = Velocity; 
+            var velocity = Velocity;
             // Collide on against y axis (vertical)? Cease movement and acceleration in that direction
-            if (collisionDirections.ContainsKey(Direction.East) ||
-                collisionDirections.ContainsKey(Direction.West))
+            if(collisionDirections.ContainsKey(Direction.East) || collisionDirections.ContainsKey(Direction.West))
             {
                 velocity.X = 0;
             }
             // Same for horizontal movement
-            if (collisionDirections.ContainsKey(Direction.South) ||
-                collisionDirections.ContainsKey(Direction.North))
+            if(collisionDirections.ContainsKey(Direction.South) || collisionDirections.ContainsKey(Direction.North))
             {
                 velocity.Y = 0;
             }
@@ -122,7 +120,7 @@ namespace DXGame.Core.Components.Advanced.Physics
             public virtual PhysicsComponent Build()
             {
                 var physics = new PhysicsComponent(velocity_, acceleration_, space_, updatePriority_);
-                foreach (var force in forces_)
+                foreach(var force in forces_)
                 {
                     physics.AttachForce(force);
                 }

@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
-using DXGame.Main;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Physics
 {
@@ -15,13 +15,11 @@ namespace DXGame.Core.Components.Advanced.Physics
 
     [DataContract]
     [Serializable]
+    [ProtoContract]
     public class UnforcableMapCollidablePhysicsComponent : MapCollidablePhysicsComponent
     {
         protected UnforcableMapCollidablePhysicsComponent(DxVector2 velocity, DxVector2 acceleration,
-            SpatialComponent space, UpdatePriority updatePriority)
-            : base(velocity, acceleration, space, updatePriority)
-        {
-        }
+            SpatialComponent space, UpdatePriority updatePriority) : base(velocity, acceleration, space, updatePriority) {}
 
         public override void AttachForce(Force force)
         {
@@ -39,7 +37,7 @@ namespace DXGame.Core.Components.Advanced.Physics
             {
                 var physics = new UnforcableMapCollidablePhysicsComponent(velocity_, acceleration_, space_,
                     updatePriority_);
-                foreach (Force force in forces_)
+                foreach(Force force in forces_)
                 {
                     physics.forces_.Add(force);
                 }

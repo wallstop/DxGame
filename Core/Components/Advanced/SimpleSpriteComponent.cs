@@ -7,16 +7,18 @@ using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced
 {
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class SimpleSpriteComponent : DrawableComponent
     {
-        [DataMember] protected string assetName_;
-        [DataMember] protected DxRectangle boundingBox_;
-        [DataMember] protected PositionalComponent position_;
+        [ProtoMember(1)] [DataMember] protected string assetName_;
+        [ProtoMember(2)] [DataMember] protected DxRectangle boundingBox_;
+        [ProtoMember(3)] [DataMember] protected PositionalComponent position_;
         [NonSerialized] [IgnoreDataMember] protected Texture2D texture_;
 
         [IgnoreDataMember]

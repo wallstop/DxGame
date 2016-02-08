@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using System.Threading;
+using ProtoBuf;
 
 namespace DXGame.Core
 {
@@ -12,25 +13,19 @@ namespace DXGame.Core
 
     [Serializable]
     [DataContract]
+    [ProtoContract]
     public class UniqueId : IComparable, IEquatable<UniqueId>
     {
         private const long INVALID_ID = 0;
         private static long staticId;
         private static readonly UniqueId INVALID = new UniqueId(INVALID_ID);
-        private readonly long id_;
+        [DataMember] [ProtoMember(1)] private readonly long id_;
 
-        [NonSerialized]
-        private int hashCode_;
+        [NonSerialized] private int hashCode_;
 
-        public UniqueId()
-            : this(GenerateId())
-        {
-        }
+        public UniqueId() : this(GenerateId()) {}
 
-        public UniqueId(UniqueId copy)
-            : this(copy.id_)
-        {
-        }
+        public UniqueId(UniqueId copy) : this(copy.id_) {}
 
         private UniqueId(long assignedId)
         {
@@ -40,7 +35,7 @@ namespace DXGame.Core
         public int CompareTo(object rhs)
         {
             var otherId = rhs as UniqueId;
-            if (otherId != null)
+            if(otherId != null)
             {
                 /* 
                     We compare negative to allow for first-created UniqueIds to be 
@@ -48,7 +43,7 @@ namespace DXGame.Core
 
                     ... why?
                 */
-                return -(id_.CompareTo(otherId.id_));
+                return -id_.CompareTo(otherId.id_);
             }
             return -1;
         }
@@ -70,9 +65,10 @@ namespace DXGame.Core
 
         public override int GetHashCode()
         {
-            if (hashCode_ == 0)
+            if(hashCode_ == 0)
             {
-                hashCode_ = id_.GetHashCode(); ;
+                hashCode_ = id_.GetHashCode();
+                ;
             }
             return hashCode_;
         }

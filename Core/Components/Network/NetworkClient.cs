@@ -92,15 +92,41 @@ namespace DXGame.Core.Components.Network
                     $"Could not properly format a NetworkMessage from NetIncomingMessage {message}");
             }
 
+            // Don't lie to me resharper...
+            // ReSharper disable once PossibleNullReferenceException
             switch (networkMessage.MessageType)
             {
-                case MessageType.SERVER_DATA_KEYFRAME:
+                case MessageType.ServerDataKeyFrame:
                     HandleServerDataKeyFrame(networkMessage);
+                    break;
+                case MessageType.ServerDataDiff:
+                    HandleServerDataDiff(networkMessage);
                     break;
                 default:
                     LOG.Info(
                         $"Received NetMessage of type {message.MessageType}. Currently not handling this. ({message.MessageContents()})");
                     break;
+            }
+        }
+
+        protected void HandleServerDataDiff(NetworkMessage message)
+        {
+            ServerEntityDiff entityDiff = ConvertMessageType<ServerEntityDiff>(message);
+            foreach(object entity in entityDiff.MissingGameElements)
+            {
+                Component entityAsComponent = entity as Component;
+                if(!ReferenceEquals(entityAsComponent, null))
+                {
+                    DxGame.Instance.AddAndInitializeComponent(entityAsComponent);
+                    continue;
+                }
+                GameObject gameObject = entity as GameObject;
+                if(!ReferenceEquals(gameObject, null))
+                {
+                    DxGame.Instance.AddGameObject(gameObject);
+                    continue;
+                }
+                LOG.Warn($"Encountered unexpected entity type in ServerDataDiff {entity.GetType()} ({entity})");
             }
         }
 

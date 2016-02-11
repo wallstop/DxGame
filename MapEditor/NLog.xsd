@@ -1842,7 +1842,7 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="PerfCounter">
+  <xs:complexType name="PerfIdBasedCounter">
     <xs:complexContent>
       <xs:extension base="Target">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -1851,7 +1851,7 @@
           <xs:element name="categoryName" minOccurs="0" maxOccurs="1" type="xs:string" />
           <xs:element name="counterHelp" minOccurs="0" maxOccurs="1" type="xs:string" />
           <xs:element name="counterName" minOccurs="0" maxOccurs="1" type="xs:string" />
-          <xs:element name="counterType" minOccurs="0" maxOccurs="1" type="System.Diagnostics.PerformanceCounterType" />
+          <xs:element name="counterType" minOccurs="0" maxOccurs="1" type="System.Diagnostics.PerformanceIdBasedCounterType" />
           <xs:element name="instanceName" minOccurs="0" maxOccurs="1" type="xs:string" />
         </xs:choice>
         <xs:attribute name="name" type="xs:string">
@@ -1871,7 +1871,7 @@
         </xs:attribute>
         <xs:attribute name="counterHelp" type="xs:string">
           <xs:annotation>
-            <xs:documentation>Counter help text.</xs:documentation>
+            <xs:documentation>IdBasedCounter help text.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="counterName" type="xs:string">
@@ -1879,7 +1879,7 @@
             <xs:documentation>Name of the performance counter.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="counterType" type="System.Diagnostics.PerformanceCounterType">
+        <xs:attribute name="counterType" type="System.Diagnostics.PerformanceIdBasedCounterType">
           <xs:annotation>
             <xs:documentation>Performance counter type.</xs:documentation>
           </xs:annotation>
@@ -1892,7 +1892,7 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:simpleType name="System.Diagnostics.PerformanceCounterType">
+  <xs:simpleType name="System.Diagnostics.PerformanceIdBasedCounterType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="NumberOfItems32" />
       <xs:enumeration value="NumberOfItems64" />
@@ -1908,20 +1908,20 @@
       <xs:enumeration value="AverageBase" />
       <xs:enumeration value="AverageCount64" />
       <xs:enumeration value="SampleFraction" />
-      <xs:enumeration value="SampleCounter" />
+      <xs:enumeration value="SampleIdBasedCounter" />
       <xs:enumeration value="SampleBase" />
-      <xs:enumeration value="CounterTimer" />
-      <xs:enumeration value="CounterTimerInverse" />
+      <xs:enumeration value="IdBasedCounterTimer" />
+      <xs:enumeration value="IdBasedCounterTimerInverse" />
       <xs:enumeration value="Timer100Ns" />
       <xs:enumeration value="Timer100NsInverse" />
       <xs:enumeration value="ElapsedTime" />
-      <xs:enumeration value="CounterMultiTimer" />
-      <xs:enumeration value="CounterMultiTimerInverse" />
-      <xs:enumeration value="CounterMultiTimer100Ns" />
-      <xs:enumeration value="CounterMultiTimer100NsInverse" />
-      <xs:enumeration value="CounterMultiBase" />
-      <xs:enumeration value="CounterDelta32" />
-      <xs:enumeration value="CounterDelta64" />
+      <xs:enumeration value="IdBasedCounterMultiTimer" />
+      <xs:enumeration value="IdBasedCounterMultiTimerInverse" />
+      <xs:enumeration value="IdBasedCounterMultiTimer100Ns" />
+      <xs:enumeration value="IdBasedCounterMultiTimer100NsInverse" />
+      <xs:enumeration value="IdBasedCounterMultiBase" />
+      <xs:enumeration value="IdBasedCounterDelta32" />
+      <xs:enumeration value="IdBasedCounterDelta64" />
     </xs:restriction>
   </xs:simpleType>
   <xs:complexType name="PostFilteringWrapper">

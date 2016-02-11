@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using System.Threading;
-using ProtoBuf;
 
 namespace DXGame.Core
 {
@@ -13,13 +12,12 @@ namespace DXGame.Core
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class UniqueId : IComparable, IEquatable<UniqueId>
     {
         private const long INVALID_ID = 0;
         private static long staticId;
         private static readonly UniqueId INVALID = new UniqueId(INVALID_ID);
-        [DataMember] [ProtoMember(1)] private readonly long id_;
+        [DataMember] private readonly long id_;
 
         [NonSerialized] private int hashCode_;
 
@@ -68,7 +66,6 @@ namespace DXGame.Core
             if(hashCode_ == 0)
             {
                 hashCode_ = id_.GetHashCode();
-                ;
             }
             return hashCode_;
         }

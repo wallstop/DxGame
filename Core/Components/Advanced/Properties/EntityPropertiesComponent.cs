@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
 using DXGame.Core.Properties;

@@ -3,11 +3,10 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
-using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Entities
 {
@@ -21,13 +20,11 @@ namespace DXGame.Core.Components.Advanced.Entities
 
     [DataContract]
     [Serializable]
-    [ProtoContract]
     public class Spawner : Component
     {
-        [DataMember] [ProtoMember(1)] protected DxRectangle spawnArea_;
+        [DataMember] protected DxRectangle spawnArea_;
 
         [DataMember]
-        [ProtoMember(2)]
         protected SpawnTrigger SpawnTrigger { get; }
 
         protected virtual DxRectangle SpawnArea => spawnArea_;
@@ -115,15 +112,10 @@ namespace DXGame.Core.Components.Advanced.Entities
 
     [DataContract]
     [Serializable]
-    [ProtoContract]
     internal class SimpleImmediateSpawner
     {
-        [DataMember]
-        [ProtoMember(1)]
-        private readonly GameObject objectToSpawn_;
-        [DataMember]
-        [ProtoMember(2)]
-        private bool alreadySpawned_;
+        [DataMember] private readonly GameObject objectToSpawn_;
+        [DataMember] private bool alreadySpawned_;
 
         public SimpleImmediateSpawner(GameObject objectToSpawn)
         {

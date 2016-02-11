@@ -5,11 +5,11 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 
-namespace DXGame.Core.Utils.Cache
+namespace DXGame.Core.Utils.Cache.Simple
 {
     [Serializable]
     [DataContract]
-    public class AbstractCache<U, T> : ICache<U, T>
+    public class AbstractSimpleCache<U, T> : ISimpleCache<U, T>
     {
         protected readonly ReaderWriterLockSlim globalLock_ = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
         [DataMember]

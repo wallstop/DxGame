@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Cache;
+using DXGame.Core.Utils.Cache.Simple;
 using ProtoBuf;
 
 namespace DXGame.Core
@@ -20,8 +21,8 @@ namespace DXGame.Core
     [ProtoContract]
     public sealed class Team : IEquatable<Team>
     {
-        private static readonly UnboundedLoadingCache<string, Team> TEAM_CACHE =
-            new UnboundedLoadingCache<string, Team>(name => new Team(name));
+        private static readonly UnboundedLoadingSimpleCache<string, Team> TeamSimpleCache =
+            new UnboundedLoadingSimpleCache<string, Team>(name => new Team(name));
 
         [DataMember]
         [ProtoMember(1)]
@@ -30,7 +31,7 @@ namespace DXGame.Core
         public static Team PlayerTeam { get; } = TeamFor("Player");
         public static Team EnemyTeam { get; } = TeamFor("Enemy");
 
-        public static IReadOnlyCollection<Team> Teams => TEAM_CACHE.Elements;
+        public static IReadOnlyCollection<Team> Teams => TeamSimpleCache.Elements;
 
         private Team(string name)
         {
@@ -63,7 +64,7 @@ namespace DXGame.Core
         public static Team TeamFor(string name)
         {
             Validate.IsNotEmpty(name, $"Cannot have {typeof(Team)}s with null/empty Names");
-            return TEAM_CACHE.Get(name);
+            return TeamSimpleCache.Get(name);
         }
 
         public override bool Equals(object other)

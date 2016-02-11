@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace DXGame.Core.Utils
+namespace DXGame.Core.Utils.Cache.Simple
 {
     /**
         <summary>
             Simple interface that all caches should adhere to.
         </summary>
     */
-    public interface ICache<U, T>
+    public interface ISimpleCache<U, T>
     {
         IReadOnlyCollection<T> Elements
         {

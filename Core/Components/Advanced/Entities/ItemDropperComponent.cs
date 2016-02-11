@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
-using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Entities
 {
@@ -25,15 +24,12 @@ namespace DXGame.Core.Components.Advanced.Entities
 
     [DataContract]
     [Serializable]
-    [ProtoContract]
     public class ItemDropperComponent : Component
     {
         [DataMember]
-        [ProtoMember(1)]
         private double PercentChance { get; }
 
         [DataMember]
-        [ProtoMember(2)]
         private Func<DxVector2, List<GameObject>> ItemProduction { get; }
 
         public ItemDropperComponent(double percentChance, Func<DxVector2, List<GameObject>> itemProduction)

@@ -150,7 +150,8 @@
     <Compile Include="Core\Map\MapLayer.cs" />
     <Compile Include="Core\Messaging\AttackBuilder.cs" />
     <Compile Include="Core\Messaging\AttackRequest.cs" />
-    <Compile Include="Core\Messaging\EntitySpawnedMessage.cs" />
+    <Compile Include="Core\Messaging\Entity\EntitySpawnedMessage.cs" />
+    <Compile Include="Core\Messaging\Entity\EntityStatusChangedMessage.cs" />
     <Compile Include="Core\Messaging\EnvironmentInteractionMessage.cs" />
     <Compile Include="Core\Messaging\ExperiencedReceivedMessage.cs" />
     <Compile Include="Core\Messaging\ExperienceDroppedMessage.cs" />
@@ -161,7 +162,17 @@
     <Compile Include="Core\Models\EnvironmentModel.cs" />
     <Compile Include="Core\Models\EventModel.cs" />
     <Compile Include="Core\Models\ExperienceModel.cs" />
+    <Compile Include="Core\Network\Acknowledgement.cs" />
+    <Compile Include="Core\Network\PackedNetworkEvent.cs" />
+    <Compile Include="Core\Network\ServerEntityDiff.cs" />
+    <Compile Include="Core\Network\ServerEventTracker.cs" />
     <Compile Include="Core\Skills\ChargedSkill.cs" />
+    <Compile Include="Core\Utils\Cache\CacheBuilder.cs" />
+    <Compile Include="Core\Utils\Cache\ICache.cs" />
+    <Compile Include="Core\Utils\Cache\IRemovalListener.cs" />
+    <Compile Include="Core\Utils\Cache\IWeigher.cs" />
+    <Compile Include="Core\Utils\Cache\RemovalNotification.cs" />
+    <Compile Include="Core\Utils\IdBasedCounter.cs" />
     <Compile Include="Core\Utils\SpringFunctions.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\TimedTriggeredActionComponent.cs" />
     <Compile Include="TowerGame\Components\Waves\WaveEmitter.cs" />
@@ -202,7 +213,7 @@
     <Compile Include="Core\Messaging\CommandMessage.cs" />
     <Compile Include="Core\Messaging\DamageMessage.cs" />
     <Compile Include="Core\Messaging\DropThroughPlatformRequest.cs" />
-    <Compile Include="Core\Messaging\EntityDeathMessage.cs" />
+    <Compile Include="Core\Messaging\Entity\EntityDeathMessage.cs" />
     <Compile Include="Core\Messaging\PathFindingRequest.cs" />
     <Compile Include="Core\Messaging\MessageHandler.cs" />
     <Compile Include="Core\Messaging\PhysicsMessage.cs" />
@@ -249,7 +260,7 @@
     <Compile Include="Core\Components\Advanced\Position\PositionalComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
     <Compile Include="Core\Team.cs" />
-    <Compile Include="Core\Utils\Cache\AbstractCache.cs" />
+    <Compile Include="Core\Utils\Cache\Simple\AbstractSimpleCache.cs" />
     <Compile Include="Core\Utils\ColorFactory.cs" />
     <Compile Include="Core\Utils\ColorUtils.cs" />
     <Compile Include="Core\Utils\CriticalRegion.cs" />
@@ -304,7 +315,7 @@
     <Compile Include="Core\Models\Model.cs" />
     <Compile Include="Core\Models\NetworkModel.cs" />
     <Compile Include="Core\Models\PlayerModel.cs" />
-    <Compile Include="Core\Utils\ICache.cs" />
+    <Compile Include="Core\Utils\Cache\Simple\ICache.cs" />
     <Compile Include="Core\Utils\ImmutablePair.cs" />
     <Compile Include="Core\Utils\IPair.cs" />
     <Compile Include="Core\Utils\LidgrenUtils.cs" />
@@ -338,8 +349,8 @@
     <Compile Include="Core\Utils\ThreadLocalRandom.cs" />
     <Compile Include="Core\Utils\TimeSpanUtils.cs" />
     <Compile Include="Core\Utils\UintUtils.cs" />
-    <Compile Include="Core\Utils\Cache\UnboundedCache.cs" />
-    <Compile Include="Core\Utils\Cache\UnboundedLoadingCache.cs" />
+    <Compile Include="Core\Utils\Cache\Simple\UnboundedSimpleCache.cs" />
+    <Compile Include="Core\Utils\Cache\Simple\UnboundedLoadingSimpleCache.cs" />
     <Compile Include="Core\Utils\Validate.cs" />
     <Compile Include="Core\Primitives\DxGameTime.cs" />
     <Compile Include="Core\Primitives\DxRectangle.cs" />
@@ -377,10 +388,6 @@
       <HintPath>packages\GeoAPI.1.7.3\lib\net45-client\GeoAPI.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Protobuf, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Protobuf.3.0.0-beta2\lib\dotnet\Google.Protobuf.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Lidgren.Network">
       <HintPath>packages\Lidgren.Network.2012.2.15.2\lib\net45\Lidgren.Network.dll</HintPath>
     </Reference>
@@ -389,14 +396,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8\Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\EnterpriseLibrary.TransientFaultHandling.Data.6.0.1304.1\lib\NET45\Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="MonoGame.Framework, Version=3.4.0.459, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MonoGame.Framework.WindowsDX.3.4.0.459\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
@@ -407,6 +406,10 @@
     </Reference>
     <Reference Include="NetTopologySuite, Version=1.13.3.0, Culture=neutral, PublicKeyToken=f580a05016ebada1, processorArchitecture=MSIL">
       <HintPath>packages\NetTopologySuite.1.13.3.2\lib\net45\NetTopologySuite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
@@ -647,6 +650,10 @@
     <Folder Include="TowerGame\Physics\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

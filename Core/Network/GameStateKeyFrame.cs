@@ -6,7 +6,6 @@ using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using ProtoBuf;
 
 namespace DXGame.Core.Network
 {
@@ -16,30 +15,25 @@ namespace DXGame.Core.Network
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class GameStateKeyFrame : NetworkMessage
     {
-        [ProtoMember(1)] [DataMember] public DxGameTime GameTime = new DxGameTime();
+        [DataMember] public DxGameTime GameTime = new DxGameTime();
 
-        [ProtoMember(2)]
         [DataMember]
         public GameElementCollection GameElements { get; set; }
 
-        [ProtoMember(3)]
         [DataMember]
         public GameElementCollection NewGameElements { get; set; }
 
-        [ProtoMember(4)]
         [DataMember]
         public GameElementCollection RemovedGameEleemnts { get; set; }
 
-        [ProtoMember(5)]
         [DataMember]
         public List<Model> Models { get; set; }
 
         public GameStateKeyFrame()
         {
-            MessageType = MessageType.SERVER_DATA_KEYFRAME;
+            MessageType = MessageType.ServerDataKeyFrame;
         }
 
         public static GameStateKeyFrame FromGame(DxGameTime gameTime)

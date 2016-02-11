@@ -2,7 +2,6 @@
 using System.Runtime.Serialization;
 using DXGame.Core.Primitives;
 using Microsoft.Xna.Framework.Graphics;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Basic
 {
@@ -24,7 +23,6 @@ namespace DXGame.Core.Components.Basic
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public abstract class DrawableComponent : Component, IComparable<DrawableComponent>, IDrawable
     {
         protected DrawableComponent()
@@ -37,7 +35,6 @@ namespace DXGame.Core.Components.Basic
             return DrawPriority.CompareTo(other?.DrawPriority);
         }
 
-        [ProtoMember(1)]
         [DataMember]
         public DrawPriority DrawPriority { get; protected set; }
 

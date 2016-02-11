@@ -15,7 +15,7 @@ namespace DXGame.Core.Network
     {
         public GameStateDiff()
         {
-            MessageType = MessageType.SERVER_DATA_DIFF;
+            MessageType = MessageType.ServerDataDiff;
         }
 
         //[DataMember] public GameTime GameTime = new GameTime();

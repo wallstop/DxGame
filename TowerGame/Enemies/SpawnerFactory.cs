@@ -116,7 +116,7 @@ namespace DXGame.TowerGame.Enemies
         {
             private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-            private static readonly int NUM_BOXES_PER_WAVE = 1;
+            private static readonly int NUM_BOXES_PER_WAVE = 5;
 
             private int numBoxesSpawned_ = 0;
 

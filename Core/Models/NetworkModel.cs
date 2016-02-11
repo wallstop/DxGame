@@ -2,21 +2,35 @@
 using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Network;
+using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Main;
 
 namespace DXGame.Core.Models
 {
     public class NetworkModel : Model
     {
-        protected List<NetworkComponent> connections_ = new List<NetworkComponent>();
+        private readonly List<NetworkComponent> connections_ = new List<NetworkComponent>();
         // TODO: Empty checks
         public IEnumerable<NetworkClient> Clients => connections_.OfType<NetworkClient>();
 
         public IEnumerable<NetworkServer> Servers => connections_.OfType<NetworkServer>();
 
         public override bool ShouldSerialize => false;
+
+        public NetworkModel()
+        {
+            MessageHandler.EnableAcceptAll();
+            MessageHandler.RegisterMessageHandler<Message>(HandleMessageReceived);
+        }
+
+        private void HandleMessageReceived(Message message)
+        {
+            foreach(NetworkComponent networkComponent in connections_)
+            {
+                networkComponent.MessageHandler.HandleMessage(message);
+            }
+        }
 
         public NetworkModel WithClient(NetworkClient client)
         {
@@ -40,6 +54,14 @@ namespace DXGame.Core.Models
         public void AttachClient(NetworkClient client)
         {
             WithClient(client);
+        }
+
+        protected override void Update(DxGameTime gameTime)
+        {
+            foreach(NetworkComponent networkComponent in connections_)
+            {
+                networkComponent.Process(gameTime);
+            }
         }
 
         protected void AddNetworkComponent(NetworkComponent netComponent)

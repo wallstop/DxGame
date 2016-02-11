@@ -10,13 +10,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DXGame.Core.Utils.Cache;
+using DXGame.Core.Utils.Cache.Simple;
 
 namespace DXGame.Core.Pathfinding
 {
     public static class Simulation
     {
-        private static readonly UnboundedLoadingCache<EntityTypeComponent, Dictionary<CommandChain, DisplacementApproximator>> ENTITY_MOVEMENT_APPROXIMATORS =
-            new UnboundedLoadingCache<EntityTypeComponent, Dictionary<CommandChain, DisplacementApproximator>>(entityTypeComponent =>
+        private static readonly UnboundedLoadingSimpleCache<EntityTypeComponent, Dictionary<CommandChain, DisplacementApproximator>> ENTITY_MOVEMENT_APPROXIMATORS =
+            new UnboundedLoadingSimpleCache<EntityTypeComponent, Dictionary<CommandChain, DisplacementApproximator>>(entityTypeComponent =>
                ApproximatorForProperties(entityTypeComponent.Parent.ComponentOfType<EntityPropertiesComponent>()));
 
         public static Dictionary<CommandChain, DisplacementApproximator> DetermineDisplacementApproximators(GameObject entity, bool cacheResults = false)

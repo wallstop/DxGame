@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using Lidgren.Network;
 using NLog;
-using ProtoBuf;
 
 namespace DXGame.Core.Network
 {
@@ -14,12 +13,13 @@ namespace DXGame.Core.Network
 
     public enum MessageType
     {
-        INVALID,
-        CLIENT_CONNECTION_REQUEST, // Client connect to server
-        CLIENT_DATA_DIFF, // Client info of how it thought a frame went
-        CLIENT_KEY_FRAME, // Client full-state dump
-        SERVER_DATA_DIFF, // Server info of the diff between it's last update and "now"
-        SERVER_DATA_KEYFRAME // Server full-state dump
+        Invalid,
+        Acknowledgement,
+        ClientConnectionRequest, // Client connect to server
+        ClientDataDiff, // Client info of how it thought a frame went
+        ClientKeyFrame, // Client full-state dump
+        ServerDataDiff, // Server info of the diff between it's last update and "now"
+        ServerDataKeyFrame // Server full-state dump
     }
 
     /*
@@ -31,14 +31,19 @@ namespace DXGame.Core.Network
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
-    public class NetworkMessage
+    public class NetworkMessage : IIdentifiable
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
         [DataMember]
-        [ProtoMember(1)]
         public MessageType MessageType { get; set; }
+
+        protected NetworkMessage()
+        {
+            Id = new UniqueId();
+        }
+
+        public UniqueId Id { get; }
 
         public static NetworkMessage FromNetIncomingMessage(NetIncomingMessage message)
         {

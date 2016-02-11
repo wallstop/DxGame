@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Models;
 using DXGame.Core.Network;
 using DXGame.Core.Primitives;
@@ -17,17 +19,26 @@ namespace DXGame.Core.Components.Network
 
     public class NetworkServer : NetworkComponent
     {
+        private static readonly TimeSpan KEY_FRAME_DELAY = TimeSpan.FromSeconds(1.0 / 30); // 30 FPS
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         public NetServer ServerConnection => Connection as NetServer;
-        public Dictionary<NetConnection, FrameModel> ClientFrameStates { get; private set; }
+        public Dictionary<NetConnection, ServerEventTracker> ClientFrameStates { get; }
 
-        private static readonly TimeSpan KEY_FRAME_DELAY = TimeSpan.FromSeconds(1.0 / 30); // 30 FPS
+        /* 
+            In addition to keeping track of unique diffs for each Connection, we need to 
+            keep track of all global diffs for *NEW* connections. This way, whenever a 
+            client connects, we can shit out "the world thus far" to them in a 
+            succinct manner.
+        */
+        private readonly ServerEventTracker baseEventTracker_ = new ServerEventTracker();
 
         private TimeSpan lastSent_ = TimeSpan.Zero;
 
         public NetworkServer()
         {
-            ClientFrameStates = new Dictionary<NetConnection, FrameModel>();
+            ClientFrameStates = new Dictionary<NetConnection, ServerEventTracker>();
+            MessageHandler.EnableAcceptAll();
+            MessageHandler.RegisterMessageHandler<Message>(HandleMessage);
         }
 
         public override NetworkComponent WithConfiguration(NetPeerConfiguration configuration)
@@ -36,6 +47,20 @@ namespace DXGame.Core.Components.Network
             configuration.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
             Connection = new NetServer(configuration);
             return this;
+        }
+
+        protected override void Update(DxGameTime gameTime)
+        {
+            base.Update(gameTime);
+        }
+
+        private void HandleMessage(Message message)
+        {
+            baseEventTracker_.Handler.HandleMessage(message);
+            foreach(ServerEventTracker eventTracker in ClientFrameStates.Values)
+            {
+                eventTracker.Handler.HandleMessage(message);
+            }
         }
 
         public override void EstablishConnection()
@@ -74,12 +99,14 @@ namespace DXGame.Core.Components.Network
         {
             if (lastSent_ + KEY_FRAME_DELAY < gameTime.TotalGameTime)
             {
-                // Quick and dirty for now - do some nice differentials later
-                var message = GameStateKeyFrame.FromGame(gameTime);
-                var outgoingMessage = message.ToNetOutgoingMessage(ServerConnection);
-                foreach (NetConnection connection in ClientFrameStates.Keys)
+                foreach (KeyValuePair<NetConnection, ServerEventTracker> connectionEventTrackingPair in ClientFrameStates)
                 {
-                    ServerConnection.SendMessage(outgoingMessage, connection, NetDeliveryMethod.ReliableOrdered, 0);
+                    //foreach()
+                    ServerEntityDiff entityDiff = new ServerEntityDiff(connectionEntityTrackingPair.Value);
+                    NetOutgoingMessage outgoingMessage = entityDiff.ToNetOutgoingMessage(ServerConnection);
+                    ServerConnection.SendMessage(outgoingMessage, connectionEntityTrackingPair.Key, NetDeliveryMethod.ReliableOrdered, 0);
+                    // TODO: Rely on acks (for now, BLOW EM AWAY BOYS)
+                    connectionEntityTrackingPair.Value.Entities.Clear();
                 }
                 lastSent_ = gameTime.TotalGameTime;
             }
@@ -141,22 +168,22 @@ namespace DXGame.Core.Components.Network
 
             switch (networkMessage.MessageType)
             {
-                case MessageType.CLIENT_CONNECTION_REQUEST:
+                case MessageType.ClientConnectionRequest:
                     demarshall = HandleClientConnectionRequest;
                     break;
-                case MessageType.CLIENT_DATA_DIFF:
+                case MessageType.ClientDataDiff:
                     demarshall = HandleClientDataDiff;
                     break;
-                case MessageType.CLIENT_KEY_FRAME:
+                case MessageType.ClientKeyFrame:
                     demarshall = HandleClientDataKeyFrame;
                     break;
-                case MessageType.SERVER_DATA_DIFF:
+                case MessageType.ServerDataDiff:
                     demarshall = HandleServerDataDiff;
                     break;
-                case MessageType.SERVER_DATA_KEYFRAME:
+                case MessageType.ServerDataKeyFrame:
                     demarshall = HandleServerDataKeyframe;
                     break;
-                case MessageType.INVALID:
+                case MessageType.Invalid:
                     LOG.Warn($"Received an invalid message ({message}) from a client, ignoring");
                     return;
                 default:
@@ -188,8 +215,8 @@ namespace DXGame.Core.Components.Network
             Validate.IsFalse(ClientFrameStates.ContainsKey(connection),
                 $"Received ClientConnectionRequest that we're already tracking, this is an issue! Request: {clientConnectionRequest}");
 
-            var frameModel = new FrameModel();
-            ClientFrameStates.Add(connection, frameModel);
+            ServerEntityTracker entityTracker = new ServerEntityTracker(baseEntityTracker_);
+            ClientFrameStates.Add(connection, entityTracker);
             LOG.Info(
                 $"Successfully initialized ClientConnection {connection} for player {clientConnectionRequest.PlayerName}");
         }

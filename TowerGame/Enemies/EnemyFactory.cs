@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DXGame.Core;
-using DXGame.Core.Animation;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Advanced.Command;
 using DXGame.Core.Components.Advanced.Damage;
@@ -15,6 +14,7 @@ using DXGame.Core.Components.Developer;
 using DXGame.Core.Events;
 using DXGame.Core.Experience;
 using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.State;

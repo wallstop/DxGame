@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using DXGame.Core.Utils.Cache;
+using DXGame.Core.Utils.Cache.Simple;
 
 namespace DXGame.Core.Animation
 {
@@ -38,8 +39,8 @@ namespace DXGame.Core.Animation
                 {StandardAnimationType.WalkingRight, "Walk_Right"}
             });
 
-        private readonly UnboundedCache<string, AnimationDescriptor> animationCache_ = new UnboundedCache<string, AnimationDescriptor>();
-        private readonly UnboundedLoadingCache<string, bool> generatedStaticAnimations_ = new UnboundedLoadingCache<string, bool>(InternalGenerateStaticStandardAnimationTypes);
+        private readonly UnboundedSimpleCache<string, AnimationDescriptor> animationSimpleCache_ = new UnboundedSimpleCache<string, AnimationDescriptor>();
+        private readonly UnboundedLoadingSimpleCache<string, bool> generatedStaticAnimations_ = new UnboundedLoadingSimpleCache<string, bool>(InternalGenerateStaticStandardAnimationTypes);
         /* TODO: Content-directory enumeration caching */
         //private readonly List<string> allContentFiles_;
 
@@ -49,7 +50,7 @@ namespace DXGame.Core.Animation
         {
             foreach (var animationFile in AnimationDescriptors(DxGame.Instance.Content.RootDirectory))
             {
-                animationCache_.PutIfAbsent(animationFile, AnimationDescriptor.StaticLoad(animationFile));
+                animationSimpleCache_.PutIfAbsent(animationFile, AnimationDescriptor.StaticLoad(animationFile));
             }
         }
 
@@ -74,7 +75,7 @@ namespace DXGame.Core.Animation
         private static AnimationDescriptor SearchCache(string category, string animation)
         {
             AnimationDescriptor animationDescriptor =
-                Instance.animationCache_.KeyedElements
+                Instance.animationSimpleCache_.KeyedElements
                     .FirstOrDefault(
                         entry =>
                             (entry.Value.Asset.Contains(category) || entry.Key.Contains(category)) &&
@@ -118,7 +119,7 @@ namespace DXGame.Core.Animation
                 fakeDescriptor.FramesPerSecond = 60;
                 fakeDescriptor.Scale = 1.0;
                 string mangledFakePath = ManipulatePathToIncludeAnimationType(pathToAssetFile, animationType);
-                Instance.animationCache_.PutIfAbsent(mangledFakePath, fakeDescriptor);
+                Instance.animationSimpleCache_.PutIfAbsent(mangledFakePath, fakeDescriptor);
             }
             return true;
         }

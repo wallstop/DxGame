@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Cache;
+using DXGame.Core.Utils.Cache.Simple;
 using ProtoBuf;
 
 namespace DXGame.Core
@@ -12,10 +13,10 @@ namespace DXGame.Core
     [ProtoContract]
     public sealed class EntityType : IEquatable<EntityType>
     {
-        private static readonly UnboundedLoadingCache<string, EntityType> ENTITY_TYPE_CACHE =
-            new UnboundedLoadingCache<string, EntityType>(name => new EntityType(name));
+        private static readonly UnboundedLoadingSimpleCache<string, EntityType> EntityTypeSimpleCache =
+            new UnboundedLoadingSimpleCache<string, EntityType>(name => new EntityType(name));
 
-        public static IReadOnlyCollection<EntityType> EntityTypes => ENTITY_TYPE_CACHE.Elements;
+        public static IReadOnlyCollection<EntityType> EntityTypes => EntityTypeSimpleCache.Elements;
 
         [DataMember]
         [ProtoMember(1)]
@@ -31,7 +32,7 @@ namespace DXGame.Core
         public static EntityType EntityTypeFor(string name)
         {
             Validate.IsNotNullOrDefault(name, StringUtils.GetFormattedNullOrDefaultMessage(typeof(EntityType), "name"));
-            return ENTITY_TYPE_CACHE.Get(name);
+            return EntityTypeSimpleCache.Get(name);
         }
 
         public override int GetHashCode()

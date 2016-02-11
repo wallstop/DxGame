@@ -1,5 +1,6 @@
 ﻿using System;
 using DXGame.Core.Utils.Cache;
+using DXGame.Core.Utils.Cache.Simple;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Utils
@@ -20,16 +21,16 @@ namespace DXGame.Core.Utils
     {
         private static readonly int NUM_PRECISION_DIGITS = 2;
         private static readonly Lazy<ColorFactory> SINGLETON = new Lazy<ColorFactory>(() => new ColorFactory());
-        private readonly UnboundedLoadingCache<Tuple<float, Color>, Color> coloredTransparencies_;
-        private readonly UnboundedLoadingCache<float, Color> transparencies_;
+        private readonly UnboundedLoadingSimpleCache<Tuple<float, Color>, Color> coloredTransparencies_;
+        private readonly UnboundedLoadingSimpleCache<float, Color> transparencies_;
         public static ColorFactory Instance => SINGLETON.Value;
 
         private ColorFactory()
         {
             transparencies_ =
-                new UnboundedLoadingCache<float, Color>(scalar => new Color(Color.White.ToVector4() * scalar));
+                new UnboundedLoadingSimpleCache<float, Color>(scalar => new Color(Color.White.ToVector4() * scalar));
             coloredTransparencies_ =
-                new UnboundedLoadingCache<Tuple<float, Color>, Color>(
+                new UnboundedLoadingSimpleCache<Tuple<float, Color>, Color>(
                     tuple => new Color(tuple.Item2.ToVector4() * tuple.Item1));
         }
 

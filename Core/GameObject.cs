@@ -7,7 +7,6 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using ProtoBuf;
 
 namespace DXGame.Core
 {
@@ -25,20 +24,17 @@ namespace DXGame.Core
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public sealed class GameObject : IIdentifiable, IEquatable<GameObject>, IProcessable, IDisposable
     {
         // DataMembers can't be readonly :(
-        [ProtoMember(1)] [DataMember] private List<Component> components_;
-        [ProtoMember(2)] [DataMember] private UniqueId id_ = new UniqueId();
-        [ProtoMember(3)] [DataMember] public volatile bool Removed;
+        [DataMember] private List<Component> components_;
+        [DataMember] private UniqueId id_ = new UniqueId();
+        [DataMember] public volatile bool Removed;
         public IEnumerable<Component> Components => components_;
 
-        [ProtoMember(4)]
         [DataMember]
         public List<Message> CurrentMessages { get; private set; } = new List<Message>();
 
-        [ProtoMember(5)]
         [DataMember]
         public List<Message> FutureMessages { get; private set; } = new List<Message>();
 

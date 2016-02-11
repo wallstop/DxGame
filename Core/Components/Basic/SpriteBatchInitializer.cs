@@ -4,13 +4,11 @@ using DXGame.Core.Primitives;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Basic
 {
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class SpriteBatchInitializer : DrawableComponent
     {
         public SpriteBatchInitializer()

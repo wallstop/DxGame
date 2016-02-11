@@ -5,6 +5,7 @@ using DXGame.Core;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Menus;
 using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Settings;
@@ -210,6 +211,12 @@ namespace DXGame.Main
             NewGameElements.Add(gameObject);
         }
 
+        public void AddGameObject(GameObject gameObject)
+        {
+            Validate.IsNotNull(gameObject);
+            NewGameElements.Add(gameObject);
+        }
+
         public void RemoveGameObject(GameObject gameObject)
         {
             if(ReferenceEquals(gameObject, null))
@@ -277,14 +284,26 @@ namespace DXGame.Main
 
         private void UpdateElements()
         {
-            foreach(var newGameElement in NewGameElements)
+            foreach(object newGameElement in NewGameElements)
             {
                 DxGameElements.Add(newGameElement);
+                EntityStatusChangedMessage entityStatusChanged = new EntityStatusChangedMessage
+                {
+                    Entity = newGameElement,
+                    Status = EntityStatus.Created
+                };
+                BroadcastMessage<EntityStatusChangedMessage>(entityStatusChanged);
             }
             NewGameElements.Clear();
-            foreach(var removedGameElement in RemovedGameElements)
+            foreach(object removedGameElement in RemovedGameElements)
             {
                 DxGameElements.Remove(removedGameElement);
+                EntityStatusChangedMessage entityStatusChanged = new EntityStatusChangedMessage
+                {
+                    Entity = removedGameElement,
+                    Status = EntityStatus.Removed
+                };
+                BroadcastMessage<EntityStatusChangedMessage>(entityStatusChanged);
             }
             RemovedGameElements.Clear();
         }

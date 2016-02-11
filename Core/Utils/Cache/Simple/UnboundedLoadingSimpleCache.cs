@@ -1,18 +1,30 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace DXGame.Core.Utils.Cache
+namespace DXGame.Core.Utils.Cache.Simple
 {
     /**
         <summary>
-            Simple threadsafe unbounded cache, for when you want to store a lot of stuff in a threadsafe manner.
+            Threadsafe unbounded loading cache. 
+            Useful if you want to store a lot of stuff in a dictionary-style format, but threadsafe and automatically loading!
         </summary>
     */
     [Serializable]
     [DataContract]
-    public class UnboundedCache<U, T> : AbstractCache<U, T>
+    public class UnboundedLoadingSimpleCache<U, T> : AbstractSimpleCache<U, T>
     {
-        public T PutIfAbsent(U key, T value)
+        private Func<U, T> Producer
+        {
+            get;
+        }
+
+        public UnboundedLoadingSimpleCache(Func<U, T> producer)
+        {
+            Validate.IsNotNull(producer, StringUtils.GetFormattedNullOrDefaultMessage(this, "producer"));
+            Producer = producer;
+        }
+
+        public override T Get(U key)
         {
             /* 
                 This doesn't really need to be locked for reading, as ContainsKey should be a read-only operation. 
@@ -31,6 +43,7 @@ namespace DXGame.Core.Utils.Cache
                 {
                     return cache_[key];
                 }
+                T value = Producer(key);
                 cache_[key] = value;
                 return value;
             }

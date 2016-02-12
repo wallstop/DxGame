@@ -118,5 +118,15 @@ namespace DXGame.Core.Utils
         {
             FailIfTrue(!first.Equals(second), message);
         }
+
+        public static void AreNotEqual<T>(T first, T second) where T : IEquatable<T>
+        {
+            AreNotEqual(first, second, $"{first} was not equal to {second}");
+        }
+
+        public static void AreNotEqual<T>(T first, T second, string message) where T : IEquatable<T>
+        {
+            FailIfTrue(first.Equals(second), message);
+        }
     }
 }

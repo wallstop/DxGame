@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DXGame.Core.Utils.Cache.Simple;
 
 namespace DXGame.Core.Utils.Cache
 {
@@ -14,33 +8,48 @@ namespace DXGame.Core.Utils.Cache
 
         private const int DEFAULT_INITIAL_CAPACITY = 16;
         private const int DEFAULT_CONCURRENCY_LEVEL = 4;
-        private const int DEFAULT_EXPIRATION_NANOS = 0;
-        private const int DEFAULT_REFRESH_NANOS = 0;
+        private const int DEFAULT_EXPIRATION_TICKS = 0;
+        private const int DEFAULT_REFRESH_TICKS = 0;
 
-        private bool strictParsing_ = false;
-        private int initialCapacity_ = UNSET_INT;
-        private int concurrenyLevel_ = UNSET_INT;
+        private readonly bool strictParsing_ = true;
         private long maximumSize_ = UNSET_INT;
-        private long maximumWeight_ = UNSET_INT;
+        private readonly long maximumWeight_ = UNSET_INT;
+
+        public int InitialCapacity => DEFAULT_INITIAL_CAPACITY;
+        public int ConcurrencyLevel => DEFAULT_CONCURRENCY_LEVEL;
+
+        public long MaximumWeight
+        {
+            get
+            {
+                if(expireAfterWriteTicks_ == 0 || expireAfterAccessTicks_ == 0)
+                {
+                    return 0;
+                }
+                return ReferenceEquals(weigher_, null) ? maximumSize_ : maximumWeight_;
+            }
+        }
 
         private IWeigher<K, V> weigher_;
+
+        public IWeigher<K, V> Weigher => ReferenceEquals(weigher_, null) ? SimpleWeigher<K, V>.Instance : weigher_;
 
         private long expireAfterWriteTicks_ = UNSET_INT;
         private long expireAfterAccessTicks_ = UNSET_INT;
         private long refreshTicks_ = UNSET_INT;
 
-        public long ExpireAfterWrite
-            => (expireAfterWriteTicks_ == UNSET_INT) ? DEFAULT_REFRESH_NANOS : expireAfterWriteTicks_;
+        public long ExpireAfterWriteTicks
+            => expireAfterWriteTicks_ == UNSET_INT ? DEFAULT_EXPIRATION_TICKS : expireAfterWriteTicks_;
 
-        public long ExpireAfterAccess
-            => (expireAfterAccessTicks_ == UNSET_INT) ? DEFAULT_REFRESH_NANOS : expireAfterAccessTicks_;
+        public long ExpireAfterAccessTicks
+            => expireAfterAccessTicks_ == UNSET_INT ? DEFAULT_EXPIRATION_TICKS : expireAfterAccessTicks_;
 
-        public long Refresh => (refreshTicks_ == UNSET_INT) ? DEFAULT_REFRESH_NANOS : refreshTicks_;
+        public long RefreshTicks => refreshTicks_ == UNSET_INT ? DEFAULT_REFRESH_TICKS : refreshTicks_;
 
         private IRemovalListener<K, V> removalListener_;
 
         public IRemovalListener<K, V> RemovalListener
-            => (ReferenceEquals(removalListener_, null) ? NullRemovalListener<K, V>.Instance : removalListener_);
+            => ReferenceEquals(removalListener_, null) ? NullRemovalListener<K, V>.Instance : removalListener_;
 
         private CacheBuilder() {}
 
@@ -110,11 +119,47 @@ namespace DXGame.Core.Utils.Cache
             return this;
         }
 
+        public CacheBuilder<K, V> WithWeigher(IWeigher<K, V> weigher)
+        {
+            Validate.IsNull(weigher_);
+            if(strictParsing_)
+            {
+                Validate.AreEqual(maximumSize_, UNSET_INT, "weigher can not be combined with maximum size");
+            }
+            weigher_ = weigher;
+            return this;
+        }
+
         public ICache<K, V> Build()
         {
-            // TODO
-            return null;
-        } 
+            ValidateWeightWithWeigher();
+            ValidateNonLoadingCache();
+            return new LocalManualCache<K, V>(this);
+        }
 
+        public ILoadingCache<K, V> Build(CacheLoader<K, V> cacheLoader)
+        {
+            ValidateWeightWithWeigher();
+            return new LocalLoadingCache<K, V>(this, cacheLoader);
+        }
+
+        private void ValidateNonLoadingCache()
+        {
+            Validate.AreEqual(refreshTicks_, UNSET_INT, "refreshAfterWrite requires a LoadingCache");
+        }
+
+        private void ValidateWeightWithWeigher()
+        {
+            if(ReferenceEquals(weigher_, null))
+            {
+                Validate.AreEqual(maximumWeight_, UNSET_INT, "maximumWeight requires a non-null weigher");
+                return;
+            }
+
+            if(strictParsing_)
+            {
+                Validate.AreNotEqual(maximumWeight_, UNSET_INT, "weigher requires a maximumWeight");
+            }
+        }
     }
 }

@@ -168,10 +168,15 @@
     <Compile Include="Core\Network\ServerEventTracker.cs" />
     <Compile Include="Core\Skills\ChargedSkill.cs" />
     <Compile Include="Core\Utils\Cache\CacheBuilder.cs" />
+    <Compile Include="Core\Utils\Cache\CacheLoader.cs" />
     <Compile Include="Core\Utils\Cache\ICache.cs" />
+    <Compile Include="Core\Utils\Cache\ILoadingCache.cs" />
     <Compile Include="Core\Utils\Cache\IRemovalListener.cs" />
     <Compile Include="Core\Utils\Cache\IWeigher.cs" />
+    <Compile Include="Core\Utils\Cache\LocalCache.cs" />
+    <Compile Include="Core\Utils\Cache\NullRemovalListener.cs" />
     <Compile Include="Core\Utils\Cache\RemovalNotification.cs" />
+    <Compile Include="Core\Utils\Cache\SimpleWeigher.cs" />
     <Compile Include="Core\Utils\IdBasedCounter.cs" />
     <Compile Include="Core\Utils\SpringFunctions.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\TimedTriggeredActionComponent.cs" />
@@ -315,7 +320,7 @@
     <Compile Include="Core\Models\Model.cs" />
     <Compile Include="Core\Models\NetworkModel.cs" />
     <Compile Include="Core\Models\PlayerModel.cs" />
-    <Compile Include="Core\Utils\Cache\Simple\ICache.cs" />
+    <Compile Include="Core\Utils\Cache\Simple\ISimpleCache.cs" />
     <Compile Include="Core\Utils\ImmutablePair.cs" />
     <Compile Include="Core\Utils\IPair.cs" />
     <Compile Include="Core\Utils\LidgrenUtils.cs" />

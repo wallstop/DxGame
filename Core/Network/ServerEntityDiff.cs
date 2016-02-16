@@ -23,10 +23,10 @@ namespace DXGame.Core.Network
             GameTime = DxGame.Instance.CurrentTime;
         }
 
-        public ServerEntityDiff(ServerEntityTracker entityTracker) : this()
-        {
-            Validate.IsNotNull(entityTracker, StringUtils.GetFormattedNullOrDefaultMessage(this, entityTracker));
-            MissingGameElements.AddRange(entityTracker.Entities);
-        }
+        //public ServerEntityDiff(ServerEntityTracker entityTracker) : this()
+        //{
+        //    Validate.IsNotNull(entityTracker, StringUtils.GetFormattedNullOrDefaultMessage(this, entityTracker));
+        //    MissingGameElements.AddRange(entityTracker.Entities);
+        //}
     }
 }

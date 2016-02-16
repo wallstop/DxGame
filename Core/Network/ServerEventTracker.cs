@@ -2,6 +2,7 @@
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Utils;
-using FlitBit.Cache;
+using MemoryCache = System.Runtime.Caching.MemoryCache;
 using Message = DXGame.Core.Messaging.Message;
 
 namespace DXGame.Core.Network
@@ -29,9 +30,11 @@ namespace DXGame.Core.Network
         };
 
         private readonly List<Message> events_;
+        private readonly ObjectCache messageCache_;
 
         public ServerEventTracker()
         {
+            messageCache_ = NewObjectCache;
             events_ = new List<Message>();
             Handler.EnableAcceptAll();
             Handler.RegisterMessageHandler<Message>(HandleMessage);
@@ -44,23 +47,26 @@ namespace DXGame.Core.Network
             {
                 events_ = copy.events_.ToList();
             }
+            messageCache_ = NewObjectCache;
         }
 
         public bool StopTracking(Message message)
         {
+            //messageCache_.Remove
             //cache_.
             //MemoryCache.Default.Remove(uniqueIdentifier_, null)
             //return eventQueue_.Remove(message);
             return true;
         }
 
-        private static object NewObjectCache
+        private static ObjectCache NewObjectCache
         {
             get
             {
-                // TODO PLS GOOD CACHE
+                //MemoryCache<Message> b = new MemoryCache<Message>("");
+                // TODO PLS GOOD CACHE, MemoryCache is garbage. Look into porting Caffeine (https://github.com/ben-manes/caffeine)
                 string uniqueCacheIdentifier = Guid.NewGuid().ToString();
-                return null;
+                return new System.Runtime.Caching.MemoryCache(uniqueCacheIdentifier);
             }
         }
 

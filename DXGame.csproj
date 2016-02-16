@@ -167,16 +167,6 @@
     <Compile Include="Core\Network\ServerEntityDiff.cs" />
     <Compile Include="Core\Network\ServerEventTracker.cs" />
     <Compile Include="Core\Skills\ChargedSkill.cs" />
-    <Compile Include="Core\Utils\Cache\CacheBuilder.cs" />
-    <Compile Include="Core\Utils\Cache\CacheLoader.cs" />
-    <Compile Include="Core\Utils\Cache\ICache.cs" />
-    <Compile Include="Core\Utils\Cache\ILoadingCache.cs" />
-    <Compile Include="Core\Utils\Cache\IRemovalListener.cs" />
-    <Compile Include="Core\Utils\Cache\IWeigher.cs" />
-    <Compile Include="Core\Utils\Cache\LocalCache.cs" />
-    <Compile Include="Core\Utils\Cache\NullRemovalListener.cs" />
-    <Compile Include="Core\Utils\Cache\RemovalNotification.cs" />
-    <Compile Include="Core\Utils\Cache\SimpleWeigher.cs" />
     <Compile Include="Core\Utils\IdBasedCounter.cs" />
     <Compile Include="Core\Utils\SpringFunctions.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\TimedTriggeredActionComponent.cs" />
@@ -442,6 +432,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />

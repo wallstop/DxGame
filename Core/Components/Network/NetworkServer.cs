@@ -102,11 +102,11 @@ namespace DXGame.Core.Components.Network
                 foreach (KeyValuePair<NetConnection, ServerEventTracker> connectionEventTrackingPair in ClientFrameStates)
                 {
                     //foreach()
-                    ServerEntityDiff entityDiff = new ServerEntityDiff(connectionEntityTrackingPair.Value);
-                    NetOutgoingMessage outgoingMessage = entityDiff.ToNetOutgoingMessage(ServerConnection);
-                    ServerConnection.SendMessage(outgoingMessage, connectionEntityTrackingPair.Key, NetDeliveryMethod.ReliableOrdered, 0);
-                    // TODO: Rely on acks (for now, BLOW EM AWAY BOYS)
-                    connectionEntityTrackingPair.Value.Entities.Clear();
+                    //ServerEntityDiff entityDiff = new ServerEntityDiff(connectionEntityTrackingPair.Value);
+                    //NetOutgoingMessage outgoingMessage = entityDiff.ToNetOutgoingMessage(ServerConnection);
+                    //ServerConnection.SendMessage(outgoingMessage, connectionEntityTrackingPair.Key, NetDeliveryMethod.ReliableOrdered, 0);
+                    //// TODO: Rely on acks (for now, BLOW EM AWAY BOYS)
+                    //connectionEntityTrackingPair.Value.Entities.Clear();
                 }
                 lastSent_ = gameTime.TotalGameTime;
             }
@@ -215,8 +215,8 @@ namespace DXGame.Core.Components.Network
             Validate.IsFalse(ClientFrameStates.ContainsKey(connection),
                 $"Received ClientConnectionRequest that we're already tracking, this is an issue! Request: {clientConnectionRequest}");
 
-            ServerEntityTracker entityTracker = new ServerEntityTracker(baseEntityTracker_);
-            ClientFrameStates.Add(connection, entityTracker);
+            //ServerEntityTracker entityTracker = new ServerEntityTracker(baseEntityTracker_);
+            //ClientFrameStates.Add(connection, entityTracker);
             LOG.Info(
                 $"Successfully initialized ClientConnection {connection} for player {clientConnectionRequest.PlayerName}");
         }

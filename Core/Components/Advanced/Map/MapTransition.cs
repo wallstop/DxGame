@@ -48,7 +48,7 @@ namespace DXGame.Core.Components.Advanced.Map
                 return;
             }
             MapRotationRequest mapRotationRequest = new MapRotationRequest();
-            DxGame.Instance.BroadcastMessage(mapRotationRequest);
+            DxGame.Instance.BroadcastTypedMessage(mapRotationRequest);
             Active = false; // Disable once we're done so we don't accidentally double-trigger
         }
 

@@ -90,7 +90,7 @@ namespace DXGame.Core.Models
                 ExperiencedReceivedMessage experienceReceived =
                     new ExperiencedReceivedMessage(new Experience.Experience(experienceValue));
                 ++entitiesContributingToExperienceByPlayer_[player];
-                player.Object.BroadcastMessage(experienceReceived);
+                player.Object.BroadcastTypedMessage(experienceReceived);
             }
         }
     }

@@ -139,7 +139,7 @@ namespace DXGame.TowerGame.Enemies
             }, () =>
             {
                 LevelEndRequest levelEndRequest = new LevelEndRequest();
-                DxGame.Instance.BroadcastMessage(levelEndRequest);
+                DxGame.Instance.BroadcastTypedMessage(levelEndRequest);
             });
             GameObject triggerHolder = GameObject.Builder().WithComponent(trigger).Build();
             return triggerHolder;

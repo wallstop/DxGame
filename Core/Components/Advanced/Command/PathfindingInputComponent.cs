@@ -113,7 +113,7 @@ namespace DXGame.Core.Components.Advanced.Command
             foreach(Commandment commandment in commandments.Value.Commandments)
             {
                 var commandMessage = new CommandMessage {Commandment = commandment};
-                Parent?.BroadcastMessage(commandMessage);
+                Parent?.BroadcastTypedMessage(commandMessage);
             }
         }
     }

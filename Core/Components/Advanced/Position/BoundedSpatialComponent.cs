@@ -41,7 +41,7 @@ namespace DXGame.Core.Components.Advanced.Position
                 position_ = newPosition;
                 if(newPosition != value)
                 {
-                    Parent.BroadcastMessage(new CollisionMessage(value - newPosition, this));
+                    Parent.BroadcastTypedMessage(new CollisionMessage(value - newPosition, this));
                 }
             }
         }

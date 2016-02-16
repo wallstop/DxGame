@@ -28,7 +28,7 @@ namespace DXGame.Core.Models
         {
             foreach(NetworkComponent networkComponent in connections_)
             {
-                networkComponent.MessageHandler.HandleMessage(message);
+                networkComponent.MessageHandler.HandleTypedMessage(message);
             }
         }
 

@@ -211,7 +211,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
                 Source = Source,
                 Interaction = ArrowRainInteraction
             };
-            DxGame.Instance.BroadcastMessage(arrowRainCollisionMessage);
+            DxGame.Instance.BroadcastTypedMessage(arrowRainCollisionMessage);
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
@@ -335,7 +335,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
         private static void ArrowRainInteraction(GameObject source, PhysicsComponent destination)
         {
             var damageDealt = new DamageMessage {Source = source, DamageCheck = ArrowRainDamage};
-            destination.Parent?.BroadcastMessage(damageDealt);
+            destination.Parent?.BroadcastTypedMessage(damageDealt);
         }
 
         private static Tuple<bool, double> ArrowRainDamage(GameObject source, GameObject destination)

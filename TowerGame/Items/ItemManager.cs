@@ -38,7 +38,7 @@ namespace DXGame.TowerGame.Items
         {
             foreach(ItemComponent itemComponent in itemsByType_.Values)
             {
-                itemComponent.MessageHandler.HandleMessage(message);
+                itemComponent.MessageHandler.HandleTypedMessage(message);
             }
         }
 

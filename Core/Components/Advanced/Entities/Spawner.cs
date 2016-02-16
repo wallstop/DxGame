@@ -55,7 +55,7 @@ namespace DXGame.Core.Components.Advanced.Entities
                 }
                 DxGame.Instance.AddAndInitializeGameObject(spawnedObject);
                 EntitySpawnedMessage spawnMessage = new EntitySpawnedMessage(Id, spawnedObject);
-                DxGame.Instance.BroadcastMessage(spawnMessage);
+                DxGame.Instance.BroadcastTypedMessage(spawnMessage);
             }
             base.Update(gameTime);
         }

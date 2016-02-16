@@ -64,13 +64,13 @@ namespace DXGame.Core.Messaging
             existingMessageHandlers.Remove(messageHandler);
         }
 
-        public void HandleMessage(Message message)
+        public void HandleUntypedMessage(Message message)
         {
             dynamic trueMessageType = message;
             InternalHandleMessage(trueMessageType);
         }
 
-        public void HandleMessage<T>(T message) where T : Message
+        public void HandleTypedMessage<T>(T message) where T : Message
         {
             InternalHandleMessage(message);
         }

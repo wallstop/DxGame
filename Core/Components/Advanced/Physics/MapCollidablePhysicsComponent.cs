@@ -161,7 +161,7 @@ namespace DXGame.Core.Components.Advanced.Physics
             // Let everyone else know we collided (only if we collided with anything)
             if(collision.CollisionDirections.Any())
             {
-                Parent?.BroadcastMessage(collision);
+                Parent?.BroadcastTypedMessage(collision);
             }
         }
 

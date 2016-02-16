@@ -55,12 +55,12 @@ namespace DXGame.TowerGame.Components
                 return;
             }
 
-            var pathfindingRequest = new PathFindingRequest
+            PathFindingRequest pathfindingRequest = new PathFindingRequest
             {
                 Location = new DxVector2(player.Position.Position.X, player.Position.Position.Y + player.Position.Height - 0.001),
                 Timeout = PATHFINDING_TIMEOUT
             };
-            Parent?.BroadcastMessage(pathfindingRequest);
+            Parent?.BroadcastTypedMessage(pathfindingRequest);
             timeSinceLastMovementRequest_ = TimeSpan.Zero;
         }
 

@@ -46,11 +46,11 @@ namespace DXGame.TowerGame.Skills.Gevurah
             /* TODO: Need to deal with states / animation */
             AttackBuilder attackBuilder =
                 new AttackBuilder(Parent, new List<IShape> {attackArea}).WithPhysicsMessageGenerator(GenerateBasicAttack);
-            Parent.BroadcastMessage(attackBuilder);
+            Parent.BroadcastTypedMessage(attackBuilder);
             List<PhysicsMessage> attacks = attackBuilder.Build();
             foreach(PhysicsMessage attack in attacks)
             {
-                DxGame.Instance.BroadcastMessage(attack);
+                DxGame.Instance.BroadcastTypedMessage(attack);
             }
         }
 
@@ -106,7 +106,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
             /* If they either don't have a team component or are not on our team, blaze em */
             DamageMessage damage = new DamageMessage {DamageCheck = DamageCheck, Source = source};
-            destination.Parent.BroadcastMessage(damage);
+            destination.Parent.BroadcastTypedMessage(damage);
         }
 
         private Tuple<bool, double> DamageCheck(GameObject source, GameObject destination)

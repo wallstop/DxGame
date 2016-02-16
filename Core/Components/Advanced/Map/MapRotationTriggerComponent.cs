@@ -40,7 +40,7 @@ namespace DXGame.Core.Components.Advanced.Map
                 if(shouldTrigger)
                 {
                     MapRotationRequest mapRotationRequest = new MapRotationRequest();
-                    DxGame.Instance.BroadcastMessage(mapRotationRequest);
+                    DxGame.Instance.BroadcastTypedMessage(mapRotationRequest);
                 }
                 Triggered = shouldTrigger;
             }

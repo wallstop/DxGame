@@ -56,10 +56,10 @@ namespace DXGame.Core.Components.Network
 
         private void HandleMessage(Message message)
         {
-            baseEventTracker_.Handler.HandleMessage(message);
+            baseEventTracker_.Handler.HandleTypedMessage(message);
             foreach(ServerEventTracker eventTracker in ClientFrameStates.Values)
             {
-                eventTracker.Handler.HandleMessage(message);
+                eventTracker.Handler.HandleTypedMessage(message);
             }
         }
 

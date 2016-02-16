@@ -36,7 +36,7 @@ namespace DXGame.TowerGame.Components.Waves
             {
                 ++waveNumber_;
                 NewWaveMessage newWaveMessage = new NewWaveMessage(waveNumber_);
-                DxGame.Instance.BroadcastMessage(newWaveMessage);
+                DxGame.Instance.BroadcastTypedMessage(newWaveMessage);
             }
         }
     }

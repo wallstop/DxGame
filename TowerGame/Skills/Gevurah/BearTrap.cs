@@ -64,7 +64,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             stepOnBearTrap.AffectedAreas.Add(spatial_.Space);
             stepOnBearTrap.Source = Parent;
             stepOnBearTrap.Interaction = Trigger;
-            DxGame.Instance.BroadcastMessage<PhysicsMessage>(stepOnBearTrap);
+            DxGame.Instance.BroadcastTypedMessage<PhysicsMessage>(stepOnBearTrap);
         }
 
         private void Trigger(GameObject source, PhysicsComponent destination)
@@ -74,7 +74,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
                 DamageCheck = DamageCheck,
                 Source = Parent
             };
-            destination.Parent?.BroadcastMessage<DamageMessage>(damage);
+            destination.Parent?.BroadcastTypedMessage<DamageMessage>(damage);
         }
 
         private Tuple<bool, double> DamageCheck(GameObject source, GameObject destination)

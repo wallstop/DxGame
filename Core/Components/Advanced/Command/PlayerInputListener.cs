@@ -85,7 +85,7 @@ namespace DXGame.Core.Components.Advanced.Command
         {
             if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Left))
             {
-                Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.MoveLeft});
+                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.MoveLeft});
             }
         }
 
@@ -93,7 +93,7 @@ namespace DXGame.Core.Components.Advanced.Command
         {
             if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Right))
             {
-                Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.MoveRight});
+                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.MoveRight});
             }
         }
 
@@ -101,7 +101,7 @@ namespace DXGame.Core.Components.Advanced.Command
         {
             if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Jump))
             {
-                Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.MoveUp});
+                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.MoveUp});
             }
         }
 
@@ -110,8 +110,8 @@ namespace DXGame.Core.Components.Advanced.Command
             if (inputEvents.Any(keyEvent => keyEvent.Key == DxGame.Instance.Controls.Down && keyEvent.HeldDown) &&
                 (lastDroppedThroughPlatform_ + DROP_THROUGH_PLATFORM_DELAY) < gameTime.TotalGameTime)
             {
-                Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.MoveDown});
-                Parent?.BroadcastMessage(new DropThroughPlatformRequest()); // TODO: Move out to somewhere else?
+                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.MoveDown});
+                Parent?.BroadcastTypedMessage(new DropThroughPlatformRequest()); // TODO: Move out to somewhere else?
                 lastDroppedThroughPlatform_ = gameTime.TotalGameTime;
             }
         }
@@ -122,7 +122,7 @@ namespace DXGame.Core.Components.Advanced.Command
         {
             if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Attack))
             {
-                Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.Attack});
+                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.Attack});
             }
         }
 
@@ -130,7 +130,7 @@ namespace DXGame.Core.Components.Advanced.Command
         {
             if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability1))
             {
-                Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.Ability1});
+                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.Ability1});
             }
         }
 
@@ -138,7 +138,7 @@ namespace DXGame.Core.Components.Advanced.Command
         {
             if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability2))
             {
-                Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.Ability2});
+                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.Ability2});
             }
         }
 
@@ -146,7 +146,7 @@ namespace DXGame.Core.Components.Advanced.Command
         {
             if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability3))
             {
-                Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.Ability3});
+                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.Ability3});
             }
         }
 
@@ -154,7 +154,7 @@ namespace DXGame.Core.Components.Advanced.Command
         {
             if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability4))
             {
-                Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.Ability4});
+                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.Ability4});
             }
         }
 
@@ -162,7 +162,7 @@ namespace DXGame.Core.Components.Advanced.Command
         {
             if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Movement))
             {
-                Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.Movement});
+                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.Movement});
             }
         }
 
@@ -170,8 +170,8 @@ namespace DXGame.Core.Components.Advanced.Command
         {
             if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Interact))
             {
-                Parent?.BroadcastMessage(new CommandMessage {Commandment = Commandment.InteractWithEnvironment});
-                DxGame.Instance.BroadcastMessage(new EnvironmentInteractionMessage {Source = Parent, Time = gameTime}); // TODO: Move somewhere else?
+                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.InteractWithEnvironment});
+                DxGame.Instance.BroadcastTypedMessage(new EnvironmentInteractionMessage {Source = Parent, Time = gameTime}); // TODO: Move somewhere else?
             }
         }
     }

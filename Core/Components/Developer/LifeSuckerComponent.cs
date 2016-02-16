@@ -38,7 +38,7 @@ namespace DXGame.Core.Components.Developer
                 Source = Parent,
                 DamageCheck = LifeSuckDamage
             };
-            Parent?.BroadcastMessage(lifeSuckMessage);
+            Parent?.BroadcastTypedMessage(lifeSuckMessage);
         }
 
         private static Tuple<bool, double> LifeSuckDamage(GameObject source, GameObject destination)

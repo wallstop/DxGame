@@ -166,8 +166,8 @@ namespace DXGame.Core.Components.Advanced.Properties
                 /* If so, tell everyone that we've died. */
                 var entityDeathMessage = new EntityDeathMessage {Entity = Parent};
                 /* The world deserves to know. We were important. */
-                DxGame.Instance.BroadcastMessage(entityDeathMessage);
-                Parent?.BroadcastMessage(entityDeathMessage);
+                DxGame.Instance.BroadcastTypedMessage(entityDeathMessage);
+                Parent?.BroadcastTypedMessage(entityDeathMessage);
             }
         }
 

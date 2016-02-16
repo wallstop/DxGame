@@ -28,7 +28,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             physicsMessage.Interaction =
                 (gameObject, destination) =>
                     new ShockwaveClosure(gameTime.TotalGameTime).ShockwaveInteraction(gameObject, destination);
-            DxGame.Instance.BroadcastMessage(physicsMessage);
+            DxGame.Instance.BroadcastTypedMessage(physicsMessage);
         }
 
         public static void RainOfArrows(GameObject parent, DxGameTime startTime, DxGameTime gameTime)
@@ -164,7 +164,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
                 /* ...and then damage (if we can) */
                 var damageDealt = new DamageMessage {Source = source, DamageCheck = ShockwaveDamage};
-                destination.Parent?.BroadcastMessage(damageDealt);
+                destination.Parent?.BroadcastTypedMessage(damageDealt);
 
                 /* ... and attach a life sucker (just to be evil) */
                 if(!ReferenceEquals(destination.Parent, null))

@@ -133,19 +133,19 @@ namespace DXGame.Main
             </summary>
         */
 
-        public void BroadcastMessage(Message message)
+        public void BroadcastUntypedMessage(Message message)
         {
             foreach(var model in Models)
             {
-                model.MessageHandler.HandleMessage(message);
+                model.MessageHandler.HandleUntypedMessage(message);
             }
         }
 
-        public void BroadcastMessage<T>(T message) where T : Message
+        public void BroadcastTypedMessage<T>(T message) where T : Message
         {
             foreach(var model in Models)
             {
-                model.MessageHandler.HandleMessage<T>(message);
+                model.MessageHandler.HandleTypedMessage<T>(message);
             }
         }
 
@@ -292,7 +292,7 @@ namespace DXGame.Main
                     Entity = newGameElement,
                     Status = EntityStatus.Created
                 };
-                BroadcastMessage<EntityStatusChangedMessage>(entityStatusChanged);
+                BroadcastTypedMessage<EntityStatusChangedMessage>(entityStatusChanged);
             }
             NewGameElements.Clear();
             foreach(object removedGameElement in RemovedGameElements)
@@ -303,7 +303,7 @@ namespace DXGame.Main
                     Entity = removedGameElement,
                     Status = EntityStatus.Removed
                 };
-                BroadcastMessage<EntityStatusChangedMessage>(entityStatusChanged);
+                BroadcastTypedMessage<EntityStatusChangedMessage>(entityStatusChanged);
             }
             RemovedGameElements.Clear();
         }

@@ -44,7 +44,7 @@ namespace DXGame.Core.Components.Advanced.Entities
             DxVector2 sourcePosition = Parent?.ComponentOfType<SpatialComponent>()?.Center ?? new DxVector2();
             ExperienceDroppedMessage experienceDropped = new ExperienceDroppedMessage(sourceTeam, sourcePosition, Radius,
                 Experience);
-            DxGame.Instance.BroadcastMessage(experienceDropped);
+            DxGame.Instance.BroadcastTypedMessage(experienceDropped);
         }
     }
 }

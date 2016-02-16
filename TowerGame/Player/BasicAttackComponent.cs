@@ -51,7 +51,7 @@ namespace DXGame.TowerGame.Player
 
             AttackRequest attackRequest = new AttackRequest();
 
-            Parent.BroadcastMessage(attackRequest);
+            Parent.BroadcastTypedMessage(attackRequest);
         }
     }
 }

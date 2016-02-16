@@ -136,17 +136,31 @@ namespace DXGame.Core
             return new GameObjectBuilder();
         }
 
-        public void BroadcastMessage<T>(T message) where T : Message
+        public void BroadcastUntypedMessage(Message message)
         {
             FutureMessages.Add(message);
-            var components = components_.ToArray();
-            foreach(var component in components)
+            Component[] components = components_.ToArray();
+            foreach(Component component in components)
             {
-                component.MessageHandler.HandleMessage(message);
+                component.MessageHandler.HandleUntypedMessage(message);
             }
             if(message.Global)
             {
-                DxGame.Instance.BroadcastMessage(message);
+                DxGame.Instance.BroadcastTypedMessage(message);
+            }
+        }
+
+        public void BroadcastTypedMessage<T>(T message) where T : Message
+        {
+            FutureMessages.Add(message);
+            Component [] components = components_.ToArray();
+            foreach(Component component in components)
+            {
+                component.MessageHandler.HandleTypedMessage<T>(message);
+            }
+            if(message.Global)
+            {
+                DxGame.Instance.BroadcastTypedMessage(message);
             }
         }
 

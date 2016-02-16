@@ -24,7 +24,7 @@ namespace DXGame.Core.Components.Advanced.Impulse
             }
 
             AttackRequest attackRequest = new AttackRequest();
-            Parent?.BroadcastMessage(attackRequest);
+            Parent?.BroadcastTypedMessage(attackRequest);
         }
     }
 }

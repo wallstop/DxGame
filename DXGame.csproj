@@ -167,6 +167,13 @@
     <Compile Include="Core\Network\ServerEntityDiff.cs" />
     <Compile Include="Core\Network\ServerEventTracker.cs" />
     <Compile Include="Core\Skills\ChargedSkill.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\CacheBuilder.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\DiscardingQueue.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\ICache.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\ILoadingCache.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\LocalCache.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\LocalLoadingCache.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\RemovalNotification.cs" />
     <Compile Include="Core\Utils\IdBasedCounter.cs" />
     <Compile Include="Core\Utils\SpringFunctions.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\TimedTriggeredActionComponent.cs" />

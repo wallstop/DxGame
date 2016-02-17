@@ -14,8 +14,6 @@ namespace DXGame.Core.Utils.Cache.Advanced
         private readonly ConcurrentDictionary<K, StampedAndLockedValue<V>> cache_ =
             new ConcurrentDictionary<K, StampedAndLockedValue<V>>();
 
-        private readonly ReaderWriterLockSlim lock_ = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-
         private readonly Action<RemovalNotification<K, V>> removalListener_;
 
         private readonly IProducerConsumerCollection<RemovalNotification<K, V>> removalNotificationQueue_;
@@ -40,8 +38,11 @@ namespace DXGame.Core.Utils.Cache.Advanced
         public LocalCache(CacheBuilder<K, V> cacheBuilder)
         {
             Validate.IsNotNull(cacheBuilder, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(cacheBuilder)));
-            ExpireAfterAccessTicks = cacheBuilder.ExpireAfterAccessTicks;
-            ExpireAfterWriteTicks = cacheBuilder.ExpireAfterWriteTicks;
+            ticker_ = Stopwatch.StartNew();
+            /* Our input ticks are of the form "Timespan Ticks". We need to transform them to "Stopwatch" ticks */
+            ExpireAfterAccessTicks = TransformTimeSpanTicksToStopwatchTicks(cacheBuilder.ExpireAfterAccessTicks);
+            ExpireAfterWriteTicks = TransformTimeSpanTicksToStopwatchTicks(cacheBuilder.ExpireAfterWriteTicks);
+
             removalListener_ = cacheBuilder.RemovalListener;
             if(ReferenceEquals(cacheBuilder.RemovalListener, null))
             {
@@ -69,7 +70,11 @@ namespace DXGame.Core.Utils.Cache.Advanced
             {
                 writeQueue_ = DiscardingQueue<StampedAccessEntry<K, V>>.Instance;
             }
-            ticker_ = Stopwatch.StartNew();
+        }
+
+        private static int TransformTimeSpanTicksToStopwatchTicks(long ticks)
+        {
+            return (int) Math.Round(1.0 * Stopwatch.Frequency / new TimeSpan(ticks).TotalSeconds);
         }
 
         public Optional<V> GetIfPresent(K key)
@@ -82,33 +87,46 @@ namespace DXGame.Core.Utils.Cache.Advanced
                 {
                     return Optional<V>.Empty;
                 }
+                return UpdateOrExpireStampedAndLockedValueForRead(key, lockedValue);
+            }
+            finally
+            {
+                PostReadCleanup();
+            }
+        }
 
-                long nowTicks = NowTick;
-                V value;
-                lockedValue.Lock.EnterReadLock();
-                try
-                {
-                    value = lockedValue.Value;
-                    RecordRead(key, value, nowTicks);
-                }
-                finally
-                {
-                    lockedValue.Lock.ExitReadLock();
-                }
+        private Optional<V> UpdateOrExpireStampedAndLockedValueForRead(K key, StampedAndLockedValue<V> lockedValue)
+        {
+            long nowTicks = NowTick;
+            if(lockedValue.IsExpired(nowTicks))
+            {
+                TryExpireEntries(nowTicks);
+                return Optional<V>.Empty;
+            }
 
-                /* Only lock the value if we actually care */
+            lockedValue.Lock.EnterUpgradeableReadLock();
+            try
+            {
+                /* Neat, new read, record it */
+                RecordRead(key, lockedValue.Value, nowTicks);
+                V value = lockedValue.Value;
                 if(ExpiresAfterAccess)
                 {
-                    using(new CriticalRegion(lockedValue.Lock, CriticalRegion.LockType.Write))
+                    lockedValue.Lock.EnterWriteLock();
+                    try
                     {
-                        lockedValue.AccessExpiry = NewAccessExpiryTimeTick;
+                        lockedValue.AccessExpiry = AccessExpiryTimeTick(nowTicks);
+                    }
+                    finally
+                    {
+                        lockedValue.Lock.ExitWriteLock();
                     }
                 }
                 return value;
             }
             finally
             {
-                PostReadCleanup();
+                lockedValue.Lock.ExitUpgradeableReadLock();
             }
         }
 
@@ -122,35 +140,10 @@ namespace DXGame.Core.Utils.Cache.Advanced
                 /* First, see if a value exists. We need to check expiry here - it might be expired :( */
                 if(cache_.TryGetValue(key, out lockedValue))
                 {
-                    long nowTicks = NowTick;
-                    lockedValue.Lock.EnterUpgradeableReadLock();
-                    try
+                    Optional<V> maybeNonExpiredValue = UpdateOrExpireStampedAndLockedValueForRead(key, lockedValue);
+                    if(maybeNonExpiredValue.HasValue)
                     {
-                        if(lockedValue.IsExpired(nowTicks))
-                        {
-                            TryExpireEntries(nowTicks);
-                            // Fall through
-                        }
-                        else
-                        {
-                            /* Neat, new read, record it */
-                            RecordRead(key, lockedValue.Value, nowTicks);
-                            V value = lockedValue.Value;
-                            lockedValue.Lock.EnterWriteLock();
-                            try
-                            {
-                                lockedValue.AccessExpiry = NewAccessExpiryTimeTick;
-                            }
-                            finally
-                            {
-                                lockedValue.Lock.ExitWriteLock();
-                            }
-                            return value;
-                        }
-                    }
-                    finally
-                    {
-                        lockedValue.Lock.ExitUpgradeableReadLock();
+                        return maybeNonExpiredValue.Value;
                     }
                 }
                 /* Someone might have beat us to the punch */
@@ -194,7 +187,6 @@ namespace DXGame.Core.Utils.Cache.Advanced
                 StampedAndLockedValue<V> lockedValue = NewStampedAndLockedValue(value);
                 cache_.AddOrUpdate(key, keyArg =>
                 {
-                    EvictEntries();
                     RecordWrite(key, value, nowTicks);
                     return lockedValue;
                 }, (keyArg, existingValue) =>
@@ -234,17 +226,14 @@ namespace DXGame.Core.Utils.Cache.Advanced
         {
             try
             {
-                using(new CriticalRegion(lock_, CriticalRegion.LockType.Write))
+                long nowTicks = NowTick;
+                PreWriteCleanup(nowTicks);
+                StampedAndLockedValue<V> lockedValue;
+                if(cache_.TryRemove(key, out lockedValue))
                 {
-                    long nowTicks = NowTick;
-                    PreWriteCleanup(nowTicks);
-                    StampedAndLockedValue<V> lockedValue;
-                    if(cache_.TryRemove(key, out lockedValue))
+                    using(new CriticalRegion(lockedValue.Lock, CriticalRegion.LockType.Read))
                     {
-                        using(new CriticalRegion(lockedValue.Lock, CriticalRegion.LockType.Read))
-                        {
-                            EnqueueNotification(key, lockedValue.Value, RemovalCause.Explicit);
-                        }
+                        EnqueueNotification(key, lockedValue.Value, RemovalCause.Explicit);
                     }
                 }
             }
@@ -258,20 +247,17 @@ namespace DXGame.Core.Utils.Cache.Advanced
         {
             try
             {
-                using(new CriticalRegion(lock_, CriticalRegion.LockType.Write))
+                foreach(KeyValuePair<K, StampedAndLockedValue<V>> entry in cache_)
                 {
-                    foreach(KeyValuePair<K, StampedAndLockedValue<V>> entry in cache_)
+                    using(new CriticalRegion(entry.Value.Lock, CriticalRegion.LockType.Read))
                     {
-                        using(new CriticalRegion(entry.Value.Lock, CriticalRegion.LockType.Read))
-                        {
-                            EnqueueNotification(entry.Key, entry.Value.Value, RemovalCause.Explicit);
-                        }
+                        EnqueueNotification(entry.Key, entry.Value.Value, RemovalCause.Explicit);
                     }
-                    cache_.Clear();
-                    writeQueue_.Clear();
-                    accessQueue_.Clear();
-                    Interlocked.Exchange(ref readCount_, 0);
                 }
+                cache_.Clear();
+                writeQueue_.Clear();
+                accessQueue_.Clear();
+                Interlocked.Exchange(ref readCount_, 0);
             }
             finally
             {
@@ -290,7 +276,7 @@ namespace DXGame.Core.Utils.Cache.Advanced
 
         private long AccessExpiryTimeTick(long nowTicks)
         {
-            return ExpiresAfterAccess ? ExpireAfterAccessTicks + nowTicks : -1;
+            return ExpiresAfterAccess ? ExpireAfterAccessTicks + nowTicks : long.MaxValue;
         }
 
         private void EnqueueNotification(K key, V value, RemovalCause removalCause)
@@ -298,8 +284,6 @@ namespace DXGame.Core.Utils.Cache.Advanced
             RemovalNotification<K, V> notification = new RemovalNotification<K, V>(key, value, removalCause);
             removalNotificationQueue_.TryAdd(notification);
         }
-
-        private void EvictEntries() {}
 
         private void ExpireEntries(long nowTick)
         {
@@ -331,23 +315,17 @@ namespace DXGame.Core.Utils.Cache.Advanced
                     return false;
                 }
                 /* If we can't enter the write lock, it means that someone else owns it - and that they're fucking with it, which means don't expire */
-                if(lockedValue.Lock.TryEnterWriteLock(0))
+                using(new CriticalRegion(lockedValue.Lock, CriticalRegion.LockType.Read))
                 {
-                    try
+                    V expectedValue = stampedEntry.Value;
+                    if(!Objects.Equals(expectedValue, lockedValue.Value))
                     {
-                        V expectedValue = stampedEntry.Value;
-                        if(!Objects.Equals(expectedValue, lockedValue.Value))
-                        {
-                            return true;
-                        }
-                        StampedAndLockedValue<V> removedValue;
-                        bool success = cache_.TryRemove(key, out removedValue);
-                        Assert.IsTrue(success);
+                        /* Our mapped value has changed - we don't care! We'll get a notification later */
+                        return true;
                     }
-                    finally
-                    {
-                        lockedValue.Lock.ExitWriteLock();
-                    }
+                    StampedAndLockedValue<V> removedValue;
+                    bool success = cache_.TryRemove(key, out removedValue);
+                    // TODO: Validate? This should be true
                 }
             }
             return true;
@@ -410,7 +388,7 @@ namespace DXGame.Core.Utils.Cache.Advanced
         private void RecordWrite(K key, V value, long nowTicks)
         {
             StampedAccessEntry<K, V> stampedWriteAccess = new StampedAccessEntry<K, V>(key, value,
-                AccessExpiryTimeTick(nowTicks));
+                WriteExpiryTimeTick(nowTicks));
             bool success = writeQueue_.TryAdd(stampedWriteAccess);
             // Validate success?
         }
@@ -428,26 +406,16 @@ namespace DXGame.Core.Utils.Cache.Advanced
 
         private void TryExpireEntries(long nowTicks)
         {
-            if(lock_.TryEnterWriteLock(0))
-            {
-                try
-                {
-                    ExpireEntries(nowTicks);
-                }
-                finally
-                {
-                    lock_.ExitWriteLock();
-                }
-            }
+            ExpireEntries(nowTicks);
         }
 
         private long WriteExpiryTimeTick(long nowTicks)
         {
-            return ExpiresAfterWrite ? ExpireAfterWriteTicks + nowTicks : -1;
+            return ExpiresAfterWrite ? ExpireAfterWriteTicks + nowTicks : long.MaxValue;
         }
     }
 
-    internal class StampedAndLockedValue<V>
+    internal sealed class StampedAndLockedValue<V>
     {
         public long AccessExpiry { get; set; }
         public ReaderWriterLockSlim Lock { get; } = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
@@ -463,11 +431,11 @@ namespace DXGame.Core.Utils.Cache.Advanced
 
         public bool IsExpired(long nowTick)
         {
-            return AccessExpiry > nowTick || WriteExpiry > nowTick;
+            return (AccessExpiry < nowTick) || (WriteExpiry < nowTick);
         }
     }
 
-    internal class StampedAccessEntry<K, V>
+    internal sealed class StampedAccessEntry<K, V>
     {
         public K Key { get; }
         public long TickStamp { get; }

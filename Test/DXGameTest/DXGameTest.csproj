@@ -135,6 +135,8 @@
     <Compile Include="Core\SortedListTest.cs" />
     <Compile Include="Core\TestUtils.cs" />
     <Compile Include="Core\UniqueIdTest.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\CacheBuilderTest.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\LocalManualCacheTest.cs" />
     <Compile Include="Core\Utils\Distance\DistanceHelper.cs" />
     <Compile Include="Core\Utils\Distance\KDTreeTest.cs" />
     <Compile Include="Core\Utils\Distance\QuadTreeTest.cs" />

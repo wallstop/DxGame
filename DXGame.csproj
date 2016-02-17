@@ -175,6 +175,7 @@
     <Compile Include="Core\Utils\Cache\Advanced\LocalLoadingCache.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\RemovalNotification.cs" />
     <Compile Include="Core\Utils\IdBasedCounter.cs" />
+    <Compile Include="Core\Utils\ProducerConsumerCollectionExtensions.cs" />
     <Compile Include="Core\Utils\SpringFunctions.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\TimedTriggeredActionComponent.cs" />
     <Compile Include="TowerGame\Components\Waves\WaveEmitter.cs" />

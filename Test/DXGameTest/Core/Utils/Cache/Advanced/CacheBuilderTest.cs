@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DXGame.Core.Utils;
+using DXGame.Core.Utils.Cache;
 using DXGame.Core.Utils.Cache.Advanced;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;

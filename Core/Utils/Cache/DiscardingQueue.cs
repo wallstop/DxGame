@@ -5,8 +5,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace DXGame.Core.Utils.Cache.Advanced
+namespace DXGame.Core.Utils.Cache
 {
+    /**
+        This queue simply discards whatever is thrown into it. It's a stateless, fast, immutable, empty list.
+
+        Extremely useful for when you NEED a queue but don't want one that actually does anything
+    */
     public class DiscardingQueue<T> : IProducerConsumerCollection<T>
     {
         private static readonly Lazy<DiscardingQueue<T>> INSTANCE =

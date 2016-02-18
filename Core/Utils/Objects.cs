@@ -32,7 +32,7 @@ namespace DXGame.Core.Utils
             {
                 return true;
             }
-            return !ReferenceEquals(first, null) && !ReferenceEquals(second, null) && first.Equals(second);
+            return !ReferenceEquals(first, null) && first.Equals(second);
         }
 
         public static T Copy<T>(this T original)

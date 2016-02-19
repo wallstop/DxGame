@@ -457,6 +457,9 @@ namespace DXGame.Core.Utils.Cache.Advanced
         }
     }
 
+    /**
+        The "secret sauce" Key augmentation. Provides per-element locking for our own management
+    */
     internal sealed class StampedAndLockedValue<V>
     {
         public long AccessExpiry { get; set; }
@@ -491,6 +494,7 @@ namespace DXGame.Core.Utils.Cache.Advanced
         Combined with the fact that we do not record StampedAccessEntries for operations that we don't care about (ie, configured, via a DiscardingQueue), 
         this allows us to 
     */
+
     internal sealed class StampedAccessEntry<K>
     {
         public K Key { get; }

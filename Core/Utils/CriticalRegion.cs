@@ -14,7 +14,7 @@ namespace DXGame.Core.Utils
         </summary>
     */
 
-    public class CriticalRegion : IDisposable
+    public struct CriticalRegion : IDisposable
     {
         public enum LockType
         {

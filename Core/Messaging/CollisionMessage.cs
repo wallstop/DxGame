@@ -18,7 +18,7 @@ namespace DXGame.Core.Messaging
     public class CollisionMessage : Message
     {
         [DataMember]
-        public Dictionary<Direction, IIdentifiable> CollisionDirections { get; } = new Dictionary<Direction, IIdentifiable>();
+        public Dictionary<Direction, IIdentifiable> CollisionDirections { get; set;  } = new Dictionary<Direction, IIdentifiable>();
 
         public CollisionMessage()
         {

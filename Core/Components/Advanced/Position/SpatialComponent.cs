@@ -14,12 +14,10 @@ namespace DXGame.Core.Components.Advanced.Position
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class SpatialComponent : PositionalComponent
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-
-        [ProtoMember(1)]
+        
         [DataMember]
         public DxVector2 Dimensions { get; }
 

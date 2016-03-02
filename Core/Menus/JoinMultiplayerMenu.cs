@@ -123,6 +123,7 @@ namespace DXGame.Core.Menus
                 ((NetworkClient) new NetworkClient().WithConfiguration(config))
                     .WithNetworkClientConfig(
                         networkClientConfig);
+            client.Initialize();
             var networkModel = DxGame.Instance.Model<NetworkModel>();
             networkModel.AttachClient(client);
             client.EstablishConnection();

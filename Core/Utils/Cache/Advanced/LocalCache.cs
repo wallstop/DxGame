@@ -404,7 +404,6 @@ namespace DXGame.Core.Utils.Cache.Advanced
             RemovalNotification<K, V> notification;
             while(removalNotificationQueue_.TryTake(out notification))
             {
-                // TODO: Exception handling
                 try
                 {
                     removalListener_.Invoke(notification);

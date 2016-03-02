@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Lerp;
+using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Network;
 using DXGame.Core.Models;
 using DXGame.Core.Network;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
+using DXGame.Core.Utils.Lerp;
 using DXGame.Main;
 using Lidgren.Network;
 using NLog;
@@ -24,6 +30,11 @@ namespace DXGame.Core.Components.Network
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         protected NetworkClientConfig ClientConfig { get; set; }
         public NetClient ClientConnection => Connection as NetClient;
+
+        private readonly LerpDataCollector<DxVector2> dxVector2LerpData_ = new LerpDataCollector<DxVector2>(); 
+
+        private readonly ReaderWriterLockSlim lock_ = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+        private List<Message> messagesToBroadcast_ = new List<Message>(); 
 
         public NetworkClient WithNetworkClientConfig(NetworkClientConfig configuration)
         {
@@ -45,9 +56,8 @@ namespace DXGame.Core.Components.Network
         {
             ClientConnection.Start();
 
-            ClientConnectionRequest request = new ClientConnectionRequest {PlayerName = ClientConfig.PlayerName};
-            var outMessage = request.ToNetOutgoingMessage(ClientConnection);
-
+            ClientConnectionRequest request = new ClientConnectionRequest(ClientConfig.PlayerName);
+            NetOutgoingMessage outMessage = request.ToNetOutgoingMessage(ClientConnection);
             ClientConnection.Connect(ClientConfig.IpAddress, ClientConfig.Port, outMessage);
         }
 
@@ -71,100 +81,61 @@ namespace DXGame.Core.Components.Network
 
         protected void ProcessDebugMessage(NetIncomingMessage message)
         {
-
-        }
-
-        protected void ProcessData(NetIncomingMessage message)
-        {
-            Validate.IsNotNull(message, "Cannot process server data on a null message!");
-            NetworkMessage networkMessage = null;
-            try
-            {
-                networkMessage = NetworkMessage.FromNetIncomingMessage(message);
-            }
-            catch (Exception e)
-            {
-                LOG.Error(e, "Caught unexpected exception while attempting to process network data message");
-            }
-            finally
-            {
-                Validate.IsNotNull(networkMessage,
-                    $"Could not properly format a NetworkMessage from NetIncomingMessage {message}");
-            }
-
-            // Don't lie to me resharper...
-            // ReSharper disable once PossibleNullReferenceException
-            switch (networkMessage.MessageType)
-            {
-                case MessageType.ServerDataKeyFrame:
-                    HandleServerDataKeyFrame(networkMessage);
-                    break;
-                case MessageType.ServerDataDiff:
-                    HandleServerDataDiff(networkMessage);
-                    break;
-                default:
-                    LOG.Info(
-                        $"Received NetMessage of type {message.MessageType}. Currently not handling this. ({message.MessageContents()})");
-                    break;
-            }
-        }
-
-        protected void HandleServerDataDiff(NetworkMessage message)
-        {
-            ServerEntityDiff entityDiff = ConvertMessageType<ServerEntityDiff>(message);
-            foreach(object entity in entityDiff.MissingGameElements)
-            {
-                Component entityAsComponent = entity as Component;
-                if(!ReferenceEquals(entityAsComponent, null))
-                {
-                    DxGame.Instance.AddAndInitializeComponent(entityAsComponent);
-                    continue;
-                }
-                GameObject gameObject = entity as GameObject;
-                if(!ReferenceEquals(gameObject, null))
-                {
-                    DxGame.Instance.AddGameObject(gameObject);
-                    continue;
-                }
-                LOG.Warn($"Encountered unexpected entity type in ServerDataDiff {entity.GetType()} ({entity})");
-            }
-        }
-
-        protected void HandleServerDataKeyFrame(NetworkMessage message)
-        {
-            var serverDataKeyFrame = ConvertMessageType<GameStateKeyFrame>(message);
-
-            Predicate<object> shouldSerialize = entity =>
-            {
-                var component = entity as Component;
-                return component != null && component.ShouldSerialize;
-            };
-            // TODO: Faster way of dumping state
-            DxGame.Instance.DxGameElements.Remove(shouldSerialize);
-            foreach (var element in serverDataKeyFrame.GameElements)
-            {
-                DxGame.Instance.DxGameElements.Add(element);
-            }
-            DxGame.Instance.NewGameElements.Clear();
-            foreach (var element in serverDataKeyFrame.NewGameElements)
-            {
-                DxGame.Instance.NewGameElements.Add(element);
-            }
-            DxGame.Instance.RemovedGameElements.Clear();
-            foreach (var element in serverDataKeyFrame.RemovedGameEleemnts)
-            {
-                DxGame.Instance.RemovedGameElements.Add(element);
-            }
-            DxGame.Instance.Models.RemoveAll(shouldSerialize);
-            foreach (var model in serverDataKeyFrame.Models)
-            {
-                DxGame.Instance.Models.Add(model);
-            }
+            // TODO
         }
 
         public override void SendData(DxGameTime gameTime)
         {
-            // TODO:
+            // TODO: send message stream of input to server (pretty ez)
+        }
+
+        protected override void PostReceiveData(DxGameTime gameTime)
+        {
+            List<Message> messagesToBroadcast;
+            using(new CriticalRegion(lock_, CriticalRegion.LockType.Write))
+            {
+                messagesToBroadcast = messagesToBroadcast_;
+                messagesToBroadcast_ = new List<Message>();
+            }
+
+            foreach(Message message in messagesToBroadcast)
+            {
+                DxGame.Instance.BroadcastUntypedMessage(message);
+            }
+
+                // TODO: Make this not shit (Keep our own id -> component mapping?)
+            List<IDxVectorLerpable> dxVectorLerpables = DxGame.Instance.Components.OfType<IDxVectorLerpable>().ToList();
+            foreach(IDxVectorLerpable dxVectorLerpable in dxVectorLerpables)
+            {
+                UniqueId entityId = dxVectorLerpable.Id;
+                LerpData<DxVector2> dxVectorLerpData;
+                if(dxVector2LerpData_.TryGetLerpData(entityId, out dxVectorLerpData))
+                {
+                    dxVectorLerpable.Lerp(dxVectorLerpData.OldValue, dxVectorLerpData.NewValue, dxVectorLerpData.OldTime, dxVectorLerpData.NewTime, gameTime.TotalGameTime);
+                }
+            }
+            base.PostReceiveData(gameTime);
+        }
+
+        protected override void InitializeNetworkMessageListeners()
+        {
+            networkMessageHandlers_[typeof(EventStream)] = HandleEventStream;
+            networkMessageHandlers_[typeof(DxVectorLerpMessage)] = HandleDxVectorLerpMessage;
+        }
+
+        private void HandleEventStream(NetworkMessage message, NetConnection netConnection)
+        {
+            EventStream eventStream = ConvertMessageType<EventStream>(message);
+            using(new CriticalRegion(lock_, CriticalRegion.LockType.Write))
+            {
+                messagesToBroadcast_.AddRange(eventStream.Messages);   
+            }
+        }
+
+        private void HandleDxVectorLerpMessage(NetworkMessage message, NetConnection netConnection)
+        {
+            DxVectorLerpMessage dxVectorLerpMessage = ConvertMessageType<DxVectorLerpMessage>(message);
+            dxVector2LerpData_.UpdateLerpData(dxVectorLerpMessage.EntityId, dxVectorLerpMessage.CurrentLerpValue, dxVectorLerpMessage.TimeStamp.TotalGameTime);
         }
 
         public override void Shutdown()

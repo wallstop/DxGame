@@ -30,8 +30,7 @@ namespace DXGame.TowerGame.Items
         public ItemManager()
         {
             itemsByType_ = new Dictionary<Type, ItemComponent>();
-            MessageHandler.EnableAcceptAll();
-            MessageHandler.RegisterMessageHandler<Message>(BroadcastMessageToComponents);
+            MessageHandler.EnableAcceptAll(BroadcastMessageToComponents);
         }
 
         private void BroadcastMessageToComponents(Message message)

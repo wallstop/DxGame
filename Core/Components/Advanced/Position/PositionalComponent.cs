@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Lerp;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using ProtoBuf;
@@ -28,10 +29,9 @@ namespace DXGame.Core.Components.Advanced.Position
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
-    public class PositionalComponent : Component
+    public class PositionalComponent : Component, IDxVectorLerpable
     {
-        [ProtoMember(1)] [DataMember] protected DxVector2 position_;
+        [DataMember] protected DxVector2 position_;
         /**
         <summary>
             The Position property of a PositionalComponent is likely to be overriden by derived classes.
@@ -79,6 +79,21 @@ namespace DXGame.Core.Components.Advanced.Position
                 position_ = position;
                 return this;
             }
+        }
+
+        public DxVector2 LerpValueSnapshot => Position;
+
+        public void Lerp(DxVector2 older, DxVector2 newer, TimeSpan oldTime, TimeSpan newTime, TimeSpan currentTime)
+        {
+            float newX = (float)SpringFunctions.Linear(older.X, newer.X,
+                (newTime.TotalMilliseconds - oldTime.TotalMilliseconds),
+                (currentTime.TotalMilliseconds - oldTime.TotalMilliseconds));
+
+            float newY = (float) SpringFunctions.Linear(older.Y, newer.Y,
+                (newTime.TotalMilliseconds - oldTime.TotalMilliseconds),
+                (currentTime.TotalMilliseconds - oldTime.TotalMilliseconds));
+
+            Position = new DxVector2(newX, newY);
         }
     }
 }

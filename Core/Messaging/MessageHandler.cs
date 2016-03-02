@@ -24,14 +24,17 @@ namespace DXGame.Core.Messaging
         [DataMember] private readonly Dictionary<Type, List<dynamic>> typesToMessageHandlers_ =
             new Dictionary<Type, List<dynamic>>();
 
+        private Action<Message> acceptAllFunction_;
+
         [DataMember]
         public bool AcceptAll { get; private set; }
 
-        public void EnableAcceptAll()
+        public void EnableAcceptAll(Action<Message> acceptAllFunction)
         {
             Validate.IsFalse(AcceptAll, $"Expected {nameof(AcceptAll)} to be false, but it was not :(");
             LOG.Info("Enabling Accept-All mode");
             AcceptAll = true;
+            acceptAllFunction_ = acceptAllFunction;
         }
 
         public void RegisterMessageHandler<T>(Action<T> messageHandler) where T : Message
@@ -79,19 +82,11 @@ namespace DXGame.Core.Messaging
         {
             if(AcceptAll)
             {
-                SpamMessageHandlers(message);
+                acceptAllFunction_.Invoke(message);
             }
             else
             {
                 ActuallyHandleMessage(message);
-            }
-        }
-
-        private void SpamMessageHandlers<T>(T message) where T : Message
-        {
-            foreach(var messageHandler in typesToMessageHandlers_.Values.SelectMany(values => values))
-            {
-                ((Action<T>) (messageHandler))(message);
             }
         }
 

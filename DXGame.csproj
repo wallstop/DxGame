@@ -145,6 +145,7 @@
     <Compile Include="Core\Experience\Experience.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\PlayerLevelIndicator.cs" />
     <Compile Include="Core\GraphicsWidgets\TextComponent.cs" />
+    <Compile Include="Core\Lerp\IDxVectorLerpable.cs" />
     <Compile Include="Core\Level\Level.cs" />
     <Compile Include="Core\Level\ILevelProgressionStrategy.cs" />
     <Compile Include="Core\Map\MapLayer.cs" />
@@ -159,12 +160,11 @@
     <Compile Include="Core\Messaging\MapRotationNotification.cs" />
     <Compile Include="Core\Messaging\MapRotationRequest.cs" />
     <Compile Include="Core\Messaging\LeveledUpMessage.cs" />
+    <Compile Include="Core\Messaging\Network\EventStream.cs" />
     <Compile Include="Core\Models\EnvironmentModel.cs" />
     <Compile Include="Core\Models\EventModel.cs" />
     <Compile Include="Core\Models\ExperienceModel.cs" />
-    <Compile Include="Core\Network\Acknowledgement.cs" />
-    <Compile Include="Core\Network\PackedNetworkEvent.cs" />
-    <Compile Include="Core\Network\ServerEntityDiff.cs" />
+    <Compile Include="Core\Network\DxVectorLerpMessage.cs" />
     <Compile Include="Core\Network\ServerEventTracker.cs" />
     <Compile Include="Core\Skills\ChargedSkill.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\CacheBuilder.cs" />
@@ -174,7 +174,9 @@
     <Compile Include="Core\Utils\Cache\Advanced\LocalCache.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\LocalLoadingCache.cs" />
     <Compile Include="Core\Utils\Cache\RemovalNotification.cs" />
+    <Compile Include="Core\Utils\FixedSizedBuffer.cs" />
     <Compile Include="Core\Utils\IdBasedCounter.cs" />
+    <Compile Include="Core\Utils\Lerp\LerpDataCollector.cs" />
     <Compile Include="Core\Utils\ProducerConsumerCollectionExtensions.cs" />
     <Compile Include="Core\Utils\SpringFunctions.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\TimedTriggeredActionComponent.cs" />
@@ -327,8 +329,6 @@
     <Compile Include="Core\Utils\RandomUtils.cs" />
     <Compile Include="Core\Utils\TextureFactory.cs" />
     <Compile Include="Core\Network\ClientConnectionRequest.cs" />
-    <Compile Include="Core\Network\GameStateDiff.cs" />
-    <Compile Include="Core\Network\GameStateKeyFrame.cs" />
     <Compile Include="Core\Network\NetworkMessage.cs" />
     <Compile Include="Core\Player.cs" />
     <Compile Include="Core\Properties\Property.cs" />
@@ -391,8 +391,9 @@
       <HintPath>packages\GeoAPI.1.7.3\lib\net45-client\GeoAPI.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lidgren.Network">
-      <HintPath>packages\Lidgren.Network.2012.2.15.2\lib\net45\Lidgren.Network.dll</HintPath>
+    <Reference Include="Lidgren.Network, Version=2012.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Lidgren.Network.1.0.2\lib\net451\Lidgren.Network.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=3.10.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.3.10.0\lib\net40\MathNet.Numerics.dll</HintPath>

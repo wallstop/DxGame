@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using DXGame.Core.Utils;
 
 namespace DXGame.Core.Network
 {
@@ -7,11 +8,15 @@ namespace DXGame.Core.Network
     [DataContract]
     public class ClientConnectionRequest : NetworkMessage
     {
-        [DataMember] public string PlayerName = "";
+        [DataMember]
+        public string PlayerName { get; set; }
 
-        public ClientConnectionRequest()
+        public ClientConnectionRequest() {}
+
+        public ClientConnectionRequest(string playerName)
         {
-            MessageType = MessageType.ClientConnectionRequest;
+            Validate.IsNotEmpty(playerName);
+            PlayerName = playerName;
         }
     }
 }

@@ -15,10 +15,10 @@ namespace DXGame.Core.Messaging
     public class LeveledUpMessage : Message
     {
         [DataMember]
-        public GameObject Entity { get; }
+        public GameObject Entity { get; set; }
 
         [DataMember]
-        public int NewLevel { get; }
+        public int NewLevel { get; set; }
 
         public LeveledUpMessage(GameObject entity, int newLevel)
         {

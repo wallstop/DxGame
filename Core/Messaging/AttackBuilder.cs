@@ -19,7 +19,7 @@ namespace DXGame.Core.Messaging
 
         [DataMember] private readonly GameObject source_;
 
-        [DataMember] public ReadOnlyCollection<IShape> AttackAreas { get; } 
+        [DataMember] public ReadOnlyCollection<IShape> AttackAreas { get; set; } 
 
         public override bool Global => false;
 

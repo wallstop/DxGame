@@ -17,11 +17,11 @@ namespace DXGame.Core.Messaging
     public class Message : IIdentifiable
     {
         [DataMember]
-        public TimeSpan TimeStamp { get; }
+        public TimeSpan TimeStamp { get; set; }
 
         public virtual bool Global => false;
 
-        public static Message EmptyMessage { get; } = new Message(TimeSpan.Zero);
+        public static Message EmptyMessage { get; set; } = new Message(TimeSpan.Zero);
 
         protected Message() : this(DxGame.Instance.CurrentTime.TotalGameTime) {}
 

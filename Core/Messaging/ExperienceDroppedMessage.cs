@@ -15,10 +15,10 @@ namespace DXGame.Core.Messaging
     [Serializable]
     public class ExperienceDroppedMessage : Message
     {
-        public Optional<Team> SourceTeam { get; }
-        public DxVector2 Position { get; }
-        public float Radius { get; }
-        public Experience.Experience Experience { get; }
+        public Optional<Team> SourceTeam { get; set; }
+        public DxVector2 Position { get; set; }
+        public float Radius { get; set; }
+        public Experience.Experience Experience { get; set; }
 
         public ExperienceDroppedMessage(Team sourceTeam, DxVector2 position, float radius,
             Experience.Experience experience)

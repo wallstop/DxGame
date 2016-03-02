@@ -20,8 +20,7 @@ namespace DXGame.Core.Models
 
         public NetworkModel()
         {
-            MessageHandler.EnableAcceptAll();
-            MessageHandler.RegisterMessageHandler<Message>(HandleMessageReceived);
+            MessageHandler.EnableAcceptAll(HandleMessageReceived);
         }
 
         private void HandleMessageReceived(Message message)

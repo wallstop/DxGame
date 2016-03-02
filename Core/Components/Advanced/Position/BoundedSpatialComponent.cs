@@ -19,11 +19,9 @@ namespace DXGame.Core.Components.Advanced.Position
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class BoundedSpatialComponent : SpatialComponent
     {
         [DataMember]
-        [ProtoMember(1)]
         public virtual DxRectangle Bounds { get; }
 
         [IgnoreDataMember]

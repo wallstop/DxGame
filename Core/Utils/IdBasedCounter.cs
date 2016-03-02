@@ -13,7 +13,7 @@ namespace DXGame.Core.Utils
 
     [DataContract]
     [Serializable]
-    public class IdBasedCounter : IComparable, IEquatable<IdBasedCounter>
+    public sealed class IdBasedCounter : IComparable, IEquatable<IdBasedCounter>
     {
         private static int ID_TRACKER;
 

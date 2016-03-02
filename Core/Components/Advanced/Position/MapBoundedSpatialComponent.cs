@@ -9,7 +9,6 @@ namespace DXGame.Core.Components.Advanced.Position
 {
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class MapBoundedSpatialComponent : BoundedSpatialComponent
     {
         [IgnoreDataMember]

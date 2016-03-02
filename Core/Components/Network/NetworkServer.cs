@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Lerp;
 using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Entity;
+using DXGame.Core.Messaging.Network;
 using DXGame.Core.Models;
 using DXGame.Core.Network;
 using DXGame.Core.Primitives;
@@ -37,8 +40,12 @@ namespace DXGame.Core.Components.Network
         public NetworkServer()
         {
             ClientFrameStates = new Dictionary<NetConnection, ServerEventTracker>();
-            MessageHandler.EnableAcceptAll();
-            MessageHandler.RegisterMessageHandler<Message>(HandleMessage);
+            MessageHandler.EnableAcceptAll(HandleMessage);
+        }
+
+        protected override void InitializeNetworkMessageListeners()
+        {
+            networkMessageHandlers_[typeof(ClientConnectionRequest)] = HandleClientConnectionRequest;
         }
 
         public override NetworkComponent WithConfiguration(NetPeerConfiguration configuration)
@@ -101,13 +108,27 @@ namespace DXGame.Core.Components.Network
             {
                 foreach (KeyValuePair<NetConnection, ServerEventTracker> connectionEventTrackingPair in ClientFrameStates)
                 {
-                    //foreach()
-                    //ServerEntityDiff entityDiff = new ServerEntityDiff(connectionEntityTrackingPair.Value);
-                    //NetOutgoingMessage outgoingMessage = entityDiff.ToNetOutgoingMessage(ServerConnection);
-                    //ServerConnection.SendMessage(outgoingMessage, connectionEntityTrackingPair.Key, NetDeliveryMethod.ReliableOrdered, 0);
-                    //// TODO: Rely on acks (for now, BLOW EM AWAY BOYS)
-                    //connectionEntityTrackingPair.Value.Entities.Clear();
+                    List<Message> events = connectionEventTrackingPair.Value.RetrieveEvents();
+                    EventStream eventStream = new EventStream(events);
+                    NetOutgoingMessage outgoingMessage = eventStream.ToNetOutgoingMessage(ServerConnection);
+                    ServerConnection.SendMessage(outgoingMessage, connectionEventTrackingPair.Key,
+                        NetDeliveryMethod.ReliableOrdered);
                 }
+
+                List<IDxVectorLerpable> dxVectorLerpables = DxGame.Instance.Components.OfType<IDxVectorLerpable>().ToList();
+
+                foreach(IDxVectorLerpable dxVectorLerpable in dxVectorLerpables)
+                {
+                    DxVectorLerpMessage dxVectorLerpMessage = new DxVectorLerpMessage(dxVectorLerpable.Id,
+                        dxVectorLerpable.LerpValueSnapshot);
+                    NetOutgoingMessage outgoingLerpMessage = dxVectorLerpMessage.ToNetOutgoingMessage(ServerConnection);
+                    foreach(NetConnection clientConnection in ClientFrameStates.Keys)
+                    {
+                        /* Don't really care if the client picks these up... */
+                        ServerConnection.SendMessage(outgoingLerpMessage, clientConnection, NetDeliveryMethod.Unreliable);
+                    }
+                }
+
                 lastSent_ = gameTime.TotalGameTime;
             }
         }
@@ -157,46 +178,8 @@ namespace DXGame.Core.Components.Network
             ProcessData(message);
         }
 
-        protected void ProcessData(NetIncomingMessage message)
-        {
-            Validate.IsNotNull(message, "Cannot process server data on a null message!");
-            var networkMessage = NetworkMessage.FromNetIncomingMessage(message);
-            Validate.IsNotNull(networkMessage,
-                $"Could not properly format a NetworkMessage from NetIncomingMessage {message}");
-
-            DeMarshall demarshall;
-
-            switch (networkMessage.MessageType)
-            {
-                case MessageType.ClientConnectionRequest:
-                    demarshall = HandleClientConnectionRequest;
-                    break;
-                case MessageType.ClientDataDiff:
-                    demarshall = HandleClientDataDiff;
-                    break;
-                case MessageType.ClientKeyFrame:
-                    demarshall = HandleClientDataKeyFrame;
-                    break;
-                case MessageType.ServerDataDiff:
-                    demarshall = HandleServerDataDiff;
-                    break;
-                case MessageType.ServerDataKeyFrame:
-                    demarshall = HandleServerDataKeyframe;
-                    break;
-                case MessageType.Invalid:
-                    LOG.Warn($"Received an invalid message ({message}) from a client, ignoring");
-                    return;
-                default:
-                    demarshall = HandleUnhandledType;
-                    break;
-            }
-
-            demarshall(networkMessage, message.SenderConnection);
-        }
-
         protected void HandleClientDataDiff(NetworkMessage message, NetConnection connection)
         {
-            var clientDataDiffMessage = ConvertMessageType<GameStateDiff>(message);
 
             // TODO: Nice lerp logic. For now, just ignore client messages
 
@@ -215,25 +198,10 @@ namespace DXGame.Core.Components.Network
             Validate.IsFalse(ClientFrameStates.ContainsKey(connection),
                 $"Received ClientConnectionRequest that we're already tracking, this is an issue! Request: {clientConnectionRequest}");
 
-            //ServerEntityTracker entityTracker = new ServerEntityTracker(baseEntityTracker_);
-            //ClientFrameStates.Add(connection, entityTracker);
+            ServerEventTracker eventTracker = new ServerEventTracker();
+            ClientFrameStates.Add(connection, eventTracker);
             LOG.Info(
                 $"Successfully initialized ClientConnection {connection} for player {clientConnectionRequest.PlayerName}");
-        }
-
-        protected void HandleServerDataDiff(NetworkMessage message, NetConnection connection)
-        {
-            Validate.IsTrue(false, $"Received a Server Data Diff {message} from a client. This should not happen");
-        }
-
-        protected void HandleServerDataKeyframe(NetworkMessage message, NetConnection connection)
-        {
-            Validate.IsTrue(false, $"Received a Server Data Keyframe {message} from a client. This should not happen");
-        }
-
-        protected void HandleUnhandledType(NetworkMessage message, NetConnection connection)
-        {
-            Validate.IsTrue(false, $"Received an unexpected messagetype {message} from a client. This should not happen");
         }
     }
 }

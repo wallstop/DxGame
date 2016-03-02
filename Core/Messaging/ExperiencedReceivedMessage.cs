@@ -14,7 +14,7 @@ namespace DXGame.Core.Messaging
     public class ExperiencedReceivedMessage : Message
     {
         [DataMember]
-        public Experience.Experience Experience { get; }
+        public Experience.Experience Experience { get; set; }
 
         public ExperiencedReceivedMessage(Experience.Experience experience)
         {

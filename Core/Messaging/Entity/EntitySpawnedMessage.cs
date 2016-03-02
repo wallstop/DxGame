@@ -15,11 +15,11 @@ namespace DXGame.Core.Messaging.Entity
     [DataContract]
     public class EntitySpawnedMessage : Message
     {
-        public UniqueId SpawnerId { get; }
+        public UniqueId SpawnerId { get; set; }
 
-        public Optional<WeakReference<Component>> SpawnedComponent { get; }
+        public Optional<WeakReference<Component>> SpawnedComponent { get; set;  }
 
-        public Optional<WeakReference<GameObject>> SpawnedObject { get; }
+        public Optional<WeakReference<GameObject>> SpawnedObject { get; set;  }
 
         public EntitySpawnedMessage(UniqueId spawnerId, Component spawnedComponent)
             : this(spawnerId, spawnedComponent, null) {}

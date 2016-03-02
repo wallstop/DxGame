@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Threading;
 using DXGame.Core.Network;
@@ -17,8 +18,6 @@ namespace DXGame.Core.Components.Basic
 
     public abstract class NetworkComponent : Component
     {
-        public delegate void DeMarshall(NetworkMessage message, NetConnection connection);
-
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private NetPeer connection_;
         /*
@@ -70,9 +69,19 @@ namespace DXGame.Core.Components.Basic
             }
         }
 
+
+        protected Dictionary<Type, Action<NetworkMessage, NetConnection>> networkMessageHandlers_;
+
         protected NetworkComponent()
         {
             MessageQueue = new ConcurrentQueue<NetIncomingMessage>();
+            networkMessageHandlers_ = new Dictionary<Type, Action<NetworkMessage, NetConnection>>();
+        }
+
+        public override void Initialize()
+        {
+            InitializeNetworkMessageListeners();
+            base.Initialize();
         }
 
         protected void ReadFromConnection()
@@ -137,12 +146,51 @@ namespace DXGame.Core.Components.Basic
 
                 RouteDataOnMessageType(incomingMessage, gameTime);
             }
+
+            PostReceiveData(gameTime);
+        }
+
+        protected virtual void PostReceiveData(DxGameTime gameTime)
+        {
+            
+        }
+
+        protected void ProcessData(NetIncomingMessage message)
+        {
+            Validate.IsNotNull(message, "Cannot process server data on a null message!");
+            NetworkMessage networkMessage = null;
+            try
+            {
+                networkMessage = NetworkMessage.FromNetIncomingMessage(message);
+            }
+            catch(Exception e)
+            {
+                LOG.Error(e, "Caught unexpected exception while attempting to process network data message");
+            }
+            finally
+            {
+                Validate.IsNotNull(networkMessage,
+                    $"Could not properly format a NetworkMessage from NetIncomingMessage {message}");
+            }
+
+            Type trueMessageType = networkMessage.GetType();
+            Action<NetworkMessage, NetConnection> demarshaller;
+            if(networkMessageHandlers_.TryGetValue(trueMessageType, out demarshaller))
+            {
+                demarshaller.Invoke(networkMessage, message.SenderConnection);
+            }
+            else
+            {
+                LOG.Error($"Received an invalid message ({message}) from a client, ignoring");
+            }
         }
 
         public abstract void EstablishConnection();
         public abstract void RouteDataOnMessageType(NetIncomingMessage message, DxGameTime gameTime);
         // ...and also to send data
         public abstract void SendData(DxGameTime gameTime);
+
+        protected abstract void InitializeNetworkMessageListeners();
 
         public virtual void Shutdown()
         {

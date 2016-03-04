@@ -135,6 +135,7 @@ namespace DXGame.Core.Components.Basic
         
         protected virtual void DeSerialize()
         {
+            LoadContent();
             Initialize(); // Left as an exercise to the reader to determine specific behavior (wat)
             LoadContent();
         }

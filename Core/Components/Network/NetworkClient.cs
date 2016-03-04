@@ -104,7 +104,7 @@ namespace DXGame.Core.Components.Network
             }
 
                 // TODO: Make this not shit (Keep our own id -> component mapping?)
-            List<IDxVectorLerpable> dxVectorLerpables = DxGame.Instance.Components.OfType<IDxVectorLerpable>().ToList();
+            List<IDxVectorLerpable> dxVectorLerpables = DxGame.Instance.DxGameElements.OfType<IDxVectorLerpable>().ToList();
             foreach(IDxVectorLerpable dxVectorLerpable in dxVectorLerpables)
             {
                 UniqueId entityId = dxVectorLerpable.Id;

@@ -115,7 +115,7 @@ namespace DXGame.Core.Components.Network
                         NetDeliveryMethod.ReliableOrdered);
                 }
 
-                List<IDxVectorLerpable> dxVectorLerpables = DxGame.Instance.Components.OfType<IDxVectorLerpable>().ToList();
+                List<IDxVectorLerpable> dxVectorLerpables = DxGame.Instance.DxGameElements.OfType<IDxVectorLerpable>().ToList();
 
                 foreach(IDxVectorLerpable dxVectorLerpable in dxVectorLerpables)
                 {

@@ -7,6 +7,7 @@ using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Developer;
 using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
@@ -37,7 +38,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             var facing = parent.ComponentOfType<FacingComponent>();
             var arrowRainLauncher = new ArrowRainLauncher(parent, position.Center, facing.Facing);
             var arrowRainObject = GameObject.Builder().WithComponent(arrowRainLauncher).Build();
-            DxGame.Instance.AddAndInitializeGameObject(arrowRainObject);
+            arrowRainObject.Create();
         }
 
         public static void ChargeShot(GameObject parent, DxGameTime startTime, DxGameTime endTime)
@@ -76,7 +77,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
                 endTime.TotalGameTime - startTime.TotalGameTime);
 
             GameObject chargeShotObject = GameObject.Builder().WithComponents(spatial, physics, chargeShot).Build();
-            DxGame.Instance.AddAndInitializeGameObject(chargeShotObject);
+            chargeShotObject.Create();
         }
 
         public static void BearTrapRoll(GameObject parent, DxGameTime startTime, DxGameTime endTime)
@@ -107,7 +108,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             BearTrap bearTrap = new BearTrap(bearTrapSpatial);
             GameObject bearTrapObject =
                 GameObject.Builder().WithComponents(bearTrapSpatial, bearTrapPhysics, bearTrap).Build();
-            DxGame.Instance.AddAndInitializeGameObject(bearTrapObject);
+            bearTrapObject.Create();
         }
 
         private static Tuple<bool, double> ShockwaveDamage(GameObject source, GameObject destination)
@@ -169,9 +170,10 @@ namespace DXGame.TowerGame.Skills.Gevurah
                 /* ... and attach a life sucker (just to be evil) */
                 if(!ReferenceEquals(destination.Parent, null))
                 {
-                    var lifeSucker = new LifeSuckerComponent();
+                    LifeSuckerComponent lifeSucker = new LifeSuckerComponent();
                     destination.Parent.AttachComponent(lifeSucker);
-                    DxGame.Instance.AddAndInitializeComponents(lifeSucker);
+                    EntityCreatedMessage entityCreated = new EntityCreatedMessage(lifeSucker);
+                    DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(entityCreated);
                 }
             }
 

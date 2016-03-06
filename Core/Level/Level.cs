@@ -38,15 +38,21 @@ namespace DXGame.Core.Level
 
         public override void Initialize()
         {
-            Spawners.ForEach(spawner => DxGame.Instance.AddAndInitializeComponent(spawner));
-            DxGame.Instance.AddAndInitializeComponent(entityManager_);
+            foreach(Spawner spawner in Spawners)
+            {
+                spawner.Create();
+            }
+
+            entityManager_.Create();
+
             EventObserver spawnObserver =
                 EventObserver.EventObserverBuilder()
                     .WithAcceptance(DetermineLevelSpawnEvent)
                     .WithAction(AddEntityToManagementPool)
                     .Build();
             entityManager_.Manage(spawnObserver);
-            DxGame.Instance.AddAndInitializeComponent(spawnObserver);
+
+            spawnObserver.Create();
             base.Initialize();
         }
 
@@ -66,35 +72,30 @@ namespace DXGame.Core.Level
             return false;
         }
 
+        // TODO: Manage EntityDeath (not just entity spawn) 
         private void AddEntityToManagementPool(Event gameEvent)
         {
             EntitySpawnedMessage spawnMessage = gameEvent.Message as EntitySpawnedMessage;
             Validate.IsNotNullOrDefault(spawnMessage,
                 $"Expected the Event to contain an {typeof(EntitySpawnedMessage)}, but it was not. How did this pass {nameof(DetermineLevelSpawnEvent)}?");
-            if(spawnMessage.SpawnedComponent.HasValue)
+            Component spawnedComponent;
+            if(spawnMessage.TryGetSpawnedEntity(out spawnedComponent))
             {
-                Component spawnedComponent;
-                bool stillExists = spawnMessage.SpawnedComponent.Value.TryGetTarget(out spawnedComponent);
-                if(stillExists)
-                {
-                    entityManager_.Manage(spawnedComponent);
-                }
+                entityManager_.Manage(spawnedComponent);
+                return;
             }
-            else if(spawnMessage.SpawnedObject.HasValue)
+
+            GameObject spawnedGameObject;
+            if(spawnMessage.TryGetSpawnedEntity(out spawnedGameObject))
             {
-                GameObject spawnedObject;
-                bool stillExists = spawnMessage.SpawnedObject.Value.TryGetTarget(out spawnedObject);
-                if(stillExists)
-                {
-                    spawnedObject.Components.ToList().ForEach(component => entityManager_.Manage(component));
-                }
+                spawnedGameObject.Components.ToList().ForEach(component => entityManager_.Manage(component));
             }
         }
 
-        public override void Dispose()
+        public override void Remove()
         {
-            entityManager_.Dispose();
-            Spawners.ForEach(spawner => spawner.Dispose());
+            entityManager_.Remove();
+            Spawners.ForEach(spawner => spawner.Remove());
         }
 
         public static LevelBuilder Builder()

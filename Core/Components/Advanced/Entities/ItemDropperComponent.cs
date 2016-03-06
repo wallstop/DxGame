@@ -55,7 +55,11 @@ namespace DXGame.Core.Components.Advanced.Entities
             DxVector2 position = entityPosition.Position;
 
             List<GameObject> spawnedItems = ItemProduction.Invoke(position);
-            DxGame.Instance.AddAndInitializeGameObjects(spawnedItems);
+            foreach(GameObject spawnedItem in spawnedItems)
+            {
+                EntityCreatedMessage itemCreated = new EntityCreatedMessage(spawnedItem);
+                DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(itemCreated);
+            }
         }
     }
 }

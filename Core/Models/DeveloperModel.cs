@@ -3,6 +3,7 @@ using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Developer;
 using DXGame.Core.GraphicsWidgets.HUD;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -40,8 +41,10 @@ namespace DXGame.Core.Models
             components_.Add(teamCounterWidget);
             var timePerFrameBackground = new TimePerFrameGraphBackground();
             components_.Add(timePerFrameBackground);
-            var timePerFrameGraph = new TimePerFrameGraph();
-            DxGame.Instance.AddAndInitializeComponents(timePerFrameGraph);
+            TimePerFrameGraph timePerFrameGraph = new TimePerFrameGraph();
+            /* We need to let DxGame handle the TimePerFrameGraph - it draws at a different draw priority than we do */
+            EntityCreatedMessage timePerFrameGraphCreated = new EntityCreatedMessage(timePerFrameGraph);
+            DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(timePerFrameGraphCreated);
             var keysPressed = new KeysPressedWidget();
             components_.Add(keysPressed);
             HealthAdjustor healthAdjustor = new HealthAdjustor();

@@ -10,7 +10,6 @@ namespace DXGame.Core.Components.Advanced.Entities
 {
     [DataContract]
     [Serializable]
-    [ProtoContract]
     public class LevelComponent : Component
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
@@ -18,15 +17,12 @@ namespace DXGame.Core.Components.Advanced.Entities
         public static readonly int BASE_EXPERIENCE_TO_LEVEL = 100;
 
         [DataMember]
-        [ProtoMember(1)]
         public int Level { get; private set; }
 
         [DataMember]
-        [ProtoMember(2)]
         public int ExperienceToLevel { get; private set; }
 
         [DataMember]
-        [ProtoMember(3)]
         public int CurrentExperience { get; private set; }
 
         [IgnoreDataMember]

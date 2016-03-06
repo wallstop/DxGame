@@ -79,7 +79,7 @@ namespace DXGame.Core.Components.Advanced.Triggers
             if(isFinished)
             {
                 finalAction_.Invoke(source_);
-                Dispose();
+                Remove();
             }
         }
     }
@@ -151,7 +151,7 @@ namespace DXGame.Core.Components.Advanced.Triggers
             if(isFinished)
             {
                 finalAction_.Invoke();
-                Dispose();
+                Remove();
             }
         }
     }

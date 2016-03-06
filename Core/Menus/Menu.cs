@@ -2,6 +2,7 @@
 using System.Linq;
 using DXGame.Core.Components.Advanced;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
@@ -19,7 +20,8 @@ namespace DXGame.Core.Menus
             MouseTrackingComponent mousePosition = new MouseTrackingComponent();
             SimpleSpriteComponent mouseSprite = SimpleSpriteComponent.Builder().WithAsset("MousePointer").WithPosition(mousePosition).Build();
             mousePointer_ = GameObject.Builder().WithComponents(mousePosition, mouseSprite).Build();
-            DxGame.Instance.AddAndInitializeComponents(mousePosition, mouseSprite);
+
+            mousePointer_.Create();
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
@@ -51,10 +53,10 @@ namespace DXGame.Core.Menus
             base.Update(gameTime);
         }
 
-        public override void Dispose()
+        public override void Remove()
         {
-            DxGame.Instance.RemoveGameObject(mousePointer_);
-            base.Dispose();
+            mousePointer_.Remove();
+            base.Remove();
         }
     }
 }

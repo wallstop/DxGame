@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using DXGame.Core.Network;
 using DXGame.Core.Utils;
 
-namespace DXGame.Core.Network
+namespace DXGame.Core.Messaging.Network
 {
     [Serializable]
     [DataContract]
     public class ClientConnectionRequest : NetworkMessage
     {
         [DataMember]
-        public string PlayerName { get; set; }
-
-        public ClientConnectionRequest() {}
+        public string PlayerName { get; private set; }
 
         public ClientConnectionRequest(string playerName)
         {

@@ -116,13 +116,13 @@ namespace DXGame.TowerGame.Items
             if(Activated)
             {
                 LOG.Info($"{GetType()} had a double activate call, ignoring");
-                Dispose();
+                Remove();
                 return false;
             }
             return true;
         }
 
-        public override void Dispose()
+        public override void Remove()
         {
             /* TODO: Move to some centralized ManagerComponent? (This concept exists similarly elsewhere) */
             foreach(var component in Parent.Components.ToList())
@@ -132,9 +132,9 @@ namespace DXGame.TowerGame.Items
                     /* Make sure we don't stack overflow */
                     continue;
                 }
-                component.Dispose();
+                component.Remove();
             }
-            base.Dispose();
+            base.Remove();
         }
     }
 }

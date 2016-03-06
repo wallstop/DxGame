@@ -166,7 +166,7 @@ namespace DXGame.TowerGame.Items
             TimedTriggeredActionComponent<EntityProperties> pandoraHealthRegen =
                 new TimedTriggeredActionComponent<EntityProperties>(duration, tickRate, playerProperties_,
                     attachedHealer.Tick, properties => Active = false);
-            DxGame.Instance.AddAndInitializeComponent(pandoraHealthRegen);
+            pandoraHealthRegen.Create();
             source_.AttachComponent(pandoraHealthRegen);
         }
     }

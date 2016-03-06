@@ -15,13 +15,13 @@ namespace DXGame.Core.Primitives
     public class DxGameTime : IEquatable<DxGameTime>, IComparable<DxGameTime>
     {
         [DataMember]
-        public TimeSpan TotalGameTime { get; }
+        public TimeSpan TotalGameTime { get; private set;}
         
         [DataMember]
-        public TimeSpan ElapsedGameTime { get; }
+        public TimeSpan ElapsedGameTime { get; private set; }
         
         [DataMember]
-        public bool IsRunningSlowly { get; }
+        public bool IsRunningSlowly { get; private set; }
 
         [IgnoreDataMember]
         public double ScaleFactor

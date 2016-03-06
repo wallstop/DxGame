@@ -107,8 +107,8 @@ namespace DXGame.TowerGame.Skills.Gevurah
             if(currentDuration_ >= LifeTime)
             {
                 // We're done here.
-                Dispose();
-                Parent?.Dispose();
+                Remove();
+                Parent?.Remove();
                 return;
             }
             

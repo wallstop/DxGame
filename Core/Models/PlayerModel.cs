@@ -12,16 +12,13 @@ namespace DXGame.Core.Models
 {
     [DataContract]
     [Serializable]
-    [ProtoContract]
     public class PlayerModel : Model
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-
-        [ProtoMember(1)]
+        
         [DataMember]
         public Player ActivePlayer { get; private set; }
-
-        [ProtoMember(2)]
+        
         [DataMember]
         public ICollection<Player> Players { get; private set; } = new List<Player>();
 

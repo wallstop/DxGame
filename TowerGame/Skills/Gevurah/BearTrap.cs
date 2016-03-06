@@ -10,6 +10,7 @@ using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -46,8 +47,8 @@ namespace DXGame.TowerGame.Skills.Gevurah
         {
             if (Triggered)
             {
-                Dispose();
-                DxGame.Instance.RemoveGameObject(Parent);
+                Remove();
+                Parent.Remove();
                 Particle particle =
                     Particle.Builder()
                             .WithColor(Color.Gray)
@@ -56,7 +57,8 @@ namespace DXGame.TowerGame.Skills.Gevurah
                             .WithTimeToLive(TimeSpan.FromSeconds(1))
                             .WithRadius(10)
                             .Build();
-                DxGame.Instance.AddAndInitializeComponent(particle);
+                EntityCreatedMessage entityCreated = new EntityCreatedMessage(particle);
+                DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(entityCreated);
                 return;
             }
 

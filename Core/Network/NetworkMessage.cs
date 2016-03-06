@@ -56,11 +56,11 @@ namespace DXGame.Core.Network
             }
         }
 
-        public NetOutgoingMessage ToNetOutgoingMessage(NetPeer connection)
+        public NetOutgoingMessage ToNetOutgoingMessage(NetPeer sender)
         {
-            Validate.IsNotNull(connection,
-                $"Cannot create a NetOutgoingMessage from {this}, the connection provided connection is null!");
-            var message = connection.CreateMessage();
+            Validate.IsNotNull(sender,
+                $"Cannot create a NetOutgoingMessage from {this}, the provided sender connection is null!");
+            var message = sender.CreateMessage();
             byte[] byteStream = Serializer<NetworkMessage>.BinarySerialize(this);
             message.Write(byteStream);
             return message;

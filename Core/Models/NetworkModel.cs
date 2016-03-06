@@ -3,6 +3,7 @@ using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Network;
 using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Network;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 

@@ -43,7 +43,7 @@ namespace DXGame.Core.Utils.Lerp
             {
                 using(new CriticalRegion(value.Item1, CriticalRegion.LockType.Read))
                 {
-                    if(value.Item2.Size != BUFFER_SIZE)
+                    if(value.Item2.Count != BUFFER_SIZE)
                     {
                         lerpData = new LerpData<T>();
                         return false;
@@ -77,7 +77,7 @@ namespace DXGame.Core.Utils.Lerp
             {
                 using(new CriticalRegion(existing.Item1, CriticalRegion.LockType.Write))
                 {
-                    if(existing.Item2.Size < BUFFER_SIZE)
+                    if(existing.Item2.Count < BUFFER_SIZE)
                     {
                         existing.Item2.Buffer(newLerpDataPoint);
                         return existing;

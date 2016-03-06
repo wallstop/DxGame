@@ -3,6 +3,7 @@ using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Network;
 using DXGame.Core.GraphicsWidgets;
 using DXGame.Core.Input;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Main;
@@ -98,15 +99,19 @@ namespace DXGame.Core.Menus
             MenuItems.Add(portLabel);
             MenuItems.Add(addressLabel);
             MenuItems.Add(connectButton);
-            DxGame.Instance.AddAndInitializeComponent(AddressBox);
-            DxGame.Instance.AddAndInitializeComponent(PortBox);
+
+            EntityCreatedMessage addressBoxCreated = new EntityCreatedMessage(AddressBox);
+            DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(addressBoxCreated);
+
+            EntityCreatedMessage portBoxCreated = new EntityCreatedMessage(PortBox);
+            DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(portBoxCreated);
         }
 
-        public override void Dispose()
+        public override void Remove()
         {
-            DxGame.Instance.RemoveComponent(PortBox);
-            DxGame.Instance.RemoveComponent(AddressBox);
-            base.Dispose();
+            PortBox.Remove();
+            AddressBox.Remove();
+            base.Remove();
         }
 
         protected void ConnectAction()
@@ -129,8 +134,8 @@ namespace DXGame.Core.Menus
             client.EstablishConnection();
 
             var game = DxGame.Instance;
-            Dispose();
-            game.UpdateMode = UpdateMode.Passive;
+            Remove();
+            game.UpdateMode = UpdateMode.Cooperative;
             game.AttachModel(new GameModel());
         }
     }

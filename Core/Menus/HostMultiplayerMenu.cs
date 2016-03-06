@@ -3,6 +3,7 @@ using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Network;
 using DXGame.Core.GraphicsWidgets;
 using DXGame.Core.Input;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Main;
@@ -53,7 +54,8 @@ namespace DXGame.Core.Menus
                     });
 
 
-            DxGame.Instance.AddAndInitializeComponent(PortBox);
+            EntityCreatedMessage portBoxCreated = new EntityCreatedMessage(PortBox);
+            DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(portBoxCreated);
 
             var hostLabel = new MenuItem().WithSpriteFont(spriteFont)
                 .WithText("Host")
@@ -72,10 +74,10 @@ namespace DXGame.Core.Menus
             base.Initialize();
         }
 
-        public override void Dispose()
+        public override void Remove()
         {
-            DxGame.Instance.RemoveComponent(PortBox);
-            base.Dispose();
+            PortBox.Remove();
+            base.Remove();
         }
 
         private void HostAction()
@@ -103,7 +105,7 @@ namespace DXGame.Core.Menus
             server.EstablishConnection();
 
             var game = DxGame.Instance;
-            Dispose();
+            Remove();
             game.AttachModel(new GameModel());
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
 using DXGame.Main;
 using NLog;
@@ -57,7 +58,7 @@ namespace DXGame.Core.Components.Basic
 
     [Serializable]
     [DataContract]
-    public abstract class Component : IIdentifiable, IComparable<Component>, IProcessable, IDisposable
+    public abstract class Component : IIdentifiable, IComparable<Component>, IProcessable, ICreatable, IRemovable
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         [DataMember] protected bool initialized_;
@@ -102,17 +103,24 @@ namespace DXGame.Core.Components.Basic
             return Id.GetHashCode();
         }
 
+        public virtual void Create()
+        {
+            EntityCreatedMessage entityCreated = new EntityCreatedMessage(this);
+            DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(entityCreated);
+        }
+
         public override bool Equals(object other)
         {
             var rhs = other as Component;
             return rhs != null && Id.Equals(rhs.Id);
         }
 
-        public virtual void Dispose()
+        public virtual void Remove()
         {
             Parent?.RemoveComponents(this);
             Parent = null;
-            DxGame.Instance.RemoveComponent(this);
+            EntityRemovedMessage entityRemoved = new EntityRemovedMessage(this);
+            DxGame.Instance.BroadcastTypedMessage<EntityRemovedMessage>(entityRemoved);
         }
 
         protected virtual void Update(DxGameTime gameTime) {}
@@ -133,7 +141,7 @@ namespace DXGame.Core.Components.Basic
             DeSerialize();
         }
         
-        protected virtual void DeSerialize()
+        public virtual void DeSerialize()
         {
             LoadContent();
             Initialize(); // Left as an exercise to the reader to determine specific behavior (wat)

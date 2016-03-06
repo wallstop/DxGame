@@ -8,7 +8,6 @@ using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Damage
 {
@@ -30,10 +29,9 @@ namespace DXGame.Core.Components.Advanced.Damage
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class DeathEffectComponent : Component
     {
-        [DataMember] [ProtoMember(1)] protected DeathEffect deathEffect_;
+        [DataMember] protected DeathEffect deathEffect_;
 
         public DeathEffectComponent(DeathEffect deathEffect)
         {
@@ -44,7 +42,13 @@ namespace DXGame.Core.Components.Advanced.Damage
 
         protected virtual void HandleEntityDeath(EntityDeathMessage deathMessage)
         {
-            var spatial = deathMessage.Entity?.ComponentOfType<SpatialComponent>();
+            if(!ReferenceEquals(deathMessage.Entity, Parent))
+            {
+                /* Not us? Don't care */
+                return;
+            }
+
+            SpatialComponent spatial = deathMessage.Entity?.ComponentOfType<SpatialComponent>();
             /* 
                 If there is a spatial, trigger the death effect. 
                 If there isn't one, we can't reliably determine the space that the entity died at, so don't trigger it. 
@@ -53,8 +57,7 @@ namespace DXGame.Core.Components.Advanced.Damage
             {
                 deathEffect_.Invoke(spatial.Space);
             }
-            /* But regardless of whether or not a spatial exists, we want to kill this guy - remove everything from the game */
-            DxGame.Instance.RemoveGameObject(Parent);
+            Parent?.Remove();
         }
 
         public static void SimpleEnemyBloodParticles(DxRectangle deathSpace)
@@ -121,8 +124,9 @@ namespace DXGame.Core.Components.Advanced.Damage
                         .WithMaxDistance(maximumDistance)
                         .WithTransparencyWeight(transparencyWeight)
                         .Build();
-
-                DxGame.Instance.AddAndInitializeComponents(particle);
+                
+                EntityCreatedMessage particlesCreated = new EntityCreatedMessage(particle);
+                DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(particlesCreated);
             }
         }
     }

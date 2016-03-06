@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading;
 using DXGame.Core.Network;
@@ -18,6 +19,10 @@ namespace DXGame.Core.Components.Basic
 
     public abstract class NetworkComponent : Component
     {
+        protected const int REQUIRED_MESSAGE_CHANNEL = 0;
+        protected const int LERP_DATA_CHANNEL = 1;
+        protected const int TIME_SYNCHRONIZATION_CHANNEL = 2;
+
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private NetPeer connection_;
         /*
@@ -26,6 +31,15 @@ namespace DXGame.Core.Components.Basic
         */
         protected Thread ConnectionListener { get; set; }
         protected ConcurrentQueue<NetIncomingMessage> MessageQueue { get; set; }
+
+        private static readonly TimeSpan NETWORK_POLL_DELAY = TimeSpan.FromMilliseconds(1.0);
+
+        public abstract TimeSpan TickRate { get; }
+
+        protected Stopwatch TransmissionClock { get; }
+
+        private TimeSpan lastTicked_;
+
         /*
             The Connection property will attempt to terminate the current ConnectionListener thread
             when set and spawn a new one.
@@ -76,6 +90,7 @@ namespace DXGame.Core.Components.Basic
         {
             MessageQueue = new ConcurrentQueue<NetIncomingMessage>();
             networkMessageHandlers_ = new Dictionary<Type, Action<NetworkMessage, NetConnection>>();
+            TransmissionClock = Stopwatch.StartNew();
         }
 
         public override void Initialize()
@@ -86,7 +101,6 @@ namespace DXGame.Core.Components.Basic
 
         protected void ReadFromConnection()
         {
-            TimeSpan sleepTime = DxGame.Instance.TargetElapsedTime;
             try
             {
                 while (true)
@@ -96,7 +110,7 @@ namespace DXGame.Core.Components.Basic
                     {
                         MessageQueue.Enqueue(message);
                     }
-                    Thread.Sleep(sleepTime);
+                    Thread.Sleep(NETWORK_POLL_DELAY);
                 }
             }
             catch (ThreadInterruptedException e)
@@ -188,7 +202,19 @@ namespace DXGame.Core.Components.Basic
         public abstract void EstablishConnection();
         public abstract void RouteDataOnMessageType(NetIncomingMessage message, DxGameTime gameTime);
         // ...and also to send data
-        public abstract void SendData(DxGameTime gameTime);
+        public void SendData(DxGameTime gameTime)
+        {
+            TimeSpan currentTick = TransmissionClock.Elapsed;
+            if(currentTick <= lastTicked_ + TickRate)
+            {
+                return;
+            }
+
+            InternalSendData(gameTime);
+            lastTicked_ = currentTick;
+        }
+
+        protected abstract void InternalSendData(DxGameTime gameTime);
 
         protected abstract void InitializeNetworkMessageListeners();
 

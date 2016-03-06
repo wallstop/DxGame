@@ -41,10 +41,10 @@ namespace DXGame.Core.Components.Advanced.Entities
             base.Update(gameTime);
         }
 
-        public override void Dispose()
+        public override void Remove()
         {
-            ManagedEntites.ForEach(entity => entity?.Dispose());
-            base.Dispose();
+            ManagedEntites.ForEach(entity => entity?.Remove());
+            base.Remove();
         }
     }
 }

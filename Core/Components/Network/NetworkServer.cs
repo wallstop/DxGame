@@ -4,9 +4,7 @@ using System.Linq;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Lerp;
 using DXGame.Core.Messaging;
-using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Messaging.Network;
-using DXGame.Core.Models;
 using DXGame.Core.Network;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
@@ -22,7 +20,7 @@ namespace DXGame.Core.Components.Network
 
     public class NetworkServer : NetworkComponent
     {
-        private static readonly TimeSpan KEY_FRAME_DELAY = TimeSpan.FromSeconds(1.0 / 30); // 30 FPS
+        private static readonly TimeSpan TICK_RATE = TimeSpan.FromSeconds(1.0 / 30); // 30 FPS
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         public NetServer ServerConnection => Connection as NetServer;
         public Dictionary<NetConnection, ServerEventTracker> ClientFrameStates { get; }
@@ -43,10 +41,57 @@ namespace DXGame.Core.Components.Network
             MessageHandler.EnableAcceptAll(HandleMessage);
         }
 
+        protected override void InternalSendData(DxGameTime gameTime)
+        {
+            // TODO: Function-ize
+            foreach(KeyValuePair<NetConnection, ServerEventTracker> connectionEventTrackingPair in ClientFrameStates)
+            {
+                List<Message> events = connectionEventTrackingPair.Value.RetrieveEvents();
+                events.RemoveAll(message =>
+                {
+                    try
+                    {
+                        Serializer<Message>.BinarySerialize(message);
+                        return false;
+                    }
+                    catch(Exception)
+                    {
+                        // TODO: This is shitty and bad, do something else
+                        return true;
+                    }
+                });
+                EventStream eventStream = new EventStream(events);
+                NetOutgoingMessage outgoingMessage = eventStream.ToNetOutgoingMessage(ServerConnection);
+                ServerConnection.SendMessage(outgoingMessage, connectionEventTrackingPair.Key,
+                    NetDeliveryMethod.ReliableOrdered, REQUIRED_MESSAGE_CHANNEL);
+            }
+
+            List<IDxVectorLerpable> dxVectorLerpables =
+                DxGame.Instance.DxGameElements.OfType<IDxVectorLerpable>().ToList();
+
+            foreach(IDxVectorLerpable dxVectorLerpable in dxVectorLerpables)
+            {
+                DxVectorLerpMessage dxVectorLerpMessage = new DxVectorLerpMessage(dxVectorLerpable.Id,
+                    dxVectorLerpable.LerpValueSnapshot);
+                NetOutgoingMessage outgoingLerpMessage = dxVectorLerpMessage.ToNetOutgoingMessage(ServerConnection);
+                foreach(NetConnection clientConnection in ClientFrameStates.Keys)
+                {
+                    /* Don't really care if the client picks these up... */
+                    ServerConnection.SendMessage(outgoingLerpMessage, clientConnection, NetDeliveryMethod.Unreliable,
+                        LERP_DATA_CHANNEL);
+                }
+            }
+
+            lastSent_ = gameTime.TotalGameTime;
+        }
+
         protected override void InitializeNetworkMessageListeners()
         {
             networkMessageHandlers_[typeof(ClientConnectionRequest)] = HandleClientConnectionRequest;
+            networkMessageHandlers_[typeof(ClientTimeSynchronizationRequest)] = HandleClientTimeSynchronizationRequest;
         }
+
+        public override TimeSpan TickRate => TICK_RATE;
 
         public override NetworkComponent WithConfiguration(NetPeerConfiguration configuration)
         {
@@ -54,11 +99,6 @@ namespace DXGame.Core.Components.Network
             configuration.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
             Connection = new NetServer(configuration);
             return this;
-        }
-
-        protected override void Update(DxGameTime gameTime)
-        {
-            base.Update(gameTime);
         }
 
         private void HandleMessage(Message message)
@@ -78,7 +118,7 @@ namespace DXGame.Core.Components.Network
         public override void RouteDataOnMessageType(NetIncomingMessage incomingMessage, DxGameTime gameTime)
         {
             // TODO: Deal with gameTime
-            switch (incomingMessage.MessageType)
+            switch(incomingMessage.MessageType)
             {
                 case NetIncomingMessageType.Error:
                     ProcessError(incomingMessage);
@@ -94,42 +134,12 @@ namespace DXGame.Core.Components.Network
                     break;
                 case NetIncomingMessageType.StatusChanged:
                 default:
-                    LOG.Info($"Received MessageType {incomingMessage.MessageType}. Currently not handling. ({incomingMessage})");
+                    LOG.Info(
+                        $"Received MessageType {incomingMessage.MessageType}. Currently not handling. ({incomingMessage})");
                     // TODO: Handle
                     break;
                 //ProcessUnhandledMessageType(incomingMessage);
                 //break;
-            }
-        }
-
-        public override void SendData(DxGameTime gameTime)
-        {
-            if (lastSent_ + KEY_FRAME_DELAY < gameTime.TotalGameTime)
-            {
-                foreach (KeyValuePair<NetConnection, ServerEventTracker> connectionEventTrackingPair in ClientFrameStates)
-                {
-                    List<Message> events = connectionEventTrackingPair.Value.RetrieveEvents();
-                    EventStream eventStream = new EventStream(events);
-                    NetOutgoingMessage outgoingMessage = eventStream.ToNetOutgoingMessage(ServerConnection);
-                    ServerConnection.SendMessage(outgoingMessage, connectionEventTrackingPair.Key,
-                        NetDeliveryMethod.ReliableOrdered);
-                }
-
-                List<IDxVectorLerpable> dxVectorLerpables = DxGame.Instance.DxGameElements.OfType<IDxVectorLerpable>().ToList();
-
-                foreach(IDxVectorLerpable dxVectorLerpable in dxVectorLerpables)
-                {
-                    DxVectorLerpMessage dxVectorLerpMessage = new DxVectorLerpMessage(dxVectorLerpable.Id,
-                        dxVectorLerpable.LerpValueSnapshot);
-                    NetOutgoingMessage outgoingLerpMessage = dxVectorLerpMessage.ToNetOutgoingMessage(ServerConnection);
-                    foreach(NetConnection clientConnection in ClientFrameStates.Keys)
-                    {
-                        /* Don't really care if the client picks these up... */
-                        ServerConnection.SendMessage(outgoingLerpMessage, clientConnection, NetDeliveryMethod.Unreliable);
-                    }
-                }
-
-                lastSent_ = gameTime.TotalGameTime;
             }
         }
 
@@ -161,7 +171,7 @@ namespace DXGame.Core.Components.Network
 
         protected void ProcessConnectionApproval(NetIncomingMessage message)
         {
-            if (ClientFrameStates.ContainsKey(message.SenderConnection))
+            if(ClientFrameStates.ContainsKey(message.SenderConnection))
             {
                 // TODO: Metrics
                 LOG.Error(
@@ -180,7 +190,6 @@ namespace DXGame.Core.Components.Network
 
         protected void HandleClientDataDiff(NetworkMessage message, NetConnection connection)
         {
-
             // TODO: Nice lerp logic. For now, just ignore client messages
 
             //var clientConnection = clientDataDiffMessage.Connection;
@@ -191,14 +200,26 @@ namespace DXGame.Core.Components.Network
             // TODO: Nice lerp logic. For now, just ignore client messages
         }
 
+        protected void HandleClientTimeSynchronizationRequest(NetworkMessage message, NetConnection connection)
+        {
+            ClientTimeSynchronizationRequest timeSynchronizationRequest =
+                ConvertMessageType<ClientTimeSynchronizationRequest>(message);
+
+            ServerTimeUpdate timeUpdate = new ServerTimeUpdate(timeSynchronizationRequest.ClientSideGameTime,
+                DxGame.Instance.CurrentTime);
+            NetOutgoingMessage outgoingTimeUpdate = timeUpdate.ToNetOutgoingMessage(ServerConnection);
+            ServerConnection.SendMessage(outgoingTimeUpdate, connection, NetDeliveryMethod.Unreliable,
+                TIME_SYNCHRONIZATION_CHANNEL);
+        }
+
         protected void HandleClientConnectionRequest(NetworkMessage message, NetConnection connection)
         {
-            var clientConnectionRequest = ConvertMessageType<ClientConnectionRequest>(message);
+            ClientConnectionRequest clientConnectionRequest = ConvertMessageType<ClientConnectionRequest>(message);
 
             Validate.IsFalse(ClientFrameStates.ContainsKey(connection),
                 $"Received ClientConnectionRequest that we're already tracking, this is an issue! Request: {clientConnectionRequest}");
 
-            ServerEventTracker eventTracker = new ServerEventTracker();
+            ServerEventTracker eventTracker = new ServerEventTracker(baseEventTracker_);
             ClientFrameStates.Add(connection, eventTracker);
             LOG.Info(
                 $"Successfully initialized ClientConnection {connection} for player {clientConnectionRequest.PlayerName}");

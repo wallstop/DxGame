@@ -14,13 +14,6 @@ namespace DXGame.Core.Network
     {
         public MessageHandler Handler { get; } = new MessageHandler();
 
-        // TODO: Hand off this responsibility to someone else
-        private static readonly Predicate<object> NON_SERIALIZATION_CHECK = entity =>
-        {
-            var component = entity as Component;
-            return component != null && !component.ShouldSerialize;
-        };
-
         private readonly List<Message> events_;
 
         public List<Message> RetrieveEvents()
@@ -39,10 +32,8 @@ namespace DXGame.Core.Network
         public ServerEventTracker(ServerEventTracker copy)
         {
             Validate.IsNotNullOrDefault(copy, StringUtils.GetFormattedNullOrDefaultMessage(this, copy));
-            lock(copy.events_)
-            {
-                events_ = copy.events_.ToList();
-            }
+            events_ = copy.events_.ToList();
+            Handler.EnableAcceptAll(HandleMessage);
         }
 
         private void HandleMessage(Message message)

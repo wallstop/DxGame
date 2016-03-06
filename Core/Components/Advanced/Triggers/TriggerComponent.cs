@@ -68,7 +68,7 @@ namespace DXGame.Core.Components.Advanced.Triggers
             if(triggered)
             {
                 Action();
-                Dispose();
+                Remove();
             }
         }
     }

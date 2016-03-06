@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using DXGame.Core;
+using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Menus;
 using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Entity;
+using DXGame.Core.Messaging.Game;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.Settings;
@@ -40,6 +43,8 @@ namespace DXGame.Main
 
         private static readonly Lazy<DxGame> singleton_ = new Lazy<DxGame>(() => new DxGame());
 
+        private MessageHandler MessageHandler { get; }
+
         public Rectangle Screen { get; protected set; }
         public SpriteBatch SpriteBatch { get; private set; }
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
@@ -57,22 +62,38 @@ namespace DXGame.Main
         /* TODO: Remove public access to this, this was made public for network testing */
         public List<Model> Models { get; } = new List<Model>();
 
+        private TimeSpan lastFrameTick_;
+        private TimeSpan compensatedGameTime_;
+
+        private double timeSkewMilliseconds_;
+
+        public Stopwatch GameTimer { get; }
+
         public DxRectangle ScreenRegion
         {
             get
             {
-                GameModel gameModel = Model<GameModel>();
-                if(Check.IsNullOrDefault(gameModel))
+                PlayerModel playerModel = Model<PlayerModel>();
+                if(Check.IsNullOrDefault(playerModel))
                 {
                     return new DxRectangle(Screen);
                 }
-                var mapModel = Model<MapModel>();
-                float x = Screen.Width / 2.0f - gameModel.FocalPoint.Position.X;
+
+                Player activePlayer = playerModel.ActivePlayer;
+                if(Check.IsNullOrDefault(activePlayer))
+                {
+                    return new DxRectangle(Screen);
+                }
+
+                SpatialComponent focalPoint = activePlayer.Position;
+
+                MapModel mapModel = Model<MapModel>();
+                float x = Screen.Width / 2.0f - focalPoint.Position.X;
                 x = MathHelper.Clamp(x,
                     Math.Max(float.MinValue, -(mapModel.MapBounds.X + mapModel.MapBounds.Width - Screen.Width)),
                     mapModel.MapBounds.X);
 
-                float y = Screen.Height / 2.0f - gameModel.FocalPoint.Position.Y;
+                float y = Screen.Height / 2.0f - focalPoint.Position.Y;
                 y = MathHelper.Clamp(y,
                     Math.Max(float.MinValue, -(mapModel.MapBounds.Y + mapModel.MapBounds.Height - Screen.Height)),
                     mapModel.MapBounds.Y);
@@ -100,7 +121,7 @@ namespace DXGame.Main
                 PreferredBackBufferWidth = Screen.Width
             };
 
-            TargetElapsedTime = TimeSpan.FromSeconds(1.0f / TargetFps);
+            TargetElapsedTime = TimeSpan.FromSeconds(1.0 / TargetFps);
             IsFixedTimeStep = false;
 
             // LOL VSYNC
@@ -108,6 +129,15 @@ namespace DXGame.Main
 
             DxGameElements = new GameElementCollection();
             Content.RootDirectory = "Content";
+
+            MessageHandler = new MessageHandler();
+            MessageHandler.RegisterMessageHandler<EntityCreatedMessage>(HandleEntityCreatedMessage);
+            MessageHandler.RegisterMessageHandler<EntityRemovedMessage>(HandleEntityRemovedMessage);
+            MessageHandler.RegisterMessageHandler<TimeSkewRequest>(HandleTimeSkewRequest);
+            timeSkewMilliseconds_ = 0;
+            lastFrameTick_ = TimeSpan.Zero;
+            compensatedGameTime_ = TimeSpan.Zero;
+            GameTimer = Stopwatch.StartNew(); 
         }
 
         /**
@@ -135,6 +165,7 @@ namespace DXGame.Main
 
         public void BroadcastUntypedMessage(Message message)
         {
+            MessageHandler.HandleUntypedMessage(message);
             foreach(var model in Models)
             {
                 model.MessageHandler.HandleUntypedMessage(message);
@@ -143,6 +174,7 @@ namespace DXGame.Main
 
         public void BroadcastTypedMessage<T>(T message) where T : Message
         {
+            MessageHandler.HandleTypedMessage<T>(message);
             foreach(var model in Models)
             {
                 model.MessageHandler.HandleTypedMessage<T>(message);
@@ -171,38 +203,53 @@ namespace DXGame.Main
         }
 
         // TODO: Figure out a better way to attach shit to the game
-        public void AddAndInitializeComponent(Component component)
+        private void AddAndInitializeComponent(Component component)
         {
             component.LoadContent();
             component.Initialize();
             NewGameElements.Add(component);
         }
 
-        public void AddAndInitializeComponents(params Component[] components)
+        private void HandleEntityCreatedMessage(EntityCreatedMessage entityCreated)
         {
-            foreach(var component in components)
+            Component createdComponent;
+            if(entityCreated.TryGetCreatedEntity(out createdComponent))
             {
-                AddAndInitializeComponent(component);
+                AddAndInitializeComponent(createdComponent);
+                return;
+            }
+
+            GameObject createdGameObject;
+            if(entityCreated.TryGetCreatedEntity(out createdGameObject))
+            {
+                AddAndInitializeGameObject(createdGameObject);
+                return;
             }
         }
 
-        public void AddAndInitializeComponents(IEnumerable<Component> components)
+        private void HandleEntityRemovedMessage(EntityRemovedMessage entityRemoved)
         {
-            foreach(var component in components)
+            Component removedComponent;
+            if(entityRemoved.TryGetRemovedEntity(out removedComponent))
             {
-                AddAndInitializeComponent(component);
+                RemoveComponent(removedComponent);
+                return;
+            }
+
+            GameObject removedGameObject;
+            if(entityRemoved.TryGetRemovedEntity(out removedGameObject))
+            {
+                RemoveGameObject(removedGameObject);
+                return;
             }
         }
 
-        public void AddAndInitializeGameObjects(IEnumerable<GameObject> gameObjects)
+        private void HandleTimeSkewRequest(TimeSkewRequest timeSkewRequest)
         {
-            foreach(var gameObject in gameObjects)
-            {
-                AddAndInitializeGameObject(gameObject);
-            }
+            timeSkewMilliseconds_ = timeSkewRequest.OffsetMilliseconds;
         }
 
-        public void AddAndInitializeGameObject(GameObject gameObject)
+        private void AddAndInitializeGameObject(GameObject gameObject)
         {
             foreach(var component in gameObject.Components)
             {
@@ -211,45 +258,19 @@ namespace DXGame.Main
             NewGameElements.Add(gameObject);
         }
 
-        public void AddGameObject(GameObject gameObject)
-        {
-            Validate.IsNotNull(gameObject);
-            NewGameElements.Add(gameObject);
-        }
-
-        public void RemoveGameObject(GameObject gameObject)
+        private void RemoveGameObject(GameObject gameObject)
         {
             if(ReferenceEquals(gameObject, null))
             {
                 LOG.Warn($"{nameof(RemoveGameObject)} called with null {typeof(GameObject)}");
                 return;
             }
-
-            gameObject.Dispose();
-            foreach(var component in gameObject.Components)
-            {
-                RemovedGameElements.Add(component);
-            }
             RemovedGameElements.Add(gameObject);
         }
 
-        public void RemoveComponent(Component component)
+        private void RemoveComponent(Component component)
         {
             RemovedGameElements.Add(component);
-        }
-
-        public void Remove(object element)
-        {
-            RemovedGameElements.Add(element);
-        }
-
-        // TODO: Figure out a better way to remove shit from the game
-        public void RemoveComponents(params Component[] components)
-        {
-            foreach(var component in components)
-            {
-                RemoveComponent(component);
-            }
         }
 
         protected override void Initialize()
@@ -287,23 +308,28 @@ namespace DXGame.Main
             foreach(object newGameElement in NewGameElements)
             {
                 DxGameElements.Add(newGameElement);
-                EntityStatusChangedMessage entityStatusChanged = new EntityStatusChangedMessage
-                {
-                    Entity = newGameElement,
-                    Status = EntityStatus.Created
-                };
-                BroadcastTypedMessage<EntityStatusChangedMessage>(entityStatusChanged);
             }
             NewGameElements.Clear();
             foreach(object removedGameElement in RemovedGameElements)
             {
                 DxGameElements.Remove(removedGameElement);
-                EntityStatusChangedMessage entityStatusChanged = new EntityStatusChangedMessage
+
+                Component maybeComponent = removedGameElement as Component;
+                if(!ReferenceEquals(maybeComponent, null))
                 {
-                    Entity = removedGameElement,
-                    Status = EntityStatus.Removed
-                };
-                BroadcastTypedMessage<EntityStatusChangedMessage>(entityStatusChanged);
+                    maybeComponent.Parent?.RemoveComponents(maybeComponent);
+                    maybeComponent.Parent = null;
+                    continue;
+                }
+
+                GameObject maybeGameObject = removedGameElement as GameObject;
+                if(!ReferenceEquals(maybeGameObject, null))
+                {
+                    foreach(Component component in maybeGameObject.Components)
+                    {
+                        RemoveComponent(component);
+                    }
+                }
             }
             RemovedGameElements.Clear();
         }
@@ -315,7 +341,7 @@ namespace DXGame.Main
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            var dxGameTime = new DxGameTime(gameTime);
+            DxGameTime dxGameTime = DetermineGameTime(gameTime);
             CurrentTime = dxGameTime;
 
             // Querying Gamepad.GetState(...) requires xinput1_3.dll (The xbox 360 controller driver). Interesting fact...
@@ -330,7 +356,8 @@ namespace DXGame.Main
                     ActiveUpdate(dxGameTime);
                     break;
                 case UpdateMode.Cooperative:
-                    throw new NotImplementedException($"{UpdateMode} currently not implemented");
+                    CooperativeUpdate(dxGameTime);
+                    break;
                 case UpdateMode.Passive:
                     PassiveUpdate(dxGameTime);
                     break;
@@ -339,10 +366,42 @@ namespace DXGame.Main
             }
         }
 
+        private DxGameTime DetermineGameTime(GameTime gameTime)
+        {
+            TimeSpan wallclock = GameTimer.Elapsed;
+            TimeSpan actualElapsed = wallclock - lastFrameTick_;
+            TimeSpan elapsed = MathUtils.Min(actualElapsed, TargetElapsedTime);
+            TimeSpan currentTime = compensatedGameTime_ + elapsed;
+            if(timeSkewMilliseconds_ != 0)
+            {
+                // TODO: Roll this much more gently
+                TimeSpan timeSkew = TimeSpan.FromMilliseconds(timeSkewMilliseconds_);
+                currentTime += timeSkew;
+                compensatedGameTime_ += timeSkew;
+                timeSkewMilliseconds_ = 0;
+            }
+            bool isRunningSlowly = TargetElapsedTime < actualElapsed;
+            DxGameTime dxGameTime = new DxGameTime(currentTime, elapsed, isRunningSlowly);
+            lastFrameTick_ = wallclock;
+            compensatedGameTime_ += elapsed;
+            return dxGameTime;
+        }
+
         private void PassiveUpdate(DxGameTime gameTime)
         {
             var networkModel = Model<NetworkModel>();
             networkModel.ReceiveData(gameTime);
+            networkModel.SendData(gameTime);
+        }
+
+        private void CooperativeUpdate(DxGameTime gameTime)
+        {
+            NetworkModel networkModel = Model<NetworkModel>();
+            networkModel.ReceiveData(gameTime);
+
+
+            // TODO: Need to process input
+            UpdateElements();
             networkModel.SendData(gameTime);
         }
 

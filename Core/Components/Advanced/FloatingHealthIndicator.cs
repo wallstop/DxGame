@@ -8,7 +8,6 @@ using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced
 {
@@ -17,29 +16,26 @@ namespace DXGame.Core.Components.Advanced
     // TODO: Have color values be based on "TEAM" (also, introduce concept of teams)
     [Serializable]
     [DataContract]
-    [ProtoContract]
-    public class FloatingHealthIndicator : DrawableComponent, IDisposable
+    public class FloatingHealthIndicator : DrawableComponent
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
         private const int HEALTH_BAR_PIXEL_HEIGHT = 5;
         private const int HEALTH_BAR_PIXEL_WIDTH = 75;
 
-        [ProtoMember(1)]
         [DataMember]
         protected DxColor BackgroundColor { get; set; }
 
-        [ProtoMember(2)]
         [DataMember]
         protected DxColor ForegroundColor { get; set; }
 
         [NonSerialized] [IgnoreDataMember] protected Texture2D backgroundTexture_;
         [NonSerialized] [IgnoreDataMember] protected Texture2D foregroundTexture_;
 
-        [ProtoMember(3)] [DataMember] protected EntityPropertiesComponent entityProperties_;
-        [ProtoMember(4)] [DataMember] protected DxVector2 floatDistance_;
+        [DataMember] protected EntityPropertiesComponent entityProperties_;
+        [DataMember] protected DxVector2 floatDistance_;
 
-        [ProtoMember(5)] [DataMember] protected PositionalComponent position_;
+        [DataMember] protected PositionalComponent position_;
 
         public virtual int Health => entityProperties_.EntityProperties.Health.CurrentValue;
         public virtual int MaxHealth => entityProperties_.EntityProperties.MaxHealth.CurrentValue;
@@ -60,10 +56,10 @@ namespace DXGame.Core.Components.Advanced
             DrawPriority = DrawPriority.HUD_LAYER;
         }
 
-        public override void Dispose()
+        public override void Remove()
         {
             backgroundTexture_?.Dispose();
-            base.Dispose();
+            base.Remove();
         }
 
         public static FloatingHealthIndicatorBuilder Builder()

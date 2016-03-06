@@ -53,7 +53,8 @@ namespace DXGame.Core.Components.Advanced.Entities
                 {
                     position.Position = RandomPositionInSpawnArea();
                 }
-                DxGame.Instance.AddAndInitializeGameObject(spawnedObject);
+
+                spawnedObject.Create();
                 EntitySpawnedMessage spawnMessage = new EntitySpawnedMessage(Id, spawnedObject);
                 DxGame.Instance.BroadcastTypedMessage(spawnMessage);
             }

@@ -15,12 +15,13 @@ namespace DXGame.Core.Messaging.Entity
     [DataContract]
     public class EntitySpawnedMessage : Message
     {
-        public UniqueId SpawnerId { get; set; }
+        [DataMember]
+        public UniqueId SpawnerId { get; private set; }
 
-        public Optional<WeakReference<Component>> SpawnedComponent { get; set;  }
+        [DataMember] private Component spawnedComponent_;
 
-        public Optional<WeakReference<GameObject>> SpawnedObject { get; set;  }
-
+        [DataMember] private GameObject spawnedGameObject_;
+        
         public EntitySpawnedMessage(UniqueId spawnerId, Component spawnedComponent)
             : this(spawnerId, spawnedComponent, null) {}
 
@@ -33,15 +34,22 @@ namespace DXGame.Core.Messaging.Entity
             Validate.IsTrue(!ReferenceEquals(spawnedComponent, null) ^ !ReferenceEquals(spawnedObject, null),
                 "Expected only one of component / object to be spawned");
             SpawnerId = spawnerId;
-            /* We need to do these null checks - otherwise, each of these Optionals will "have" a value, which is not cool */
-            SpawnedComponent =
-                Optional<WeakReference<Component>>.Of(spawnedComponent == null
-                    ? null
-                    : new WeakReference<Component>(spawnedComponent));
-            SpawnedObject =
-                Optional<WeakReference<GameObject>>.Of(spawnedObject == null
-                    ? null
-                    : new WeakReference<GameObject>(spawnedObject));
+            spawnedComponent_ = spawnedComponent;
+            spawnedGameObject_ = spawnedObject;
         }
+
+        public bool TryGetSpawnedEntity(out Component spawnedComponent)
+        {
+            spawnedComponent = spawnedComponent_;
+            return !ReferenceEquals(spawnedComponent_, null);
+        }
+
+        public bool TryGetSpawnedEntity(out GameObject spawnedGameObject)
+        {
+            spawnedGameObject = spawnedGameObject_;
+            return !ReferenceEquals(spawnedGameObject_, null);
+        }
+
+        public override bool Global => false;
     }
 }

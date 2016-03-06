@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Lerp;
 using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Game;
 using DXGame.Core.Messaging.Network;
-using DXGame.Core.Models;
 using DXGame.Core.Network;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
@@ -27,14 +26,16 @@ namespace DXGame.Core.Components.Network
 
     public class NetworkClient : NetworkComponent
     {
+        private static readonly TimeSpan TICK_RATE = TimeSpan.FromSeconds(1.0 / 30); // 30 FPS
+
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         protected NetworkClientConfig ClientConfig { get; set; }
         public NetClient ClientConnection => Connection as NetClient;
 
-        private readonly LerpDataCollector<DxVector2> dxVector2LerpData_ = new LerpDataCollector<DxVector2>(); 
+        private readonly LerpDataCollector<DxVector2> dxVector2LerpData_ = new LerpDataCollector<DxVector2>();
 
         private readonly ReaderWriterLockSlim lock_ = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-        private List<Message> messagesToBroadcast_ = new List<Message>(); 
+        private List<Message> messagesToBroadcast_ = new List<Message>();
 
         public NetworkClient WithNetworkClientConfig(NetworkClientConfig configuration)
         {
@@ -43,6 +44,8 @@ namespace DXGame.Core.Components.Network
             ClientConfig = configuration;
             return this;
         }
+
+        public override TimeSpan TickRate => TICK_RATE;
 
         public override NetworkComponent WithConfiguration(NetPeerConfiguration configuration)
         {
@@ -64,7 +67,7 @@ namespace DXGame.Core.Components.Network
         public override void RouteDataOnMessageType(NetIncomingMessage message, DxGameTime gameTime)
         {
             // TODO: Deal with gameTime
-            switch (message.MessageType)
+            switch(message.MessageType)
             {
                 case NetIncomingMessageType.Data:
                     ProcessData(message);
@@ -84,9 +87,25 @@ namespace DXGame.Core.Components.Network
             // TODO
         }
 
-        public override void SendData(DxGameTime gameTime)
+        protected override void InternalSendData(DxGameTime gameTime)
         {
-            // TODO: send message stream of input to server (pretty ez)
+            SendTimeSynchronizationRequest(gameTime);
+
+            // TODO: Send Input events over last (whatever time)
+        }
+
+        private void SendTimeSynchronizationRequest(DxGameTime gameTime)
+        {
+            if(ReferenceEquals(Connection, null))
+            {
+                return;
+            }
+            ClientTimeSynchronizationRequest clientSynchronizationRequest =
+                new ClientTimeSynchronizationRequest(gameTime);
+            NetOutgoingMessage outgoingSyncronizationRequest =
+                clientSynchronizationRequest.ToNetOutgoingMessage(Connection);
+            Connection.SendMessage(outgoingSyncronizationRequest, ClientConnection.ServerConnection,
+                NetDeliveryMethod.Unreliable, TIME_SYNCHRONIZATION_CHANNEL);
         }
 
         protected override void PostReceiveData(DxGameTime gameTime)
@@ -103,15 +122,17 @@ namespace DXGame.Core.Components.Network
                 DxGame.Instance.BroadcastUntypedMessage(message);
             }
 
-                // TODO: Make this not shit (Keep our own id -> component mapping?)
-            List<IDxVectorLerpable> dxVectorLerpables = DxGame.Instance.DxGameElements.OfType<IDxVectorLerpable>().ToList();
+            // TODO: Make this not shit (Keep our own id -> component mapping?)
+            List<IDxVectorLerpable> dxVectorLerpables =
+                DxGame.Instance.DxGameElements.OfType<IDxVectorLerpable>().ToList();
             foreach(IDxVectorLerpable dxVectorLerpable in dxVectorLerpables)
             {
                 UniqueId entityId = dxVectorLerpable.Id;
                 LerpData<DxVector2> dxVectorLerpData;
                 if(dxVector2LerpData_.TryGetLerpData(entityId, out dxVectorLerpData))
                 {
-                    dxVectorLerpable.Lerp(dxVectorLerpData.OldValue, dxVectorLerpData.NewValue, dxVectorLerpData.OldTime, dxVectorLerpData.NewTime, gameTime.TotalGameTime);
+                    dxVectorLerpable.Lerp(dxVectorLerpData.OldValue, dxVectorLerpData.NewValue, dxVectorLerpData.OldTime,
+                        dxVectorLerpData.NewTime, gameTime.TotalGameTime);
                 }
             }
             base.PostReceiveData(gameTime);
@@ -121,6 +142,7 @@ namespace DXGame.Core.Components.Network
         {
             networkMessageHandlers_[typeof(EventStream)] = HandleEventStream;
             networkMessageHandlers_[typeof(DxVectorLerpMessage)] = HandleDxVectorLerpMessage;
+            networkMessageHandlers_[typeof(ServerTimeUpdate)] = HandleServerTimeUpdate;
         }
 
         private void HandleEventStream(NetworkMessage message, NetConnection netConnection)
@@ -128,14 +150,35 @@ namespace DXGame.Core.Components.Network
             EventStream eventStream = ConvertMessageType<EventStream>(message);
             using(new CriticalRegion(lock_, CriticalRegion.LockType.Write))
             {
-                messagesToBroadcast_.AddRange(eventStream.Messages);   
+                messagesToBroadcast_.AddRange(eventStream.Messages);
+            }
+        }
+
+        private void HandleServerTimeUpdate(NetworkMessage message, NetConnection netConnection)
+        {
+            ServerTimeUpdate serverTimeUpdate = ConvertMessageType<ServerTimeUpdate>(message);
+            DxGameTime currentTime = DxGame.Instance.CurrentTime;
+
+            double roundTripLatencyInMillis =
+                (currentTime.TotalGameTime - serverTimeUpdate.ClientGameTime).TotalMilliseconds;
+            double oneWayLatency = roundTripLatencyInMillis / 2;
+            double offsetInMillis = serverTimeUpdate.ServerGameTime.TotalMilliseconds -
+                                    serverTimeUpdate.ClientGameTime.TotalMilliseconds;
+
+            LOG.Info($"Skew: {offsetInMillis} millis, Average one way latency of {oneWayLatency} millis for timestamp: {serverTimeUpdate.ClientGameTime} (currently {DxGame.Instance.CurrentTime.TotalGameTime}");
+
+            if(offsetInMillis != 0)
+            {
+                TimeSkewRequest timeSkewRequest = new TimeSkewRequest(offsetInMillis);
+                DxGame.Instance.BroadcastTypedMessage(timeSkewRequest);
             }
         }
 
         private void HandleDxVectorLerpMessage(NetworkMessage message, NetConnection netConnection)
         {
             DxVectorLerpMessage dxVectorLerpMessage = ConvertMessageType<DxVectorLerpMessage>(message);
-            dxVector2LerpData_.UpdateLerpData(dxVectorLerpMessage.EntityId, dxVectorLerpMessage.CurrentLerpValue, dxVectorLerpMessage.TimeStamp.TotalGameTime);
+            dxVector2LerpData_.UpdateLerpData(dxVectorLerpMessage.EntityId, dxVectorLerpMessage.CurrentLerpValue,
+                dxVectorLerpMessage.TimeStamp.TotalGameTime);
         }
 
         public override void Shutdown()

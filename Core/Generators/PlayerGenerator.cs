@@ -6,6 +6,7 @@ using DXGame.Core.Components.Advanced.Command;
 using DXGame.Core.Components.Advanced.Entities;
 using DXGame.Core.Components.Advanced.Impulse;
 using DXGame.Core.Components.Advanced.Physics;
+using DXGame.Core.Components.Advanced.Player;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Messaging;
@@ -64,8 +65,11 @@ namespace DXGame.Core.Generators
             GevurahBasicAttack gevurahBasicAttack = new GevurahBasicAttack();
             ItemManager itemManager = new ItemManager();
 
+            string playerName = "rektorOfSouls";
+            PlayerNameComponent playerNameComponent = new PlayerNameComponent(playerName);
+            ActivePlayerComponent activePlayerComponent = new ActivePlayerComponent();
             playerBuilder.WithComponents(PlayerSpace, physics_, 
-                    playerProperties_, healthBar_, inputListener, facingComponent, teamComponent, levelComponent, basicAttackListener, gevurahBasicAttack, itemManager);
+                    playerProperties_, healthBar_, inputListener, facingComponent, teamComponent, levelComponent, basicAttackListener, gevurahBasicAttack, itemManager, playerNameComponent, activePlayerComponent);
             var playerObject = playerBuilder.Build();
             var shockwaveSkill =
                 Skill.Builder()
@@ -94,6 +98,7 @@ namespace DXGame.Core.Generators
 
             SkillComponent playerSkillComponent = new SkillComponent(shockwaveSkill, arrowRainSkill, chargeShot, archerRoll);
             playerObject.AttachComponent(playerSkillComponent);
+
             StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(playerObject, "Player");
             objects.Add(playerObject);
             return objects;

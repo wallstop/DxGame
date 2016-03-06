@@ -22,7 +22,7 @@ namespace DXGame.Core.Components.Advanced
         {
             if(collisionMessage.CollisionDirections.Any())
             {
-                DxGame.Instance.RemoveGameObject(Parent);
+                Parent.Remove();
             }
         }
     }

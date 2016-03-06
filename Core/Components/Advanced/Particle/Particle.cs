@@ -59,7 +59,7 @@ namespace DXGame.Core.Components.Advanced.Particle
             if (TimeToLive <= TimeSpan.Zero)
             {
                 /* Is our TTL up? If so, die */
-                Dispose();
+                Remove();
                 return;
             }
 
@@ -74,7 +74,7 @@ namespace DXGame.Core.Components.Advanced.Particle
             if (AccumulatedRadius < 0 || MaxDistance <= 0)
             {
                 /* Have we shrunk to 0 or traveled farther than we should have? If so, die */
-                Dispose();
+                Remove();
                 return;
             }
             /* Othwerise, do our own physics computations (scale to FPS like normal physics components) */

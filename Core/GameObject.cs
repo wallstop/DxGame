@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -24,12 +25,17 @@ namespace DXGame.Core
 
     [Serializable]
     [DataContract]
-    public sealed class GameObject : IIdentifiable, IEquatable<GameObject>, IProcessable, IDisposable
+    public sealed class GameObject : IIdentifiable, IEquatable<GameObject>, IProcessable, ICreatable, IRemovable
     {
         // DataMembers can't be readonly :(
         [DataMember] private List<Component> components_;
         [DataMember] private UniqueId id_ = new UniqueId();
-        [DataMember] public volatile bool Removed;
+
+        [DataMember]
+        public bool Created { get; private set; } = false;
+
+        [DataMember]
+        public bool Removed { get; private set; } = false;
         public IEnumerable<Component> Components => components_;
 
         [DataMember]
@@ -100,13 +106,6 @@ namespace DXGame.Core
                 components_.Remove(component);
                 component.Parent = null;
             }
-        }
-
-        public void Dispose()
-        {
-            Removed = true;
-            CurrentMessages.Clear();
-            FutureMessages.Clear();
         }
 
         /**
@@ -204,6 +203,45 @@ namespace DXGame.Core
                 components_.Add(component);
                 return this;
             }
+        }
+
+        [OnDeserialized]
+        private void InitializeComponents(StreamingContext streamingContext)
+        {
+            foreach(Component component in components_)
+            {
+                component.DeSerialize();
+            }
+        }
+
+        public void Remove()
+        {
+
+            CurrentMessages.Clear();
+            FutureMessages.Clear();
+
+            if(!Removed)
+            {
+                foreach(Component component in components_)
+                {
+                    EntityRemovedMessage componentRemoved = new EntityRemovedMessage(component);
+                    DxGame.Instance.BroadcastTypedMessage<EntityRemovedMessage>(componentRemoved);
+                }
+
+                EntityRemovedMessage gameObjectRemoved = new EntityRemovedMessage(this);
+                DxGame.Instance.BroadcastTypedMessage<EntityRemovedMessage>(gameObjectRemoved);
+            }
+            Removed = true;
+        }
+
+        public void Create()
+        {
+            if(!Created)
+            {
+                EntityCreatedMessage entityCreated = new EntityCreatedMessage(this);
+                DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(entityCreated);
+            }
+            Created = true;
         }
     }
 }

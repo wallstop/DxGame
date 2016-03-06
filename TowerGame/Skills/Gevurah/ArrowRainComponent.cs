@@ -10,6 +10,7 @@ using DXGame.Core.Components.Advanced.Physics;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Core.State;
@@ -118,8 +119,9 @@ namespace DXGame.TowerGame.Skills.Gevurah
         {
             var arrowRainer = new ArrowRainer(Source, Spatial.Position, Direction);
             Parent.AttachComponent(arrowRainer);
-            DxGame.Instance.AddAndInitializeComponent(arrowRainer);
-            Dispose();
+            EntityCreatedMessage arrowRainerCreated = new EntityCreatedMessage(arrowRainer);
+            DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(arrowRainerCreated);
+            Remove();
         }
 
         private static StateMachine CreateIdleStateMachine()
@@ -190,7 +192,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             elapsed_ += gameTime.ElapsedGameTime;
             if (elapsed_ > Duration)
             {
-                Dispose();
+                Remove();
                 return;
             }
             if (elapsed_.Divide(PulseDelay) > pulses_)

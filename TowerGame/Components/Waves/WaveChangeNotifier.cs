@@ -55,6 +55,12 @@ namespace DXGame.TowerGame.Components.Waves
             Position = PositionalComponent.Builder().Build();
         }
 
+        public override void Initialize()
+        {
+            WaveMessageObserver.Initialize();
+            base.Initialize();
+        }
+
         private bool CheckIsWaveNotification(Event gameEvent)
         {
             Message eventMessage = gameEvent.Message;
@@ -93,6 +99,7 @@ namespace DXGame.TowerGame.Components.Waves
         private static Color DetermineColorFade(TimeSpan currentTime, TimeSpan max)
         {
             double current = Math.Max(0, currentTime.TotalMilliseconds);
+            current = Math.Min(current, max.TotalMilliseconds);
             double end = max.TotalMilliseconds;
             double scalar = SpringFunctions.Linear(1, 0, current, end);
             Color transparentColor = ColorFactory.Transparency((float) scalar, Color.Purple);
@@ -110,12 +117,12 @@ namespace DXGame.TowerGame.Components.Waves
             WaveText.Draw(spriteBatch, gameTime);
         }
 
-        public override void Dispose()
+        public override void Remove()
         {
-            Position.Dispose();
-            WaveMessageObserver.Dispose();
-            WaveText.Dispose();
-            base.Dispose();
+            Position.Remove();
+            WaveMessageObserver.Remove();
+            WaveText.Remove();
+            base.Remove();
         }
     }
 }

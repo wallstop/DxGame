@@ -44,7 +44,7 @@ namespace DXGame.Core.Models
             }
 
             Level.Level nextLevel = LevelProgressionStrategy.DetermineNextLevel(Level);
-            Level.Dispose();
+            Level.Remove();
 
             Level = nextLevel;
             MapRotationNotification mapRotationNotification = new MapRotationNotification();
@@ -53,12 +53,12 @@ namespace DXGame.Core.Models
 
         public void HandleMapFinishedLoading(MapRotationNotification mapRotationNotification)
         {
-            DxGame.Instance.AddAndInitializeComponent(Level);
+            Level.Create();
         }
 
         public override void Initialize()
         {
-            DxGame.Instance.AddAndInitializeComponent(Level);
+            Level.Create();
             base.Initialize();
         }
 

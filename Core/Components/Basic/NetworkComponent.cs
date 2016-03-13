@@ -22,6 +22,7 @@ namespace DXGame.Core.Components.Basic
         protected const int REQUIRED_MESSAGE_CHANNEL = 0;
         protected const int LERP_DATA_CHANNEL = 1;
         protected const int TIME_SYNCHRONIZATION_CHANNEL = 2;
+        protected const int PLAYER_INPUT_CHANNEL = 3;
 
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         private NetPeer connection_;

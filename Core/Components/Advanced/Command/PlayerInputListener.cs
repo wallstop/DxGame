@@ -86,7 +86,7 @@ namespace DXGame.Core.Components.Advanced.Command
             base.Update(gameTime);
         }
 
-        private static List<KeyboardEvent> RipEventsFromLocalInputModel()
+        public static List<KeyboardEvent> RipEventsFromLocalInputModel()
         {
             InputModel inputModel = DxGame.Instance.Model<InputModel>();
             List<KeyboardEvent> inputEvents = inputModel.Events.ToList();

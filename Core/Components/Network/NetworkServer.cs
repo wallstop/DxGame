@@ -23,10 +23,10 @@ namespace DXGame.Core.Components.Network
 
     public class NetworkServer : NetworkComponent
     {
-        private static readonly TimeSpan TICK_RATE = TimeSpan.FromSeconds(1.0 / 30); // 30 FPS
+        private static readonly TimeSpan TICK_RATE = TimeSpan.FromSeconds(1.0 / 30); // 60 FPS
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         public NetServer ServerConnection => Connection as NetServer;
-        public Dictionary<NetConnection, ServerEventTracker> ClientFrameStates { get; }
+        public Dictionary<NetConnection, ClientEventTracker> ClientFrameStates { get; }
 
         /* 
             In addition to keeping track of unique diffs for each Connection, we need to 
@@ -36,20 +36,18 @@ namespace DXGame.Core.Components.Network
         */
         private readonly ServerEventTracker baseEventTracker_ = new ServerEventTracker();
 
-        private TimeSpan lastSent_ = TimeSpan.Zero;
-
         public NetworkServer()
         {
-            ClientFrameStates = new Dictionary<NetConnection, ServerEventTracker>();
+            ClientFrameStates = new Dictionary<NetConnection, ClientEventTracker>();
             MessageHandler.EnableAcceptAll(HandleMessage);
         }
 
         protected override void InternalSendData(DxGameTime gameTime)
         {
             // TODO: Function-ize
-            foreach(KeyValuePair<NetConnection, ServerEventTracker> connectionEventTrackingPair in ClientFrameStates)
+            foreach(KeyValuePair<NetConnection, ClientEventTracker> connectionEventTrackingPair in ClientFrameStates)
             {
-                List<Message> events = connectionEventTrackingPair.Value.RetrieveEvents();
+                List<Message> events = connectionEventTrackingPair.Value.ServerEventTracker.RetrieveEvents();
                 events.RemoveAll(message =>
                 {
                     try
@@ -84,14 +82,13 @@ namespace DXGame.Core.Components.Network
                         LERP_DATA_CHANNEL);
                 }
             }
-
-            lastSent_ = gameTime.TotalGameTime;
         }
 
         protected override void InitializeNetworkMessageListeners()
         {
             networkMessageHandlers_[typeof(ClientConnectionRequest)] = HandleClientConnectionRequest;
             networkMessageHandlers_[typeof(ClientTimeSynchronizationRequest)] = HandleClientTimeSynchronizationRequest;
+            networkMessageHandlers_[typeof(ClientCommands)] = HandleClientCommands;
         }
 
         public override TimeSpan TickRate => TICK_RATE;
@@ -107,9 +104,9 @@ namespace DXGame.Core.Components.Network
         private void HandleMessage(Message message)
         {
             baseEventTracker_.Handler.HandleTypedMessage(message);
-            foreach(ServerEventTracker eventTracker in ClientFrameStates.Values)
+            foreach(ClientEventTracker eventTracker in ClientFrameStates.Values)
             {
-                eventTracker.Handler.HandleTypedMessage(message);
+                eventTracker.ServerEventTracker.Handler.HandleTypedMessage(message);
             }
         }
 
@@ -215,6 +212,19 @@ namespace DXGame.Core.Components.Network
                 TIME_SYNCHRONIZATION_CHANNEL);
         }
 
+        protected void HandleClientCommands(NetworkMessage message, NetConnection connection)
+        {
+            ClientEventTracker eventTracker;
+            if(!ClientFrameStates.TryGetValue(connection, out eventTracker))
+            {
+                LOG.Error($"Encountered unexpected client commands from {connection}");
+                return;
+            }
+
+            ClientCommands clientCommands = ConvertMessageType<ClientCommands>(message);
+            eventTracker.PlayerCommand.RelayCommands(clientCommands.ClientCommandments);
+        }
+
         protected void HandleClientConnectionRequest(NetworkMessage message, NetConnection connection)
         {
             ClientConnectionRequest clientConnectionRequest = ConvertMessageType<ClientConnectionRequest>(message);
@@ -223,18 +233,19 @@ namespace DXGame.Core.Components.Network
                 $"Received ClientConnectionRequest that we're already tracking, this is an issue! Request: {clientConnectionRequest}");
 
             ServerEventTracker eventTracker = new ServerEventTracker(baseEventTracker_);
-            ClientFrameStates.Add(connection, eventTracker);
-            LOG.Info(
-                $"Successfully initialized ClientConnection {connection} for player {clientConnectionRequest.PlayerName}");
 
             MapModel mapModel = DxGame.Instance.Model<MapModel>();
             PlayerGenerator playerGenerator = new PlayerGenerator(mapModel.RandomSpawnLocation.Center.ToDxVector2());
 
-            AbstractCommandComponent networkPlayerCommand = new SimpleRelayingCommandComponent();
+            SimpleRelayingCommandComponent networkPlayerCommand = new SimpleRelayingCommandComponent(TickRate);
 
-            playerGenerator.GeneratePlayer(networkPlayerCommand);
-            //GameObject player
-            // 
+            ClientEventTracker clientEventTracker = new ClientEventTracker(eventTracker, networkPlayerCommand);
+            ClientFrameStates.Add(connection, clientEventTracker);
+            LOG.Info(
+                $"Successfully initialized ClientConnection {connection} for player {clientConnectionRequest.PlayerName}");
+
+            GameObject player = playerGenerator.GeneratePlayer(networkPlayerCommand);
+            player.Create();
         }
     }
 }

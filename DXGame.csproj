@@ -167,6 +167,7 @@
     <Compile Include="Core\Messaging\MapRotationNotification.cs" />
     <Compile Include="Core\Messaging\MapRotationRequest.cs" />
     <Compile Include="Core\Messaging\LeveledUpMessage.cs" />
+    <Compile Include="Core\Messaging\Network\ClientCommands.cs" />
     <Compile Include="Core\Messaging\Network\ClientInputUpdate.cs" />
     <Compile Include="Core\Messaging\Network\ClientTimeSynchronizationRequest.cs" />
     <Compile Include="Core\Messaging\Network\EventStream.cs" />

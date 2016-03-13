@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using DXGame.Core.Components.Advanced.Command;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Input;
 using DXGame.Core.Lerp;
 using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Game;
@@ -26,7 +28,7 @@ namespace DXGame.Core.Components.Network
 
     public class NetworkClient : NetworkComponent
     {
-        private static readonly TimeSpan TICK_RATE = TimeSpan.FromSeconds(1.0 / 30); // 30 FPS
+        private static readonly TimeSpan TICK_RATE = TimeSpan.FromSeconds(1.0 / 30); // 60 FPS
         private static readonly TimeSpan TIME_SYNCHRONIZATION_RATE = TimeSpan.FromSeconds(1);
         private TimeSpan lastSynchronizedTime_ = TimeSpan.Zero;
 
@@ -92,8 +94,11 @@ namespace DXGame.Core.Components.Network
         protected override void InternalSendData(DxGameTime gameTime)
         {
             SendTimeSynchronizationRequest(gameTime);
-
-            // TODO: Send Input events over last (whatever time)
+            /* 
+                TODO: Accrue input events over the period since the NetworkClient has ticked - 
+                we don't have a 1-1 mapping between game ticks and network send ticks (its totally arbitrary) 
+            */
+            SendClientCommandments(gameTime);
         }
 
         private void SendTimeSynchronizationRequest(DxGameTime gameTime)
@@ -111,6 +116,24 @@ namespace DXGame.Core.Components.Network
                 Connection.SendMessage(outgoingSyncronizationRequest, ClientConnection.ServerConnection,
                     NetDeliveryMethod.Unreliable, TIME_SYNCHRONIZATION_CHANNEL);
                 lastSynchronizedTime_ = gameTime.TotalGameTime;
+            }
+        }
+
+        private void SendClientCommandments(DxGameTime gameTime)
+        {
+            if(ReferenceEquals(Connection, null))
+            {
+                return;
+            }
+
+            List<KeyboardEvent> keyboardEvents = PlayerInputListener.RipEventsFromLocalInputModel();
+            List<Commandment> clientCommandments = PlayerInputListener.DetermineCommandmentsFor(keyboardEvents);
+            if(clientCommandments.Any())
+            {
+                ClientCommands clientCommands = new ClientCommands(clientCommandments);
+                NetOutgoingMessage outgoingClientCommands = clientCommands.ToNetOutgoingMessage(Connection);
+                Connection.SendMessage(outgoingClientCommands, ClientConnection.ServerConnection, NetDeliveryMethod.ReliableOrdered,
+                    PLAYER_INPUT_CHANNEL);
             }
         }
 

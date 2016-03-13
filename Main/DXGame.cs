@@ -5,6 +5,7 @@ using System.Linq;
 using DXGame.Core;
 using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Lerp;
 using DXGame.Core.Menus;
 using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Entity;
@@ -389,7 +390,7 @@ namespace DXGame.Main
 
         private void PassiveUpdate(DxGameTime gameTime)
         {
-            var networkModel = Model<NetworkModel>();
+            NetworkModel networkModel = Model<NetworkModel>();
             networkModel.ReceiveData(gameTime);
             networkModel.SendData(gameTime);
         }
@@ -398,8 +399,13 @@ namespace DXGame.Main
         {
             NetworkModel networkModel = Model<NetworkModel>();
             networkModel.ReceiveData(gameTime);
+            networkModel.Process(gameTime);
 
+            InputModel inputModel = Model<InputModel>();
+            inputModel.Process(gameTime);
 
+            DeveloperModel developerModel = Model<DeveloperModel>();
+            developerModel.Process(gameTime);
             // TODO: Need to process input
             UpdateElements();
             networkModel.SendData(gameTime);

@@ -32,7 +32,7 @@ namespace DXGame.Core.Components.Basic
         protected Thread ConnectionListener { get; set; }
         protected ConcurrentQueue<NetIncomingMessage> MessageQueue { get; set; }
 
-        private static readonly TimeSpan NETWORK_POLL_DELAY = TimeSpan.FromMilliseconds(1.0);
+        private static readonly TimeSpan NETWORK_POLL_DELAY = TimeSpan.FromMilliseconds(1.0 / 10);
 
         public abstract TimeSpan TickRate { get; }
 

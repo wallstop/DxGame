@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DXGame.Core.Components.Advanced.Command;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Generators;
 using DXGame.Core.Lerp;
 using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Network;
+using DXGame.Core.Models;
 using DXGame.Core.Network;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
@@ -223,6 +226,15 @@ namespace DXGame.Core.Components.Network
             ClientFrameStates.Add(connection, eventTracker);
             LOG.Info(
                 $"Successfully initialized ClientConnection {connection} for player {clientConnectionRequest.PlayerName}");
+
+            MapModel mapModel = DxGame.Instance.Model<MapModel>();
+            PlayerGenerator playerGenerator = new PlayerGenerator(mapModel.RandomSpawnLocation.Center.ToDxVector2());
+
+            AbstractCommandComponent networkPlayerCommand = new SimpleRelayingCommandComponent();
+
+            playerGenerator.GeneratePlayer(networkPlayerCommand);
+            //GameObject player
+            // 
         }
     }
 }

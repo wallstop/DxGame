@@ -33,10 +33,10 @@ namespace DXGame.Core.Network
         }
 
         [DataMember]
-        public UniqueId Id { get; set; }
+        public UniqueId Id { get; private set; }
 
         [DataMember]
-        public DxGameTime TimeStamp { get; set; } = DxGame.Instance.CurrentTime;
+        public DxGameTime TimeStamp { get; private set; } = DxGame.Instance.CurrentTime;
 
         public static NetworkMessage FromNetIncomingMessage(NetIncomingMessage message)
         {

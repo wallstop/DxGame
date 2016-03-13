@@ -94,11 +94,21 @@ namespace DXGame.Core.Messaging
     public class CommandMessage : Message, IEquatable<CommandMessage>
     {
         [DataMember]
-        public Commandment Commandment { get; set; } = Commandment.None;
+        public Commandment Commandment { get; set; }
 
         public bool Equals(CommandMessage other)
         {
             return !ReferenceEquals(null, other) && Commandment == other.Commandment;
+        }
+
+        public CommandMessage()
+            :this(Commandment.None)
+        {
+        }
+
+        public CommandMessage(Commandment commandment)
+        {
+            Commandment = commandment;
         }
 
         public static Commandment CommandmentForDirection(Direction direction)

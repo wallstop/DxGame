@@ -8,23 +8,21 @@ using DXGame.Core.Pathfinding;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Command
 {
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class PathfindingInputComponent : AbstractCommandComponent
     {
-        [DataMember] [ProtoMember(1)] private LinkedList<ImmutablePair<TimeSpan, CommandChain>> currentPath_ =
+        [DataMember] private LinkedList<ImmutablePair<TimeSpan, CommandChain>> currentPath_ =
             new LinkedList<ImmutablePair<TimeSpan, CommandChain>>();
 
-        [DataMember] [ProtoMember(2)] private LinkedList<DxVector2> waypoints_ = new LinkedList<DxVector2>();
+        [DataMember] private LinkedList<DxVector2> waypoints_ = new LinkedList<DxVector2>();
 
-        [DataMember] [ProtoMember(3)] private TimeSpan currentTimeout_;
-        [DataMember] [ProtoMember(4)] private TimeSpan timeOnCurrentCommandment_;
-        [DataMember] [ProtoMember(5)] private TimeSpan totalTime_;
+        [DataMember] private TimeSpan currentTimeout_;
+        [DataMember] private TimeSpan timeOnCurrentCommandment_;
+        [DataMember] private TimeSpan totalTime_;
 
         public IEnumerable<DxVector2> WayPoints => waypoints_;
 

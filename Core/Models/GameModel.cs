@@ -67,7 +67,7 @@ namespace DXGame.Core.Models
 
         public void InitializePlayer()
         {
-            PlayerGenerator playerGenerator = new PlayerGenerator(mapModel_.PlayerSpawn, mapModel_.MapBounds);
+            PlayerGenerator playerGenerator = new PlayerGenerator(mapModel_.PlayerSpawn);
             var generatedObjects = playerGenerator.Generate();
 
             // TODO: We need to throw this away if we're doing a network game

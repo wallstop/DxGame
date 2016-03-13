@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using DXGame.Core.Input;
 using DXGame.Core.Messaging;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
+using DXGame.Core.Utils;
 using DXGame.Main;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Command
 {
@@ -19,7 +20,7 @@ namespace DXGame.Core.Components.Advanced.Command
         </summary>
     */
 
-    internal delegate void ActionCheck(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime);
+    internal delegate bool ActionCheck(List<KeyboardEvent> inputEvents, ref Commandment commandment);
 
     /**
 
@@ -31,148 +32,189 @@ namespace DXGame.Core.Components.Advanced.Command
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class PlayerInputListener : AbstractCommandComponent
     {
-        // TODO: Configify (this should be in player properties or some shit)
-        private static readonly TimeSpan DROP_THROUGH_PLATFORM_DELAY = TimeSpan.FromSeconds(1);
+        [IgnoreDataMember] private static List<ActionCheck> CACHED_ACTION_CHECKS;
 
-        [IgnoreDataMember] private List<ActionCheck> cachedActionChecks_;
+        /* We use a list instead of single KeyboardEvents to check the case of "combo" type inputs */
 
-        [DataMember] [ProtoMember(1)] private TimeSpan lastDroppedThroughPlatform_ = TimeSpan.FromSeconds(0);
+        [DataMember]
+        private Func<List<KeyboardEvent>> PlayerInputProducer { get; set; }
 
-        private IEnumerable<ActionCheck> ActionChecks
+        private static IEnumerable<ActionCheck> ActionChecks
         {
             get
             {
                 // This isn't threadsafe
-                if (cachedActionChecks_ != null)
+                if(CACHED_ACTION_CHECKS != null)
                 {
-                    return cachedActionChecks_;
+                    return CACHED_ACTION_CHECKS;
                 }
 
                 /* Rip every function that is a ActionCheck off of the class via Reflection (what could go wrong?) */
-                var allMethods = typeof (PlayerInputListener).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance);
+                var allMethods = typeof(PlayerInputListener).GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
                 var actionChecks = new List<ActionCheck>(allMethods.Length);
                 actionChecks.AddRange(
                     allMethods.Select(
-                        method => (ActionCheck) Delegate.CreateDelegate(typeof (ActionCheck), this, method, false))
+                        method => (ActionCheck) Delegate.CreateDelegate(typeof(ActionCheck), method, false))
                         .Where(actionCheck => !ReferenceEquals(null, actionCheck)));
                 /* Cache them so this is only a one-time hit */
-                cachedActionChecks_ = actionChecks;
-                return cachedActionChecks_;
+                CACHED_ACTION_CHECKS = actionChecks;
+                return CACHED_ACTION_CHECKS;
             }
         }
 
-        public PlayerInputListener()
+        public PlayerInputListener() : this(RipEventsFromLocalInputModel) {}
+
+        public PlayerInputListener(Func<List<KeyboardEvent>> playerInputProducer)
         {
+            Validate.IsNotNullOrDefault(playerInputProducer,
+                StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(playerInputProducer)));
+            PlayerInputProducer = playerInputProducer;
         }
 
         protected override void Update(DxGameTime gameTime)
         {
             /* TODO: Change state transitions to simply be event handlers based off the events emitted from here */
-            var inputModel = DxGame.Instance.Model<InputModel>();
-            var inputEvents = inputModel.Events.ToList();
-            foreach (var actionCheck in ActionChecks)
-            {
-                actionCheck.Invoke(inputEvents, gameTime);
-            }
 
+            List<KeyboardEvent> inputEvents = PlayerInputProducer.Invoke();
+            List<Commandment> commandments = DetermineCommandmentsFor(inputEvents);
+            foreach(Commandment commandment in commandments)
+            {
+                BroadcastCommandment(commandment);
+            }
             base.Update(gameTime);
         }
 
-        private void CheckForMoveLeft(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
+        private static List<KeyboardEvent> RipEventsFromLocalInputModel()
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Left))
-            {
-                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.MoveLeft});
-            }
+            InputModel inputModel = DxGame.Instance.Model<InputModel>();
+            List<KeyboardEvent> inputEvents = inputModel.Events.ToList();
+            return inputEvents;
         }
 
-        private void CheckForMoveRight(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
+        public static List<Commandment> DetermineCommandmentsFor(List<KeyboardEvent> keyboardEvents)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Right))
+            return ActionChecks.Select(actionCheck =>
             {
-                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.MoveRight});
-            }
+                Commandment commandment = Commandment.None;
+                if(actionCheck.Invoke(keyboardEvents, ref commandment))
+                {
+                    Commandment? actualCommandment = commandment;
+                    return actualCommandment;
+                }
+                return null;
+            }).Where(commandment => commandment.HasValue).Select(commandment => commandment.Value).ToList();
         }
 
-        private void CheckForMoveUp(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
+        private static bool CheckForMoveLeft(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Jump))
+            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Left))
             {
-                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.MoveUp});
+                commandment = Commandment.MoveLeft;
+                return true;
             }
+            return false;
         }
 
-        private void CheckForMoveDown(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
+        private static bool CheckForMoveRight(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if (inputEvents.Any(keyEvent => keyEvent.Key == DxGame.Instance.Controls.Down && keyEvent.HeldDown) &&
-                (lastDroppedThroughPlatform_ + DROP_THROUGH_PLATFORM_DELAY) < gameTime.TotalGameTime)
+            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Right))
             {
-                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.MoveDown});
-                Parent?.BroadcastTypedMessage(new DropThroughPlatformRequest()); // TODO: Move out to somewhere else?
-                lastDroppedThroughPlatform_ = gameTime.TotalGameTime;
+                commandment = Commandment.MoveRight;
+                return true;
             }
+            return false;
         }
 
-        /* TODO: Need to feed cooldowns into this logic (more paremeters, drawn from active player / player model ?) */
-
-        private void CheckForAttack(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
+        private static bool CheckForMoveUp(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Attack))
+            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Jump))
             {
-                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.Attack});
+                commandment = Commandment.MoveUp;
+                return true;
             }
+            return false;
         }
 
-        private void CheckForAbility1(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
+        private static bool CheckForMoveDown(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability1))
+            if(inputEvents.Any(keyEvent => keyEvent.Key == DxGame.Instance.Controls.Down && keyEvent.HeldDown))
             {
-                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.Ability1});
+                commandment = Commandment.MoveDown;
+                return true;
             }
+            return false;
         }
 
-        private void CheckForAbility2(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
+        private static bool CheckForAttack(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability2))
+            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Attack))
             {
-                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.Ability2});
+                commandment = Commandment.Attack;
+                return true;
             }
+            return false;
         }
 
-        private void CheckForAbility3(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
+        private static bool CheckForAbility1(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability3))
+            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability1))
             {
-                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.Ability3});
+                commandment = Commandment.Ability1;
+                return true;
             }
+            return false;
         }
 
-        private void CheckForAbility4(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
+        private static bool CheckForAbility2(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability4))
+            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability2))
             {
-                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.Ability4});
+                commandment = Commandment.Ability2;
+                return true;
             }
+            return false;
         }
 
-        private void CheckForMovement(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
+        private static bool CheckForAbility3(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Movement))
+            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability3))
             {
-                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.Movement});
+                commandment = Commandment.Ability3;
+                return true;
             }
+            return false;
         }
 
-        private void CheckForInteraction(List<Input.KeyboardEvent> inputEvents, DxGameTime gameTime)
+        private static bool CheckForAbility4(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if (inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Interact))
+            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability4))
             {
-                Parent?.BroadcastTypedMessage(new CommandMessage {Commandment = Commandment.InteractWithEnvironment});
-                DxGame.Instance.BroadcastTypedMessage(new EnvironmentInteractionMessage {Source = Parent, Time = gameTime}); // TODO: Move somewhere else?
+                commandment = Commandment.Ability4;
+                return true;
             }
+            return false;
+        }
+
+        private static bool CheckForMovement(List<KeyboardEvent> inputEvents, ref Commandment commandment)
+        {
+            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Movement))
+            {
+                commandment = Commandment.Movement;
+                return true;
+            }
+            return false;
+        }
+
+        private static bool CheckForInteraction(List<KeyboardEvent> inputEvents, ref Commandment commandment)
+        {
+            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Interact))
+            {
+                commandment = Commandment.InteractWithEnvironment;
+                return true;
+            }
+            return false;
         }
     }
 }

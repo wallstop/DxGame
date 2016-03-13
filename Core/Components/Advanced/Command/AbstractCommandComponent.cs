@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Messaging;
+using DXGame.Main;
 using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Command
@@ -18,8 +20,27 @@ namespace DXGame.Core.Components.Advanced.Command
     [ProtoContract]
     public abstract class AbstractCommandComponent : Component
     {
-        protected AbstractCommandComponent()
+        protected virtual void BroadcastCommandment(Commandment commandment)
         {
+            switch(commandment)
+            {
+                case Commandment.MoveDown:
+                {
+                    Parent?.BroadcastTypedMessage(new CommandMessage(commandment));
+                    Parent?.BroadcastTypedMessage(new DropThroughPlatformRequest());
+                }
+                    break;
+                case Commandment.InteractWithEnvironment:
+                {
+                    Parent?.BroadcastTypedMessage(new CommandMessage(commandment));
+                    // TODO: Move somewhere else?
+                    DxGame.Instance.BroadcastTypedMessage(new EnvironmentInteractionMessage {Source = Parent});
+                }
+                    break;
+                default:
+                    Parent?.BroadcastTypedMessage(new CommandMessage(commandment));
+                    break;
+            }
         }
     }
 }

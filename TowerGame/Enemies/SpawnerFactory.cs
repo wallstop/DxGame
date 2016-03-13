@@ -115,10 +115,12 @@ namespace DXGame.TowerGame.Enemies
         internal sealed class SimpleSmallBoxWaveSpawnFunction
         {
             private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+            private static readonly int MAX_BOXES_IN_PLAY = 25;
 
             private static readonly int NUM_BOXES_PER_WAVE = 5;
 
-            private int numBoxesSpawned_ = 0;
+            private int numBoxesSpawnedInWave_ = 0;
+            private int totalBoxesSpawned_ = 0;
 
             private EventListener EventListener { get; }
 
@@ -127,7 +129,7 @@ namespace DXGame.TowerGame.Enemies
                 EventModel eventModel = DxGame.Instance.Model<EventModel>();
                 EventListener = new EventListener(ProcessEvent);
                 eventModel.AttachEventListener(EventListener);
-                numBoxesSpawned_ = 0;
+                numBoxesSpawnedInWave_ = 0;
             }
 
             private void ProcessEvent(Event gameEvent)
@@ -140,17 +142,18 @@ namespace DXGame.TowerGame.Enemies
                 }
 
                 LOG.Info($"Received New Wave notification {maybeNewWaveMessage} - triggering spawn");
-                numBoxesSpawned_ = 0;
+                numBoxesSpawnedInWave_ = 0;
             }
 
             public Tuple<bool, GameObject> Spawn(DxGameTime gameTime)
             {
-                if(numBoxesSpawned_ >= NUM_BOXES_PER_WAVE)
+                if(NUM_BOXES_PER_WAVE < numBoxesSpawnedInWave_ || MAX_BOXES_IN_PLAY < totalBoxesSpawned_)
                 {
                     return Tuple.Create<bool, GameObject>(false, null);
                 }
 
-                ++numBoxesSpawned_;
+                ++numBoxesSpawnedInWave_;
+                ++totalBoxesSpawned_;
 
                 GameObject smallBox = EnemyFactory.SmallBox();
                 return Tuple.Create(true, smallBox);

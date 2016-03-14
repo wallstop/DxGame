@@ -398,15 +398,15 @@ namespace DXGame.Main
         private void CooperativeUpdate(DxGameTime gameTime)
         {
             NetworkModel networkModel = Model<NetworkModel>();
-            networkModel.ReceiveData(gameTime);
-            networkModel.Process(gameTime);
-
             InputModel inputModel = Model<InputModel>();
             inputModel.Process(gameTime);
 
+            networkModel.ReceiveData(gameTime);
+            networkModel.Process(gameTime);
+
             DeveloperModel developerModel = Model<DeveloperModel>();
             developerModel.Process(gameTime);
-            // TODO: Need to process input
+
             UpdateElements();
             networkModel.SendData(gameTime);
         }

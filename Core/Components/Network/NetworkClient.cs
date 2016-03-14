@@ -9,6 +9,7 @@ using DXGame.Core.Lerp;
 using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Game;
 using DXGame.Core.Messaging.Network;
+using DXGame.Core.Models;
 using DXGame.Core.Network;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
@@ -40,6 +41,8 @@ namespace DXGame.Core.Components.Network
 
         private readonly ReaderWriterLockSlim lock_ = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
         private List<Message> messagesToBroadcast_ = new List<Message>();
+
+        private UniqueId playerId_;
 
         public NetworkClient WithNetworkClientConfig(NetworkClientConfig configuration)
         {
@@ -85,6 +88,7 @@ namespace DXGame.Core.Components.Network
                     break;
             }
         }
+        
 
         protected void ProcessDebugMessage(NetIncomingMessage message)
         {
@@ -150,6 +154,23 @@ namespace DXGame.Core.Components.Network
                         gameTime.TotalGameTime);
                 }
             }
+
+            if(!ReferenceEquals(playerId_, null))
+            {
+                List<GameObject> maybePlayers = DxGame.Instance.DxGameElements.OfType<GameObject>().ToList();
+                foreach(GameObject maybePlayer in maybePlayers)
+                {
+                    if(Objects.Equals(maybePlayer.Id, playerId_))
+                    {
+                        Player clientSideActivePlayer = Player.PlayerFrom(maybePlayer, "Bartholomew");
+                        PlayerModel playerModel = DxGame.Instance.Model<PlayerModel>();
+                        playerModel.WithActivePlayer(clientSideActivePlayer);
+                        playerId_ = null;
+                        break;
+                    }
+                }
+            }
+
             base.Update(gameTime);
         }
 
@@ -188,6 +209,7 @@ namespace DXGame.Core.Components.Network
             networkMessageHandlers_[typeof(EventStream)] = HandleEventStream;
             networkMessageHandlers_[typeof(DxVectorLerpMessage)] = HandleDxVectorLerpMessage;
             networkMessageHandlers_[typeof(ServerTimeUpdate)] = HandleServerTimeUpdate;
+            networkMessageHandlers_[typeof(UpdateActivePlayer)] = HandleUpdateActivePlayer;
         }
 
         private void HandleEventStream(NetworkMessage message, NetConnection netConnection)
@@ -222,6 +244,12 @@ namespace DXGame.Core.Components.Network
             DxVectorLerpMessage dxVectorLerpMessage = ConvertMessageType<DxVectorLerpMessage>(message);
             dxVector2LerpData_.UpdateLerpData(dxVectorLerpMessage.EntityId, dxVectorLerpMessage.CurrentLerpValue,
                 dxVectorLerpMessage.TimeStamp.TotalGameTime);
+        }
+
+        private void HandleUpdateActivePlayer(NetworkMessage message, NetConnection connection)
+        {
+            UpdateActivePlayer updateActivePlayer = ConvertMessageType<UpdateActivePlayer>(message);
+            playerId_ = updateActivePlayer.PlayerId;
         }
 
         public override void Shutdown()

@@ -5,6 +5,7 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Cache.Advanced;
+using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Command
 {
@@ -12,15 +13,16 @@ namespace DXGame.Core.Components.Advanced.Command
     [Serializable]
     public class SimpleRelayingCommandComponent : AbstractCommandComponent
     {
-        [DataMember]
-        private readonly UniqueId cacheKey_ = new UniqueId();
+        [DataMember] private List<Commandment> currentCommandments_;
 
-        [DataMember] private ICache<UniqueId, List<Commandment>> commandmentCache_;
+        [DataMember] public TimeSpan CommandmentExpiry { get; }
+
+        [DataMember] private TimeSpan lastUpdated_;
 
         public SimpleRelayingCommandComponent(TimeSpan commandmentTimeout)
         {
-            commandmentCache_ =
-                CacheBuilder<UniqueId, List<Commandment>>.NewBuilder().WithExpireAfterWrite(commandmentTimeout).Build();
+            CommandmentExpiry = commandmentTimeout;
+            currentCommandments_ = new List<Commandment>();
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -31,13 +33,13 @@ namespace DXGame.Core.Components.Advanced.Command
 
         private void EmitCommandments()
         {
-            Optional<List<Commandment>> maybeCommandments = commandmentCache_.GetIfPresent(cacheKey_);
-            if(!maybeCommandments.HasValue)
+            if(lastUpdated_ + CommandmentExpiry < DxGame.Instance.CurrentTime.TotalGameTime)
             {
+                currentCommandments_.Clear();
                 return;
             }
 
-            foreach(Commandment commandment in maybeCommandments.Value)
+            foreach(Commandment commandment in currentCommandments_)
             {
                 BroadcastCommandment(commandment);
             }
@@ -45,7 +47,8 @@ namespace DXGame.Core.Components.Advanced.Command
 
         public void RelayCommands(List<Commandment> commandments)
         {
-            commandmentCache_.Put(cacheKey_, commandments);
+            lastUpdated_ = DxGame.Instance.CurrentTime.TotalGameTime;
+            currentCommandments_ = commandments;
             EmitCommandments();
         }
     }

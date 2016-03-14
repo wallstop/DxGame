@@ -40,8 +40,6 @@ namespace DXGame.TowerGame.Components
             timeSinceLastMovementRequest_ += gameTime.ElapsedGameTime;
             // Extract player model, players; handle limitations on AI
             PlayerModel playerModel = DxGame.Instance.Model<PlayerModel>();
-            Validate.AreEqual(1, playerModel.Players.Count,
-                $"{GetType()} cannot fathom {playerModel.Players.Count} players.");
             Core.Player player = playerModel.Players.First();
 
             var closeEnough = Math.Abs(player.Position.Position.X - spatialComponent_.Position.X) < PERSONAL_SPACE && Math.Abs(player.Position.Position.Y - spatialComponent_.Position.Y) < PERSONAL_SPACE;

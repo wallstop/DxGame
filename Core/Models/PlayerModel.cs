@@ -44,8 +44,10 @@ namespace DXGame.Core.Models
         public PlayerModel WithActivePlayer(Player player)
         {
             Validate.IsNotNull(player, $"Cannot initialize {GetType()} with a null/default ActivePlayer ({player})");
-            Validate.IsNull(ActivePlayer,
-                $"Cannot initialize {GetType()} with an already initialized {nameof(ActivePlayer)}");
+            if(!Check.IsNullOrDefault(ActivePlayer))
+            {
+                LOG.Info($"Re-initializing {GetType()} with a different active player {nameof(ActivePlayer)}");
+            }
 
             LOG.Debug($"Assigning {player} to be ActivePlayer");
             ActivePlayer = player;

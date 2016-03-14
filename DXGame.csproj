@@ -172,6 +172,7 @@
     <Compile Include="Core\Messaging\Network\ClientTimeSynchronizationRequest.cs" />
     <Compile Include="Core\Messaging\Network\EventStream.cs" />
     <Compile Include="Core\Messaging\Network\ServerTimeUpdate.cs" />
+    <Compile Include="Core\Messaging\Network\UpdateActivePlayer.cs" />
     <Compile Include="Core\Models\EnvironmentModel.cs" />
     <Compile Include="Core\Models\EventModel.cs" />
     <Compile Include="Core\Models\ExperienceModel.cs" />

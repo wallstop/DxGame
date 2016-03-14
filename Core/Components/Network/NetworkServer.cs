@@ -6,6 +6,7 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Generators;
 using DXGame.Core.Lerp;
 using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Game;
 using DXGame.Core.Messaging.Network;
 using DXGame.Core.Models;
 using DXGame.Core.Network;
@@ -244,8 +245,14 @@ namespace DXGame.Core.Components.Network
             LOG.Info(
                 $"Successfully initialized ClientConnection {connection} for player {clientConnectionRequest.PlayerName}");
 
-            GameObject player = playerGenerator.GeneratePlayer(networkPlayerCommand);
+            GameObject player = playerGenerator.GeneratePlayer(networkPlayerCommand, false);
             player.Create();
+
+            UpdateActivePlayer updateActivePlayerRequest = new UpdateActivePlayer(player.Id);
+            NetOutgoingMessage outgoingUpdateActivePlayerRequest =
+                updateActivePlayerRequest.ToNetOutgoingMessage(ServerConnection);
+            ServerConnection.SendMessage(outgoingUpdateActivePlayerRequest, connection,
+                NetDeliveryMethod.ReliableOrdered, CLIENT_SPECIFIC_UPDATES);
         }
     }
 }

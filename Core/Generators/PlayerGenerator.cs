@@ -47,7 +47,7 @@ namespace DXGame.Core.Generators
             healthBar_.LoadContent();
         }
 
-        public GameObject GeneratePlayer(AbstractCommandComponent playerCommander)
+        public GameObject GeneratePlayer(AbstractCommandComponent playerCommander, bool isActivePlayer)
         {
             GameObject.GameObjectBuilder playerBuilder = GameObject.Builder();
             FacingComponent facingComponent = new FacingComponent();
@@ -59,10 +59,14 @@ namespace DXGame.Core.Generators
 
             string playerName = "rektorOfSouls";
             PlayerNameComponent playerNameComponent = new PlayerNameComponent(playerName);
-            ActivePlayerComponent activePlayerComponent = new ActivePlayerComponent();
+            if(isActivePlayer)
+            {
+                ActivePlayerComponent activePlayerComponent = new ActivePlayerComponent();
+                playerBuilder.WithComponent(activePlayerComponent);
+            }
             playerBuilder.WithComponents(PlayerSpace, physics_, playerProperties_, healthBar_, playerCommander,
                 facingComponent, teamComponent, levelComponent, basicAttackListener, gevurahBasicAttack, itemManager,
-                playerNameComponent, activePlayerComponent);
+                playerNameComponent);
             GameObject playerObject = playerBuilder.Build();
             Skill shockwaveSkill =
                 Skill.Builder()
@@ -99,7 +103,7 @@ namespace DXGame.Core.Generators
 
         public GameObject GeneratePlayer()
         {
-            return GeneratePlayer(new PlayerInputListener());
+            return GeneratePlayer(new PlayerInputListener(), true);
         }
 
         public List<GameObject> Generate()

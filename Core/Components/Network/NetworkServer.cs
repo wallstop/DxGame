@@ -24,7 +24,7 @@ namespace DXGame.Core.Components.Network
 
     public class NetworkServer : NetworkComponent
     {
-        private static readonly TimeSpan TICK_RATE = TimeSpan.FromSeconds(1.0 / 30); // 60 FPS
+        private static readonly TimeSpan TICK_RATE = TimeSpan.FromSeconds(1.0 / 60); // 60 FPS
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         public NetServer ServerConnection => Connection as NetServer;
         public Dictionary<NetConnection, ClientEventTracker> ClientFrameStates { get; }

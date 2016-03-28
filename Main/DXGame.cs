@@ -373,7 +373,7 @@ namespace DXGame.Main
             TimeSpan actualElapsed = wallclock - lastFrameTick_;
             TimeSpan elapsed = MathUtils.Min(actualElapsed, TargetElapsedTime);
             TimeSpan currentTime = compensatedGameTime_ + elapsed;
-            if(timeSkewMilliseconds_ != 0)
+            if(TargetElapsedTime.TotalMilliseconds < Math.Abs(timeSkewMilliseconds_))
             {
                 // TODO: Roll this much more gently
                 TimeSpan timeSkew = TimeSpan.FromMilliseconds(timeSkewMilliseconds_);

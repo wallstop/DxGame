@@ -29,7 +29,7 @@ namespace DXGame.Core.Components.Network
 
     public class NetworkClient : NetworkComponent
     {
-        private static readonly TimeSpan TICK_RATE = TimeSpan.FromSeconds(1.0 / 30); // 60 FPS
+        private static readonly TimeSpan TICK_RATE = TimeSpan.FromSeconds(1.0 / 60); // 60 FPS
         private static readonly TimeSpan TIME_SYNCHRONIZATION_RATE = TimeSpan.FromSeconds(1);
         private TimeSpan lastSynchronizedTime_ = TimeSpan.Zero;
 
@@ -243,7 +243,7 @@ namespace DXGame.Core.Components.Network
         {
             DxVectorLerpMessage dxVectorLerpMessage = ConvertMessageType<DxVectorLerpMessage>(message);
             dxVector2LerpData_.UpdateLerpData(dxVectorLerpMessage.EntityId, dxVectorLerpMessage.CurrentLerpValue,
-                dxVectorLerpMessage.TimeStamp.TotalGameTime);
+                DxGame.Instance.CurrentTime.TotalGameTime);
         }
 
         private void HandleUpdateActivePlayer(NetworkMessage message, NetConnection connection)

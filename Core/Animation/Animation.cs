@@ -7,24 +7,31 @@ using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using ProtoBuf;
 
 namespace DXGame.Core.Animation
 {
+    public enum Orientation
+    {
+        None,
+        Left,
+        Right
+    }
+
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class Animation : IDrawable, IProcessable
     {
-        [ProtoMember(1)] [DataMember] private int currentFrame_;
-        [ProtoMember(2)] [DataMember] private DrawPriority drawPriority_;
-        [ProtoMember(3)] [DataMember] private TimeSpan lastUpdated_ = TimeSpan.FromSeconds(0);
-        [ProtoMember(4)] [DataMember] protected PositionalComponent position_;
+        [DataMember] private int currentFrame_;
+        [DataMember] private DrawPriority drawPriority_;
+        [DataMember] private TimeSpan lastUpdated_ = TimeSpan.FromSeconds(0);
+        [DataMember] protected PositionalComponent position_;
         [NonSerialized] [IgnoreDataMember] private Texture2D spriteSheet_;
         public TimeSpan TimePerFrame => TimeSpan.FromSeconds(1.0f / AnimationDescriptor.FramesPerSecond);
 
         [DataMember]
         public AnimationDescriptor AnimationDescriptor { get; private set; }
+
+        private Orientation Orientation { get; }
 
         /* 
             TODO: Precompute the bounding box of each animation frame. Have the animation offer the actual bounding box of the object instead of relying on hardcoded values.
@@ -34,7 +41,12 @@ namespace DXGame.Core.Animation
         private int TotalFrames => AnimationDescriptor.FrameCount;
         private float Scale => (float) AnimationDescriptor.Scale;
 
-        public Animation(AnimationDescriptor descriptor, DrawPriority drawPriority = DrawPriority.NORMAL)
+        public Animation(AnimationDescriptor descriptor, Orientation orientation)
+            : this(descriptor, DrawPriority.NORMAL, orientation)
+        {
+        }
+
+        public Animation(AnimationDescriptor descriptor, DrawPriority drawPriority = DrawPriority.NORMAL, Orientation orientation = Orientation.Right)
         {
             Validate.IsNotNullOrDefault(descriptor, StringUtils.GetFormattedNullOrDefaultMessage(this, descriptor));
             Validate.IsTrue(descriptor.FrameCount > 0,
@@ -45,6 +57,9 @@ namespace DXGame.Core.Animation
                 StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(descriptor.Asset)));
             AnimationDescriptor = descriptor;
             drawPriority_ = drawPriority;
+
+            Validate.IsFalse(orientation != Orientation.None);
+            Orientation = orientation;
         }
 
         public DrawPriority DrawPriority => drawPriority_;
@@ -55,8 +70,15 @@ namespace DXGame.Core.Animation
             /* We asume that Animations are horizontal strips without any spacing or anything between frames */
             int frameWidth = spriteSheet_.Width / TotalFrames;
             Rectangle frameOutline = new Rectangle(frameWidth * currentFrame_, 0, frameWidth, spriteSheet_.Height);
+
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if(Orientation == Orientation.Left)
+            {
+                spriteEffects = SpriteEffects.FlipVertically;
+            }
+
             spriteBatch.Draw(spriteSheet_, position_.Position.ToVector2(), frameOutline, Color.White, 0.0f, Vector2.Zero,
-                Scale, SpriteEffects.None, 0);
+                Scale, spriteEffects, 0);
         }
 
         public int CompareTo(IDrawable other)

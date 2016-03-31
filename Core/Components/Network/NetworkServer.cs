@@ -66,6 +66,18 @@ namespace DXGame.Core.Components.Network
                 NetOutgoingMessage outgoingMessage = eventStream.ToNetOutgoingMessage(ServerConnection);
                 ServerConnection.SendMessage(outgoingMessage, connectionEventTrackingPair.Key,
                     NetDeliveryMethod.ReliableOrdered, REQUIRED_MESSAGE_CHANNEL);
+
+                List<NetworkMessage> clientSpecificMessages;
+                if(connectionEventTrackingPair.Value.ServerEventTracker.RetrieveNetworkEvents(out clientSpecificMessages))
+                {
+                    foreach(NetworkMessage clientMessage in clientSpecificMessages)
+                    {
+                        NetOutgoingMessage outgoingClientMessage =
+                            clientMessage.ToNetOutgoingMessage(ServerConnection);
+                        ServerConnection.SendMessage(outgoingClientMessage, connectionEventTrackingPair.Key,
+                            NetDeliveryMethod.ReliableOrdered, CLIENT_SPECIFIC_UPDATES);
+                    }
+                }
             }
 
             List<IDxVectorLerpable> dxVectorLerpables =
@@ -78,7 +90,7 @@ namespace DXGame.Core.Components.Network
                 NetOutgoingMessage outgoingLerpMessage = dxVectorLerpMessage.ToNetOutgoingMessage(ServerConnection);
                 foreach(NetConnection clientConnection in ClientFrameStates.Keys)
                 {
-                    /* Don't really care if the client picks these up... */
+                    /* Don't really care if the client picks these up... (but do we care about order? not right now...) */
                     ServerConnection.SendMessage(outgoingLerpMessage, clientConnection, NetDeliveryMethod.Unreliable,
                         LERP_DATA_CHANNEL);
                 }
@@ -247,12 +259,8 @@ namespace DXGame.Core.Components.Network
 
             GameObject player = playerGenerator.GeneratePlayer(networkPlayerCommand, false);
             player.Create();
-
             UpdateActivePlayer updateActivePlayerRequest = new UpdateActivePlayer(player.Id);
-            NetOutgoingMessage outgoingUpdateActivePlayerRequest =
-                updateActivePlayerRequest.ToNetOutgoingMessage(ServerConnection);
-            ServerConnection.SendMessage(outgoingUpdateActivePlayerRequest, connection,
-                NetDeliveryMethod.ReliableOrdered, CLIENT_SPECIFIC_UPDATES);
+            eventTracker.AttachNetworkMessage(updateActivePlayerRequest);
         }
     }
 }

@@ -38,6 +38,7 @@ namespace DXGame.Core.Utils.Lerp
 
         public bool TryGetLerpData(UniqueId entityId, out LerpData<T> lerpData)
         {
+
             Tuple<ReaderWriterLockSlim, FixedSizedBuffer<Tuple<T, TimeSpan>>> value;
             if(lerpBuffersById_.TryGetValue(entityId, out value))
             {

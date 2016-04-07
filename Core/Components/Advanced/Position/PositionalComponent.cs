@@ -85,13 +85,13 @@ namespace DXGame.Core.Components.Advanced.Position
 
         public void Lerp(DxVector2 older, DxVector2 newer, TimeSpan oldTime, TimeSpan newTime, TimeSpan currentTime)
         {
-            float newX = (float)SpringFunctions.Linear(older.X, newer.X,
+            int newX = (int)Math.Round(SpringFunctions.Linear(older.X, newer.X,
                 (newTime.TotalMilliseconds - oldTime.TotalMilliseconds),
-                (currentTime.TotalMilliseconds - oldTime.TotalMilliseconds));
+                (currentTime.TotalMilliseconds - oldTime.TotalMilliseconds)));
 
-            float newY = (float) SpringFunctions.Linear(older.Y, newer.Y,
+            int newY = (int) Math.Round(SpringFunctions.Linear(older.Y, newer.Y,
                 (newTime.TotalMilliseconds - oldTime.TotalMilliseconds),
-                (currentTime.TotalMilliseconds - oldTime.TotalMilliseconds));
+                (currentTime.TotalMilliseconds - oldTime.TotalMilliseconds)));
 
             Position = new DxVector2(newX, newY);
         }

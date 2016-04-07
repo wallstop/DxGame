@@ -47,7 +47,7 @@ namespace DXGame.Core.Animation
         {
             while(lastUpdated_ + TimePerFrame < gameTime.TotalGameTime)
             {
-                lastUpdated_ = gameTime.TotalGameTime;
+                lastUpdated_ += TimePerFrame;
                 currentFrame_ = currentFrame_.WrappedAdd(1, TotalFrames);
             }
             

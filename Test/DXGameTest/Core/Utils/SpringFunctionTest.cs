@@ -54,5 +54,12 @@ namespace DXGameTest.Core.Utils
                 }
             }
         }
+
+        [Test]
+        public void TestLinearSpringFunction()
+        {
+            double result = SpringFunctions.Linear(0, 1, 2, 1);
+            Assert.AreEqual(result, 2, 0.00001);
+        }
     }
 }

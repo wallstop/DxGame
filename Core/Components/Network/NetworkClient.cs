@@ -187,20 +187,6 @@ namespace DXGame.Core.Components.Network
             {
                 DxGame.Instance.BroadcastUntypedMessage(message);
             }
-
-            // TODO: Make this not shit (Keep our own id -> component mapping?)
-            List<IDxVectorLerpable> dxVectorLerpables =
-                DxGame.Instance.DxGameElements.OfType<IDxVectorLerpable>().ToList();
-            foreach(IDxVectorLerpable dxVectorLerpable in dxVectorLerpables)
-            {
-                UniqueId entityId = dxVectorLerpable.Id;
-                LerpData<DxVector2> dxVectorLerpData;
-                if(dxVector2LerpData_.TryGetLerpData(entityId, out dxVectorLerpData))
-                {
-                    dxVectorLerpable.Lerp(dxVectorLerpData.OldValue, dxVectorLerpData.NewValue, dxVectorLerpData.OldTime,
-                        dxVectorLerpData.NewTime, gameTime.TotalGameTime);
-                }
-            }
             base.PostReceiveData(gameTime);
         }
 
@@ -242,8 +228,7 @@ namespace DXGame.Core.Components.Network
         private void HandleDxVectorLerpMessage(NetworkMessage message, NetConnection netConnection)
         {
             DxVectorLerpMessage dxVectorLerpMessage = ConvertMessageType<DxVectorLerpMessage>(message);
-            dxVector2LerpData_.UpdateLerpData(dxVectorLerpMessage.EntityId, dxVectorLerpMessage.CurrentLerpValue,
-                DxGame.Instance.CurrentTime.TotalGameTime);
+            dxVector2LerpData_.UpdateLerpData(dxVectorLerpMessage.EntityId, dxVectorLerpMessage.CurrentLerpValue, dxVectorLerpMessage.TimeStamp.TotalGameTime);
         }
 
         private void HandleUpdateActivePlayer(NetworkMessage message, NetConnection connection)

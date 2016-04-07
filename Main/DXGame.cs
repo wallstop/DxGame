@@ -375,10 +375,19 @@ namespace DXGame.Main
             TimeSpan currentTime = compensatedGameTime_ + elapsed;
             if(TargetElapsedTime.TotalMilliseconds < Math.Abs(timeSkewMilliseconds_))
             {
+                if(0 < timeSkewMilliseconds_)
+                {
+                    TimeSpan timeSkew = TimeSpan.FromMilliseconds(timeSkewMilliseconds_);
+                    currentTime += timeSkew;
+                    compensatedGameTime_ += timeSkew;
+                }
+                else
+                {
+                    TimeSpan timeSkew = TimeSpan.FromMilliseconds(-timeSkewMilliseconds_);
+                    currentTime -= timeSkew;
+                    compensatedGameTime_ -= timeSkew;
+                }
                 // TODO: Roll this much more gently
-                TimeSpan timeSkew = TimeSpan.FromMilliseconds(timeSkewMilliseconds_);
-                currentTime += timeSkew;
-                compensatedGameTime_ += timeSkew;
                 timeSkewMilliseconds_ = 0;
             }
             bool isRunningSlowly = TargetElapsedTime < actualElapsed;
@@ -400,7 +409,7 @@ namespace DXGame.Main
             NetworkModel networkModel = Model<NetworkModel>();
             InputModel inputModel = Model<InputModel>();
             inputModel.Process(gameTime);
-
+            
             networkModel.ReceiveData(gameTime);
             networkModel.Process(gameTime);
 

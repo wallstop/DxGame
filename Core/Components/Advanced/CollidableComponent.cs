@@ -7,7 +7,6 @@ using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced
 {
@@ -21,10 +20,8 @@ namespace DXGame.Core.Components.Advanced
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class CollidableComponent : Component
     {
-        [ProtoMember(1)]
         [DataMember]
         public ReadOnlyCollection<CollidableDirection> CollidableDirections { get; }
 
@@ -58,7 +55,6 @@ namespace DXGame.Core.Components.Advanced
         }
 
         [DataMember]
-        [ProtoMember(2)]
         public SpatialComponent Spatial { get; }
 
         protected CollidableComponent(IList<CollidableDirection> collidableDirections, SpatialComponent spatial)

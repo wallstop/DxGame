@@ -1,23 +1,16 @@
-﻿using DXGame.Core.Components.Basic;
-using DXGame.Core.Utils;
-using System;
+﻿using System;
 using System.Runtime.Serialization;
-using ProtoBuf;
+using DXGame.Core.Components.Basic;
+using DXGame.Core.Utils;
 
 namespace DXGame.Core.Components.Advanced
 {
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class EntityTypeComponent : Component
     {
-
         [DataMember]
-        [ProtoMember(1)]
-        public EntityType EntityType
-        {
-            get;
-        }
+        public EntityType EntityType { get; private set; }
 
         public EntityTypeComponent(EntityType entityType)
         {

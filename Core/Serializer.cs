@@ -86,7 +86,8 @@ namespace DXGame.Core
         {
             using(MemoryStream memoryStream = new MemoryStream(data))
             {
-                DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(T));
+                /* TODO: Use Global instance? */
+                DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(T), new DataContractJsonSerializerSettings { UseSimpleDictionaryFormat = true });
                 memoryStream.Position = 0;
                 return (T) deserializer.ReadObject(memoryStream);
             }

@@ -8,6 +8,7 @@ using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
+using DXGame.Core.State;
 
 namespace DXGame.Core
 {
@@ -38,12 +39,6 @@ namespace DXGame.Core
         public bool Removed { get; private set; } = false;
         public IEnumerable<Component> Components => components_;
 
-        [DataMember]
-        public List<Message> CurrentMessages { get; private set; } = new List<Message>();
-
-        [DataMember]
-        public List<Message> FutureMessages { get; private set; } = new List<Message>();
-
         private GameObject(List<Component> components)
         {
             components_ = components;
@@ -60,11 +55,6 @@ namespace DXGame.Core
 
         public void Process(DxGameTime gameTime)
         {
-            /* Simply swap Message buffers */
-            List<Message> temp = CurrentMessages;
-            CurrentMessages = FutureMessages;
-            FutureMessages = temp;
-            FutureMessages.Clear();
         }
 
         public int CompareTo(IProcessable other)
@@ -127,7 +117,7 @@ namespace DXGame.Core
 
         public T ComponentOfType<T>() where T : Component
         {
-            return ComponentsOfType<T>().First();
+            return ComponentsOfType<T>().FirstOrDefault();
         }
 
         public static GameObjectBuilder Builder()
@@ -137,7 +127,6 @@ namespace DXGame.Core
 
         public void BroadcastUntypedMessage(Message message)
         {
-            FutureMessages.Add(message);
             Component[] components = components_.ToArray();
             foreach(Component component in components)
             {
@@ -151,7 +140,6 @@ namespace DXGame.Core
 
         public void BroadcastTypedMessage<T>(T message) where T : Message
         {
-            FutureMessages.Add(message);
             Component [] components = components_.ToArray();
             foreach(Component component in components)
             {
@@ -216,10 +204,6 @@ namespace DXGame.Core
 
         public void Remove()
         {
-
-            CurrentMessages.Clear();
-            FutureMessages.Clear();
-
             if(!Removed)
             {
                 foreach(Component component in components_)

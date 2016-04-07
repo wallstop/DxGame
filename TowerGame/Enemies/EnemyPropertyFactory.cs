@@ -22,10 +22,20 @@ namespace DXGame.TowerGame.Enemies
                     return SmallBoxProperties;
                 case "LargeBox":
                     return LargeBoxProperties;
+                case "Golem":
+                    return GolemProperties;
                 default:
                     throw new InvalidOperationException($"No known properties for {entityType.Name}");
             }
         }
+
+        private static EntityProperties GolemProperties => new EntityProperties(
+            health: new Property<int>(150, "Health"),
+            maxHealth: new Property<int>(150, "MaxHealth"),
+            defense: new Property<int>(1, "Defense"),
+            moveSpeed: new Property<float>(0f, "MoveSpeed"),
+            jumpSpeed: new Property<float>(0f, "JumpSpeed"),
+            attackSpeed: new Property<int>(1, "AttackSpeed"));
 
         private static EntityProperties SmallBoxProperties => new EntityProperties(
             health: new Property<int>(5, "Health"),

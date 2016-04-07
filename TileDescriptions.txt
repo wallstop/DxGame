@@ -1,0 +1,24 @@
+* Alters
+* Pillars with designs on them
+
+
+2 styles:
+* Normal
+* Weird shit
+
+* Ledges
+* Cliffs
+* Plain stone tiles
+* Plain grass tiles
+* Moss tiles
+* Sticky trees, small shrubs
+* Wooden platforms / ladders (not floating)
+* Floating stone platforms
+
+PROPS
+* Houses / huts - stone & wood
+* Fountain
+* Pillars / alters
+Theme
+Shaman-ey, ritualistic, ancient, run-down
+Stone henge-ey

@@ -14,11 +14,8 @@ namespace DXGame.Core.Animation
     public enum StandardAnimationType
     {
         Idle,
-        WalkingLeft,
-        WalkingRight,
-        IdleJump,
-        JumpLeft,
-        JumpRight
+        Moving,
+        Jumping
     }
 
     public class AnimationFactory
@@ -32,11 +29,8 @@ namespace DXGame.Core.Animation
             new ReadOnlyDictionary<StandardAnimationType, string>(new Dictionary<StandardAnimationType, string>
             {
                 {StandardAnimationType.Idle, "Idle"},
-                {StandardAnimationType.WalkingLeft, "Walk_Left"},
-                {StandardAnimationType.IdleJump, "Idle_Jump"},
-                {StandardAnimationType.JumpLeft, "Jump_Left"},
-                {StandardAnimationType.JumpRight, "Jump_Right"},
-                {StandardAnimationType.WalkingRight, "Walk_Right"}
+                {StandardAnimationType.Moving, "Moving"},
+                {StandardAnimationType.Jumping, "Jumping"}
             });
 
         private readonly UnboundedSimpleCache<string, AnimationDescriptor> animationSimpleCache_ = new UnboundedSimpleCache<string, AnimationDescriptor>();

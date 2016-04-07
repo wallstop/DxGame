@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils.Distance;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced
 {
@@ -15,11 +14,9 @@ namespace DXGame.Core.Components.Advanced
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class FacingComponent : Component
     {
         [DataMember]
-        [ProtoMember(1)]
         public Direction Facing { get; private set; } = Direction.East;
 
         public FacingComponent()

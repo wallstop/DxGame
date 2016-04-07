@@ -20,12 +20,12 @@ namespace DXGame.Core.Components.Advanced
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class SkillComponent : Component
     {
-        [ProtoMember(1)]
         [DataMember]
         public ReadOnlyDictionary<Commandment, Skill> Skills { get; }
+
+        [DataMember] private readonly List<CommandMessage> commandMessages_; 
 
         public SkillComponent(params Skill[] skills) : this(skills.ToList()) {}
 
@@ -35,7 +35,16 @@ namespace DXGame.Core.Components.Advanced
             Validate.NoNullElements(skills, StringUtils.GetFormattedNullOrDefaultMessage(this, typeof(Skill)));
             Skills =
                 new ReadOnlyDictionary<Commandment, Skill>(skills.ToDictionary(skill => skill.Ability, skill => skill));
+            commandMessages_ = new List<CommandMessage>();
+            MessageHandler.RegisterMessageHandler<CommandMessage>(HandleCommandMessage);
         }
+
+        private void HandleCommandMessage(CommandMessage commandMessage)
+        {
+            commandMessages_.Add(commandMessage);
+        }
+
+
 
         /**
             <summary>
@@ -45,7 +54,9 @@ namespace DXGame.Core.Components.Advanced
 
         protected override void Update(DxGameTime gameTime)
         {
-            HashSet<CommandMessage> commandMessages = Parent.CurrentMessages.OfType<CommandMessage>().ToHashSet();
+            HashSet<CommandMessage> commandMessages = commandMessages_.ToHashSet();
+            commandMessages_.Clear();
+
             foreach(var skillEntry in Skills)
             {
                 // No skill message? Signal that we didn't get one

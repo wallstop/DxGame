@@ -108,6 +108,8 @@
     <Compile Include="Core\Animation\Animation.cs" />
     <Compile Include="Core\Animation\AnimationDescriptor.cs" />
     <Compile Include="Core\Animation\AnimationFactory.cs" />
+    <Compile Include="Core\Animation\AnimationFrameOffset.cs" />
+    <Compile Include="Core\Animation\FrameDescriptor.cs" />
     <Compile Include="Core\Behavior\Behavior.cs" />
     <Compile Include="Core\Behavior\Goals\AbstractGoal.cs" />
     <Compile Include="Core\Behavior\Goals\BuffGoal.cs" />
@@ -260,13 +262,11 @@
     <Compile Include="Core\Primitives\IShape.cs" />
     <Compile Include="Core\Properties\EntityProperties.cs" />
     <Compile Include="Core\Skills\Skill.cs" />
-    <Compile Include="Core\State\Action.cs" />
     <Compile Include="Core\State\StateMachine.cs" />
     <Compile Include="Core\State\Presentation.cs" />
     <Compile Include="Core\State\State.cs" />
     <Compile Include="Core\State\StateMachineFactory.cs" />
     <Compile Include="Core\State\Transition.cs" />
-    <Compile Include="Core\State\Trigger.cs" />
     <Compile Include="Core\Components\Advanced\AnimationComponent.cs" />
     <Compile Include="Core\Components\Advanced\CollisionDestructibleComponent.cs" />
     <Compile Include="Core\Components\Advanced\FloatingHealthIndicator.cs" />
@@ -534,6 +534,21 @@
     <Content Include="Content\Player\Pick Ax.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Player\Poison Idle.png" />
+    <Content Include="Content\Player\Poison Jumping.png" />
+    <Content Include="Content\Player\Poison Moving.png" />
+    <Content Include="Content\Player\Poison\Ability1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Poison\Idle.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Poison\Jumping.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Poison\Moving.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Player\Rope_Right.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -574,6 +589,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Player\Warp.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Sprites\Golem\Golem.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Sprites\LargeBox\LargeBox.png">
@@ -649,6 +667,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Player\Idle_Jump.adtr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Player\Poison\Ability1.adtr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Player\Poison\Idle.adtr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Player\Poison\Jumping.adtr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Player\Poison\Moving.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="NLog.xsd">

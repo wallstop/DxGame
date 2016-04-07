@@ -63,7 +63,7 @@ namespace DXGame.Core.Components.Advanced.Entities
             */
             const int offset = 2;
             /* 
-                Offset the level by 2 - the following formula is assuming the following fibonacci mapping:
+                FrameOffset the level by 2 - the following formula is assuming the following fibonacci mapping:
                     0: 0
                     1: 1
                     2: 1

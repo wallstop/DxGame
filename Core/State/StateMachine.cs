@@ -1,58 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
+using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using ProtoBuf;
 
 namespace DXGame.Core.State
 {
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class StateMachine : Component
     {
-        [ProtoMember(1)]
         [DataMember]
         public State InitialState { get; private set; }
 
-        [ProtoMember(2)]
         [DataMember]
         public State CurrentState { get; private set; }
-
-        // TODO: Verify this is correct
-        [IgnoreDataMember]
-        public int States
-        {
-            get
-            {
-                /* Breadth-first state graph traversal to determine number of States in state graph */
-                var statesToVisit = new Queue<State>();
-                var seenStates = new HashSet<State>();
-                statesToVisit.Enqueue(InitialState);
-
-                do
-                {
-                    var currentState = statesToVisit.Dequeue();
-                    foreach(var transition in currentState.Transitions)
-                    {
-                        var state = transition.State;
-                        if(!seenStates.Add(state))
-                        {
-                            statesToVisit.Enqueue(transition.State);
-                        }
-                    }
-                } while(statesToVisit.Any());
-                return seenStates.Count;
-            }
-        }
 
         protected StateMachine(State initialState)
         {
             InitialState = initialState;
+            MessageHandler.EnableAcceptAll(HandleMessage);
             Reset();
+        }
+
+        private void HandleMessage(Message message)
+        {
+            CurrentState.Accept(message);
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -60,17 +34,20 @@ namespace DXGame.Core.State
             /*
                 Find the first transition that has had it's trigger activated. 
             */
-            var nextState =
-                CurrentState.Transitions.FirstOrDefault(transition => transition.ShouldTransition(Parent, gameTime))?
-                    .State ?? CurrentState;
+            State nextState;
+            if(!CurrentState.Transition(out nextState))
+            {
+                nextState = CurrentState;
+            }
+
             /* Are we transitioning? Fire the enter and exit functions, boys! Land ho! */
             if(!ReferenceEquals(nextState, CurrentState))
             {
-                CurrentState.OnExit?.Invoke(gameTime);
-                nextState.OnEnter?.Invoke(gameTime);
+                CurrentState.Exit(gameTime);
+                nextState.Enter(gameTime);
                 CurrentState = nextState;
             }
-            CurrentState.Action(gameTime);
+            CurrentState.Process(gameTime);
         }
 
         public void Reset()

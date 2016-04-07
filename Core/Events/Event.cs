@@ -9,7 +9,7 @@ namespace DXGame.Core.Events
 {
     /**
         <summary>
-            Events are lightweight wrappers around Messsages, describing a Message and when it occurred. 
+            Events are lightweight wrappers around Messages, describing a Message and when it occurred. 
         </summary>
     */
     [Serializable]

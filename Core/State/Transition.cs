@@ -1,17 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
+using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Main;
 
 namespace DXGame.Core.State
 {
     public enum Priority
     {
-        HIGH = -1,
-        MEDIUM = 0,
-        LOW = 1
+        High = -1,
+        Medium = 0,
+        Low = 1
     }
+
+    public delegate bool Trigger(List<Message> messages, DxGameTime gameTime);
 
     [Serializable]
     [DataContract]
@@ -24,29 +27,24 @@ namespace DXGame.Core.State
         [DataMember]
         public State State { get; private set; }
 
-        public Transition(Trigger trigger, State resultState)
-            : this(trigger, resultState, Priority.MEDIUM)
+        public Transition(Trigger trigger, State state)
+            : this(trigger, state, Priority.Medium)
         {
         }
 
-        public Transition(Trigger trigger, State resultState, Priority priority)
+        public Transition(Trigger trigger, State state, Priority priority)
         {
             Validate.IsNotNull(trigger, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(trigger)));
-            Validate.IsNotNull(resultState, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(resultState)));
+            Validate.IsNotNull(state, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(state)));
             Validate.IsNotNull(priority, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(priority)));
             Trigger = trigger;
-            State = resultState;
             Priority = priority;
+            State = state;
         }
 
         public int CompareTo(Transition other)
         {
             return Priority.CompareTo(other?.Priority);
-        }
-
-        public bool ShouldTransition(GameObject gameObject, DxGameTime gameTime)
-        {
-            return Trigger.Invoke(gameObject, gameTime);
         }
     }
 }

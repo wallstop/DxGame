@@ -27,7 +27,7 @@ namespace DXGame.Core.Generators
 
         public PlayerGenerator(DxVector2 playerPosition)
         {
-            PlayerSpace = new MapBoundedSpatialComponent(playerPosition, new DxVector2(50, 50));
+            PlayerSpace = new MapBoundedSpatialComponent(playerPosition, new DxVector2(75, 75));
             physics_ =
                 MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(PlayerSpace).Build();
 
@@ -97,7 +97,7 @@ namespace DXGame.Core.Generators
                 archerRoll);
             playerObject.AttachComponent(playerSkillComponent);
 
-            StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(playerObject, "Player");
+            StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(playerObject, "Poison");
             return playerObject;
         }
 

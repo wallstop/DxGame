@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Animation;
@@ -11,7 +12,6 @@ using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
-using DXGame.Main;
 
 namespace DXGame.Core.State
 {
@@ -58,47 +58,32 @@ namespace DXGame.Core.State
             Validate.IsNotNull(position,
                 $"Cannot make a {typeof (StateMachine)} for a null {typeof (PositionalComponent)}");
 
-            var stateMachineBuilder = StateMachine.Builder();
-            var animationBuilder = AnimationComponent.Builder().WithPosition(position);
+            StateMachine.StateMachineBuilder stateMachineBuilder = StateMachine.Builder();
+            AnimationComponent.AnimationComponentBuilder animationBuilder = AnimationComponent.Builder().WithPosition(position);
 
-            var actionResolver = new SimpleActionResolver(entity);
-            var idleState =
+            SimpleActionResolver actionResolver = new SimpleActionResolver(entity);
+            State idleState =
                 State.Builder()
                     .WithName("Idle")
                     .WithAction(actionResolver.IdleAction)
                     .WithEntrance(actionResolver.OnIdleEnterAction)
                     .Build();
-            var moveLeftState = State.Builder().WithName("MovingLeft").WithAction(actionResolver.MoveLeftAction).Build();
-            var moveRightState =
-                State.Builder().WithName("MovingRight").WithAction(actionResolver.MoveRightAction).Build();
-            var jumpState =
+
+            State movementState = State.Builder().WithName("Moving").WithAction(actionResolver.MovementAction).Build();
+            State jumpState =
                 State.Builder()
                     .WithName("Jumping")
-                    .WithAction(actionResolver.JumpAction)
+                    .WithAction(actionResolver.MovementAction)
                     .WithEntrance(actionResolver.OnJumpEnterAction)
                     .Build();
-            var jumpNormalState =
-                State.Builder().WithName("NormalJumping").WithAction(actionResolver.IdleAction).Build();
-            var jumpLeftState =
-                State.Builder().WithName("JumpingLeft").WithAction(actionResolver.MoveLeftAction).Build();
-            var jumpRightState =
-                State.Builder().WithName("JumpingRight").WithAction(actionResolver.MoveRightAction).Build();
 
             animationBuilder.WithStateAndAsset(idleState,
                 AnimationFactory.AnimationFor(entityName, StandardAnimationType.Idle))
-                .WithStateAndAsset(moveLeftState,
-                    AnimationFactory.AnimationFor(entityName, StandardAnimationType.WalkingLeft))
-                .WithStateAndAsset(moveRightState,
-                    AnimationFactory.AnimationFor(entityName, StandardAnimationType.WalkingRight))
-                .WithStateAndAsset(jumpState, AnimationFactory.AnimationFor(entityName, StandardAnimationType.IdleJump))
-                .WithStateAndAsset(jumpLeftState,
-                    AnimationFactory.AnimationFor(entityName, StandardAnimationType.JumpLeft))
-                .WithStateAndAsset(jumpRightState,
-                    AnimationFactory.AnimationFor(entityName, StandardAnimationType.JumpLeft))
-                .WithStateAndAsset(jumpNormalState, AnimationFactory.AnimationFor(entityName, StandardAnimationType.JumpLeft));
+                .WithStateAndAsset(movementState,
+                    AnimationFactory.AnimationFor(entityName, StandardAnimationType.Moving))
+                .WithStateAndAsset(jumpState, AnimationFactory.AnimationFor(entityName, StandardAnimationType.Jumping));
 
-            Trigger moveLeftTrigger = AnyMoveLeftCommands;
-            Trigger moveRightTrigger = AnyMoveRightCommands;
+            Trigger movementTrigger = AnyMoveLeftOrRightCommands;
             Trigger jumpTrigger = AnyJumpCommands;
 
             Trigger returnToIdleTrigger =
@@ -106,84 +91,71 @@ namespace DXGame.Core.State
                     !AnyMoveLeftCommands(entityInstance, gameTime) && !AnyMoveRightCommands(entityInstance, gameTime);
             Trigger movingBothDirectionsIsReallyIdleTrigger = OnlyMoveLeftAndRightCommands;
 
-            var moveLeftTransition = new Transition(moveLeftTrigger, moveLeftState);
-            var jumpLeftTransition = new Transition(moveLeftTrigger, jumpLeftState);
-            var moveRightTransition = new Transition(moveRightTrigger, moveRightState);
-            var jumpRightTransition = new Transition(moveRightTrigger, jumpRightState);
-            var jumpTransition = new Transition(jumpTrigger, jumpState, Priority.HIGH);
-            var returnToIdleTransition = new Transition(returnToIdleTrigger, idleState, Priority.LOW);
-            var returnToNormalJumpTransition = new Transition(returnToIdleTrigger, jumpNormalState, Priority.LOW);
-            var movingBothDirectionsIsReallyIdleTransition = new Transition(movingBothDirectionsIsReallyIdleTrigger, idleState, Priority.HIGH);
-            var movingBothDirectionsIsReallyNormalJumpingTransition =
-                new Transition(movingBothDirectionsIsReallyIdleTrigger, jumpNormalState, Priority.HIGH);
-            var jumpToIdleTransition = new Transition(BelowCollisionTrigger, idleState, Priority.HIGH);
+            Transition movementTransition = new Transition(movementTrigger, movementState);
+            Transition jumpMovementTransition = new Transition(movementTrigger, jumpState);
+            
+            Transition jumpTransition = new Transition(jumpTrigger, jumpState, Priority.High);
+            Transition returnToIdleTransition = new Transition(returnToIdleTrigger, idleState, Priority.Low);
+            Transition returnToNormalJumpTransition = new Transition(returnToIdleTrigger, jumpState, Priority.Low);
+            Transition movingBothDirectionsIsReallyIdleTransition = new Transition(movingBothDirectionsIsReallyIdleTrigger, idleState, Priority.High);
+            Transition movingBothDirectionsIsReallyNormalJumpingTransition =
+                new Transition(movingBothDirectionsIsReallyIdleTrigger, jumpState, Priority.High);
+            Transition jumpToIdleTransition = new Transition(BelowCollisionTrigger, idleState, Priority.High);
 
-            idleState.Transitions.Add(moveLeftTransition);
-            idleState.Transitions.Add(moveRightTransition);
-            idleState.Transitions.Add(jumpTransition);
-            idleState.Transitions.Add(movingBothDirectionsIsReallyIdleTransition);
-            moveLeftState.Transitions.Add(moveLeftTransition);
-            moveLeftState.Transitions.Add(moveRightTransition);
-            moveLeftState.Transitions.Add(jumpTransition);
-            moveLeftState.Transitions.Add(returnToIdleTransition);
-            moveLeftState.Transitions.Add(movingBothDirectionsIsReallyIdleTransition);
-            moveRightState.Transitions.Add(moveLeftTransition);
-            moveRightState.Transitions.Add(moveRightTransition);
-            moveRightState.Transitions.Add(jumpTransition);
-            moveRightState.Transitions.Add(returnToIdleTransition);
-            moveRightState.Transitions.Add(movingBothDirectionsIsReallyIdleTransition);
-            jumpState.Transitions.Add(jumpRightTransition);
-            jumpState.Transitions.Add(jumpLeftTransition);
-            jumpState.Transitions.Add(jumpToIdleTransition);
-            jumpLeftState.Transitions.Add(jumpRightTransition);
-            jumpLeftState.Transitions.Add(jumpToIdleTransition);
-            jumpLeftState.Transitions.Add(jumpLeftTransition);
-            jumpLeftState.Transitions.Add(movingBothDirectionsIsReallyNormalJumpingTransition);
-            jumpLeftState.Transitions.Add(returnToNormalJumpTransition);
-            jumpRightState.Transitions.Add(jumpLeftTransition);
-            jumpRightState.Transitions.Add(jumpToIdleTransition);
-            jumpRightState.Transitions.Add(jumpRightTransition);
-            jumpRightState.Transitions.Add(movingBothDirectionsIsReallyNormalJumpingTransition);
-            jumpRightState.Transitions.Add(returnToNormalJumpTransition);
-            jumpNormalState.Transitions.Add(movingBothDirectionsIsReallyNormalJumpingTransition);
-            jumpNormalState.Transitions.Add(jumpRightTransition);
-            jumpNormalState.Transitions.Add(jumpLeftTransition);
-            jumpNormalState.Transitions.Add(jumpToIdleTransition);
-            jumpNormalState.Transitions.Add(returnToNormalJumpTransition);
-            var stateMachine = stateMachineBuilder.WithInitialState(idleState).Build();
+            idleState.WithTransition(movementTransition);
+            idleState.WithTransition(jumpTransition);
+            idleState.WithTransition(movingBothDirectionsIsReallyIdleTransition);
+
+            movementState.WithTransition(movementTransition);
+            movementState.WithTransition(jumpTransition);
+            movementState.WithTransition(returnToIdleTransition);
+            movementState.WithTransition(movingBothDirectionsIsReallyIdleTransition);
+
+            jumpState.WithTransition(jumpMovementTransition);
+            jumpState.WithTransition(movingBothDirectionsIsReallyNormalJumpingTransition);
+            jumpState.WithTransition(returnToNormalJumpTransition);
+            jumpState.WithTransition(jumpToIdleTransition);
+
+            StateMachine stateMachine = stateMachineBuilder.WithInitialState(idleState).Build();
             entity.AttachComponent(stateMachine);
-            var animationComponent = animationBuilder.WithStateMachine(stateMachine).Build();
+            AnimationComponent animationComponent = animationBuilder.WithStateMachine(stateMachine).Build();
             entity.AttachComponent(animationComponent);
         }
 
-        private static bool AnyJumpCommands(GameObject entity, DxGameTime gameTime)
+        private static bool AnyJumpCommands(List<Message> messages, DxGameTime gameTime)
         {
             var commands =
-                entity.CurrentMessages
+                messages
                     .OfType<CommandMessage>();
             return commands.Any(command => command.Commandment == Commandment.MoveUp);
         }
 
-        private static bool AnyMoveRightCommands(GameObject entity, DxGameTime gameTime)
+        private static bool AnyMoveRightCommands(List<Message> messages, DxGameTime gameTime)
         {
-            var commands = entity.CurrentMessages.OfType<CommandMessage>();
+            var commands = messages.OfType<CommandMessage>();
             return commands.Any(command => command.Commandment == Commandment.MoveRight);
         }
 
-        private static bool AnyMoveLeftCommands(GameObject entity, DxGameTime gameTime)
+        private static bool AnyMoveLeftCommands(List<Message> messages, DxGameTime gameTime)
         {
-            var commands = entity.CurrentMessages.OfType<CommandMessage>();
+            var commands = messages.OfType<CommandMessage>();
             return commands.Any(command => command.Commandment == Commandment.MoveLeft);
         }
 
-        private static bool BelowCollisionTrigger(GameObject entity, DxGameTime gameTime)
+        private static bool AnyMoveLeftOrRightCommands(List<Message> messages, DxGameTime gameTime)
+        {
+            var commands = messages.OfType<CommandMessage>();
+            return commands.Any(command => command.Commandment == Commandment.MoveLeft || command.Commandment == Commandment.MoveRight);
+        }
+
+        private static bool BelowCollisionTrigger(List<Message> messages, DxGameTime gameTime)
         {
             /* 
                 Check the future queue - if we have collided THIS FRAME, 
                 then there will bea message in the queue next frame. This was causing a bug of 
                 double-applying the jump force 
             */
-            var collisionMessages = entity.FutureMessages.OfType<CollisionMessage>();
+            var collisionMessages = messages.OfType<CollisionMessage>();
             return collisionMessages.Any(collision => collision.CollisionDirections.ContainsKey(Direction.South));
         }
 
@@ -191,9 +163,9 @@ namespace DXGame.Core.State
             TODO: Tweak this for jumping & falling (right now it only prevents you from moving left/right, 
             but not while jumping or falling through platforms) 
         */
-        private static bool OnlyMoveLeftAndRightCommands(GameObject entity, DxGameTime gameTime)
+        private static bool OnlyMoveLeftAndRightCommands(List<Message> messages, DxGameTime gameTime)
         {
-            var commands = entity.CurrentMessages.OfType<CommandMessage>();
+            var commands = messages.OfType<CommandMessage>();
             var seenLeft = false;
             var seenRight = false;
             foreach (var commandment in commands.Select(command => command.Commandment))
@@ -232,26 +204,40 @@ namespace DXGame.Core.State
                     Entity.ComponentOfType<PhysicsComponent>().Velocity.Y);
             }
 
-            public void IdleAction(DxGameTime gameTIme)
+            public void IdleAction(List<Message> messages, DxGameTime gameTIme)
             {
                 // Super lazy, nothing to do, nothing to see
             }
 
-            public void MoveRightAction(DxGameTime gameTime)
+            public void MovementAction(List<Message> messages, DxGameTime gameTime)
             {
-                var force = Entity.ComponentOfType<EntityPropertiesComponent>().MovementForceFor(Commandment.MoveRight);
-                AttachForce(Entity, force);
-            }
-
-            public void MoveLeftAction(DxGameTime gameTime)
-            {
-                var force = Entity.ComponentOfType<EntityPropertiesComponent>().MovementForceFor(Commandment.MoveLeft);
-                AttachForce(Entity, force);
+                List<CommandMessage> commandMessages =
+                    messages.OfType<CommandMessage>().OrderBy(commandMessage => commandMessage.Commandment).ToList();
+                foreach(CommandMessage commandMessage in commandMessages)
+                {
+                    switch(commandMessage.Commandment)
+                    {
+                        case Commandment.MoveRight:
+                        {
+                                Force force = Entity.ComponentOfType<EntityPropertiesComponent>().MovementForceFor(Commandment.MoveRight);
+                                AttachForce(Entity, force);
+                            return;
+                        }
+                        case Commandment.MoveLeft:
+                        {
+                                Force force = Entity.ComponentOfType<EntityPropertiesComponent>().MovementForceFor(Commandment.MoveLeft);
+                                AttachForce(Entity, force);
+                            return;
+                        }
+                        default:
+                            break;
+                    }
+                }
             }
 
             public void OnJumpEnterAction(DxGameTime gameTime)
             {
-                var force =  Entity.ComponentOfType<EntityPropertiesComponent>().MovementForceFor(Commandment.MoveUp);
+                Force force =  Entity.ComponentOfType<EntityPropertiesComponent>().MovementForceFor(Commandment.MoveUp);
                 AttachForce(Entity, force);
             }
 

@@ -7,26 +7,25 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
 using DXGame.Core.State;
 using DXGame.Core.Utils;
+using DXGame.Core.Utils.Distance;
 using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced
 {
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class AnimationComponent : DrawableComponent
     {
-        [ProtoMember(1)] [DataMember] private readonly Dictionary<State.State, Animation.Animation> animationsForStates_;
-
-        [ProtoMember(2)]
+        [DataMember] private readonly Dictionary<State.State, Animation.Animation> animationsForStates_;
+        
         [DataMember]
         public PositionalComponent Position { get; }
-
-        [ProtoMember(3)]
+        
         [DataMember]
         public StateMachine StateMachine { get; }
+
+        [DataMember] private State.State lastState_ = null;
 
         private AnimationComponent(StateMachine stateMachine,
             Dictionary<State.State, Animation.Animation> animationsForStates, PositionalComponent position)
@@ -59,17 +58,26 @@ namespace DXGame.Core.Components.Advanced
 
         public override void Draw(SpriteBatch spritebatch, DxGameTime gameTime)
         {
-            var currentState = StateMachine.CurrentState;
-            var animation = animationsForStates_[currentState];
-            animation.Draw(spritebatch, gameTime);
-        }
+            State.State currentState = StateMachine.CurrentState;
+            if(lastState_ == null)
+            {
+                lastState_ = currentState;
+            }
+            else if(!ReferenceEquals(lastState_,currentState))
+            {
+                animationsForStates_[lastState_].Reset();
+                lastState_ = currentState;
+            }
+            Animation.Animation animation = animationsForStates_[currentState];
 
-        protected override void Update(DxGameTime gameTime)
-        {
-            var currentState = StateMachine.CurrentState;
-            var animation = animationsForStates_[currentState];
-            animation.Process(gameTime);
-            base.Update(gameTime);
+            // TODO: Emit & Consume "Facing changed" messages
+            FacingComponent facing = Parent.ComponentOfType<FacingComponent>();
+            Direction orientation = Direction.East;
+            if(!ReferenceEquals(facing, null))
+            {
+                orientation = facing.Facing;
+            }
+            animation.Draw(spritebatch, gameTime, Position.Position, orientation);
         }
 
         public class AnimationComponentBuilder : IBuilder<AnimationComponent>
@@ -102,13 +110,11 @@ namespace DXGame.Core.Components.Advanced
 
             public AnimationComponentBuilder WithStateAndAsset(State.State state, AnimationDescriptor descriptor)
             {
-                Validate.IsNotNull(position_,
-                    $"Creating {typeof(Animation.Animation)} requires that the {typeof(PositionalComponent)} be set first");
                 Validate.IsNotNullOrDefault(state,
                     StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(descriptor)));
                 Validate.IsFalse(animationsForStates_.ContainsKey(state),
                     StringUtils.GetFormattedAlreadyContainsMessage(this, state, animationsForStates_.Keys));
-                var animation = new Animation.Animation(descriptor).WithPosition(position_);
+                var animation = new Animation.Animation(descriptor);
                 animationsForStates_.Add(state, animation);
                 return this;
             }

@@ -51,6 +51,8 @@ namespace DXGame.TowerGame.Skills.Gevurah
         [DataMember]
         private GameObject Source { get; }
 
+        [DataMember] readonly private List<CollisionMessage> collisionMessages_; 
+
         public ArrowRainLauncher(GameObject source, DxVector2 position, Direction direction)
         {
             Validate.IsNotNullOrDefault(source, StringUtils.GetFormattedNullOrDefaultMessage(this, "source"));
@@ -81,6 +83,14 @@ namespace DXGame.TowerGame.Skills.Gevurah
                     .WithSpatialComponent(Spatial)
                     .WithVelocity(velocity)
                     .Build();
+
+            MessageHandler.RegisterMessageHandler<CollisionMessage>(HandleMapCollision);
+            collisionMessages_ = new List<CollisionMessage>();
+        }
+
+        private void HandleMapCollision(CollisionMessage collisionMessage)
+        {
+            collisionMessages_.Add(collisionMessage);
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -93,10 +103,11 @@ namespace DXGame.TowerGame.Skills.Gevurah
             {
                 Spatial.Parent = Parent;
             }
-            var currentMessages = Parent?.CurrentMessages;
+
+            List<CollisionMessage> collisionMessages = collisionMessages_;
+            collisionMessages_.Clear();
             /* If our launch TTL has expired OR we've collided with the map, launch! */
-            if (timeToLaunch_ < gameTime.ElapsedGameTime ||
-                (!ReferenceEquals(null, currentMessages) && currentMessages.OfType<CollisionMessage>().Any()))
+            if (timeToLaunch_ < gameTime.ElapsedGameTime || collisionMessages.Any())
             {
                 Launch();
             }
@@ -126,8 +137,9 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
         private static StateMachine CreateIdleStateMachine()
         {
-            var idleState = State.Builder().WithAction(dxGameTime => { }).WithName("IdleState").Build();
-            var stateMachine = StateMachine.Builder().WithInitialState(idleState).Build();
+            // TODO
+            State idleState = State.Builder().WithAction((messages, dxGameTime) => { }).WithName("IdleState").Build();
+            StateMachine stateMachine = StateMachine.Builder().WithInitialState(idleState).Build();
             return stateMachine;
         }
 

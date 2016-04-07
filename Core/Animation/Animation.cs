@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
+using DXGame.Core.Utils.Distance;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -10,43 +10,25 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.Core.Animation
 {
-    public enum Orientation
-    {
-        None,
-        Left,
-        Right
-    }
-
     [Serializable]
     [DataContract]
-    public class Animation : IDrawable, IProcessable
+    public class Animation
     {
         [DataMember] private int currentFrame_;
         [DataMember] private DrawPriority drawPriority_;
         [DataMember] private TimeSpan lastUpdated_ = TimeSpan.FromSeconds(0);
-        [DataMember] protected PositionalComponent position_;
+
         [NonSerialized] [IgnoreDataMember] private Texture2D spriteSheet_;
+
         public TimeSpan TimePerFrame => TimeSpan.FromSeconds(1.0f / AnimationDescriptor.FramesPerSecond);
 
         [DataMember]
         public AnimationDescriptor AnimationDescriptor { get; private set; }
 
-        private Orientation Orientation { get; }
-
-        /* 
-            TODO: Precompute the bounding box of each animation frame. Have the animation offer the actual bounding box of the object instead of relying on hardcoded values.
-            This can be done by walking the "frame" in each direction and determining the x & y min & max for non-alpha blended pixels 
-        */
-
         private int TotalFrames => AnimationDescriptor.FrameCount;
         private float Scale => (float) AnimationDescriptor.Scale;
 
-        public Animation(AnimationDescriptor descriptor, Orientation orientation)
-            : this(descriptor, DrawPriority.NORMAL, orientation)
-        {
-        }
-
-        public Animation(AnimationDescriptor descriptor, DrawPriority drawPriority = DrawPriority.NORMAL, Orientation orientation = Orientation.Right)
+        public Animation(AnimationDescriptor descriptor, DrawPriority drawPriority = DrawPriority.NORMAL)
         {
             Validate.IsNotNullOrDefault(descriptor, StringUtils.GetFormattedNullOrDefaultMessage(this, descriptor));
             Validate.IsTrue(descriptor.FrameCount > 0,
@@ -57,28 +39,51 @@ namespace DXGame.Core.Animation
                 StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(descriptor.Asset)));
             AnimationDescriptor = descriptor;
             drawPriority_ = drawPriority;
-
-            Validate.IsFalse(orientation != Orientation.None);
-            Orientation = orientation;
         }
 
         public DrawPriority DrawPriority => drawPriority_;
 
-        public void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
+        public void Draw(SpriteBatch spriteBatch, DxGameTime gameTime, DxVector2 position, Direction orientation)
         {
-            // Assume gameTime is non-null (if it is we have some issues)
+            while(lastUpdated_ + TimePerFrame < gameTime.TotalGameTime)
+            {
+                lastUpdated_ = gameTime.TotalGameTime;
+                currentFrame_ = currentFrame_.WrappedAdd(1, TotalFrames);
+            }
+            
             /* We asume that Animations are horizontal strips without any spacing or anything between frames */
             int frameWidth = spriteSheet_.Width / TotalFrames;
-            Rectangle frameOutline = new Rectangle(frameWidth * currentFrame_, 0, frameWidth, spriteSheet_.Height);
+            DxVector2 frameOffset;
+            DxVector2 drawOffset;
+            DxRectangle boundingBox;
+            AnimationDescriptor.FrameOffsets.OffsetForFrame(currentFrame_, out frameOffset, out drawOffset, out boundingBox);
+
+            Rectangle frameOutline = new Rectangle(frameWidth * currentFrame_, 0, (int) boundingBox.Width, (int) boundingBox.Height);
+            if(frameOutline.Width == 0)
+            {
+                frameOutline.Width = frameWidth;
+            }
+            if(frameOutline.Height == 0)
+            {
+                frameOutline.Height = spriteSheet_.Height;
+            }
+            
+            frameOutline.X += (int) frameOffset.X;
+            frameOutline.Y += (int) frameOffset.Y;
+
+            position.X += drawOffset.X;
+            position.Y += drawOffset.Y;
 
             SpriteEffects spriteEffects = SpriteEffects.None;
-            if(Orientation == Orientation.Left)
+            if(orientation != AnimationDescriptor.Orientation)
             {
-                spriteEffects = SpriteEffects.FlipVertically;
+                spriteEffects = SpriteEffects.FlipHorizontally;
             }
+            spriteBatch.Draw(spriteSheet_, null,
+                new Rectangle((int) position.X, (int) position.Y, (int) (frameOutline.Width * AnimationDescriptor.Scale),
+                    (int) (frameOutline.Height * AnimationDescriptor.Scale)), frameOutline, null, 0, null, Color.White,
+                spriteEffects, 0);
 
-            spriteBatch.Draw(spriteSheet_, position_.Position.ToVector2(), frameOutline, Color.White, 0.0f, Vector2.Zero,
-                Scale, spriteEffects, 0);
         }
 
         public int CompareTo(IDrawable other)
@@ -93,23 +98,7 @@ namespace DXGame.Core.Animation
 
         public UpdatePriority UpdatePriority => UpdatePriority.NORMAL;
 
-        public void Process(DxGameTime gameTime)
-        {
-            if(gameTime.TotalGameTime >= lastUpdated_ + TimePerFrame)
-            {
-                lastUpdated_ = gameTime.TotalGameTime;
-                currentFrame_ = currentFrame_.WrappedAdd(1, TotalFrames);
-            }
-        }
-
         /* TODO: Make proper builders for everything */
-
-        public Animation WithPosition(PositionalComponent position)
-        {
-            Validate.IsNotNullOrDefault(position, StringUtils.GetFormattedNullOrDefaultMessage(this, position));
-            position_ = position;
-            return this;
-        }
 
         public void Reset()
         {

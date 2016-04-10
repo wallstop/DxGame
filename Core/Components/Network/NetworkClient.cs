@@ -111,14 +111,19 @@ namespace DXGame.Core.Components.Network
             {
                 return;
             }
-            if(lastSynchronizedTime_ + TIME_SYNCHRONIZATION_RATE < gameTime.TotalGameTime)
+            if(ReferenceEquals(ClientConnection.ServerConnection, null))
+            {
+                return;
+            }
+
+        if(lastSynchronizedTime_ + TIME_SYNCHRONIZATION_RATE < gameTime.TotalGameTime)
             {
                 ClientTimeSynchronizationRequest clientSynchronizationRequest =
                     new ClientTimeSynchronizationRequest(gameTime);
                 NetOutgoingMessage outgoingSyncronizationRequest =
                     clientSynchronizationRequest.ToNetOutgoingMessage(Connection);
                 Connection.SendMessage(outgoingSyncronizationRequest, ClientConnection.ServerConnection,
-                    NetDeliveryMethod.Unreliable, TIME_SYNCHRONIZATION_CHANNEL);
+                    NetDeliveryMethod.Unreliable);
                 lastSynchronizedTime_ = gameTime.TotalGameTime;
             }
         }

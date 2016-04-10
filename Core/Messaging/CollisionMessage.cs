@@ -20,6 +20,9 @@ namespace DXGame.Core.Messaging
         [DataMember]
         public Dictionary<Direction, IIdentifiable> CollisionDirections { get; set;  } = new Dictionary<Direction, IIdentifiable>();
 
+        [DataMember]
+        public DxVector2 DisplacementVector { get; set; }
+
         public CollisionMessage()
         {
         }
@@ -36,18 +39,21 @@ namespace DXGame.Core.Messaging
             {
                 WithDirectionAndSource(Direction.East, source);
             }
-            if (collisionVector.X < 0)
+            else if (collisionVector.X < 0)
             {
                 WithDirectionAndSource(Direction.West, source);
             }
+
             if (collisionVector.Y > 0)
             {
                 WithDirectionAndSource(Direction.South, source);
             }
-            if (collisionVector.Y < 0)
+            else if (collisionVector.Y < 0)
             {
                 WithDirectionAndSource(Direction.North, source);
             }
+
+            DisplacementVector = DxVector2.EmptyVector - collisionVector;
         }
     }
 }

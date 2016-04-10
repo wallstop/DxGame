@@ -189,17 +189,14 @@ namespace DXGame.Core.Components.Advanced.Properties
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     internal sealed class Movement
     {
-        [DataMember] [ProtoMember(1)] private bool dissipated_;
+        [DataMember] private bool dissipated_;
 
         [DataMember]
-        [ProtoMember(2)]
         public Force Force { get; }
 
         [DataMember]
-        [ProtoMember(3)]
         private DxVector2 Direction { get; }
 
         public Movement(DxVector2 directionalForceVector, string forceName)

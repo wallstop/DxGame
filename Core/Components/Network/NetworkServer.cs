@@ -91,8 +91,7 @@ namespace DXGame.Core.Components.Network
                 foreach(NetConnection clientConnection in ClientFrameStates.Keys)
                 {
                     /* Don't really care if the client picks these up... (but do we care about order? not right now...) */
-                    ServerConnection.SendMessage(outgoingLerpMessage, clientConnection, NetDeliveryMethod.Unreliable,
-                        LERP_DATA_CHANNEL);
+                    ServerConnection.SendMessage(outgoingLerpMessage, clientConnection, NetDeliveryMethod.Unreliable);
                 }
             }
         }
@@ -221,8 +220,7 @@ namespace DXGame.Core.Components.Network
             ServerTimeUpdate timeUpdate = new ServerTimeUpdate(timeSynchronizationRequest.ClientSideGameTime,
                 DxGame.Instance.CurrentTime);
             NetOutgoingMessage outgoingTimeUpdate = timeUpdate.ToNetOutgoingMessage(ServerConnection);
-            ServerConnection.SendMessage(outgoingTimeUpdate, connection, NetDeliveryMethod.Unreliable,
-                TIME_SYNCHRONIZATION_CHANNEL);
+            ServerConnection.SendMessage(outgoingTimeUpdate, connection, NetDeliveryMethod.Unreliable);
         }
 
         protected void HandleClientCommands(NetworkMessage message, NetConnection connection)

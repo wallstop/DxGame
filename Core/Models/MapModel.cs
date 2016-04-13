@@ -65,7 +65,6 @@ namespace DXGame.Core.Models
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             Map.Draw(spriteBatch, gameTime);
-            base.Draw(spriteBatch, gameTime);
         }
     }
 }

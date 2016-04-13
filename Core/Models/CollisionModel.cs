@@ -21,7 +21,7 @@ namespace DXGame.Core.Models
 
         protected override void Update(DxGameTime gameTime)
         {
-            var physics = DxGame.Instance.DxGameElements.OfType<PhysicsComponent>().ToList();
+            List<PhysicsComponent> physics = DxGame.Instance.DxGameElements.OfType<PhysicsComponent>().ToList();
             Collidables = new RTree<PhysicsComponent>(physicsComponent => physicsComponent.Space, physics);
         }
 

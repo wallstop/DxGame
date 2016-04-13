@@ -182,7 +182,7 @@ namespace DXGame.Core.Primitives
 
         public Vector2 ToVector2()
         {
-            return new Vector2(X, Y);
+            return new Vector2((int)Math.Round(X), (int)Math.Round(Y));
         }
 
         public override string ToString()

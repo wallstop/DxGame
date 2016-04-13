@@ -145,6 +145,7 @@
     <Compile Include="Core\Components\Advanced\Triggers\TriggerComponent.cs" />
     <Compile Include="Core\Components\Developer\HealthAdjustor.cs" />
     <Compile Include="Core\Components\Developer\KeysPressedWidget.cs" />
+    <Compile Include="Core\DataStructures\CircularBuffer.cs" />
     <Compile Include="Core\Events\Event.cs" />
     <Compile Include="Core\Events\EventListener.cs" />
     <Compile Include="Core\Experience\Experience.cs" />
@@ -175,6 +176,7 @@
     <Compile Include="Core\Messaging\Network\EventStream.cs" />
     <Compile Include="Core\Messaging\Network\ServerTimeUpdate.cs" />
     <Compile Include="Core\Messaging\Network\UpdateActivePlayer.cs" />
+    <Compile Include="Core\Models\CameraModel.cs" />
     <Compile Include="Core\Models\EnvironmentModel.cs" />
     <Compile Include="Core\Models\EventModel.cs" />
     <Compile Include="Core\Models\ExperienceModel.cs" />

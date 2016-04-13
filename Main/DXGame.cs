@@ -53,6 +53,7 @@ namespace DXGame.Main
         // TODO: Thread safety? Move this to some kind of Context static class?
         public static DxGame Instance => singleton_.Value;
         public double TargetFps => 60.0;
+        private static readonly TimeSpan MINIMUM_FRAMERATE = TimeSpan.FromSeconds(1 / 10000.0);
         public GameElementCollection NewGameElements { get; } = new GameElementCollection();
         public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
 
@@ -74,27 +75,24 @@ namespace DXGame.Main
         {
             get
             {
-                PlayerModel playerModel = Model<PlayerModel>();
-                if(Check.IsNullOrDefault(playerModel))
+                CameraModel cameraModel = Model<CameraModel>();
+                if(ReferenceEquals(cameraModel, null))
                 {
                     return new DxRectangle(Screen);
                 }
-
-                Player activePlayer = playerModel.ActivePlayer;
-                if(Check.IsNullOrDefault(activePlayer))
-                {
-                    return new DxRectangle(Screen);
-                }
-
-                SpatialComponent focalPoint = activePlayer.Position;
 
                 MapModel mapModel = Model<MapModel>();
-                float x = Screen.Width / 2.0f - focalPoint.Position.X;
+                if(ReferenceEquals(mapModel, null))
+                {
+                    return new DxRectangle(Screen);
+                }
+
+                float x = Screen.Width / 2.0f - cameraModel.Position.X;
                 x = MathHelper.Clamp(x,
                     Math.Max(float.MinValue, -(mapModel.MapBounds.X + mapModel.MapBounds.Width - Screen.Width)),
                     mapModel.MapBounds.X);
 
-                float y = Screen.Height / 2.0f - focalPoint.Position.Y;
+                float y = Screen.Height / 2.0f - cameraModel.Position.Y;
                 y = MathHelper.Clamp(y,
                     Math.Max(float.MinValue, -(mapModel.MapBounds.Y + mapModel.MapBounds.Height - Screen.Height)),
                     mapModel.MapBounds.Y);
@@ -291,6 +289,9 @@ namespace DXGame.Main
             var inputModel = new InputModel();
             AttachModel(inputModel);
 
+            CameraModel cameraModel = new CameraModel();
+            AttachModel(cameraModel);
+
             base.Initialize();
         }
 
@@ -369,8 +370,13 @@ namespace DXGame.Main
 
         private DxGameTime DetermineGameTime(GameTime gameTime)
         {
-            TimeSpan wallclock = GameTimer.Elapsed;
-            TimeSpan actualElapsed = wallclock - lastFrameTick_;
+            TimeSpan wallclock;
+            TimeSpan actualElapsed;
+            while((actualElapsed = (wallclock = GameTimer.Elapsed) - lastFrameTick_) < MINIMUM_FRAMERATE)
+            {
+                // Do nothing
+            }
+            
             TimeSpan elapsed = MathUtils.Min(actualElapsed, TargetElapsedTime);
             TimeSpan currentTime = compensatedGameTime_ + elapsed;
             if(TargetElapsedTime.TotalMilliseconds < Math.Abs(timeSkewMilliseconds_))

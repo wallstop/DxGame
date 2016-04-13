@@ -94,7 +94,7 @@ namespace DXGame.Core.Primitives
 
         public Rectangle ToRectangle()
         {
-            return new Rectangle((int) X, (int) Y, (int) Width, (int) Height);
+            return new Rectangle((int) Math.Round(X), (int) Math.Round(Y), (int) Math.Round(Width), (int) Math.Round(Height));
         }
 
         public static DxRectangle FromRange(DxVector2 source, float radius)

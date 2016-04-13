@@ -127,6 +127,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Core\Components\Advanced\Entities\LevelComponentTest.cs" />
+    <Compile Include="Core\DataStructures\CircularBufferTest.cs" />
     <Compile Include="Core\Network\ComplexNetworkSerialization.cs" />
     <Compile Include="Core\Network\NetworkMessageMarshalling.cs" />
     <Compile Include="Core\Network\SimpleNetworkSerialization.cs" />

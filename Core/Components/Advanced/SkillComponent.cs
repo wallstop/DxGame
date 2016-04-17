@@ -8,7 +8,6 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Skills;
 using DXGame.Core.Utils;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced
 {
@@ -41,6 +40,10 @@ namespace DXGame.Core.Components.Advanced
 
         private void HandleCommandMessage(CommandMessage commandMessage)
         {
+            if(!Equals(commandMessage.Target, Parent.Id))
+            {
+                
+            }
             commandMessages_.Add(commandMessage);
         }
 

@@ -58,7 +58,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
                             .WithRadius(10)
                             .Build();
                 EntityCreatedMessage entityCreated = new EntityCreatedMessage(particle);
-                DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(entityCreated);
+                entityCreated.Emit();
                 return;
             }
 
@@ -66,7 +66,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             stepOnBearTrap.AffectedAreas.Add(spatial_.Space);
             stepOnBearTrap.Source = Parent;
             stepOnBearTrap.Interaction = Trigger;
-            DxGame.Instance.BroadcastTypedMessage<PhysicsMessage>(stepOnBearTrap);
+            stepOnBearTrap.Emit();
         }
 
         private void Trigger(GameObject source, PhysicsComponent destination)
@@ -74,9 +74,10 @@ namespace DXGame.TowerGame.Skills.Gevurah
             DamageMessage damage = new DamageMessage
             {
                 DamageCheck = DamageCheck,
-                Source = Parent
+                Source = Parent,
+                Target = destination.Parent?.Id
             };
-            destination.Parent?.BroadcastTypedMessage<DamageMessage>(damage);
+            damage.Emit();
         }
 
         private Tuple<bool, double> DamageCheck(GameObject source, GameObject destination)

@@ -166,6 +166,10 @@
     <Compile Include="Core\Messaging\ExperiencedReceivedMessage.cs" />
     <Compile Include="Core\Messaging\ExperienceDroppedMessage.cs" />
     <Compile Include="Core\Messaging\Game\TimeSkewRequest.cs" />
+    <Compile Include="Core\Messaging\GlobalMessageBus.cs" />
+    <Compile Include="Core\Messaging\ITargetedMessage.cs" />
+    <Compile Include="Core\Messaging\ITypedMessageProcessor.cs" />
+    <Compile Include="Core\Messaging\IUntypedMessageProcessor.cs" />
     <Compile Include="Core\Messaging\LevelEndRequest.cs" />
     <Compile Include="Core\Messaging\MapRotationNotification.cs" />
     <Compile Include="Core\Messaging\MapRotationRequest.cs" />

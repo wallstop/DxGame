@@ -38,7 +38,14 @@ namespace DXGame.Core.Models
             DxRectangle sourceSpace = message.Source.ComponentOfType<SpatialComponent>().Space;
             foreach(IEnvironmentComponent environmentComponent in Collidables.InRange(sourceSpace))
             {
-                environmentComponent.Parent?.BroadcastTypedMessage(message);
+                // TODO: Refactor / come up with better solution
+                EnvironmentInteractionMessage targetedMessage = new EnvironmentInteractionMessage
+                {
+                    Source = message.Source,
+                    Target = environmentComponent.Parent?.Id
+                };
+
+                targetedMessage.Emit();
             }
         }
     }

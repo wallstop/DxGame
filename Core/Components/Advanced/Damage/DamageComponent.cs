@@ -4,7 +4,6 @@ using DXGame.Core.Components.Advanced.Properties;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Damage
 {
@@ -18,21 +17,24 @@ namespace DXGame.Core.Components.Advanced.Damage
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class DamageComponent : Component
     {
         [DataMember]
-        [ProtoMember(1)]
         protected EntityPropertiesComponent EntityProperties { get; }
 
         protected DamageComponent(EntityPropertiesComponent entityProperties)
         {
             EntityProperties = entityProperties;
-            MessageHandler.RegisterMessageHandler<DamageMessage>(HandleDamageMessage);
+            RegisterMessageHandler<DamageMessage>(HandleDamageMessage);
         }
 
         private void HandleDamageMessage(DamageMessage damageMessage)
         {
+            if(!Equals(damageMessage.Target, Parent.Id))
+            {
+                return;
+            }
+
             var damageReceived = damageMessage.DamageCheck(damageMessage.Source, Parent);
             /* If our owner wasn't damaged, don't do anything */
             if(!damageReceived.Item1)

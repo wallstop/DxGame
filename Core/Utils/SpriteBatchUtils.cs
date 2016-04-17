@@ -46,7 +46,7 @@ namespace DXGame.Core.Utils
             float angle = (float) Math.Atan2(displacement.Y, displacement.X);
 
             var texture = TextureFactory.TextureForColor(color);
-            spriteBatch.Draw(texture, destinationRectangle: new Rectangle((int)start.X, (int)start.Y, (int)displacement.Magnitude, (int)thickness), rotation: angle);
+            spriteBatch.Draw(texture, destinationRectangle: new Rectangle((int)Math.Round(start.X), (int) Math.Round(start.Y), (int)Math.Round(displacement.Magnitude), (int)Math.Round(thickness)), rotation: angle);
         }
 
         /**

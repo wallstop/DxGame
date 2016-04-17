@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
-using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
-using ProtoBuf;
 
 namespace DXGame.TowerGame.Items
 {
@@ -22,23 +20,13 @@ namespace DXGame.TowerGame.Items
 
     [DataContract]
     [Serializable]
-    [ProtoContract]
     public class ItemManager : Component
     {
-        [ProtoMember(1)] [DataMember] private readonly Dictionary<Type, ItemComponent> itemsByType_;
+       [DataMember] private readonly Dictionary<Type, ItemComponent> itemsByType_;
 
         public ItemManager()
         {
             itemsByType_ = new Dictionary<Type, ItemComponent>();
-            MessageHandler.EnableAcceptAll(BroadcastMessageToComponents);
-        }
-
-        private void BroadcastMessageToComponents(Message message)
-        {
-            foreach(ItemComponent itemComponent in itemsByType_.Values)
-            {
-                itemComponent.MessageHandler.HandleTypedMessage(message);
-            }
         }
 
         public void Attach(Type itemComponentType)

@@ -17,68 +17,106 @@ namespace DXGame.Core.Messaging
 
     [Serializable]
     [DataContract]
-    public class MessageHandler
+    public sealed class MessageHandler
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        [DataMember] private readonly Dictionary<Type, List<dynamic>> typesToMessageHandlers_ =
-            new Dictionary<Type, List<dynamic>>();
+        internal class TypedHandler<T> where T : Message
+        {
+            public List<Action<T>> Handlers { get; } = new List<Action<T>>();
+            public Action Deregistration { get; set; }
+        }
 
-        private Action<Message> acceptAllFunction_;
+        [DataMember]
+        private Dictionary<Type, object> handlersByType_;
+
+        private TypedHandler<T> HandlerForType<T>() where T : Message
+        {
+            handlersByType_.
+            if(handlersByType_.)
+            // TODO
+        }
+
+
+        //internal class TypeHandlerResolver
+        //{
+        //    Lazy<TypedHandler<T>> h = new Lazy<TypedHandler<T>>(() => new TypedHandler<T>());
+        //    public TypedHandler<T> Resolve<T>() where T : Message
+        //    {
+        //        return h.Value;
+        //    }
+        //}
+
+
+
+        [DataMember]
+        private List<Action> Deregistrations { get; set; } = new List<Action>();
+
+        [DataMember] private Action<Message> acceptAllFunction_;
 
         [DataMember]
         public bool AcceptAll { get; private set; }
 
-        public void EnableAcceptAll(Action<Message> acceptAllFunction)
+        [DataMember]
+        public UniqueId Owner { get; private set; }
+
+        public MessageHandler(UniqueId ownerId)
+        {
+            Validate.IsNotNull(ownerId);
+            Owner = ownerId;
+            handlersByType_ = new Dictionary<Type, object>();
+        }
+
+        public void EnableTargetedAcceptAll(Action<Message> acceptAllFunction)
         {
             Validate.IsFalse(AcceptAll, $"Expected {nameof(AcceptAll)} to be false, but it was not :(");
-            LOG.Info("Enabling Accept-All mode");
+            LOG.Info("Enabling Accept-All mode for {0}", Owner);
             AcceptAll = true;
             acceptAllFunction_ = acceptAllFunction;
+            Action deregistration = GlobalMessageBus.RegisterTargetedGlobal(Owner, this);
+            Deregistrations.Add(deregistration);
+        }
+
+        public void EnableGlobalAcceptAll(Action<Message> acceptAllFunction)
+        {
+            Validate.IsFalse(AcceptAll, $"Expected {nameof(AcceptAll)} to be false, but it was not :(");
+            LOG.Info("Enabling Accept-All mode for {0}", Owner);
+            AcceptAll = true;
+            acceptAllFunction_ = acceptAllFunction;
+            Action deregistration = GlobalMessageBus.RegisterGlobal(this);
+            Deregistrations.Add(deregistration);
         }
 
         public void RegisterMessageHandler<T>(Action<T> messageHandler) where T : Message
         {
-            Type type = typeof(T);
-            List<object> existingHandlers = ExistingMessageHandlers(type);
-            Validate.IsFalse(existingHandlers.Contains(messageHandler),
-                StringUtils.GetFormattedAlreadyContainsMessage(this, messageHandler, existingHandlers));
-            existingHandlers.Add(messageHandler);
-            typesToMessageHandlers_[type] = existingHandlers;
+            TypedHandler<T>.Handlers.Add(messageHandler);
+            Action deregistration = GlobalMessageBus.Register<T>(Owner, this);
+            TypedHandler<T>.Deregistration = deregistration;
+            Deregistrations.Add(deregistration);
         }
 
-        private List<dynamic> ExistingMessageHandlers(Type type)
+        public void Deregister<T>() where T : Message
         {
-            return (typesToMessageHandlers_.ContainsKey(type) ? typesToMessageHandlers_[type] : new List<dynamic>());
+            if(!TypedHandler<T>.Handlers.Any())
+            {
+                LOG.Debug("Deregistering handler type {0} without any handlers", typeof(T));
+            }
+            TypedHandler<T>.Handlers.Clear();
+            TypedHandler<T>.Deregistration.Invoke();
+            Deregistrations.Remove(TypedHandler<T>.Deregistration);
+            TypedHandler<T>.Deregistration = null;
         }
 
-        public void DeregisterMessageHandlers(Type type)
+        public void Deregister()
         {
-            List<object> existingHandlers = ExistingMessageHandlers(type);
-            existingHandlers.Clear();
-        }
-
-        public void DeregisterMessageHandler<T>(Action<T> messageHandler) where T : Message
-        {
-            Type type = typeof(T);
-            List<dynamic> existingMessageHandlers = ExistingMessageHandlers(type);
-            Validate.IsTrue(existingMessageHandlers.Contains(messageHandler),
-                $"Cannot remove {typeof(MessageHandler)} {messageHandler}, as it is not associated with the provided type");
-            existingMessageHandlers.Remove(messageHandler);
-        }
-
-        public void HandleUntypedMessage(Message message)
-        {
-            dynamic trueMessageType = message;
-            InternalHandleMessage(trueMessageType);
+            foreach(Action deregistration in Deregistrations)
+            {
+                deregistration.Invoke();
+            }
+            Deregistrations.Clear();
         }
 
         public void HandleTypedMessage<T>(T message) where T : Message
-        {
-            InternalHandleMessage(message);
-        }
-
-        private void InternalHandleMessage<T>(T message) where T : Message
         {
             if(AcceptAll)
             {
@@ -92,17 +130,9 @@ namespace DXGame.Core.Messaging
 
         private void ActuallyHandleMessage<T>(T message) where T : Message
         {
-            var type = message.GetType();
-            if(!typesToMessageHandlers_.ContainsKey(type))
+            foreach(Action<T> handler in TypedHandler<T>.Handlers)
             {
-                return;
-            }
-
-            IEnumerable<object> messageHandlers = typesToMessageHandlers_[type];
-            foreach(var messageHandler in messageHandlers)
-            {
-                /* They're really TypedMessageHandlers, I promise! */
-                ((Action<T>) (messageHandler))(message);
+                handler.Invoke(message);
             }
         }
     }

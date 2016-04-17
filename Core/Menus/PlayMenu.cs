@@ -1,4 +1,5 @@
-﻿using DXGame.Core.Messaging.Entity;
+﻿using DXGame.Core.Messaging;
+using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
 using DXGame.Main;
@@ -42,14 +43,14 @@ namespace DXGame.Core.Menus
         private void HostMultiplayer()
         {
             EntityCreatedMessage hostMultiplayerMenuCreated = new EntityCreatedMessage(new HostMultiplayerMenu());
-            DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(hostMultiplayerMenuCreated);
+            hostMultiplayerMenuCreated.Emit();
             Remove();
         }
 
         private void JoinMultiplayer()
         {
             EntityCreatedMessage joinMultiplayerMenuCreated = new EntityCreatedMessage(new JoinMultiplayerMenu());
-            DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(joinMultiplayerMenuCreated);
+            joinMultiplayerMenuCreated.Emit();
             Remove();
         }
     }

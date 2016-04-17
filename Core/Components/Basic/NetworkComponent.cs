@@ -85,7 +85,6 @@ namespace DXGame.Core.Components.Basic
             }
         }
 
-
         protected Dictionary<Type, Action<NetworkMessage, NetConnection>> networkMessageHandlers_;
 
         protected NetworkComponent()

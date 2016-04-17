@@ -37,7 +37,7 @@ namespace DXGame.Core.Components.Advanced.Damage
         {
             Validate.IsNotNull(deathEffect, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(DeathEffect)));
             deathEffect_ = deathEffect;
-            MessageHandler.RegisterMessageHandler<EntityDeathMessage>(HandleEntityDeath);
+            RegisterMessageHandler<EntityDeathMessage>(HandleEntityDeath);
         }
 
         protected virtual void HandleEntityDeath(EntityDeathMessage deathMessage)
@@ -126,7 +126,7 @@ namespace DXGame.Core.Components.Advanced.Damage
                         .Build();
                 
                 EntityCreatedMessage particlesCreated = new EntityCreatedMessage(particle);
-                DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(particlesCreated);
+                particlesCreated.Emit();
             }
         }
     }

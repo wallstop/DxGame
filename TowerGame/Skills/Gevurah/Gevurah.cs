@@ -12,7 +12,6 @@ using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
-using DXGame.Main;
 using ProtoBuf;
 
 namespace DXGame.TowerGame.Skills.Gevurah
@@ -29,7 +28,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             physicsMessage.Interaction =
                 (gameObject, destination) =>
                     new ShockwaveClosure(gameTime.TotalGameTime).ShockwaveInteraction(gameObject, destination);
-            DxGame.Instance.BroadcastTypedMessage(physicsMessage);
+            physicsMessage.Emit();
         }
 
         public static void RainOfArrows(GameObject parent, DxGameTime startTime, DxGameTime gameTime)
@@ -164,8 +163,8 @@ namespace DXGame.TowerGame.Skills.Gevurah
                 destination.AttachForce(force);
 
                 /* ...and then damage (if we can) */
-                var damageDealt = new DamageMessage {Source = source, DamageCheck = ShockwaveDamage};
-                destination.Parent?.BroadcastTypedMessage(damageDealt);
+                DamageMessage damageDealt = new DamageMessage {Source = source, DamageCheck = ShockwaveDamage, Target = destination.Parent?.Id};
+                damageDealt.Emit();
 
                 /* ... and attach a life sucker (just to be evil) */
                 if(!ReferenceEquals(destination.Parent, null))
@@ -173,7 +172,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
                     LifeSuckerComponent lifeSucker = new LifeSuckerComponent();
                     destination.Parent.AttachComponent(lifeSucker);
                     EntityCreatedMessage entityCreated = new EntityCreatedMessage(lifeSucker);
-                    DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(entityCreated);
+                    entityCreated.Emit();
                 }
             }
 

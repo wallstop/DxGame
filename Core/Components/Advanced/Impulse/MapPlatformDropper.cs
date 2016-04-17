@@ -20,8 +20,11 @@ namespace DXGame.Core.Components.Advanced.Impulse
         {
             if(message.Commandment == Commandment.MoveDown)
             {
-                var dropThroughPlatformRequest = new DropThroughPlatformRequest();
-                Parent?.BroadcastTypedMessage(dropThroughPlatformRequest);
+                DropThroughPlatformRequest dropThroughPlatformRequest = new DropThroughPlatformRequest
+                {
+                    Target = Parent?.Id
+                };
+                dropThroughPlatformRequest.Emit();
             }
         }
     }

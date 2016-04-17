@@ -32,7 +32,6 @@ namespace DXGame.Core.Models
 
             DxVector2 target = activePlayer.Position.Center;
 
-
             DxVector2 displacement = target - Position;
             float magnitude = displacement.Magnitude;
             if(magnitude < IGNORE_THRESHOLD)

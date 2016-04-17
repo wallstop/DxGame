@@ -15,7 +15,7 @@ namespace DXGame.Core.Messaging
 
     [Serializable]
     [DataContract]
-    public class CollisionMessage : Message
+    public class CollisionMessage : Message, ITargetedMessage
     {
         [DataMember]
         public Dictionary<Direction, IIdentifiable> CollisionDirections { get; set;  } = new Dictionary<Direction, IIdentifiable>();
@@ -55,5 +55,8 @@ namespace DXGame.Core.Messaging
 
             DisplacementVector = DxVector2.EmptyVector - collisionVector;
         }
+
+        [DataMember]
+        public UniqueId Target { get; set; }
     }
 }

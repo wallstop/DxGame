@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
 
 namespace DXGame.Core.Messaging
@@ -91,19 +92,24 @@ namespace DXGame.Core.Messaging
 
     [Serializable]
     [DataContract]
-    public class CommandMessage : Message, IEquatable<CommandMessage>
+    public class CommandMessage : Message, IEquatable<CommandMessage>, ITargetedMessage
     {
         [DataMember]
         public Commandment Commandment { get; set; }
+
+        [DataMember]
+        public UniqueId GameObjectId { get; set; }
 
         public bool Equals(CommandMessage other)
         {
             return !ReferenceEquals(null, other) && Commandment == other.Commandment;
         }
 
-        public CommandMessage()
+        public CommandMessage(UniqueId gameObjectId)
             :this(Commandment.None)
         {
+            Validate.IsNotNullOrDefault(gameObjectId);
+            GameObjectId = gameObjectId;
         }
 
         public CommandMessage(Commandment commandment)
@@ -144,5 +150,7 @@ namespace DXGame.Core.Messaging
             var command = other as CommandMessage;
             return !ReferenceEquals(null, command) && Equals(command);
         }
+
+        public UniqueId Target => GameObjectId;
     }
 }

@@ -19,19 +19,21 @@ namespace DXGame.Core.State
 
     [Serializable]
     [DataContract]
-    public sealed class State : IProcessable
+    public sealed class State : IProcessable, IIdentifiable
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
         public UpdatePriority UpdatePriority => UpdatePriority.NORMAL;
 
-        [DataMember] private bool triggered_ = false;
+        [DataMember] private bool triggered_;
 
         [IgnoreDataMember] private State transition_;
 
         [DataMember] private readonly SortedList<Transition> transitions_;
 
         [DataMember] private List<Message> messageBuffer_;
+
+        [DataMember] private UniqueId id_;
 
         [IgnoreDataMember]
         public IEnumerable<Transition> Transitions => transitions_;
@@ -56,7 +58,8 @@ namespace DXGame.Core.State
         [DataMember]
         private Action<DxGameTime> OnExit { get; }
 
-        private State(ICollection<Transition> transitions, string name, Action<List<Message>, DxGameTime> action, Action<DxGameTime> onEnter, Action<DxGameTime> onExit)
+        private State(ICollection<Transition> transitions, string name, Action<List<Message>, DxGameTime> action,
+            Action<DxGameTime> onEnter, Action<DxGameTime> onExit)
         {
             Name = name;
             messageBuffer_ = new List<Message>();
@@ -64,6 +67,7 @@ namespace DXGame.Core.State
             Action = action;
             OnEnter = onEnter;
             OnExit = onExit;
+            id_ = new UniqueId();
         }
 
         public void Accept(Message message)
@@ -224,5 +228,7 @@ namespace DXGame.Core.State
             transition_ = null;
             triggered_ = false;
         }
+
+        public UniqueId Id => id_;
     }
 }

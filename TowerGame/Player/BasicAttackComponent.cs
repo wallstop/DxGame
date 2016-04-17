@@ -36,6 +36,11 @@ namespace DXGame.TowerGame.Player
 
         private void HandleAttackRequest(CommandMessage commandment)
         {
+            if(!Equals(commandment.Target, Parent.Id))
+            {
+                return;
+            }
+
             if(commandment.Commandment != Commandment.Attack)
             {
                 return;
@@ -49,9 +54,8 @@ namespace DXGame.TowerGame.Player
 
             lastAttacked_ = DxGame.Instance.CurrentTime.TotalGameTime;
 
-            AttackRequest attackRequest = new AttackRequest();
-
-            Parent.BroadcastTypedMessage(attackRequest);
+            AttackRequest attackRequest = new AttackRequest {Target = Parent.Id};
+            attackRequest.Emit();
         }
     }
 }

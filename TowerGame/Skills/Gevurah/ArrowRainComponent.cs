@@ -90,6 +90,11 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
         private void HandleMapCollision(CollisionMessage collisionMessage)
         {
+            if(!Equals(collisionMessage.Target, Parent.Id))
+            {
+                return;
+            }
+
             collisionMessages_.Add(collisionMessage);
         }
 
@@ -131,7 +136,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             var arrowRainer = new ArrowRainer(Source, Spatial.Position, Direction);
             Parent.AttachComponent(arrowRainer);
             EntityCreatedMessage arrowRainerCreated = new EntityCreatedMessage(arrowRainer);
-            DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(arrowRainerCreated);
+            arrowRainerCreated.Emit();
             Remove();
         }
 
@@ -219,13 +224,13 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
         private void EmitDamageMessage()
         {
-            var arrowRainCollisionMessage = new PhysicsMessage
+            PhysicsMessage arrowRainCollisionMessage = new PhysicsMessage
             {
                 AffectedAreas = AffectedAreas(),
                 Source = Source,
                 Interaction = ArrowRainInteraction
             };
-            DxGame.Instance.BroadcastTypedMessage(arrowRainCollisionMessage);
+            arrowRainCollisionMessage.Emit();
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
@@ -348,8 +353,8 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
         private static void ArrowRainInteraction(GameObject source, PhysicsComponent destination)
         {
-            var damageDealt = new DamageMessage {Source = source, DamageCheck = ArrowRainDamage};
-            destination.Parent?.BroadcastTypedMessage(damageDealt);
+            DamageMessage damageDealt = new DamageMessage {Source = source, DamageCheck = ArrowRainDamage};
+            damageDealt.Emit();
         }
 
         private static Tuple<bool, double> ArrowRainDamage(GameObject source, GameObject destination)

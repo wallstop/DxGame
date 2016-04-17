@@ -30,11 +30,15 @@ namespace DXGame.Core.Components.Advanced.Command
         {
             UpdatePriority = UpdatePriority.HIGH;
             ResetState();
-            MessageHandler.RegisterMessageHandler<PathFindingRequest>(HandlePathFindingRequest);
+            RegisterMessageHandler<PathFindingRequest>(HandlePathFindingRequest);
         }
 
         private void HandlePathFindingRequest(PathFindingRequest request)
         {
+            if(!Equals(request.Target, Parent.Id))
+            {
+                return;
+            }
             var pathfindingModel = DxGame.Instance.Model<PathfindingModel>();
             var path = pathfindingModel.Pathfind(Parent, request.Location);
             ResetState();
@@ -110,8 +114,8 @@ namespace DXGame.Core.Components.Advanced.Command
             currentTimeout_ = commandments.Key;
             foreach(Commandment commandment in commandments.Value.Commandments)
             {
-                var commandMessage = new CommandMessage {Commandment = commandment};
-                Parent?.BroadcastTypedMessage(commandMessage);
+                CommandMessage commandMessage = new CommandMessage(Parent?.Id) {Commandment = commandment};
+                commandMessage.Emit();
             }
         }
     }

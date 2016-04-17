@@ -4,7 +4,6 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Position
 {
@@ -39,7 +38,8 @@ namespace DXGame.Core.Components.Advanced.Position
                 position_ = newPosition;
                 if(newPosition != value)
                 {
-                    Parent.BroadcastTypedMessage(new CollisionMessage(value - newPosition, this));
+                    CollisionMessage collision = new CollisionMessage(value - newPosition, this) {Target = Parent?.Id};
+                    collision.Emit();
                 }
             }
         }

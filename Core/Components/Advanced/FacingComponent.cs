@@ -26,6 +26,11 @@ namespace DXGame.Core.Components.Advanced
 
         private void HandleCommandMessage(CommandMessage command)
         {
+            if(!Equals(command.Target, Parent.Id))
+            {
+                return;
+            }
+
             switch(command.Commandment)
             {
                 case Commandment.MoveLeft:

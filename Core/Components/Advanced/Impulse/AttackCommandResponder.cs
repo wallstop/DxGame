@@ -2,13 +2,11 @@
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Impulse
 {
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class AttackCommandResponder : Component
     {
         public AttackCommandResponder()
@@ -18,13 +16,18 @@ namespace DXGame.Core.Components.Advanced.Impulse
 
         private void HandleAttackCommand(CommandMessage commandMessage)
         {
+            if(!Equals(commandMessage.Target, Parent.Id))
+            {
+                return;
+            }
+
             if(commandMessage.Commandment != Commandment.Attack)
             {
                 return;
             }
 
-            AttackRequest attackRequest = new AttackRequest();
-            Parent?.BroadcastTypedMessage(attackRequest);
+            AttackRequest attackRequest = new AttackRequest {Target = Parent.Id};
+            attackRequest.Emit();
         }
     }
 }

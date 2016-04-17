@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DXGame.Core.Messaging
 {
     [Serializable]
     [DataContract]
-    public class DropThroughPlatformRequest : Message
+    public class DropThroughPlatformRequest : Message, ITargetedMessage
     {
+        [DataMember]
+        public UniqueId Target { get; set; }
     }
 }

@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
-using DXGame.Main;
 using NLog;
 
 namespace DXGame.Core.Components.Basic
@@ -64,9 +63,6 @@ namespace DXGame.Core.Components.Basic
         [DataMember] protected bool initialized_;
 
         [DataMember]
-        public MessageHandler MessageHandler { get; protected set; } = new MessageHandler();
-
-        [DataMember]
         public GameObject Parent { get; set; }
 
         public virtual bool ShouldSerialize => true;
@@ -74,6 +70,7 @@ namespace DXGame.Core.Components.Basic
         protected Component()
         {
             UpdatePriority = UpdatePriority.NORMAL;
+            Id = new UniqueId();
             initialized_ = false;
         }
 
@@ -82,8 +79,13 @@ namespace DXGame.Core.Components.Basic
             return UpdatePriority.CompareTo(other?.UpdatePriority);
         }
 
+        protected void RegisterMessageHandler<T>(Action<T> handler) where T: Message
+        {
+            Parent.MessageHandler.RegisterMessageHandler(handler);
+        }
+
         [DataMember]
-        public UniqueId Id { get; } = new UniqueId();
+        public UniqueId Id { get; }
 
         [DataMember]
         public UpdatePriority UpdatePriority { protected set; get; }
@@ -106,7 +108,7 @@ namespace DXGame.Core.Components.Basic
         public virtual void Create()
         {
             EntityCreatedMessage entityCreated = new EntityCreatedMessage(this);
-            DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(entityCreated);
+            entityCreated.Emit();
         }
 
         public override bool Equals(object other)
@@ -120,7 +122,8 @@ namespace DXGame.Core.Components.Basic
             Parent?.RemoveComponents(this);
             Parent = null;
             EntityRemovedMessage entityRemoved = new EntityRemovedMessage(this);
-            DxGame.Instance.BroadcastTypedMessage<EntityRemovedMessage>(entityRemoved);
+            entityRemoved.Emit();
+            // TODO: Gotta figure out deregistration
         }
 
         protected virtual void Update(DxGameTime gameTime) {}
@@ -133,6 +136,16 @@ namespace DXGame.Core.Components.Basic
             }
         }
 
+        public virtual void OnAttach()
+        {
+            
+        }
+
+        public virtual void OnDetach()
+        {
+            
+        }
+
         public virtual void LoadContent() {}
 
         [OnDeserialized]
@@ -140,7 +153,7 @@ namespace DXGame.Core.Components.Basic
         {
             DeSerialize();
         }
-        
+
         public virtual void DeSerialize()
         {
             LoadContent();

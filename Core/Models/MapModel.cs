@@ -48,7 +48,7 @@ namespace DXGame.Core.Models
 
             Level = nextLevel;
             MapRotationNotification mapRotationNotification = new MapRotationNotification();
-            DxGame.Instance.BroadcastTypedMessage(mapRotationNotification);
+            mapRotationNotification.Emit();
         }
 
         public void HandleMapFinishedLoading(MapRotationNotification mapRotationNotification)

@@ -35,7 +35,7 @@ namespace DXGame.Core.Models
 
         public EventModel()
         {
-            MessageHandler.EnableAcceptAll(HandleMessage);
+            MessageHandler.EnableGlobalAcceptAll(HandleMessage);
         }
 
         private void HandleMessage(Message message)

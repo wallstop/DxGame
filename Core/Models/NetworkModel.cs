@@ -21,15 +21,6 @@ namespace DXGame.Core.Models
 
         public NetworkModel()
         {
-            MessageHandler.EnableAcceptAll(HandleMessageReceived);
-        }
-
-        private void HandleMessageReceived(Message message)
-        {
-            foreach(NetworkComponent networkComponent in connections_)
-            {
-                networkComponent.MessageHandler.HandleTypedMessage(message);
-            }
         }
 
         public NetworkModel WithClient(NetworkClient client)

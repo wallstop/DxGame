@@ -12,11 +12,16 @@ namespace DXGame.Core.Components.Advanced
     {
         public CollisionDestructibleComponent()
         {
-            MessageHandler.RegisterMessageHandler<CollisionMessage>(HandleCollision);
+            RegisterMessageHandler<CollisionMessage>(HandleCollision);
         }
 
         protected void HandleCollision(CollisionMessage collisionMessage)
         {
+            if(!Equals(collisionMessage.Target, Parent.Id))
+            {
+                return;
+            }
+
             if(collisionMessage.CollisionDirections.Any())
             {
                 Parent.Remove();

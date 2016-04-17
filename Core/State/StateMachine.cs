@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
@@ -17,10 +19,14 @@ namespace DXGame.Core.State
         [DataMember]
         public State CurrentState { get; private set; }
 
-        protected StateMachine(State initialState)
+        [DataMember]
+        private ReadOnlyDictionary<UniqueId, State> statesById_; 
+
+        protected StateMachine(State initialState, Dictionary<UniqueId, State> statesById)
         {
             InitialState = initialState;
-            MessageHandler.EnableAcceptAll(HandleMessage);
+            MessageHandler.EnableTargetedAcceptAll(HandleMessage);
+            statesById_ = new ReadOnlyDictionary<UniqueId, State>(statesById);
             Reset();
         }
 
@@ -64,16 +70,25 @@ namespace DXGame.Core.State
         {
             private State initialState_;
 
+            private readonly Dictionary<UniqueId, State> uniqueStates_ = new Dictionary<UniqueId, State>(); 
+
             public StateMachine Build()
             {
                 Validate.IsNotNullOrDefault(initialState_,
                     StringUtils.GetFormattedNullOrDefaultMessage(this, "InitialState"));
-                return new StateMachine(initialState_);
+                return new StateMachine(initialState_, uniqueStates_);
+            }
+
+            public StateMachineBuilder WithState(State state)
+            {
+                uniqueStates_[state.Id] = state;
+                return this;
             }
 
             public StateMachineBuilder WithInitialState(State initialState)
             {
                 initialState_ = initialState;
+                WithState(initialState);
                 return this;
             }
         }

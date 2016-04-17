@@ -94,6 +94,11 @@ namespace DXGame.Core.Components.Advanced.Physics
 
         protected void HandleCollisionMessage(CollisionMessage message)
         {
+            if(!Equals(message.Target, Parent.Id))
+            {
+                return;
+            }
+
             var collisionDirections = message.CollisionDirections;
             var velocity = Velocity;
             // Collide on against y axis (vertical)? Cease movement and acceleration in that direction

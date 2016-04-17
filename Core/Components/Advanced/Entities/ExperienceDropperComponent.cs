@@ -6,24 +6,19 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Main;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Entities
 {
     [DataContract]
     [Serializable]
-    [ProtoContract]
     public class ExperienceDropperComponent : Component
     {
         public static readonly float DEFAULT_RADIUS = 250;
 
         [DataMember]
-        [ProtoMember(1)]
         public float Radius { get; }
 
         [DataMember]
-        [ProtoMember(2)]
         public Experience.Experience Experience { get; }
 
         public ExperienceDropperComponent(Experience.Experience experience) : this(DEFAULT_RADIUS, experience) {}
@@ -35,7 +30,12 @@ namespace DXGame.Core.Components.Advanced.Entities
             Validate.IsNotNullOrDefault(experience, StringUtils.GetFormattedNullOrDefaultMessage(this, experience));
             Radius = radius;
             Experience = experience;
-            MessageHandler.RegisterMessageHandler<EntityDeathMessage>(HandleEntityDeath);
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<EntityDeathMessage>(HandleEntityDeath);
+            base.OnAttach();
         }
 
         protected virtual void HandleEntityDeath(EntityDeathMessage deathMessage)
@@ -44,7 +44,7 @@ namespace DXGame.Core.Components.Advanced.Entities
             DxVector2 sourcePosition = Parent?.ComponentOfType<SpatialComponent>()?.Center ?? new DxVector2();
             ExperienceDroppedMessage experienceDropped = new ExperienceDroppedMessage(sourceTeam, sourcePosition, Radius,
                 Experience);
-            DxGame.Instance.BroadcastTypedMessage(experienceDropped);
+            experienceDropped.Emit();
         }
     }
 }

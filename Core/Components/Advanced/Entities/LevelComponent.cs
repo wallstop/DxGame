@@ -50,8 +50,7 @@ namespace DXGame.Core.Components.Advanced.Entities
                 CurrentExperience -= ExperienceToLevel;
                 ExperienceToLevel = DetermineExperienceForNextLevel(Level);
                 LeveledUpMessage leveledUp = new LeveledUpMessage(Parent, Level);
-                Parent?.BroadcastTypedMessage(leveledUp);
-                DxGame.Instance.BroadcastTypedMessage(leveledUp);
+                leveledUp.Emit();
             }
         }
 

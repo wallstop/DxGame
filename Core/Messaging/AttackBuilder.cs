@@ -10,7 +10,7 @@ namespace DXGame.Core.Messaging
 {
     [DataContract]
     [Serializable]
-    public class AttackBuilder : Message, IBuilder<List<PhysicsMessage>>
+    public class AttackBuilder : Message, IBuilder<List<PhysicsMessage>>, ITargetedMessage
     {
         public delegate PhysicsMessage PhysicsMessageGenerator(GameObject source, ICollection<IShape> sourceAttackAreas);
 
@@ -29,6 +29,7 @@ namespace DXGame.Core.Messaging
             source_ = source;
             Validate.IsNotNullOrDefault(attackAreas, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(attackAreas)));
             AttackAreas = new ReadOnlyCollection<IShape>(attackAreas);
+            Target = source.Id;
         }
 
         public List<PhysicsMessage> Build()
@@ -48,5 +49,8 @@ namespace DXGame.Core.Messaging
             attackMessageGenerators_.Add(physicsMessageGenerator);
             return this;
         }
+
+        [DataMember]
+        public UniqueId Target { get; set; }
     }
 }

@@ -17,7 +17,7 @@ namespace DXGame.Core.Messaging
 
     [Serializable]
     [DataContract]
-    public class DamageMessage : Message
+    public class DamageMessage : Message, ITargetedMessage
     {
         /**
             <summary> The GameObject that the Damage originates from. </summary>
@@ -28,5 +28,8 @@ namespace DXGame.Core.Messaging
 
         [DataMember]
         public DamageCheck DamageCheck { get; set; }
+
+        [DataMember]
+        public UniqueId Target { get; set; }
     }
 }

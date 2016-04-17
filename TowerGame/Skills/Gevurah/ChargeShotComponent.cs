@@ -82,8 +82,8 @@ namespace DXGame.TowerGame.Skills.Gevurah
             {
                 return;
             }
-            DamageMessage damage = new DamageMessage {Source = sourceEntity, DamageCheck = ChargeShotDamageCheck};
-            destinationPhysics.Parent?.BroadcastTypedMessage(damage);
+            DamageMessage damage = new DamageMessage {Source = sourceEntity, DamageCheck = ChargeShotDamageCheck, Target = destinationPhysics.Parent?.Id};
+            damage.Emit();
         }
 
         private Tuple<bool, double> ChargeShotDamageCheck(GameObject source, GameObject destination)
@@ -116,7 +116,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             interaction.AffectedAreas.Add(spatial_.Space);
             interaction.Source = Parent;
             interaction.Interaction = Interact;
-            DxGame.Instance.BroadcastTypedMessage(interaction);
+            interaction.Emit();
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)

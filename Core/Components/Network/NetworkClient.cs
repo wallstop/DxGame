@@ -190,7 +190,7 @@ namespace DXGame.Core.Components.Network
 
             foreach(Message message in messagesToBroadcast)
             {
-                DxGame.Instance.BroadcastUntypedMessage(message);
+                message.EmitUntyped();
             }
             base.PostReceiveData(gameTime);
         }
@@ -227,7 +227,7 @@ namespace DXGame.Core.Components.Network
             LOG.Info($"Skew: {offsetInMillis} millis, Average one way latency of {oneWayLatency} millis for timestamp: {serverTimeUpdate.ClientGameTime} (currently {DxGame.Instance.CurrentTime.TotalGameTime}");
 
             TimeSkewRequest timeSkewRequest = new TimeSkewRequest(offsetInMillis);
-            DxGame.Instance.BroadcastTypedMessage(timeSkewRequest);
+            timeSkewRequest.Emit();
         }
 
         private void HandleDxVectorLerpMessage(NetworkMessage message, NetConnection netConnection)

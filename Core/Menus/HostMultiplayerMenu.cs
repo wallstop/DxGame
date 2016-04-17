@@ -3,6 +3,7 @@ using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Network;
 using DXGame.Core.GraphicsWidgets;
 using DXGame.Core.Input;
+using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
@@ -55,7 +56,7 @@ namespace DXGame.Core.Menus
 
 
             EntityCreatedMessage portBoxCreated = new EntityCreatedMessage(PortBox);
-            DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(portBoxCreated);
+            portBoxCreated.Emit();
 
             var hostLabel = new MenuItem().WithSpriteFont(spriteFont)
                 .WithText("Host")

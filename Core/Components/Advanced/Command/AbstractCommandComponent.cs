@@ -2,7 +2,6 @@
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
-using DXGame.Main;
 
 namespace DXGame.Core.Components.Advanced.Command
 {
@@ -20,24 +19,13 @@ namespace DXGame.Core.Components.Advanced.Command
     {
         protected virtual void BroadcastCommandment(Commandment commandment)
         {
-            switch(commandment)
+            CommandMessage commandMessage = new CommandMessage(commandment) {GameObjectId = Parent?.Id};
+            commandMessage.Emit();
+
+            if(commandment == Commandment.MoveDown)
             {
-                case Commandment.MoveDown:
-                {
-                    Parent?.BroadcastTypedMessage(new CommandMessage(commandment));
-                    Parent?.BroadcastTypedMessage(new DropThroughPlatformRequest());
-                }
-                    break;
-                case Commandment.InteractWithEnvironment:
-                {
-                    Parent?.BroadcastTypedMessage(new CommandMessage(commandment));
-                    // TODO: Move somewhere else?
-                    DxGame.Instance.BroadcastTypedMessage(new EnvironmentInteractionMessage {Source = Parent});
-                }
-                    break;
-                default:
-                    Parent?.BroadcastTypedMessage(new CommandMessage(commandment));
-                    break;
+                DropThroughPlatformRequest dropThroughPlatform = new DropThroughPlatformRequest {Target = Parent?.Id};
+                dropThroughPlatform.Emit();
             }
         }
     }

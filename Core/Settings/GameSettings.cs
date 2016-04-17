@@ -7,7 +7,7 @@ using NLog;
 namespace DXGame.Core.Settings
 {
     /*
-        This class will hold all of the Game-specific options like Keybings, screen resolution, graphics fidelity, etc
+        This class will hold all of the Game-specific options like Keybinds, screen resolution, graphics fidelity, etc
 
         Should be easily serializable as a JSON file.
     */

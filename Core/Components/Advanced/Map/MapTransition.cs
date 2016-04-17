@@ -6,30 +6,24 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Map
 {
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class MapTransition : DrawableComponent, IEnvironmentComponent
     {
         private static readonly TimeSpan PARTICLE_EMISSION_DELAY = TimeSpan.FromSeconds(0.01);
 
         [DataMember]
-        [ProtoMember(1)]
         private TimeSpan LastParticleEmission { get; set; }
 
         [DataMember]
-        [ProtoMember(2)]
         private PositionalComponent PositionalComponent { get; }
 
         [DataMember]
-        [ProtoMember(3)]
         public bool Active { get; private set; }
 
         public MapTransition(PositionalComponent position)
@@ -49,7 +43,7 @@ namespace DXGame.Core.Components.Advanced.Map
                 return;
             }
             MapRotationRequest mapRotationRequest = new MapRotationRequest();
-            DxGame.Instance.BroadcastTypedMessage(mapRotationRequest);
+            mapRotationRequest.Emit();
             Active = false; // Disable once we're done so we don't accidentally double-trigger
         }
 
@@ -86,7 +80,7 @@ namespace DXGame.Core.Components.Advanced.Map
                     .Build();
 
             EntityCreatedMessage entityCreated = new EntityCreatedMessage(mapTransitionParticle);
-            DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(entityCreated);
+            entityCreated.Emit();
         }
     }
 }

@@ -56,9 +56,10 @@ namespace DXGame.TowerGame.Components
             PathFindingRequest pathfindingRequest = new PathFindingRequest
             {
                 Location = new DxVector2(player.Position.Position.X, player.Position.Position.Y + player.Position.Height - 0.001),
-                Timeout = PATHFINDING_TIMEOUT
+                Timeout = PATHFINDING_TIMEOUT,
+                Target = Parent?.Id
             };
-            Parent?.BroadcastTypedMessage(pathfindingRequest);
+            pathfindingRequest.Emit();
             timeSinceLastMovementRequest_ = TimeSpan.Zero;
         }
 

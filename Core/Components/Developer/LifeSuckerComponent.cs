@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
-using DXGame.Main;
 
 namespace DXGame.Core.Components.Developer
 {
@@ -24,7 +23,7 @@ namespace DXGame.Core.Components.Developer
 
         protected override void Update(DxGameTime gameTime)
         {
-            if (lastSucked_ + LIFE_SUCK_TICK_FREQUENCY <= gameTime.TotalGameTime)
+            if(lastSucked_ + LIFE_SUCK_TICK_FREQUENCY <= gameTime.TotalGameTime)
             {
                 SuckLife();
                 lastSucked_ = gameTime.TotalGameTime;
@@ -33,12 +32,13 @@ namespace DXGame.Core.Components.Developer
 
         private void SuckLife()
         {
-            var lifeSuckMessage = new DamageMessage
+            DamageMessage lifeSuckMessage = new DamageMessage
             {
                 Source = Parent,
-                DamageCheck = LifeSuckDamage
+                DamageCheck = LifeSuckDamage,
+                Target = Parent?.Id
             };
-            Parent?.BroadcastTypedMessage(lifeSuckMessage);
+            lifeSuckMessage.Emit();
         }
 
         private static Tuple<bool, double> LifeSuckDamage(GameObject source, GameObject destination)

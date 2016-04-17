@@ -12,20 +12,18 @@ using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
 using DXGame.Main;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Physics
 {
     [DataContract]
     [Serializable]
-    [ProtoContract]
     public class MapCollidablePhysicsComponent : PhysicsComponent
     {
         private const int MAX_COLLISION_CHECKS = 20;
         private static readonly DxRectangleAreaComparer DXRECTANGLE_AREA_COMPARER = new DxRectangleAreaComparer();
         private static readonly TimeSpan IGNORE_EXPIRY = TimeSpan.FromMilliseconds(30);
 
-        [ProtoMember(1)] [DataMember] private readonly List<Tuple<MapCollidableComponent, TimeSpan>> mapTilesToIgnore_ =
+        [DataMember] private readonly List<Tuple<MapCollidableComponent, TimeSpan>> mapTilesToIgnore_ =
             new List<Tuple<MapCollidableComponent, TimeSpan>>();
 
         private DxVector2 Dimensions => space_.Dimensions;
@@ -43,6 +41,11 @@ namespace DXGame.Core.Components.Advanced.Physics
 
         private void HandleDropThroughPlatformRequest(DropThroughPlatformRequest message)
         {
+            if(!Equals(message.Target, Parent.Id))
+            {
+                return;
+            }
+
             var map = DxGame.Instance.Model<MapModel>();
             var mapQueryRegion = Space;
             /* Give the region a little bit of buffer room to check for platforms we may be standing on */
@@ -90,7 +93,7 @@ namespace DXGame.Core.Components.Advanced.Physics
             mapTilesToIgnore_.RemoveAll(
                 mapTile => !mapTiles.Contains(mapTile.Item1) && mapTile.Item2 + IGNORE_EXPIRY < gameTime.TotalGameTime);
 
-            var collision = new CollisionMessage();
+            CollisionMessage collision = new CollisionMessage();
 
             // TODO: Properly handle buggy collisions (failsafe for now)
             for(int i = 0; i < MAX_COLLISION_CHECKS; ++i)
@@ -161,7 +164,8 @@ namespace DXGame.Core.Components.Advanced.Physics
             // Let everyone else know we collided (only if we collided with anything)
             if(collision.CollisionDirections.Any())
             {
-                Parent?.BroadcastTypedMessage(collision);
+                collision.Target = Parent?.Id;
+                collision.Emit();
             }
         }
 

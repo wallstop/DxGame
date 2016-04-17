@@ -11,7 +11,7 @@ namespace DXGame.Core.Messaging
 
     [DataContract]
     [Serializable]
-    public class ExperiencedReceivedMessage : Message
+    public class ExperiencedReceivedMessage : Message, ITargetedMessage
     {
         [DataMember]
         public Experience.Experience Experience { get; set; }
@@ -20,5 +20,8 @@ namespace DXGame.Core.Messaging
         {
             Experience = experience;
         }
+
+        [DataMember]
+        public UniqueId Target { get; set; }
     }
 }

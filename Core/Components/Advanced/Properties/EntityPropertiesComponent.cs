@@ -10,8 +10,6 @@ using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
 using DXGame.Core.Properties;
 using DXGame.Core.Utils;
-using DXGame.Main;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Properties
 {
@@ -25,12 +23,11 @@ namespace DXGame.Core.Components.Advanced.Properties
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public class EntityPropertiesComponent : Component
     {
         private static readonly TimeSpan FORCED_NOTIFICATION_TRIGGER_DELAY = TimeSpan.FromSeconds(1 / 2.0);
 
-        [DataMember] [ProtoMember(1)] private TimeSpan lastTriggerNotification_;
+        [DataMember] private TimeSpan lastTriggerNotification_;
 
         /*
             TODO: Modify access of these properties. In general, we should leave it up to OTHER components to decide what to do with this information. 
@@ -68,11 +65,9 @@ namespace DXGame.Core.Components.Advanced.Properties
         }
 
         [DataMember]
-        [ProtoMember(2)]
         public EntityProperties EntityProperties { get; }
 
         [DataMember]
-        [ProtoMember(3)]
         protected LevelUpResponse LevelUpResponse { get; }
 
         protected virtual DxVector2 InitialJumpAcceleration => DxVector2.EmptyVector;
@@ -164,10 +159,9 @@ namespace DXGame.Core.Components.Advanced.Properties
             if(currentHealth <= 0 && previousHealth > 0)
             {
                 /* If so, tell everyone that we've died. */
-                var entityDeathMessage = new EntityDeathMessage {Entity = Parent};
+                EntityDeathMessage entityDeathMessage = new EntityDeathMessage {Entity = Parent};
                 /* The world deserves to know. We were important. */
-                DxGame.Instance.BroadcastTypedMessage(entityDeathMessage);
-                Parent?.BroadcastTypedMessage(entityDeathMessage);
+                entityDeathMessage.Emit();
             }
         }
 

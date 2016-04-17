@@ -31,7 +31,25 @@ namespace DXGame.Core.Messaging
             TimeStamp = timeSpan;
         }
 
+        public static void EmitTyped<T>(T message) where T : Message
+        {
+            DxGame.Instance.ProcessTypedMessage<T>(message);
+        }
+
+        public void EmitUntyped()
+        {
+            DxGame.Instance.ProcessUntypedMessage(this);
+        }
+
         [DataMember]
         public UniqueId Id { get; }
+    }
+
+    public static class MessageExtensions
+    {
+        public static void Emit<T>(this T message) where T : Message
+        {
+            Message.EmitTyped(message);
+        }
     }
 }

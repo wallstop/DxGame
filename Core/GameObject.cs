@@ -7,8 +7,6 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Main;
-using DXGame.Core.State;
 
 namespace DXGame.Core
 {
@@ -39,9 +37,13 @@ namespace DXGame.Core
         public bool Removed { get; private set; } = false;
         public IEnumerable<Component> Components => components_;
 
+        [DataMember]
+        public MessageHandler MessageHandler { get; set; }
+
         private GameObject(List<Component> components)
         {
             components_ = components;
+            MessageHandler = new MessageHandler(Id);
         }
 
         public bool Equals(GameObject other)
@@ -125,32 +127,6 @@ namespace DXGame.Core
             return new GameObjectBuilder();
         }
 
-        public void BroadcastUntypedMessage(Message message)
-        {
-            Component[] components = components_.ToArray();
-            foreach(Component component in components)
-            {
-                component.MessageHandler.HandleUntypedMessage(message);
-            }
-            if(message.Global)
-            {
-                DxGame.Instance.BroadcastTypedMessage(message);
-            }
-        }
-
-        public void BroadcastTypedMessage<T>(T message) where T : Message
-        {
-            Component [] components = components_.ToArray();
-            foreach(Component component in components)
-            {
-                component.MessageHandler.HandleTypedMessage<T>(message);
-            }
-            if(message.Global)
-            {
-                DxGame.Instance.BroadcastTypedMessage(message);
-            }
-        }
-
         public class GameObjectBuilder : IBuilder<GameObject>
         {
             private List<Component> components_ = new List<Component>();
@@ -209,11 +185,12 @@ namespace DXGame.Core
                 foreach(Component component in components_)
                 {
                     EntityRemovedMessage componentRemoved = new EntityRemovedMessage(component);
-                    DxGame.Instance.BroadcastTypedMessage<EntityRemovedMessage>(componentRemoved);
+                    componentRemoved.Emit();
                 }
 
                 EntityRemovedMessage gameObjectRemoved = new EntityRemovedMessage(this);
-                DxGame.Instance.BroadcastTypedMessage<EntityRemovedMessage>(gameObjectRemoved);
+                gameObjectRemoved.Emit();
+                MessageHandler.Deregister();
             }
             Removed = true;
         }
@@ -223,7 +200,7 @@ namespace DXGame.Core
             if(!Created)
             {
                 EntityCreatedMessage entityCreated = new EntityCreatedMessage(this);
-                DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(entityCreated);
+                entityCreated.Emit();
             }
             Created = true;
         }

@@ -44,6 +44,8 @@ namespace DXGame.Main
 
         private static readonly Lazy<DxGame> singleton_ = new Lazy<DxGame>(() => new DxGame());
 
+        private UniqueId GameId { get; }
+
         private MessageHandler MessageHandler { get; }
 
         public Rectangle Screen { get; protected set; }
@@ -129,7 +131,9 @@ namespace DXGame.Main
             DxGameElements = new GameElementCollection();
             Content.RootDirectory = "Content";
 
-            MessageHandler = new MessageHandler();
+            GameId = new UniqueId();
+
+            MessageHandler = new MessageHandler(GameId);
             MessageHandler.RegisterMessageHandler<EntityCreatedMessage>(HandleEntityCreatedMessage);
             MessageHandler.RegisterMessageHandler<EntityRemovedMessage>(HandleEntityRemovedMessage);
             MessageHandler.RegisterMessageHandler<TimeSkewRequest>(HandleTimeSkewRequest);
@@ -162,22 +166,15 @@ namespace DXGame.Main
             </summary>
         */
 
-        public void BroadcastUntypedMessage(Message message)
+        public void ProcessUntypedMessage(Message message)
         {
-            MessageHandler.HandleUntypedMessage(message);
-            foreach(var model in Models)
-            {
-                model.MessageHandler.HandleUntypedMessage(message);
-            }
+            dynamic typedMessage = message;
+            ProcessTypedMessage(typedMessage);
         }
 
-        public void BroadcastTypedMessage<T>(T message) where T : Message
+        public void ProcessTypedMessage<T>(T message) where T : Message
         {
-            MessageHandler.HandleTypedMessage<T>(message);
-            foreach(var model in Models)
-            {
-                model.MessageHandler.HandleTypedMessage<T>(message);
-            }
+            GlobalMessageBus.TypedBroadcast<T>(message);
         }
 
         public T Model<T>() where T : Model
@@ -277,16 +274,16 @@ namespace DXGame.Main
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             AddAndInitializeComponent(new SpriteBatchInitializer());
             AddAndInitializeComponent(new SpriteBatchEnder());
-            var playMenu = new MainMenu();
+            MainMenu playMenu = new MainMenu();
             AddAndInitializeComponent(playMenu);
 
-            var frameModel = new FrameModel();
+            FrameModel frameModel = new FrameModel();
             AttachModel(frameModel);
 
-            var netModel = new NetworkModel();
+            NetworkModel netModel = new NetworkModel();
             AttachModel(netModel);
 
-            var inputModel = new InputModel();
+            InputModel inputModel = new InputModel();
             AttachModel(inputModel);
 
             CameraModel cameraModel = new CameraModel();
@@ -374,7 +371,7 @@ namespace DXGame.Main
             TimeSpan actualElapsed;
             while((actualElapsed = (wallclock = GameTimer.Elapsed) - lastFrameTick_) < MINIMUM_FRAMERATE)
             {
-                // Do nothing
+                // Chill out dawg, let's hang out here
             }
             
             TimeSpan elapsed = MathUtils.Min(actualElapsed, TargetElapsedTime);

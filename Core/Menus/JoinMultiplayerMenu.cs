@@ -3,6 +3,7 @@ using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Network;
 using DXGame.Core.GraphicsWidgets;
 using DXGame.Core.Input;
+using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Models;
 using DXGame.Core.Primitives;
@@ -101,10 +102,10 @@ namespace DXGame.Core.Menus
             MenuItems.Add(connectButton);
 
             EntityCreatedMessage addressBoxCreated = new EntityCreatedMessage(AddressBox);
-            DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(addressBoxCreated);
+            addressBoxCreated.Emit();
 
             EntityCreatedMessage portBoxCreated = new EntityCreatedMessage(PortBox);
-            DxGame.Instance.BroadcastTypedMessage<EntityCreatedMessage>(portBoxCreated);
+            portBoxCreated.Emit();
         }
 
         public override void Remove()

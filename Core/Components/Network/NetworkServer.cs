@@ -6,7 +6,6 @@ using DXGame.Core.Components.Basic;
 using DXGame.Core.Generators;
 using DXGame.Core.Lerp;
 using DXGame.Core.Messaging;
-using DXGame.Core.Messaging.Game;
 using DXGame.Core.Messaging.Network;
 using DXGame.Core.Models;
 using DXGame.Core.Network;
@@ -40,7 +39,6 @@ namespace DXGame.Core.Components.Network
         public NetworkServer()
         {
             ClientFrameStates = new Dictionary<NetConnection, ClientEventTracker>();
-            MessageHandler.EnableAcceptAll(HandleMessage);
         }
 
         protected override void InternalSendData(DxGameTime gameTime)
@@ -111,15 +109,6 @@ namespace DXGame.Core.Components.Network
             configuration.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
             Connection = new NetServer(configuration);
             return this;
-        }
-
-        private void HandleMessage(Message message)
-        {
-            baseEventTracker_.Handler.HandleTypedMessage(message);
-            foreach(ClientEventTracker eventTracker in ClientFrameStates.Values)
-            {
-                eventTracker.ServerEventTracker.Handler.HandleTypedMessage(message);
-            }
         }
 
         public override void EstablishConnection()

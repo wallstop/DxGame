@@ -101,7 +101,7 @@ namespace DXGame.Core.Messaging
             }
             foreach(MessageHandler handler in GlobalSinks)
             {
-                handler.HandleTypedMessage(typedMessage);
+                handler.HandleGlobalMessage(typedMessage);
             }
         }
 
@@ -109,7 +109,7 @@ namespace DXGame.Core.Messaging
         {
             foreach(MessageHandler handler in GlobalSinks)
             {
-                handler.HandleTypedMessage(typedMessage);
+                handler.HandleGlobalMessage(typedMessage);
             }
         }
 
@@ -118,8 +118,8 @@ namespace DXGame.Core.Messaging
             MessageHandler handler;
             if(UntargetedHandler(target, out handler))
             {
-                handler.HandleTypedMessage(typedAndTargetedMessage);
-                return;
+                handler.HandleGlobalMessage(typedAndTargetedMessage);
+                //return;
             }
 
             /* Re-use existing handler */

@@ -25,6 +25,10 @@ namespace DXGame.Core.Components.Advanced.Damage
         protected DamageComponent(EntityPropertiesComponent entityProperties)
         {
             EntityProperties = entityProperties;
+        }
+
+        public override void OnAttach()
+        {
             RegisterMessageHandler<DamageMessage>(HandleDamageMessage);
         }
 

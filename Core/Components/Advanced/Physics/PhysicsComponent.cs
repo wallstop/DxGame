@@ -8,7 +8,6 @@ using DXGame.Core.Physics;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Physics
 {
@@ -21,13 +20,12 @@ namespace DXGame.Core.Components.Advanced.Physics
 
     [DataContract]
     [Serializable]
-    [ProtoContract]
     public class PhysicsComponent : Component
     {
         /* Currently acting forces on this object. This will typically include gravity & air resistance */
-        [ProtoMember(1)] [DataMember] protected readonly List<Force> forces_ = new List<Force>();
-        [ProtoMember(2)] [DataMember] protected SpatialComponent space_;
-        [ProtoMember(3)] [DataMember] protected DxVector2 velocity_;
+        [DataMember] protected readonly List<Force> forces_ = new List<Force>();
+        [DataMember] protected SpatialComponent space_;
+        [DataMember] protected DxVector2 velocity_;
         public IEnumerable<Force> Forces => forces_;
 
         public virtual DxVector2 Velocity
@@ -48,10 +46,15 @@ namespace DXGame.Core.Components.Advanced.Physics
         protected PhysicsComponent(DxVector2 velocity, DxVector2 acceleration, SpatialComponent position,
             UpdatePriority updatePriority)
         {
-            MessageHandler.RegisterMessageHandler<CollisionMessage>(HandleCollisionMessage);
             velocity_ = velocity;
             space_ = position;
             UpdatePriority = updatePriority;
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<CollisionMessage>(HandleCollisionMessage);
+            base.OnAttach();
         }
 
         public virtual void AttachForce(Force force)

@@ -6,7 +6,6 @@ using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
 using NLog;
-using ProtoBuf;
 
 namespace DXGame.Core.Models
 {
@@ -15,26 +14,17 @@ namespace DXGame.Core.Models
     public class PlayerModel : Model
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        
+
         [DataMember]
         public Player ActivePlayer { get; private set; }
-        
+
         [DataMember]
         public ICollection<Player> Players { get; private set; } = new List<Player>();
 
-        public PlayerModel()
+        public override void OnAttach()
         {
-            MessageHandler.RegisterMessageHandler<MapRotationNotification>(HandleMapRotationNotification);
-        }
-
-        private void HandleMapRotationNotification(MapRotationNotification mapRotationNotification)
-        {
-            MapModel mapModel = DxGame.Instance.Model<MapModel>();
-            DxVector2 playerSpawn = mapModel.PlayerSpawn;
-            foreach(Player player in Players)
-            {
-                player.Position.Position = playerSpawn;
-            }
+            RegisterMessageHandler<MapRotationNotification>(HandleMapRotationNotification);
+            base.OnAttach();
         }
 
         /* 
@@ -66,6 +56,16 @@ namespace DXGame.Core.Models
                 Players.Add(ActivePlayer);
             }
             return this;
+        }
+
+        private void HandleMapRotationNotification(MapRotationNotification mapRotationNotification)
+        {
+            MapModel mapModel = DxGame.Instance.Model<MapModel>();
+            DxVector2 playerSpawn = mapModel.PlayerSpawn;
+            foreach(Player player in Players)
+            {
+                player.Position.Position = playerSpawn;
+            }
         }
     }
 }

@@ -51,8 +51,13 @@ namespace DXGame.TowerGame.Components.Waves
                     .WithAcceptance(CheckIsWaveNotification)
                     .WithAction(HandleWaveNotificationEvent)
                     .Build();
-            MessageHandler.RegisterMessageHandler<NewWaveMessage>(HandleWaveNotification);
             Position = PositionalComponent.Builder().Build();
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<NewWaveMessage>(HandleWaveNotification);
+            base.OnAttach();
         }
 
         public override void Initialize()

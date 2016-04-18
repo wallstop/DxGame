@@ -83,9 +83,13 @@ namespace DXGame.TowerGame.Skills.Gevurah
                     .WithSpatialComponent(Spatial)
                     .WithVelocity(velocity)
                     .Build();
-
-            MessageHandler.RegisterMessageHandler<CollisionMessage>(HandleMapCollision);
+            
             collisionMessages_ = new List<CollisionMessage>();
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<CollisionMessage>(HandleMapCollision);
         }
 
         private void HandleMapCollision(CollisionMessage collisionMessage)

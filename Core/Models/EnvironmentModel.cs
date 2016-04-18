@@ -21,7 +21,12 @@ namespace DXGame.Core.Models
 
         public EnvironmentModel()
         {
-            MessageHandler.RegisterMessageHandler<EnvironmentInteractionMessage>(HandleEnvironmentInteractionMessage);
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<EnvironmentInteractionMessage>(HandleEnvironmentInteractionMessage);
+            base.OnAttach();
         }
 
         protected override void Update(DxGameTime gameTime)

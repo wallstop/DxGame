@@ -33,9 +33,10 @@ namespace DXGame.Core.Models
 
         public override bool ShouldSerialize => false;
 
-        public EventModel()
+        public override void OnAttach()
         {
-            MessageHandler.EnableGlobalAcceptAll(HandleMessage);
+            RegisterGlobalAcceptAll(HandleMessage);
+            base.OnAttach();
         }
 
         private void HandleMessage(Message message)

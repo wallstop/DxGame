@@ -14,7 +14,7 @@ namespace DXGame.Core.Messaging
 
     [Serializable]
     [DataContract]
-    public class Message : IIdentifiable
+    public class Message
     {
         [DataMember]
         public TimeSpan TimeStamp { get; set; }
@@ -27,7 +27,6 @@ namespace DXGame.Core.Messaging
 
         protected Message(TimeSpan timeSpan)
         {
-            Id = new UniqueId();
             TimeStamp = timeSpan;
         }
 
@@ -40,9 +39,6 @@ namespace DXGame.Core.Messaging
         {
             DxGame.Instance.ProcessUntypedMessage(this);
         }
-
-        [DataMember]
-        public UniqueId Id { get; }
     }
 
     public static class MessageExtensions

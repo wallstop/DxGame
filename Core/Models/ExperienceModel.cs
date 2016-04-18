@@ -34,8 +34,13 @@ namespace DXGame.Core.Models
             Validate.IsNotNullOrDefault(experienceFunction,
                 StringUtils.GetFormattedNullOrDefaultMessage(this, experienceFunction));
             entitiesContributingToExperienceByPlayer_ = new Dictionary<Player, int>();
-            MessageHandler.RegisterMessageHandler<ExperienceDroppedMessage>(HandleExperienceDroppedMessage);
             ExperienceFunction = experienceFunction;
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<ExperienceDroppedMessage>(HandleExperienceDroppedMessage);
+            base.OnAttach();
         }
 
         protected static float SimpleExponentialEaseInOut(int x)

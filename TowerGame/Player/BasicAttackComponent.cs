@@ -31,7 +31,11 @@ namespace DXGame.TowerGame.Player
 
         public BasicAttackComponent()
         {
-            MessageHandler.RegisterMessageHandler<CommandMessage>(HandleAttackRequest);
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<CommandMessage>(HandleAttackRequest);
         }
 
         private void HandleAttackRequest(CommandMessage commandment)

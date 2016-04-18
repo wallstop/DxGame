@@ -30,8 +30,13 @@ namespace DXGame.Core.Components.Advanced.Map
         {
             Validate.IsNotNull(position);
             PositionalComponent = position;
-            MessageHandler.RegisterMessageHandler<EnvironmentInteractionMessage>(HandleEnvironmentInteraction);
             Active = true;
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<EnvironmentInteractionMessage>(HandleEnvironmentInteraction);
+            base.OnAttach();
         }
 
         public DxVector2 Position => PositionalComponent.Position;

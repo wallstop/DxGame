@@ -72,7 +72,6 @@ namespace DXGame.Core.State
 
         public void Accept(Message message)
         {
-            Validate.IsNotNullOrDefault(message, $"{typeof(State)} cannot process a null message");
             messageBuffer_.Add(message);
         }
 

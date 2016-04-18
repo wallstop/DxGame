@@ -28,7 +28,11 @@ namespace DXGame.TowerGame.Skills.Gevurah
 
         public GevurahBasicAttack()
         {
-            MessageHandler.RegisterMessageHandler<AttackRequest>(HandleAttackRequest);
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<AttackRequest>(HandleAttackRequest);
         }
 
         private void HandleAttackRequest(AttackRequest attackRequest)

@@ -79,7 +79,11 @@ namespace DXGame.Core.Components.Advanced.Properties
                 StringUtils.GetFormattedNullOrDefaultMessage(this, levelUpResponse));
             EntityProperties = entityProperties;
             LevelUpResponse = levelUpResponse;
-            MessageHandler.RegisterMessageHandler<LeveledUpMessage>(HandleLevelUp);
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<LeveledUpMessage>(HandleLevelUp);
         }
 
         public override void Initialize()

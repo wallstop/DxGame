@@ -2,7 +2,6 @@
 using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Main;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
 
@@ -29,10 +28,15 @@ namespace DXGame.Core.Models
                 StringUtils.GetFormattedNullOrDefaultMessage(this, levelProgressionStrategy));
             DrawPriority = DrawPriority.MAP;
             LevelProgressionStrategy = levelProgressionStrategy;
-            MessageHandler.RegisterMessageHandler<MapRotationRequest>(HandleMapRotationRequest);
-            MessageHandler.RegisterMessageHandler<MapRotationNotification>(HandleMapFinishedLoading);
 
             Level = LevelProgressionStrategy.InitialLevel;
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<MapRotationRequest>(HandleMapRotationRequest);
+            RegisterMessageHandler<MapRotationNotification>(HandleMapFinishedLoading);
+            base.OnAttach();
         }
 
         public void HandleMapRotationRequest(MapRotationRequest mapRotationRequest)

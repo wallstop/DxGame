@@ -14,7 +14,11 @@ namespace DXGame.Core.Models
 
         public CollisionModel()
         {
-            MessageHandler.RegisterMessageHandler<PhysicsMessage>(HandlePhysicsMessage);
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<PhysicsMessage>(HandlePhysicsMessage);
         }
 
         public override bool ShouldSerialize => false;

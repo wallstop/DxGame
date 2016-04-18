@@ -11,7 +11,11 @@ namespace DXGame.Core.Components.Advanced.Impulse
     {
         public AttackCommandResponder()
         {
-            MessageHandler.RegisterMessageHandler<CommandMessage>(HandleAttackCommand);
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<CommandMessage>(HandleAttackCommand);
         }
 
         private void HandleAttackCommand(CommandMessage commandMessage)

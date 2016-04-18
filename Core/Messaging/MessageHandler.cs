@@ -32,79 +32,73 @@ namespace DXGame.Core.Messaging
 
         private TypedHandler<T> HandlerForType<T>() where T : Message
         {
-            handlersByType_.
-            if(handlersByType_.)
-            // TODO
+            object existingTypedHandler;
+            Type type = typeof(T);
+            if(handlersByType_.TryGetValue(type, out existingTypedHandler))
+            {
+                return (TypedHandler<T>) existingTypedHandler;
+            }
+
+            TypedHandler<T> newTypedHandler = new TypedHandler<T>();
+            handlersByType_[type] = newTypedHandler;
+            return newTypedHandler;
         }
-
-
-        //internal class TypeHandlerResolver
-        //{
-        //    Lazy<TypedHandler<T>> h = new Lazy<TypedHandler<T>>(() => new TypedHandler<T>());
-        //    public TypedHandler<T> Resolve<T>() where T : Message
-        //    {
-        //        return h.Value;
-        //    }
-        //}
-
-
 
         [DataMember]
         private List<Action> Deregistrations { get; set; } = new List<Action>();
 
-        [DataMember] private Action<Message> acceptAllFunction_;
-
         [DataMember]
-        public bool AcceptAll { get; private set; }
+        private UniqueId Owner { get; set; }
 
-        [DataMember]
-        public UniqueId Owner { get; private set; }
+        [DataMember] private List<Action<Message>> acceptAllFunctions_;
 
         public MessageHandler(UniqueId ownerId)
         {
             Validate.IsNotNull(ownerId);
             Owner = ownerId;
+            acceptAllFunctions_ = new List<Action<Message>>();
             handlersByType_ = new Dictionary<Type, object>();
         }
 
-        public void EnableTargetedAcceptAll(Action<Message> acceptAllFunction)
+        public Action RegisterTargetedAcceptAll(Action<Message> acceptAllFunction)
         {
-            Validate.IsFalse(AcceptAll, $"Expected {nameof(AcceptAll)} to be false, but it was not :(");
-            LOG.Info("Enabling Accept-All mode for {0}", Owner);
-            AcceptAll = true;
-            acceptAllFunction_ = acceptAllFunction;
+            acceptAllFunctions_.Add(acceptAllFunction);
             Action deregistration = GlobalMessageBus.RegisterTargetedGlobal(Owner, this);
             Deregistrations.Add(deregistration);
+            return () => acceptAllFunctions_.Remove(acceptAllFunction);
         }
 
-        public void EnableGlobalAcceptAll(Action<Message> acceptAllFunction)
+        public Action RegisterGlobalAcceptAll(Action<Message> acceptAllFunction)
         {
-            Validate.IsFalse(AcceptAll, $"Expected {nameof(AcceptAll)} to be false, but it was not :(");
-            LOG.Info("Enabling Accept-All mode for {0}", Owner);
-            AcceptAll = true;
-            acceptAllFunction_ = acceptAllFunction;
+            acceptAllFunctions_.Add(acceptAllFunction);
             Action deregistration = GlobalMessageBus.RegisterGlobal(this);
             Deregistrations.Add(deregistration);
+            return () => acceptAllFunctions_.Remove(acceptAllFunction);
         }
 
-        public void RegisterMessageHandler<T>(Action<T> messageHandler) where T : Message
+        public Action RegisterMessageHandler<T>(Action<T> messageHandler) where T : Message
         {
-            TypedHandler<T>.Handlers.Add(messageHandler);
+            TypedHandler<T> typedHandler = HandlerForType<T>();
+            typedHandler.Handlers.Add(messageHandler);
             Action deregistration = GlobalMessageBus.Register<T>(Owner, this);
-            TypedHandler<T>.Deregistration = deregistration;
+            typedHandler.Deregistration = deregistration;
             Deregistrations.Add(deregistration);
+
+            /* We don't want to unsubscribe the message handler from the global bus - we only want to deregister this specific action from type handling */
+            return () => typedHandler.Handlers.Remove(messageHandler);
         }
 
         public void Deregister<T>() where T : Message
         {
-            if(!TypedHandler<T>.Handlers.Any())
+            TypedHandler<T> typedHandler = HandlerForType<T>();
+            if(!typedHandler.Handlers.Any())
             {
                 LOG.Debug("Deregistering handler type {0} without any handlers", typeof(T));
             }
-            TypedHandler<T>.Handlers.Clear();
-            TypedHandler<T>.Deregistration.Invoke();
-            Deregistrations.Remove(TypedHandler<T>.Deregistration);
-            TypedHandler<T>.Deregistration = null;
+            typedHandler.Handlers.Clear();
+            typedHandler.Deregistration.Invoke();
+            Deregistrations.Remove(typedHandler.Deregistration);
+            typedHandler.Deregistration = null;
         }
 
         public void Deregister()
@@ -118,19 +112,21 @@ namespace DXGame.Core.Messaging
 
         public void HandleTypedMessage<T>(T message) where T : Message
         {
-            if(AcceptAll)
-            {
-                acceptAllFunction_.Invoke(message);
-            }
-            else
-            {
                 ActuallyHandleMessage(message);
+        }
+
+        public void HandleGlobalMessage(Message message)
+        {
+            foreach(Action<Message> messageHandler in acceptAllFunctions_)
+            {
+                messageHandler.Invoke(message);
             }
         }
 
         private void ActuallyHandleMessage<T>(T message) where T : Message
         {
-            foreach(Action<T> handler in TypedHandler<T>.Handlers)
+            TypedHandler<T> typedHandler = HandlerForType<T>();
+            foreach(Action<T> handler in typedHandler.Handlers)
             {
                 handler.Invoke(message);
             }

@@ -21,7 +21,11 @@ namespace DXGame.Core.Components.Advanced
 
         public FacingComponent()
         {
-            MessageHandler.RegisterMessageHandler<CommandMessage>(HandleCommandMessage);
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<CommandMessage>(HandleCommandMessage);
         }
 
         private void HandleCommandMessage(CommandMessage command)

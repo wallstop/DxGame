@@ -25,9 +25,14 @@ namespace DXGame.Core.State
         protected StateMachine(State initialState, Dictionary<UniqueId, State> statesById)
         {
             InitialState = initialState;
-            MessageHandler.EnableTargetedAcceptAll(HandleMessage);
             statesById_ = new ReadOnlyDictionary<UniqueId, State>(statesById);
             Reset();
+        }
+
+        public override void OnAttach()
+        {
+            RegisterTargetedAcceptAll(HandleMessage);
+            base.OnAttach();
         }
 
         private void HandleMessage(Message message)

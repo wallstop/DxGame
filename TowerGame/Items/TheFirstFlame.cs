@@ -32,7 +32,12 @@ namespace DXGame.TowerGame.Items
     {
         public TheFirstFlame()
         {
-            MessageHandler.RegisterMessageHandler<AttackBuilder>(HandleAttackBuilderRequest);
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<AttackBuilder>(HandleAttackBuilderRequest);
+            base.OnAttach();
         }
 
         protected void HandleAttackBuilderRequest(AttackBuilder attackBuilder)

@@ -37,6 +37,10 @@ namespace DXGame.Core.Components.Advanced.Damage
         {
             Validate.IsNotNull(deathEffect, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(DeathEffect)));
             deathEffect_ = deathEffect;
+        }
+
+        public override void OnAttach()
+        {
             RegisterMessageHandler<EntityDeathMessage>(HandleEntityDeath);
         }
 

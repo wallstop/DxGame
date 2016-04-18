@@ -42,8 +42,12 @@ namespace DXGame.Core
 
         private GameObject(List<Component> components)
         {
-            components_ = components;
+            components_ = new List<Component>();
             MessageHandler = new MessageHandler(Id);
+            foreach(Component component in components)
+            {
+                AttachComponent(component);
+            }
         }
 
         public bool Equals(GameObject other)
@@ -73,7 +77,9 @@ namespace DXGame.Core
             Validate.IsNotNull(component, StringUtils.GetFormattedNullOrDefaultMessage(this, component));
             Validate.IsFalse(components_.Contains(component),
                 $"Cannot add a {typeof(Component)} that already exists to a {typeof(GameObject)} ");
+            component.OnDetach();
             component.Parent = this;
+            component.OnAttach();
             components_.Add(component);
         }
 

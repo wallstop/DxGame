@@ -40,7 +40,11 @@ namespace DXGame.Core.Components.Advanced.Entities
             Validate.IsNotNullOrDefault(itemProduction,
                 StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(itemProduction)));
             ItemProduction = itemProduction;
-            MessageHandler.RegisterMessageHandler<EntityDeathMessage>(HandleEntityDeath);
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<EntityDeathMessage>(HandleEntityDeath);
         }
 
         protected virtual void HandleEntityDeath(EntityDeathMessage deathMessage)

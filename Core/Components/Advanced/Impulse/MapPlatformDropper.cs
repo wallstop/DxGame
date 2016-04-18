@@ -13,7 +13,11 @@ namespace DXGame.Core.Components.Advanced.Impulse
     {
         public MapPlatformDropper()
         {
-            MessageHandler.RegisterMessageHandler<CommandMessage>(HandleDownMovement);
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<CommandMessage>(HandleDownMovement);
         }
 
         public void HandleDownMovement(CommandMessage message)

@@ -30,7 +30,12 @@ namespace DXGame.Core.Components.Advanced.Command
         {
             UpdatePriority = UpdatePriority.HIGH;
             ResetState();
+        }
+
+        public override void OnAttach()
+        {
             RegisterMessageHandler<PathFindingRequest>(HandlePathFindingRequest);
+            base.OnAttach();
         }
 
         private void HandlePathFindingRequest(PathFindingRequest request)

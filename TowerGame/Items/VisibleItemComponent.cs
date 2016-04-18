@@ -46,7 +46,11 @@ namespace DXGame.TowerGame.Items
             Spatial = spatial;
             Activated = false;
             ItemComponentType = itemComponentType;
-            MessageHandler.RegisterMessageHandler<EnvironmentInteractionMessage>(ValidEnvironmentInteractionFilter);
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<EnvironmentInteractionMessage>(ValidEnvironmentInteractionFilter);
         }
 
         /* 

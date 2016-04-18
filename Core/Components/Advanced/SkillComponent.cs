@@ -35,14 +35,18 @@ namespace DXGame.Core.Components.Advanced
             Skills =
                 new ReadOnlyDictionary<Commandment, Skill>(skills.ToDictionary(skill => skill.Ability, skill => skill));
             commandMessages_ = new List<CommandMessage>();
-            MessageHandler.RegisterMessageHandler<CommandMessage>(HandleCommandMessage);
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<CommandMessage>(HandleCommandMessage);
         }
 
         private void HandleCommandMessage(CommandMessage commandMessage)
         {
             if(!Equals(commandMessage.Target, Parent.Id))
             {
-                
+                return;
             }
             commandMessages_.Add(commandMessage);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
@@ -52,8 +53,8 @@ namespace DXGame.Core.Events
             {
                 return timeComparison;
             }
-            int messageComparison = Message.Id.CompareTo(other.Message.Id);
-            return messageComparison;
+
+            return RuntimeHelpers.GetHashCode(this).CompareTo(RuntimeHelpers.GetHashCode(other));
         }
     }
 }

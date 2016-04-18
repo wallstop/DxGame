@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Entity;
@@ -65,6 +66,9 @@ namespace DXGame.Core.Components.Basic
         [DataMember]
         public GameObject Parent { get; set; }
 
+        [DataMember]
+        protected List<Action> DeregistrationHandles { get; set; } = new List<Action>(); 
+
         public virtual bool ShouldSerialize => true;
 
         protected Component()
@@ -81,7 +85,20 @@ namespace DXGame.Core.Components.Basic
 
         protected void RegisterMessageHandler<T>(Action<T> handler) where T: Message
         {
-            Parent.MessageHandler.RegisterMessageHandler(handler);
+            Action deregistration = Parent.MessageHandler.RegisterMessageHandler<T>(handler);
+            DeregistrationHandles.Add(deregistration);
+        }
+
+        protected void RegisterGlobalAcceptAll(Action<Message> handler)
+        {
+            Action deregistration = Parent.MessageHandler.RegisterGlobalAcceptAll(handler);
+            DeregistrationHandles.Add(deregistration);
+        }
+
+        protected void RegisterTargetedAcceptAll(Action<Message> handler)
+        {
+            Action deregistration = Parent.MessageHandler.RegisterTargetedAcceptAll(handler);
+            DeregistrationHandles.Add(deregistration);
         }
 
         [DataMember]
@@ -138,12 +155,15 @@ namespace DXGame.Core.Components.Basic
 
         public virtual void OnAttach()
         {
-            
         }
 
-        public virtual void OnDetach()
+        public void OnDetach()
         {
-            
+            foreach(Action deregistrationHandle in DeregistrationHandles)
+            {
+                deregistrationHandle.Invoke();
+            }
+            DeregistrationHandles.Clear();
         }
 
         public virtual void LoadContent() {}

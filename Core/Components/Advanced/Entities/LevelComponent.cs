@@ -30,10 +30,14 @@ namespace DXGame.Core.Components.Advanced.Entities
 
         public LevelComponent()
         {
-            MessageHandler.RegisterMessageHandler<ExperiencedReceivedMessage>(HandleExperienceReceivedMessage);
             Level = 0;
             CurrentExperience = 0;
             ExperienceToLevel = DetermineExperienceForNextLevel(Level);
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<ExperiencedReceivedMessage>(HandleExperienceReceivedMessage);
         }
 
         private void HandleExperienceReceivedMessage(ExperiencedReceivedMessage experienceReceived)

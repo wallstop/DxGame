@@ -31,7 +31,12 @@ namespace DXGame.Core.Components.Advanced.Physics
         protected MapCollidablePhysicsComponent(DxVector2 velocity, DxVector2 acceleration, SpatialComponent space,
             UpdatePriority updatePriority) : base(velocity, acceleration, space, updatePriority)
         {
-            MessageHandler.RegisterMessageHandler<DropThroughPlatformRequest>(HandleDropThroughPlatformRequest);
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<DropThroughPlatformRequest>(HandleDropThroughPlatformRequest);
+            base.OnAttach();
         }
 
         public new static MapCollidablePhysicsComponentBuilder Builder()

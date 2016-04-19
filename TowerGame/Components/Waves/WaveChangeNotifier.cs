@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
-using DXGame.Core.Components.Advanced.Triggers;
 using DXGame.Core.Components.Basic;
-using DXGame.Core.Events;
 using DXGame.Core.GraphicsWidgets;
-using DXGame.Core.Messaging;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using DXGame.Main;
@@ -32,25 +29,17 @@ namespace DXGame.TowerGame.Components.Waves
         [DataMember] private TimeSpan lastWaveNotification_;
 
         [NonSerialized] [IgnoreDataMember] private SpriteFont spriteFont_;
-        
+
         [DataMember]
         private TextComponent WaveText { get; set; }
-        
+
         [DataMember]
         private PositionalComponent Position { get; }
-        
-        [DataMember]
-        private EventObserver WaveMessageObserver { get; }
 
         private bool Active => DxGame.Instance.CurrentTime.TotalGameTime < lastWaveNotification_ + DISPLAY_TIME;
 
         public WaveChangeNotifier()
         {
-            WaveMessageObserver =
-                EventObserver.EventObserverBuilder()
-                    .WithAcceptance(CheckIsWaveNotification)
-                    .WithAction(HandleWaveNotificationEvent)
-                    .Build();
             Position = PositionalComponent.Builder().Build();
         }
 
@@ -60,29 +49,16 @@ namespace DXGame.TowerGame.Components.Waves
             base.OnAttach();
         }
 
-        public override void Initialize()
-        {
-            WaveMessageObserver.Initialize();
-            base.Initialize();
-        }
-
-        private bool CheckIsWaveNotification(Event gameEvent)
-        {
-            Message eventMessage = gameEvent.Message;
-            NewWaveMessage maybeNewWaveMessage = eventMessage as NewWaveMessage;
-            return !ReferenceEquals(maybeNewWaveMessage, null);
-        }
-
-        private void HandleWaveNotificationEvent(Event gameEvent)
-        {
-            Message eventMessage = gameEvent.Message;
-            NewWaveMessage newWaveMessage = eventMessage as NewWaveMessage;
-            HandleWaveNotification(newWaveMessage);
-        }
-
         private void HandleWaveNotification(NewWaveMessage newWaveMessage)
         {
             lastWaveNotification_ = newWaveMessage.TimeStamp;
+            if(ReferenceEquals(WaveText, null))
+            {
+                // Not initialized yet, ignore
+                // TODO: Come up with better lifetime management :(
+                return;
+            }
+
             WaveText.Text = WAVE_TEXT_BASE + newWaveMessage.WaveNumber;
 
             Vector2 textSize = spriteFont_.MeasureString(WaveText.Text);
@@ -125,7 +101,6 @@ namespace DXGame.TowerGame.Components.Waves
         public override void Remove()
         {
             Position.Remove();
-            WaveMessageObserver.Remove();
             WaveText.Remove();
             base.Remove();
         }

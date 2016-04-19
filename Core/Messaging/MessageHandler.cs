@@ -21,26 +21,27 @@ namespace DXGame.Core.Messaging
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
+        [DataContract]
+        [Serializable]
         internal class TypedHandler<T> where T : Message
         {
             public List<Action<T>> Handlers { get; } = new List<Action<T>>();
             public Action Deregistration { get; set; }
         }
 
-        [DataMember]
-        private Dictionary<Type, object> handlersByType_;
+        [DataMember] private Dictionary<Type, object> handlersByType_;
 
-        private TypedHandler<T> HandlerForType<T>() where T : Message
+        private static TypedHandler<T> HandlerForType<T>(Dictionary<Type, object> handlersByType) where T : Message
         {
             object existingTypedHandler;
             Type type = typeof(T);
-            if(handlersByType_.TryGetValue(type, out existingTypedHandler))
+            if(handlersByType.TryGetValue(type, out existingTypedHandler))
             {
                 return (TypedHandler<T>) existingTypedHandler;
             }
 
             TypedHandler<T> newTypedHandler = new TypedHandler<T>();
-            handlersByType_[type] = newTypedHandler;
+            handlersByType[type] = newTypedHandler;
             return newTypedHandler;
         }
 
@@ -51,6 +52,52 @@ namespace DXGame.Core.Messaging
         private UniqueId Owner { get; set; }
 
         [DataMember] private List<Action<Message>> acceptAllFunctions_;
+
+        [DataContract]
+        [Serializable]
+        internal sealed class AcceptAllDeregistration
+        {
+            [DataMember]
+            private Action<Message> Deregistration { get; set; }
+
+            [DataMember]
+            private List<Action<Message>> AcceptAllFunctions { get; set; }
+
+            public AcceptAllDeregistration(Action<Message> deregistration, List<Action<Message>> acceptAllFunctions)
+            {
+                Deregistration = deregistration;
+                AcceptAllFunctions = acceptAllFunctions;
+            }
+
+            public void Deregister()
+            {
+                AcceptAllFunctions.Remove(Deregistration);
+            }
+        }
+
+        [DataContract]
+        [Serializable]
+        internal sealed class TypedHandlerDeregistration<T> where T : Message
+        {
+            [DataMember]
+            private readonly Action<T> typedHandler_;
+
+            [DataMember]
+            private Dictionary<Type, object> HandlersByType { get; set; }
+
+            private Action<T> TypedHandler => typedHandler_;
+
+            public TypedHandlerDeregistration(Action<T> typedHandler, Dictionary<Type, object> handlersByType)
+            {
+                HandlersByType = handlersByType;
+                typedHandler_ = typedHandler;
+            }
+
+            public void Deregister()
+            {
+                HandlerForType<T>(HandlersByType).Handlers.Remove(TypedHandler);
+            }
+        }
 
         public MessageHandler(UniqueId ownerId)
         {
@@ -65,7 +112,7 @@ namespace DXGame.Core.Messaging
             acceptAllFunctions_.Add(acceptAllFunction);
             Action deregistration = GlobalMessageBus.RegisterTargetedGlobal(Owner, this);
             Deregistrations.Add(deregistration);
-            return () => acceptAllFunctions_.Remove(acceptAllFunction);
+            return new AcceptAllDeregistration(acceptAllFunction, acceptAllFunctions_).Deregister;
         }
 
         public Action RegisterGlobalAcceptAll(Action<Message> acceptAllFunction)
@@ -73,24 +120,24 @@ namespace DXGame.Core.Messaging
             acceptAllFunctions_.Add(acceptAllFunction);
             Action deregistration = GlobalMessageBus.RegisterGlobal(this);
             Deregistrations.Add(deregistration);
-            return () => acceptAllFunctions_.Remove(acceptAllFunction);
+            return new AcceptAllDeregistration(acceptAllFunction, acceptAllFunctions_).Deregister;
         }
 
         public Action RegisterMessageHandler<T>(Action<T> messageHandler) where T : Message
         {
-            TypedHandler<T> typedHandler = HandlerForType<T>();
+            TypedHandler<T> typedHandler = HandlerForType<T>(handlersByType_);
             typedHandler.Handlers.Add(messageHandler);
             Action deregistration = GlobalMessageBus.Register<T>(Owner, this);
             typedHandler.Deregistration = deregistration;
             Deregistrations.Add(deregistration);
 
             /* We don't want to unsubscribe the message handler from the global bus - we only want to deregister this specific action from type handling */
-            return () => typedHandler.Handlers.Remove(messageHandler);
+            return new TypedHandlerDeregistration<T>(messageHandler, handlersByType_).Deregister;
         }
 
         public void Deregister<T>() where T : Message
         {
-            TypedHandler<T> typedHandler = HandlerForType<T>();
+            TypedHandler<T> typedHandler = HandlerForType<T>(handlersByType_);
             if(!typedHandler.Handlers.Any())
             {
                 LOG.Debug("Deregistering handler type {0} without any handlers", typeof(T));
@@ -112,7 +159,7 @@ namespace DXGame.Core.Messaging
 
         public void HandleTypedMessage<T>(T message) where T : Message
         {
-                ActuallyHandleMessage(message);
+            ActuallyHandleMessage(message);
         }
 
         public void HandleGlobalMessage(Message message)
@@ -125,7 +172,7 @@ namespace DXGame.Core.Messaging
 
         private void ActuallyHandleMessage<T>(T message) where T : Message
         {
-            TypedHandler<T> typedHandler = HandlerForType<T>();
+            TypedHandler<T> typedHandler = HandlerForType<T>(handlersByType_);
             foreach(Action<T> handler in typedHandler.Handlers)
             {
                 handler.Invoke(message);

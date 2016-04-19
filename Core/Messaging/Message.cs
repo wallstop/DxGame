@@ -18,9 +18,7 @@ namespace DXGame.Core.Messaging
     {
         [DataMember]
         public TimeSpan TimeStamp { get; set; }
-
-        public virtual bool Global => false;
-
+        
         public static Message EmptyMessage { get; set; } = new Message(TimeSpan.Zero);
 
         protected Message() : this(DxGame.Instance.CurrentTime.TotalGameTime) {}

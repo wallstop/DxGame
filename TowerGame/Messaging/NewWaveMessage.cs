@@ -18,8 +18,6 @@ namespace DXGame.TowerGame.Messaging
         [DataMember]
         public int WaveNumber { get; }
 
-        public override bool Global => true;
-
         public NewWaveMessage(int waveNumber)
         {
             Validate.IsTrue(waveNumber > 0, $"Expected {nameof(waveNumber)} to be positive, but was {waveNumber}");

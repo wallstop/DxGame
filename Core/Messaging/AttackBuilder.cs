@@ -21,8 +21,6 @@ namespace DXGame.Core.Messaging
 
         [DataMember] public ReadOnlyCollection<IShape> AttackAreas { get; set; } 
 
-        public override bool Global => false;
-
         public AttackBuilder(GameObject source, List<IShape> attackAreas)
         {
             Validate.IsNotNullOrDefault(source, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(source)));

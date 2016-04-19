@@ -50,6 +50,21 @@ namespace DXGame.Core.Messaging.Entity
             return !ReferenceEquals(spawnedGameObject_, null);
         }
 
-        public override bool Global => false;
+        public override string ToString()
+        {
+            Component component;
+            if(TryGetSpawnedEntity(out component))
+            {
+                return component.ToString();
+            }
+
+            GameObject gameObject;
+            if(TryGetSpawnedEntity(out gameObject))
+            {
+                return gameObject.ToString();
+            }
+
+            return base.ToString();
+        }
     }
 }

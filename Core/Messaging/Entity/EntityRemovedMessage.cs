@@ -37,7 +37,5 @@ namespace DXGame.Core.Messaging.Entity
             removedGameObject = removedGameObject_;
             return !ReferenceEquals(removedGameObject, null);
         }
-
-        public override bool Global => true;
     }
 }

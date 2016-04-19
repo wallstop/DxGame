@@ -47,6 +47,11 @@ namespace DXGame.Core.Components.Advanced.Triggers
             }
         }
 
+        public void Uninitialize()
+        {
+            // TODO
+        }
+
         public static Builder EventObserverBuilder()
         {
             return new Builder();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using NLog;
 
@@ -17,13 +18,74 @@ namespace DXGame.Core.Messaging
                 new Dictionary<UniqueId, MessageHandler>();
         }
 
-        private static Dictionary<UniqueId, MessageHandler> UntargetedSinks { get; } = new Dictionary<UniqueId, MessageHandler>();
+        [Serializable]
+        [DataContract]
+        internal sealed class SerializableDeregistration<T> where T : Message
+        {
+            [DataMember]
+            private UniqueId Target { get; set; }
+
+            public SerializableDeregistration(UniqueId target)
+            {
+                Target = target;
+            }
+
+            public void Deregister()
+            {
+                Dictionary<UniqueId, MessageHandler> targetedHandlers = TargetedHandlers<T>();
+                MessageHandler messageHandler;
+                if(targetedHandlers.TryGetValue(Target, out messageHandler))
+                {
+                    Handler<T>().Remove(messageHandler);
+                }
+                targetedHandlers.Remove(Target);
+            }
+        }
+
+        [Serializable]
+        [DataContract]
+        internal sealed class SerializableUntypedTargetedDeregistration
+        {
+            [DataMember]
+            private UniqueId Target { get; set; }
+
+            public SerializableUntypedTargetedDeregistration(UniqueId target)
+            {
+                Target = target;
+            }
+
+            public void DeregisterUntypedTargeted()
+            {
+                UntypedTargetedSinks.Remove(Target);
+            }
+        }
+
+        [Serializable]
+        [DataContract]
+        internal sealed class SerializableUntypedGlobalDeregistration
+        {
+            [DataMember]
+            private MessageHandler Handler { get; set; }
+
+            public SerializableUntypedGlobalDeregistration(MessageHandler handler)
+            {
+                Handler = handler;
+            }
+
+            public void DeregisterUntypedGlobal()
+            {
+                GlobalSinks.Remove(Handler);
+            }
+        }
+
+        private static Dictionary<UniqueId, MessageHandler> UntypedTargetedSinks { get; } = new Dictionary<UniqueId, MessageHandler>();
         private static HashSet<MessageHandler> GlobalSinks { get; } = new HashSet<MessageHandler>();
 
         private static HashSet<MessageHandler> Handler<T>() where T : Message
         {
             return SpecializedHandler<T>.Sinks;
         }
+
 
         private static Dictionary<UniqueId, MessageHandler> TargetedHandlers<T>() where T : Message
         {
@@ -37,7 +99,7 @@ namespace DXGame.Core.Messaging
 
         private static bool UntargetedHandler(UniqueId target, out MessageHandler handler)
         {
-            return UntargetedSinks.TryGetValue(target, out handler);
+            return UntypedTargetedSinks.TryGetValue(target, out handler);
         }
 
         public static void UntypedBroadcast(Message message)
@@ -61,23 +123,27 @@ namespace DXGame.Core.Messaging
 
             Dictionary<UniqueId, MessageHandler> targetedHandlers = TargetedHandlers<T>();
             targetedHandlers[handlerOwnerId] = messageHandler;
-            return () =>
-            {
-                handlersForType.Remove(messageHandler);
-                targetedHandlers.Remove(handlerOwnerId);
-            };
+
+            return new SerializableDeregistration<T>(handlerOwnerId).Deregister;
         }
 
+        /* TODO: This naming convention is garbage, please redo. No one is going to understand what any of this crap means */
+
+        /**
+            <summary>
+                Registers an untyped message handler for all messages that are for the specified target
+            </summary>   
+        */
         public static Action RegisterTargetedGlobal(UniqueId handlerOwnerId, MessageHandler messageHandler)
         {
-            UntargetedSinks[handlerOwnerId] = messageHandler;
-            return () => UntargetedSinks.Remove(handlerOwnerId);
+            UntypedTargetedSinks[handlerOwnerId] = messageHandler;
+            return new SerializableUntypedTargetedDeregistration(handlerOwnerId).DeregisterUntypedTargeted;
         }
 
         public static Action RegisterGlobal(MessageHandler messageHandler)
         {
             GlobalSinks.Add(messageHandler);
-            return () => GlobalSinks.Remove(messageHandler);
+            return new SerializableUntypedGlobalDeregistration(messageHandler).DeregisterUntypedGlobal;
         }
 
         public static void TypedBroadcast<T>(T typedMessage) where T : Message
@@ -119,7 +185,6 @@ namespace DXGame.Core.Messaging
             if(UntargetedHandler(target, out handler))
             {
                 handler.HandleGlobalMessage(typedAndTargetedMessage);
-                //return;
             }
 
             /* Re-use existing handler */

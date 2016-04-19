@@ -85,6 +85,22 @@ namespace DXGame.Core.Models
             listeners_.Add(new WeakReference<EventListener>(listener));
         }
 
+        public void RemoveEventListener(EventListener listener)
+        {
+            listeners_.RemoveAll(weakRef =>
+            {
+                EventListener referencedListener;
+                if(weakRef.TryGetTarget(out referencedListener))
+                {
+                    if(ReferenceEquals(listener, referencedListener))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
+
         /**
 
             <summary>

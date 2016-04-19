@@ -47,19 +47,22 @@ namespace DXGame.Core.Components.Network
             foreach(KeyValuePair<NetConnection, ClientEventTracker> connectionEventTrackingPair in ClientFrameStates)
             {
                 List<Message> events = connectionEventTrackingPair.Value.ServerEventTracker.RetrieveEvents();
-                events.RemoveAll(message =>
+
+                int removedCount = events.RemoveAll(message =>
                 {
                     try
                     {
                         Serializer<Message>.BinarySerialize(message);
                         return false;
                     }
-                    catch(Exception)
+                    catch(Exception e)
                     {
                         // TODO: This is shitty and bad, do something else
+                        LOG.Error(e, "Failed to process {0}", message);
                         return true;
                     }
                 });
+                LOG.Info("Failed to process {0} messages, {1} remaining", removedCount, events.Count());
                 EventStream eventStream = new EventStream(events);
                 NetOutgoingMessage outgoingMessage = eventStream.ToNetOutgoingMessage(ServerConnection);
                 ServerConnection.SendMessage(outgoingMessage, connectionEventTrackingPair.Key,

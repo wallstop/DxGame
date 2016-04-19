@@ -46,10 +46,10 @@ namespace DXGame.Core.Network
         public ServerEventTracker()
         {
             events_ = new List<Message>();
-            Handler.RegisterGlobalAcceptAll(HandleMessage);
-            clientSpecificMessages_ = new List<NetworkMessage>();
             trackerId_ = new UniqueId();
             Handler = new MessageHandler(trackerId_);
+            Handler.RegisterGlobalAcceptAll(HandleMessage);
+            clientSpecificMessages_ = new List<NetworkMessage>();
         }
 
         public ServerEventTracker(ServerEventTracker copy)
@@ -57,9 +57,9 @@ namespace DXGame.Core.Network
             Validate.IsNotNullOrDefault(copy, StringUtils.GetFormattedNullOrDefaultMessage(this, copy));
             events_ = copy.events_.ToList();
             clientSpecificMessages_ = new List<NetworkMessage>();
-            Handler.RegisterGlobalAcceptAll(HandleMessage);
             trackerId_ = new UniqueId();
             Handler = new MessageHandler(trackerId_);
+            Handler.RegisterGlobalAcceptAll(HandleMessage);
         }
 
         private void HandleMessage(Message message)

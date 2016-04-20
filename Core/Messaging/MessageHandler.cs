@@ -21,6 +21,9 @@ namespace DXGame.Core.Messaging
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
+        [DataMember]
+        public bool RegisterGlobally { get; set; } = true;
+
         [DataContract]
         [Serializable]
         internal class TypedHandler<T> where T : Message
@@ -33,6 +36,10 @@ namespace DXGame.Core.Messaging
 
         private static TypedHandler<T> HandlerForType<T>(Dictionary<Type, object> handlersByType) where T : Message
         {
+            /* 
+                TODO: Move to explicit mapping creation, right now, every time we handle a different message type, 
+                we create a mapping on demand. Might be ok, but it never hurts to be extra sure :^)
+            */
             object existingTypedHandler;
             Type type = typeof(T);
             if(handlersByType.TryGetValue(type, out existingTypedHandler))
@@ -110,16 +117,22 @@ namespace DXGame.Core.Messaging
         public Action RegisterTargetedAcceptAll(Action<Message> acceptAllFunction)
         {
             acceptAllFunctions_.Add(acceptAllFunction);
-            Action deregistration = GlobalMessageBus.RegisterTargetedGlobal(Owner, this);
-            Deregistrations.Add(deregistration);
+            if(RegisterGlobally)
+            {
+                Action deregistration = GlobalMessageBus.RegisterTargetedGlobal(Owner, this);
+                Deregistrations.Add(deregistration);
+            }
             return new AcceptAllDeregistration(acceptAllFunction, acceptAllFunctions_).Deregister;
         }
 
         public Action RegisterGlobalAcceptAll(Action<Message> acceptAllFunction)
         {
             acceptAllFunctions_.Add(acceptAllFunction);
-            Action deregistration = GlobalMessageBus.RegisterGlobal(this);
-            Deregistrations.Add(deregistration);
+            if(RegisterGlobally)
+            {
+                Action deregistration = GlobalMessageBus.RegisterGlobal(this);
+                Deregistrations.Add(deregistration);
+            }
             return new AcceptAllDeregistration(acceptAllFunction, acceptAllFunctions_).Deregister;
         }
 
@@ -127,9 +140,12 @@ namespace DXGame.Core.Messaging
         {
             TypedHandler<T> typedHandler = HandlerForType<T>(handlersByType_);
             typedHandler.Handlers.Add(messageHandler);
-            Action deregistration = GlobalMessageBus.Register<T>(Owner, this);
-            typedHandler.Deregistration = deregistration;
-            Deregistrations.Add(deregistration);
+            if(RegisterGlobally)
+            {
+                Action deregistration = GlobalMessageBus.Register<T>(Owner, this);
+                typedHandler.Deregistration = deregistration;
+                Deregistrations.Add(deregistration);
+            }
 
             /* We don't want to unsubscribe the message handler from the global bus - we only want to deregister this specific action from type handling */
             return new TypedHandlerDeregistration<T>(messageHandler, handlersByType_).Deregister;
@@ -143,7 +159,7 @@ namespace DXGame.Core.Messaging
                 LOG.Debug("Deregistering handler type {0} without any handlers", typeof(T));
             }
             typedHandler.Handlers.Clear();
-            typedHandler.Deregistration.Invoke();
+            typedHandler.Deregistration?.Invoke();
             Deregistrations.Remove(typedHandler.Deregistration);
             typedHandler.Deregistration = null;
         }
@@ -152,7 +168,7 @@ namespace DXGame.Core.Messaging
         {
             foreach(Action deregistration in Deregistrations)
             {
-                deregistration.Invoke();
+                deregistration?.Invoke();
             }
             Deregistrations.Clear();
         }
@@ -162,7 +178,7 @@ namespace DXGame.Core.Messaging
             ActuallyHandleMessage(message);
         }
 
-        public void HandleGlobalMessage(Message message)
+        public void HandleUntypedMessage(Message message)
         {
             foreach(Action<Message> messageHandler in acceptAllFunctions_)
             {

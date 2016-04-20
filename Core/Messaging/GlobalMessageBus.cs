@@ -86,7 +86,6 @@ namespace DXGame.Core.Messaging
             return SpecializedHandler<T>.Sinks;
         }
 
-
         private static Dictionary<UniqueId, MessageHandler> TargetedHandlers<T>() where T : Message
         {
             return SpecializedHandler<T>.TargetedSinks;
@@ -118,11 +117,24 @@ namespace DXGame.Core.Messaging
             Validate.IsNotNullOrDefault(handlerOwnerId);
             Validate.IsNotNullOrDefault(messageHandler);
 
+            Dictionary<UniqueId, MessageHandler> targetedHandlers = TargetedHandlers<T>();
+            if(targetedHandlers.ContainsKey(handlerOwnerId))
+            {
+                if(ReferenceEquals(targetedHandlers[handlerOwnerId], messageHandler))
+                {
+                    LOG.Info("Ignoring double registration of {0}", handlerOwnerId);
+                }
+                else
+                {
+                    LOG.Warn("Ignoring double registration of {0} with different handlers (is this intentional? Likely a bug)", handlerOwnerId);
+                }
+                return new SerializableDeregistration<T>(handlerOwnerId).Deregister;
+            }
+
+            targetedHandlers[handlerOwnerId] = messageHandler;
+
             HashSet<MessageHandler> handlersForType = Handler<T>();
             handlersForType.Add(messageHandler);
-
-            Dictionary<UniqueId, MessageHandler> targetedHandlers = TargetedHandlers<T>();
-            targetedHandlers[handlerOwnerId] = messageHandler;
 
             return new SerializableDeregistration<T>(handlerOwnerId).Deregister;
         }
@@ -136,6 +148,12 @@ namespace DXGame.Core.Messaging
         */
         public static Action RegisterTargetedGlobal(UniqueId handlerOwnerId, MessageHandler messageHandler)
         {
+            if(UntypedTargetedSinks.ContainsKey(handlerOwnerId))
+            {
+                LOG.Info("Ignoring double targeted global registration of {0}", handlerOwnerId);
+                return new SerializableUntypedTargetedDeregistration(handlerOwnerId).DeregisterUntypedTargeted;
+            }
+
             UntypedTargetedSinks[handlerOwnerId] = messageHandler;
             return new SerializableUntypedTargetedDeregistration(handlerOwnerId).DeregisterUntypedTargeted;
         }
@@ -167,7 +185,7 @@ namespace DXGame.Core.Messaging
             }
             foreach(MessageHandler handler in GlobalSinks)
             {
-                handler.HandleGlobalMessage(typedMessage);
+                handler.HandleUntypedMessage(typedMessage);
             }
         }
 
@@ -175,7 +193,7 @@ namespace DXGame.Core.Messaging
         {
             foreach(MessageHandler handler in GlobalSinks)
             {
-                handler.HandleGlobalMessage(typedMessage);
+                handler.HandleUntypedMessage(typedMessage);
             }
         }
 
@@ -184,7 +202,7 @@ namespace DXGame.Core.Messaging
             MessageHandler handler;
             if(UntargetedHandler(target, out handler))
             {
-                handler.HandleGlobalMessage(typedAndTargetedMessage);
+                handler.HandleUntypedMessage(typedAndTargetedMessage);
             }
 
             /* Re-use existing handler */

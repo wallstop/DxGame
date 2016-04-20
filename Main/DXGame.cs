@@ -89,6 +89,8 @@ namespace DXGame.Main
                     return new DxRectangle(Screen);
                 }
 
+                // TODO: Pump out exclusively to camera model
+
                 float x = Screen.Width / 2.0f - cameraModel.Position.X;
                 x = MathHelper.Clamp(x,
                     Math.Max(float.MinValue, -(mapModel.MapBounds.X + mapModel.MapBounds.Width - Screen.Width)),

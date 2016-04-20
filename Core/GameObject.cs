@@ -7,6 +7,8 @@ using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
+using NLog;
+using NLog.Fluent;
 
 namespace DXGame.Core
 {
@@ -26,6 +28,8 @@ namespace DXGame.Core
     [DataContract]
     public sealed class GameObject : IIdentifiable, IEquatable<GameObject>, IProcessable, ICreatable, IRemovable
     {
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
         // DataMembers can't be readonly :(
         [DataMember] private List<Component> components_;
         [DataMember] private UniqueId id_ = new UniqueId();
@@ -74,9 +78,19 @@ namespace DXGame.Core
             {
                 return;
             }
-            Validate.IsNotNull(component, StringUtils.GetFormattedNullOrDefaultMessage(this, component));
-            Validate.IsFalse(components_.Contains(component),
-                $"Cannot add a {typeof(Component)} that already exists to a {typeof(GameObject)} ");
+
+            if(ReferenceEquals(component, null))
+            {
+                LOG.Info("Ignoring null component attach");
+                return;
+            }
+
+            if(components_.Contains(component))
+            {
+                LOG.Info($"Ignoring attach of {typeof(Component)} that already exists on {this}");
+                return;
+            }
+
             component.OnDetach();
             component.Parent = this;
             component.OnAttach();

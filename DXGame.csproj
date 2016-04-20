@@ -140,6 +140,7 @@
     <Compile Include="Core\Components\Advanced\Map\MapTransition.cs" />
     <Compile Include="Core\Components\Advanced\Physics\UnforcablePhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\Player\PlayerNameComponent.cs" />
+    <Compile Include="Core\Components\Advanced\ShadowComponent.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\TriggeredActionComponent.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\EventObserver.cs" />
     <Compile Include="Core\Components\Advanced\Triggers\TriggerComponent.cs" />

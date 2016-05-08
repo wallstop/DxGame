@@ -7,8 +7,6 @@ namespace DXGame.Core.Messaging
     /**
         <summary>
             Simple base class for all of your messaging needs :^)
-
-            TODO: Make interface? Abstract? Core... message ...methods? This isn't ideal.
         </summary>
     */
 
@@ -17,15 +15,19 @@ namespace DXGame.Core.Messaging
     public class Message
     {
         [DataMember]
-        public TimeSpan TimeStamp { get; set; }
+        public TimeSpan TimeStamp { get; private set; }
+
+        [DataMember]
+        public Guid GameId { get; private set; }
         
-        public static Message EmptyMessage { get; set; } = new Message(TimeSpan.Zero);
+        public static Message EmptyMessage { get; set; } = new Message(TimeSpan.Zero, Guid.Empty);
 
-        protected Message() : this(DxGame.Instance.CurrentTime.TotalGameTime) {}
+        protected Message() : this(DxGame.Instance.CurrentTime.TotalGameTime, DxGame.Instance.GameGuid) {}
 
-        protected Message(TimeSpan timeSpan)
+        protected Message(TimeSpan timeSpan, Guid gameId)
         {
             TimeStamp = timeSpan;
+            GameId = gameId;
         }
 
         public static void EmitTyped<T>(T message) where T : Message

@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DXGame.Core;
-using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
-using DXGame.Core.Lerp;
 using DXGame.Core.Menus;
 using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Entity;
@@ -58,6 +56,8 @@ namespace DXGame.Main
         private static readonly TimeSpan MINIMUM_FRAMERATE = TimeSpan.FromSeconds(1 / 10000.0);
         public GameElementCollection NewGameElements { get; } = new GameElementCollection();
         public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
+
+        public Guid GameGuid { get; }  
 
         public DxGameTime CurrentTime { get; private set; } = new DxGameTime();
 
@@ -134,6 +134,7 @@ namespace DXGame.Main
             Content.RootDirectory = "Content";
 
             GameId = new UniqueId();
+            GameGuid = Guid.NewGuid();
 
             MessageHandler = new MessageHandler(GameId);
             MessageHandler.RegisterMessageHandler<EntityCreatedMessage>(HandleEntityCreatedMessage);

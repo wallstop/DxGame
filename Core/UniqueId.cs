@@ -48,7 +48,7 @@ namespace DXGame.Core
 
         public bool Equals(UniqueId other)
         {
-            return CompareTo(other) == 0;
+            return id_.Equals(other?.id_);
         }
 
         public bool IsValid()
@@ -60,7 +60,7 @@ namespace DXGame.Core
         {
             return CompareTo(other) == 0;
         }
-
+ 
         public override int GetHashCode()
         {
             if(hashCode_ == 0)

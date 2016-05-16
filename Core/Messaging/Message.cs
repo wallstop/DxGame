@@ -18,13 +18,13 @@ namespace DXGame.Core.Messaging
         public TimeSpan TimeStamp { get; private set; }
 
         [DataMember]
-        public Guid GameId { get; private set; }
+        public GameId GameId { get; private set; }
         
-        public static Message EmptyMessage { get; set; } = new Message(TimeSpan.Zero, Guid.Empty);
+        public static Message EmptyMessage { get; set; } = new Message(TimeSpan.Zero, GameId.Empty);
 
         protected Message() : this(DxGame.Instance.CurrentTime.TotalGameTime, DxGame.Instance.GameGuid) {}
 
-        protected Message(TimeSpan timeSpan, Guid gameId)
+        protected Message(TimeSpan timeSpan, GameId gameId)
         {
             TimeStamp = timeSpan;
             GameId = gameId;

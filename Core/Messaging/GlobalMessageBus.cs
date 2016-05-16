@@ -118,9 +118,23 @@ namespace DXGame.Core.Messaging
             Validate.IsNotNullOrDefault(messageHandler);
 
             Dictionary<UniqueId, MessageHandler> targetedHandlers = TargetedHandlers<T>();
-            if(targetedHandlers.ContainsKey(handlerOwnerId))
+            MessageHandler existingHandler;
+            if(!targetedHandlers.TryGetValue(handlerOwnerId, out existingHandler))
             {
-                if(ReferenceEquals(targetedHandlers[handlerOwnerId], messageHandler))
+                targetedHandlers[handlerOwnerId] = messageHandler;
+
+            }
+            else if(!ReferenceEquals(existingHandler, messageHandler))
+            {
+                LOG.Warn(
+                    "Ignoring double registration of {0} with different handlers (is this intentional? Likely a bug)",
+                    handlerOwnerId);
+                return new SerializableDeregistration<T>(handlerOwnerId).Deregister;
+            }
+
+            /*
+
+                            if(ReferenceEquals(targetedHandlers[handlerOwnerId], messageHandler))
                 {
                     LOG.Info("Ignoring double registration of {0}", handlerOwnerId);
                 }
@@ -129,23 +143,26 @@ namespace DXGame.Core.Messaging
                     LOG.Warn("Ignoring double registration of {0} with different handlers (is this intentional? Likely a bug)", handlerOwnerId);
                 }
                 return new SerializableDeregistration<T>(handlerOwnerId).Deregister;
-            }
 
-            targetedHandlers[handlerOwnerId] = messageHandler;
+            */
 
             HashSet<MessageHandler> handlersForType = Handler<T>();
-            handlersForType.Add(messageHandler);
+            bool newRegistration = handlersForType.Add(messageHandler);
+            if(!newRegistration)
+            {
+                LOG.Debug("Received double registration of {0} for {1}", typeof(T), handlerOwnerId);
+            }
 
             return new SerializableDeregistration<T>(handlerOwnerId).Deregister;
         }
 
         /* TODO: This naming convention is garbage, please redo. No one is going to understand what any of this crap means */
 
-        /**
-            <summary>
-                Registers an untyped message handler for all messages that are for the specified target
-            </summary>   
-        */
+            /**
+                <summary>
+                    Registers an untyped message handler for all messages that are for the specified target
+                </summary>   
+            */
         public static Action RegisterTargetedGlobal(UniqueId handlerOwnerId, MessageHandler messageHandler)
         {
             if(UntypedTargetedSinks.ContainsKey(handlerOwnerId))
@@ -183,10 +200,7 @@ namespace DXGame.Core.Messaging
             {
                 handler.HandleTypedMessage(typedMessage);
             }
-            foreach(MessageHandler handler in GlobalSinks)
-            {
-                handler.HandleUntypedMessage(typedMessage);
-            }
+            BroadcastGlobal<T>(typedMessage);
         }
 
         private static void BroadcastGlobal<T>(T typedMessage) where T : Message

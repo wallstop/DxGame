@@ -8,7 +8,6 @@ using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using NLog;
-using NLog.Fluent;
 
 namespace DXGame.Core
 {

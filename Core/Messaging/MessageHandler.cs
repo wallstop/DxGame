@@ -12,7 +12,6 @@ namespace DXGame.Core.Messaging
             Abstraction layer for immediate-mode Message passing. An instance of this handles all
             kinds of types to trigger functions that are registered with it.
         </summary>
-
     */
 
     [Serializable]
@@ -29,10 +28,13 @@ namespace DXGame.Core.Messaging
         internal class TypedHandler<T> where T : Message
         {
             public List<Action<T>> Handlers { get; } = new List<Action<T>>();
+            public Action Registration { get; set; }
             public Action Deregistration { get; set; }
         }
 
         [DataMember] private Dictionary<Type, object> handlersByType_;
+
+        [DataMember] private GameId boundGameId_;
 
         private static TypedHandler<T> HandlerForType<T>(Dictionary<Type, object> handlersByType) where T : Message
         {
@@ -59,28 +61,6 @@ namespace DXGame.Core.Messaging
         private UniqueId Owner { get; set; }
 
         [DataMember] private List<Action<Message>> acceptAllFunctions_;
-
-        [DataContract]
-        [Serializable]
-        internal sealed class AcceptAllDeregistration
-        {
-            [DataMember]
-            private Action<Message> Deregistration { get; set; }
-
-            [DataMember]
-            private List<Action<Message>> AcceptAllFunctions { get; set; }
-
-            public AcceptAllDeregistration(Action<Message> deregistration, List<Action<Message>> acceptAllFunctions)
-            {
-                Deregistration = deregistration;
-                AcceptAllFunctions = acceptAllFunctions;
-            }
-
-            public void Deregister()
-            {
-                AcceptAllFunctions.Remove(Deregistration);
-            }
-        }
 
         [DataContract]
         [Serializable]
@@ -112,6 +92,27 @@ namespace DXGame.Core.Messaging
             Owner = ownerId;
             acceptAllFunctions_ = new List<Action<Message>>();
             handlersByType_ = new Dictionary<Type, object>();
+        }
+
+        /**
+            Binds this MessageHandler to a specific Game Id. Messages that originates from any other GameId will be ignored. MessageHandlers can only be bound once.
+        */
+        public void BindToGame(GameId game)
+        {
+            Validate.IsNotNullOrDefault(game, $"Cannot bind a {nameof(MessageHandler)} to a null GameId");
+            Validate.IsNull(boundGameId_, $"Cannot re-bind a {nameof(MessageHandler)} (already bound to {boundGameId_})");
+            boundGameId_ = game;
+        }
+
+        private bool ShouldPropogate<T>(T message) where T : Message
+        {
+            if(ReferenceEquals(boundGameId_, null))
+            {
+                return true;
+            }
+
+            GameId messageSource = message.GameId;
+            return boundGameId_.Equals(messageSource);
         }
 
         public Action RegisterTargetedAcceptAll(Action<Message> acceptAllFunction)
@@ -175,11 +176,21 @@ namespace DXGame.Core.Messaging
 
         public void HandleTypedMessage<T>(T message) where T : Message
         {
+            if(!ShouldPropogate(message))
+            {
+                return;
+            }
+
             ActuallyHandleMessage(message);
         }
 
         public void HandleUntypedMessage(Message message)
         {
+            if(!ShouldPropogate(message))
+            {
+                return;
+            }
+
             foreach(Action<Message> messageHandler in acceptAllFunctions_)
             {
                 messageHandler.Invoke(message);
@@ -193,6 +204,28 @@ namespace DXGame.Core.Messaging
             {
                 handler.Invoke(message);
             }
+        }
+    }
+
+    [DataContract]
+    [Serializable]
+    internal sealed class AcceptAllDeregistration
+    {
+        [DataMember]
+        private Action<Message> Deregistration { get; set; }
+
+        [DataMember]
+        private List<Action<Message>> AcceptAllFunctions { get; set; }
+
+        public AcceptAllDeregistration(Action<Message> deregistration, List<Action<Message>> acceptAllFunctions)
+        {
+            Deregistration = deregistration;
+            AcceptAllFunctions = acceptAllFunctions;
+        }
+
+        public void Deregister()
+        {
+            AcceptAllFunctions.Remove(Deregistration);
         }
     }
 }

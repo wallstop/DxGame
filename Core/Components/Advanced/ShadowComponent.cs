@@ -22,6 +22,7 @@ namespace DXGame.Core.Components.Advanced
             // TODO: Setup the on-attachment shit
             ShadowCopy = copy;
             RegisterTargetedAcceptAll(HandleShadowMessage);
+            BindToLocalGame();
             base.OnAttach();
         }
 

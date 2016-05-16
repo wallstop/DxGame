@@ -150,6 +150,7 @@
     <Compile Include="Core\Events\Event.cs" />
     <Compile Include="Core\Events\EventListener.cs" />
     <Compile Include="Core\Experience\Experience.cs" />
+    <Compile Include="Core\GameId.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\PlayerLevelIndicator.cs" />
     <Compile Include="Core\GraphicsWidgets\TextComponent.cs" />
     <Compile Include="Core\ICreatable.cs" />

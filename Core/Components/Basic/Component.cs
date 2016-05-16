@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
+using DXGame.Main;
 using NLog;
 
 namespace DXGame.Core.Components.Basic
@@ -99,6 +100,11 @@ namespace DXGame.Core.Components.Basic
         {
             Action deregistration = Parent.MessageHandler.RegisterTargetedAcceptAll(handler);
             DeregistrationHandles.Add(deregistration);
+        }
+
+        protected void BindToLocalGame()
+        {
+            Parent.MessageHandler.BindToGame(DxGame.Instance.GameGuid);
         }
 
         [DataMember]

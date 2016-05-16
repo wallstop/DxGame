@@ -57,7 +57,7 @@ namespace DXGame.Main
         public GameElementCollection NewGameElements { get; } = new GameElementCollection();
         public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
 
-        public Guid GameGuid { get; }  
+        public GameId GameGuid { get; private set; }  
 
         public DxGameTime CurrentTime { get; private set; } = new DxGameTime();
 
@@ -134,7 +134,7 @@ namespace DXGame.Main
             Content.RootDirectory = "Content";
 
             GameId = new UniqueId();
-            GameGuid = Guid.NewGuid();
+            GameGuid = new GameId();
 
             MessageHandler = new MessageHandler(GameId);
             MessageHandler.RegisterMessageHandler<EntityCreatedMessage>(HandleEntityCreatedMessage);

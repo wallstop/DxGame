@@ -132,20 +132,6 @@ namespace DXGame.Core.Messaging
                 return new SerializableDeregistration<T>(handlerOwnerId).Deregister;
             }
 
-            /*
-
-                            if(ReferenceEquals(targetedHandlers[handlerOwnerId], messageHandler))
-                {
-                    LOG.Info("Ignoring double registration of {0}", handlerOwnerId);
-                }
-                else
-                {
-                    LOG.Warn("Ignoring double registration of {0} with different handlers (is this intentional? Likely a bug)", handlerOwnerId);
-                }
-                return new SerializableDeregistration<T>(handlerOwnerId).Deregister;
-
-            */
-
             HashSet<MessageHandler> handlersForType = Handler<T>();
             bool newRegistration = handlersForType.Add(messageHandler);
             if(!newRegistration)

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
-
-namespace DXGame.Core.Messaging
+﻿namespace DXGame.Core.Messaging
 {
     public interface ITargetedMessage
     {

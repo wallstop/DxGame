@@ -36,6 +36,8 @@ namespace DXGame.Core.Messaging
 
         [DataMember] private GameId boundGameId_;
 
+        [DataMember] private Action<Message> wrongGameRejectionFunction_;
+
         private static TypedHandler<T> HandlerForType<T>(Dictionary<Type, object> handlersByType) where T : Message
         {
             /* 
@@ -97,11 +99,12 @@ namespace DXGame.Core.Messaging
         /**
             Binds this MessageHandler to a specific Game Id. Messages that originates from any other GameId will be ignored. MessageHandlers can only be bound once.
         */
-        public void BindToGame(GameId game)
+        public void BindToGame(GameId game, Action<Message> rejectionFunction)
         {
             Validate.IsNotNullOrDefault(game, $"Cannot bind a {nameof(MessageHandler)} to a null GameId");
             Validate.IsNull(boundGameId_, $"Cannot re-bind a {nameof(MessageHandler)} (already bound to {boundGameId_})");
             boundGameId_ = game;
+            wrongGameRejectionFunction_ = rejectionFunction;
         }
 
         private bool ShouldPropogate<T>(T message) where T : Message
@@ -178,6 +181,7 @@ namespace DXGame.Core.Messaging
         {
             if(!ShouldPropogate(message))
             {
+                wrongGameRejectionFunction_.Invoke(message);
                 return;
             }
 
@@ -188,6 +192,7 @@ namespace DXGame.Core.Messaging
         {
             if(!ShouldPropogate(message))
             {
+                wrongGameRejectionFunction_.Invoke(message);
                 return;
             }
 

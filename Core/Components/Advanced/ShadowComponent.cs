@@ -21,8 +21,7 @@ namespace DXGame.Core.Components.Advanced
             GameObject copy = Parent.Copy();
             // TODO: Setup the on-attachment shit
             ShadowCopy = copy;
-            RegisterTargetedAcceptAll(HandleShadowMessage);
-            BindToLocalGame();
+            BindToLocalGame(HandleShadowMessage);
             base.OnAttach();
         }
 
@@ -32,5 +31,7 @@ namespace DXGame.Core.Components.Advanced
             ShadowCopy.MessageHandler.HandleTypedMessage(typedMessage);
             ShadowCopy.MessageHandler.HandleUntypedMessage(message);
         }
+
+        // TODO: Figure out diff & relay state information?
     }
 }

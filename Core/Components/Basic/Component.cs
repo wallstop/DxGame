@@ -102,9 +102,9 @@ namespace DXGame.Core.Components.Basic
             DeregistrationHandles.Add(deregistration);
         }
 
-        protected void BindToLocalGame()
+        protected void BindToLocalGame(Action<Message> rejectionFunction)
         {
-            Parent.MessageHandler.BindToGame(DxGame.Instance.GameGuid);
+            Parent.MessageHandler.BindToGame(DxGame.Instance.GameGuid, rejectionFunction);
         }
 
         [DataMember]
@@ -159,18 +159,19 @@ namespace DXGame.Core.Components.Basic
             }
         }
 
-        public virtual void OnAttach()
-        {
-        }
+        public virtual void OnAttach() {}
 
         public void OnDetach()
         {
+            CustomOnDetach();
             foreach(Action deregistrationHandle in DeregistrationHandles)
             {
                 deregistrationHandle.Invoke();
             }
             DeregistrationHandles.Clear();
         }
+
+        protected virtual void CustomOnDetach() {}
 
         public virtual void LoadContent() {}
 

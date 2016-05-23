@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using NLog;
-using ProtoBuf;
 
 namespace DXGame.Core.Map
 {
@@ -31,22 +29,28 @@ namespace DXGame.Core.Map
         [IgnoreDataMember]
         public override MapDescriptor Item => this;
 
-        /* Legacy field so I don't have to fuck with MapEditor right now */
+        /* In indices */
 
         [DataMember]
-        public string Asset { get; set; }
+        public int Width { get; }
+
+        /* In indices */
 
         [DataMember]
-        public List<MapLayer> MapLayers { get; set; } = new List<MapLayer>();
+        public int Height { get; }
+
+        /* TODO: Make readonly? */
 
         [DataMember]
-        public List<Platform> Platforms { get; set; } = new List<Platform>();
+        public Dictionary<TilePosition, Tile> Tiles { get; }
 
-        [DataMember]
-        public DxRectangle Size { get; set; }
-
-        [DataMember]
-        public float Scale { get; set; } = 1.0f;
+        private MapDescriptor(Dictionary<TilePosition, Tile> tiles, int width, int height)
+        {
+            LOG.Info("Created a map that's {0} by {1} with {2} tiles", width, height, tiles.Count);
+            Tiles = tiles;
+            Width = width;
+            Height = height;
+        }
 
         public static MapDescriptorBuilder Builder()
         {
@@ -55,55 +59,51 @@ namespace DXGame.Core.Map
 
         public class MapDescriptorBuilder : IBuilder<MapDescriptor>
         {
-            private readonly List<MapLayer> mapLayers_ = new List<MapLayer>();
-            private readonly List<Platform> platforms_ = new List<Platform>();
-            private float scale_ = 1.0f;
-            private DxRectangle size_;
+            private static readonly int INVALID_SIZE = -1;
+
+            private int width_ = INVALID_SIZE;
+            private int height_ = INVALID_SIZE;
+            private readonly Dictionary<TilePosition, Tile> tiles_ = new Dictionary<TilePosition, Tile>();
+
+            public MapDescriptorBuilder WithTile(TilePosition tilePosition, Tile tile)
+            {
+                Validate.IsTrue(0 <= tilePosition.X);
+                Validate.IsTrue(0 <= tilePosition.Y);
+                Validate.IsNotNull(tile);
+                if(tiles_.ContainsKey(tilePosition))
+                {
+                    LOG.Info("Overwriting tile at {0}", tilePosition);
+                }
+
+                tiles_[tilePosition] = tile;
+                return this;
+            }
+
+            public MapDescriptorBuilder WithTile(int x, int y, Tile tile)
+            {
+                return WithTile(new TilePosition(x, y), tile);
+            }
+
+            public MapDescriptorBuilder WithWidth(int width)
+            {
+                Validate.IsTrue(0 < width);
+                width_ = width;
+                return this;
+            }
+
+            public MapDescriptorBuilder WithHeight(int height)
+            {
+                Validate.IsTrue(0 < height);
+                height_ = height;
+                return this;
+            }
 
             public MapDescriptor Build()
             {
-                Validate.IsTrue(scale_ > 0, $"Cannot create a {typeof(MapDescriptor)} with a non-positive scale");
-                if(!mapLayers_.Any())
-                {
-                    LOG.Warn($"Creating a {typeof(Map)} without an asset, this will result in an empty map");
-                }
-                return new MapDescriptor
-                {
-                    MapLayers = mapLayers_.ToList(),
-                    Platforms = platforms_.ToList(),
-                    Scale = scale_,
-                    Size = size_
-                };
-            }
-
-            public MapDescriptorBuilder WithScale(float scale)
-            {
-                scale_ = scale;
-                return this;
-            }
-
-            public MapDescriptorBuilder WithSize(DxRectangle size)
-            {
-                size_ = size;
-                return this;
-            }
-
-            public MapDescriptorBuilder WithPlatform(params Platform[] platforms)
-            {
-                platforms_.AddRange(platforms);
-                return this;
-            }
-
-            public MapDescriptorBuilder WithAsset(string asset)
-            {
-                return WithMapLayer(new MapLayer(asset));
-            }
-
-            public MapDescriptorBuilder WithMapLayer(MapLayer mapLayer)
-            {
-                Validate.IsNotNullOrDefault(mapLayer, StringUtils.GetFormattedNullOrDefaultMessage(this, mapLayer));
-                mapLayers_.Add(mapLayer);
-                return this;
+                Validate.IsTrue(0 < width_, $"Cannot create a {typeof(MapDescriptor)} with a width of {width_}");
+                Validate.IsTrue(0 < height_, $"Cannot create a {typeof(MapDescriptor)} with a height of {height_}");
+                Validate.IsNotEmpty(tiles_, $"Cannot create a {typeof(MapDescriptor)} without any tiles");
+                return new MapDescriptor(tiles_.ToDictionary(), width_, height_);
             }
         }
     }

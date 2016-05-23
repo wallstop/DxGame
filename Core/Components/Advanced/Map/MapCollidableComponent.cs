@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced.Position;
-using DXGame.Core.Map;
 using DXGame.Core.Utils;
-using ProtoBuf;
 
 namespace DXGame.Core.Components.Advanced.Map
 {
@@ -17,11 +15,9 @@ namespace DXGame.Core.Components.Advanced.Map
 
     [DataContract]
     [Serializable]
-    [ProtoContract]
     public class MapCollidableComponent : CollidableComponent
     {
         [DataMember]
-        [ProtoMember(1)]
         public PlatformType PlatformType { get; }
 
         protected MapCollidableComponent(IList<CollidableDirection> collidableDirections, SpatialComponent spatial,

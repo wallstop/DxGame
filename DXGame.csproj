@@ -158,7 +158,9 @@
     <Compile Include="Core\Lerp\IDxVectorLerpable.cs" />
     <Compile Include="Core\Level\Level.cs" />
     <Compile Include="Core\Level\ILevelProgressionStrategy.cs" />
-    <Compile Include="Core\Map\MapLayer.cs" />
+    <Compile Include="Core\Map\Tile.cs" />
+    <Compile Include="Core\Map\TilePosition.cs" />
+    <Compile Include="Core\Map\TileType.cs" />
     <Compile Include="Core\Messaging\AttackBuilder.cs" />
     <Compile Include="Core\Messaging\AttackRequest.cs" />
     <Compile Include="Core\Messaging\Entity\EntityCreatedMessage.cs" />
@@ -197,6 +199,7 @@
     <Compile Include="Core\Utils\Cache\Advanced\LocalCache.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\LocalLoadingCache.cs" />
     <Compile Include="Core\Utils\Cache\RemovalNotification.cs" />
+    <Compile Include="Core\Utils\DictionaryUtils.cs" />
     <Compile Include="Core\Utils\FixedSizedBuffer.cs" />
     <Compile Include="Core\Utils\IdBasedCounter.cs" />
     <Compile Include="Core\Utils\Lerp\LerpDataCollector.cs" />
@@ -238,7 +241,6 @@
     <Compile Include="Core\Map\Map.cs" />
     <Compile Include="Core\Map\MapDescriptor.cs" />
     <Compile Include="Core\Map\NavigableSurface.cs" />
-    <Compile Include="Core\Map\Platform.cs" />
     <Compile Include="Core\Messaging\CommandMessage.cs" />
     <Compile Include="Core\Messaging\DamageMessage.cs" />
     <Compile Include="Core\Messaging\DropThroughPlatformRequest.cs" />

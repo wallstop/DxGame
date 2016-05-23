@@ -20,17 +20,21 @@ namespace DXGame.Core.Utils.Cache.Simple
             */
             using(new CriticalRegion(globalLock_, CriticalRegion.LockType.Read))
             {
-                if(cache_.ContainsKey(key))
+                T existing;
+                if(cache_.TryGetValue(key, out existing))
                 {
-                    return cache_[key];
+                    return existing;
                 }
             }
+
             using(new CriticalRegion(globalLock_, CriticalRegion.LockType.Write))
             {
-                if(cache_.ContainsKey(key))
+                T existing;
+                if(cache_.TryGetValue(key, out existing))
                 {
-                    return cache_[key];
+                    return existing;
                 }
+
                 cache_[key] = value;
                 return value;
             }

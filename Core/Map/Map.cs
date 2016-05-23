@@ -8,12 +8,12 @@ using DXGame.Core.Components.Advanced.Position;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
+using DXGame.Core.Utils.Cache.Simple;
 using DXGame.Core.Utils.Distance;
 using DXGame.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
-using ProtoBuf;
 
 namespace DXGame.Core.Map
 {
@@ -23,94 +23,83 @@ namespace DXGame.Core.Map
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        [NonSerialized] [IgnoreDataMember] private Dictionary<Texture2D, int> mapTexturesAndLayers_;
+        [DataMember]
+        public MapDescriptor MapDescriptor { get; set; }
 
         [DataMember]
-        public MapDescriptor MapDescriptor { get; private set; }
+        public DxRectangle Entrance { get; }
+
+        [DataMember]
+        private Tile[][] TileGrid { get; }
 
         [IgnoreDataMember]
-        public DxRectangle ScaledBounds => MapDescriptor.Size * MapDescriptor.Scale;
+        [NonSerialized]
+        private readonly ISimpleCache<Tile, Texture2D> tileTextureCache_ = new UnboundedLoadingSimpleCache<Tile, Texture2D>(tile => DxGame.Instance.Content.Load<Texture2D>(tile.Asset));
 
-        [IgnoreDataMember]
-        public Dictionary<Texture2D, int> MapTexturesAndLayers => mapTexturesAndLayers_;
-
-        [DataMember]
-        public ISpatialTree<MapCollidableComponent> Collidables { get; private set; }
-
-        [DataMember]
-        public DxVector2 PlayerSpawn { get; private set; }
-
-        public DxRectangle RandomSpawnLocation
+        public static DxRectangle DetermineEntrance(MapDescriptor descriptor)
         {
-            get
+            // TODO
+            return DxRectangle.EmptyRectangle;
+            //var boundary = ScaledBounds;
+            //DxRectangle spawnLocation;
+            //do
+            //{
+            //    /* Pick a random place that has at least a 500x500 area of "no map collidables" */
+            //    /* TODO: Have this be some kind of chooseable algorithm or something (bundled in map descriptor? ) */
+            //    spawnLocation =
+            //        new DxRectangle(
+            //            ThreadLocalRandom.Current.NextFloat(boundary.X, boundary.X + boundary.Width - 250),
+            //            ThreadLocalRandom.Current.NextFloat(boundary.Y, boundary.Y + boundary.Height - 250), 250,
+            //            250);
+            //} while(CollidesWithMap(spawnLocation));
+            //return spawnLocation;
+        }
+
+        public static Tile[][] DetermineTileGrid(MapDescriptor mapDescriptor)
+        {
+            Validate.IsNotNullOrDefault(mapDescriptor);
+            Tile [][] tileGrid = new Tile[mapDescriptor.Width][];
+            for(int i = 0; i < mapDescriptor.Width; ++i)
             {
-                var boundary = ScaledBounds;
-                DxRectangle spawnLocation;
-                do
-                {
-                    /* Pick a random place that has at least a 500x500 area of "no map collidables" */
-                    /* TODO: Have this be some kind of chooseable algorithm or something (bundled in map descriptor? ) */
-                    spawnLocation =
-                        new DxRectangle(
-                            ThreadLocalRandom.Current.NextFloat(boundary.X, boundary.X + boundary.Width - 250),
-                            ThreadLocalRandom.Current.NextFloat(boundary.Y, boundary.Y + boundary.Height - 250), 250,
-                            250);
-                } while(CollidesWithMap(spawnLocation));
-                return spawnLocation;
+                tileGrid[i] = new Tile[mapDescriptor.Height];
             }
+
+            foreach(KeyValuePair<TilePosition, Tile> tilePair in mapDescriptor.Tiles)
+            {
+                TilePosition position = tilePair.Key;
+                Tile tile = tilePair.Value;
+                tileGrid[position.X][position.Y] = tile;
+            }
+            return tileGrid;
         }
 
         public Map(MapDescriptor descriptor)
         {
-            Validate.IsNotNullOrDefault(descriptor,
-                StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(descriptor)));
+            Validate.IsNotNullOrDefault(descriptor, this.GetFormattedNullOrDefaultMessage(nameof(descriptor)));
             MapDescriptor = descriptor;
+            Entrance = DetermineEntrance(descriptor);
+            TileGrid = DetermineTileGrid(descriptor);
             DrawPriority = DrawPriority.MAP;
         }
 
         public override void LoadContent()
         {
-            mapTexturesAndLayers_ = new Dictionary<Texture2D, int>();
-            if(!MapDescriptor.MapLayers.Any())
+            /* TODO: If loading is too slow, determine unique tiles in DetermineTileGrid and pass them around */
+
+            foreach(Tile[] tileColumn in TileGrid)
             {
-                LOG.Info($"Attempted to {nameof(LoadContent)} for a null/empty Asset, defaulting to blank texture");
-                Texture2D simpleBlackBackground = TextureFactory.TextureForColor(Color.Black);
-                mapTexturesAndLayers_[simpleBlackBackground] = MapLayer.DEFAULT_LAYER;
-            }
-            else
-            {
-                foreach(MapLayer mapLayer in MapDescriptor.MapLayers)
+                foreach(Tile tile in tileColumn)
                 {
-                    Texture2D mapImage =
-                        DxGame.Instance.Content.Load<Texture2D>("Map/" +
-                                                                Path.GetFileNameWithoutExtension(mapLayer.Asset));
-                    mapTexturesAndLayers_[mapImage] = mapLayer.Layer;
+                    /* Loading cache - textures should be loaded in automagically */
+                    tileTextureCache_.Get(tile);
                 }
             }
+
             base.LoadContent();
         }
 
         public override void Initialize()
         {
-            List<MapCollidableComponent> mapSpatials = MapDescriptor.Platforms.Select(platform =>
-            {
-                var spatial =
-                    (SpatialComponent)
-                        SpatialComponent.Builder()
-                            .WithDimensions(new DxVector2(platform.BoundingBox.Width, platform.BoundingBox.Height))
-                            .WithPosition(new DxVector2(platform.BoundingBox.XY()))
-                            .Build();
-                return
-                    (MapCollidableComponent)
-                        MapCollidableComponent.Builder()
-                            .WithPlatformType(platform.Type)
-                            .WithCollidableDirections(platform.CollidableDirections)
-                            .WithSpatial(spatial)
-                            .Build();
-            }).ToList();
-
-            Collidables = new RTree<MapCollidableComponent>(spatial => spatial.Spatial.Space, mapSpatials);
-            PlayerSpawn = new DxVector2(RandomSpawnLocation.XY());
             base.Initialize();
         }
 

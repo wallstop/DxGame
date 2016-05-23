@@ -46,6 +46,8 @@ namespace DXGame.Main
 
         private MessageHandler MessageHandler { get; }
 
+        public Scale Scale { get; private set; } = Scale.Medium;
+
         public Rectangle Screen { get; protected set; }
         public SpriteBatch SpriteBatch { get; private set; }
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local

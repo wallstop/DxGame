@@ -21,6 +21,9 @@ namespace DXGame.Core.Primitives
         public float Right => X + Width;
         public float Top => Y;
         public float Bottom => Y + Height;
+
+        public DxVector2 Dimensions => new DxVector2(Width, Height);
+
         public Point Center => new Point((int) ((X + Width) / 2), (int) ((Y + Height) / 2));
         /* 
             Cartesian quadrants of this rectangle:

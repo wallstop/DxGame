@@ -15,7 +15,7 @@ namespace DXGame.Core.Models
 
         public DxRectangle RandomSpawnLocation => Map.RandomSpawnLocation;
         public DxVector2 PlayerSpawn => Map.PlayerSpawn;
-        public DxRectangle MapBounds => Map.MapDescriptor.Size * Map.MapDescriptor.Scale;
+        public DxRectangle MapBounds => Map.MapDescriptor.Bounds;
         public Level.Level Level { get; private set; }
         public Map.Map Map => Level.Map;
         public override bool ShouldSerialize => false;

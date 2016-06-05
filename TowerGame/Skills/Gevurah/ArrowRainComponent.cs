@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing.Text;
 using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core;
@@ -17,7 +16,6 @@ using DXGame.Core.State;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Distance;
 using DXGame.Main;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DXGame.TowerGame.Skills.Gevurah
@@ -273,7 +271,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             var mapTilesInRange =
                 DxGame.Instance.Model<MapModel>()
                     .Map.Collidables.InRange(new DxRectangle(Position.X, Position.Y, ARROW_RAIN_WIDTH, ARROW_RAIN_DEPTH))
-                    .Select(tile => tile.Spatial.Space).ToList();
+                    .Select(tile => tile.Space).ToList();
             mapTilesInRange.Sort((tile1, tile2) => (int) (tile2.Y - tile1.Y));
             var scaleFactor = gameTime.ScaleFactor;
             /* 
@@ -313,7 +311,7 @@ namespace DXGame.TowerGame.Skills.Gevurah
             var mapTilesInRange =
                 DxGame.Instance.Model<MapModel>()
                     .Map.Collidables.InRange(new DxRectangle(Position.X, Position.Y, ARROW_RAIN_WIDTH, ARROW_RAIN_DEPTH))
-                    .Select(tile => tile.Spatial.Space).ToList();
+                    .Select(tile => tile.Space).ToList();
             mapTilesInRange.Sort((tile1, tile2) => (int) (tile2.Y - tile1.Y));
 
             /* 

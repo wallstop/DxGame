@@ -82,7 +82,7 @@ namespace DXGame.Core.Map
         {
             var map = mapModel.Map;
             var nodes = new List<Node>();
-            List<MapCollidableComponent> allMapTiles = map.Collidables.Elements;
+            List<MapCollidable> allMapTiles = map.Collidables.Elements;
             foreach (var mapTile in allMapTiles)
             {
                 var tileNodes = ConvertMapTileToNodes(mapTile);
@@ -96,8 +96,7 @@ namespace DXGame.Core.Map
 
         private static DxRectangle MapBounds(Map map)
         {
-            var space = map.MapDescriptor.Size * map.MapDescriptor.Scale;
-            return space;
+            return new DxRectangle(0, 0, map.MapDescriptor.Width * map.MapDescriptor.TileWidth, map.MapDescriptor.Height * map.MapDescriptor.TileHeight);
         }
 
         private static UniqueId MapId(MapModel mapModel)
@@ -113,19 +112,19 @@ namespace DXGame.Core.Map
             return ConvertAreaToNodes(null, bounds);
         }
 
-        private static List<Node> ConvertMapTileToNodes(MapCollidableComponent mapTile)
+        private static List<Node> ConvertMapTileToNodes(MapCollidable mapTile)
         {
             const CollidableDirection onlyCollisionDirectionWeCareAbout = CollidableDirection.Up;
-            if (!mapTile.CollidableDirections.Contains(onlyCollisionDirectionWeCareAbout))
+            if (!mapTile.Tile.CollidableDirections.Contains(onlyCollisionDirectionWeCareAbout))
             {
                 return Enumerable.Empty<Node>().ToList();
             }
 
-            DxRectangle space = mapTile.Spatial.Space;
+            DxRectangle space = mapTile.Space;
             return ConvertAreaToNodes(mapTile, space);
         }
 
-        private static List<Node> ConvertAreaToNodes(MapCollidableComponent mapTile, DxRectangle space)
+        private static List<Node> ConvertAreaToNodes(MapCollidable mapTile, DxRectangle space)
         {
             float xMin = space.X;
             float xMax = space.X + space.Width;
@@ -155,13 +154,13 @@ namespace DXGame.Core.Map
             [DataMember]
             public DxVector2 Position { get; }
             [DataMember] 
-            public MapCollidableComponent MapTile { get; }
+            public MapCollidable MapTile { get; }
 
             [IgnoreDataMember]
             [NonSerialized]
             private int hash_;
 
-            public Node(DxVector2 position, MapCollidableComponent mapTile)
+            public Node(DxVector2 position, MapCollidable mapTile)
             {
                 MapTile = mapTile;
                 Position = position;

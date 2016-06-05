@@ -3,6 +3,7 @@ using DXGame.Core.Components.Advanced.Map;
 using DXGame.Core.Components.Basic;
 using DXGame.Core.Components.Developer;
 using DXGame.Core.GraphicsWidgets.HUD;
+using DXGame.Core.Map;
 using DXGame.Core.Messaging;
 using DXGame.Core.Messaging.Entity;
 using DXGame.Core.Primitives;
@@ -34,7 +35,7 @@ namespace DXGame.Core.Models
             components_.Add(fpsTracker);
             devSwitch_ = new DeveloperSwitch();
             var mapTreeWidget =
-                new CollisionTreeWidget<MapCollidableComponent>(() => DxGame.Instance.Model<MapModel>().Map.Collidables);
+                new CollisionTreeWidget<MapCollidable>(() => DxGame.Instance.Model<MapModel>().Map.Collidables);
             components_.Add(mapTreeWidget);
             var boundingBoxWidget = new BoundingBoxWidget();
             components_.Add(boundingBoxWidget);

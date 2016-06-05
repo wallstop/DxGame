@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using DXGame.Core.Components.Advanced;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 
 namespace DXGame.Core.Map
@@ -59,6 +60,14 @@ namespace DXGame.Core.Map
             Validate.IsNotNullOrDefault(asset, this.GetFormattedNullOrDefaultMessage(nameof(asset)));
             Type = type;
             Asset = asset;
+        }
+
+        public bool CollidesWith(DxVector2 velocity)
+        {
+            return (velocity.X > 0 && CollidableDirections.Contains(CollidableDirection.Left)) ||
+                   (velocity.X < 0 && CollidableDirections.Contains(CollidableDirection.Right)) ||
+                   (velocity.Y < 0 && CollidableDirections.Contains(CollidableDirection.Down)) ||
+                   (velocity.Y > 0 && CollidableDirections.Contains(CollidableDirection.Up));
         }
 
         public override bool Equals(object other)

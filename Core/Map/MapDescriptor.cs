@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
+using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using NLog;
 
@@ -39,17 +39,33 @@ namespace DXGame.Core.Map
         [DataMember]
         public int Height { get; }
 
+        /* In units */
+
+        [DataMember]
+        public int TileWidth { get; }
+
+        /* In units */
+
+        [DataMember]
+        public int TileHeight { get; }
+
+        [IgnoreDataMember]
+        public DxRectangle Bounds => new DxRectangle(0, 0, Width * TileWidth, Height * TileHeight);
+
         /* TODO: Make readonly? */
 
         [DataMember]
         public Dictionary<TilePosition, Tile> Tiles { get; }
 
-        private MapDescriptor(Dictionary<TilePosition, Tile> tiles, int width, int height)
+        private MapDescriptor(Dictionary<TilePosition, Tile> tiles, int width, int height, int tileWidth, int tileHeight)
         {
-            LOG.Info("Created a map that's {0} by {1} with {2} tiles", width, height, tiles.Count);
+            LOG.Info("Created a map that's {0} by {1} with {2} tiles of size ({3}, {4})", width, height, tiles.Count,
+                tileWidth, tileHeight);
             Tiles = tiles;
             Width = width;
             Height = height;
+            TileWidth = tileWidth;
+            TileHeight = tileHeight;
         }
 
         public static MapDescriptorBuilder Builder()
@@ -63,6 +79,8 @@ namespace DXGame.Core.Map
 
             private int width_ = INVALID_SIZE;
             private int height_ = INVALID_SIZE;
+            private int tileWidth_ = INVALID_SIZE;
+            private int tileHeight_ = INVALID_SIZE;
             private readonly Dictionary<TilePosition, Tile> tiles_ = new Dictionary<TilePosition, Tile>();
 
             public MapDescriptorBuilder WithTile(TilePosition tilePosition, Tile tile)
@@ -86,15 +104,25 @@ namespace DXGame.Core.Map
 
             public MapDescriptorBuilder WithWidth(int width)
             {
-                Validate.IsTrue(0 < width);
                 width_ = width;
                 return this;
             }
 
             public MapDescriptorBuilder WithHeight(int height)
             {
-                Validate.IsTrue(0 < height);
                 height_ = height;
+                return this;
+            }
+
+            public MapDescriptorBuilder WithTileWidth(int tileWidth)
+            {
+                tileWidth_ = tileWidth;
+                return this;
+            }
+
+            public MapDescriptorBuilder WithTileHeight(int tileHeight)
+            {
+                tileHeight_ = tileHeight;
                 return this;
             }
 
@@ -102,8 +130,12 @@ namespace DXGame.Core.Map
             {
                 Validate.IsTrue(0 < width_, $"Cannot create a {typeof(MapDescriptor)} with a width of {width_}");
                 Validate.IsTrue(0 < height_, $"Cannot create a {typeof(MapDescriptor)} with a height of {height_}");
+                Validate.IsTrue(0 < tileWidth_,
+                    $"Cannot create a {typeof(MapDescriptor)} with a tile width of {tileWidth_}");
+                Validate.IsTrue(0 < tileHeight_,
+                    $"Cannot create a {typeof(MapDescriptor)} with a tile  height of {tileHeight_}");
                 Validate.IsNotEmpty(tiles_, $"Cannot create a {typeof(MapDescriptor)} without any tiles");
-                return new MapDescriptor(tiles_.ToDictionary(), width_, height_);
+                return new MapDescriptor(tiles_.ToDictionary(), width_, height_, tileWidth_, tileHeight_);
             }
         }
     }

@@ -158,6 +158,8 @@
     <Compile Include="Core\Lerp\IDxVectorLerpable.cs" />
     <Compile Include="Core\Level\Level.cs" />
     <Compile Include="Core\Level\ILevelProgressionStrategy.cs" />
+    <Compile Include="Core\Map\BoundingBox.cs" />
+    <Compile Include="Core\Map\MapCollidable.cs" />
     <Compile Include="Core\Map\Tile.cs" />
     <Compile Include="Core\Map\TilePosition.cs" />
     <Compile Include="Core\Map\TileType.cs" />
@@ -191,6 +193,7 @@
     <Compile Include="Core\Network\ClientEventTracker.cs" />
     <Compile Include="Core\Network\DxVectorLerpMessage.cs" />
     <Compile Include="Core\Network\ServerEventTracker.cs" />
+    <Compile Include="Core\Primitives\DxUnit.cs" />
     <Compile Include="Core\Skills\ChargedSkill.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\CacheBuilder.cs" />
     <Compile Include="Core\Utils\Cache\DiscardingQueue.cs" />
@@ -213,7 +216,6 @@
     <Compile Include="Core\Components\Advanced\FacingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PathfindingInputComponent.cs" />
     <Compile Include="Core\Components\Advanced\Impulse\MapPlatformDropper.cs" />
-    <Compile Include="Core\Components\Advanced\Map\MapCollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
     <Compile Include="Core\Components\Advanced\Physics\UnforcableMapCollidablePhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PlayerInputListener.cs" />

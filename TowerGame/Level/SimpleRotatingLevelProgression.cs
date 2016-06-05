@@ -100,7 +100,18 @@ namespace DXGame.TowerGame.Level
 
             DxRectangle mapSize = new DxRectangle(0, 0, 1280, 720);
 
-            MapDescriptor winningMapDescriptor = MapDescriptor.Builder().WithSize(mapSize).Build();
+            int tileWidth = 50;
+            int tileHeight = 50;
+            int widthInTiles = (1280 / tileWidth) + 1;
+            int heightInTiles = 700 / tileHeight;
+
+            MapDescriptor winningMapDescriptor =
+                MapDescriptor.Builder()
+                    .WithHeight(heightInTiles)
+                    .WithWidth(widthInTiles)
+                    .WithTileWidth(tileWidth)
+                    .WithTileHeight(tileHeight)
+                    .Build();
 
             Map winningMap = new Map(winningMapDescriptor);
             winningMap.LoadContent();
@@ -144,14 +155,14 @@ namespace DXGame.TowerGame.Level
             Spawner.SpawnerBuilder levelEndSpawner = Spawner.Builder();
             /* Try and put it on a surface */
             Map map = CurrentMap;
-            List<MapCollidableComponent> mapTiles = map.Collidables.Elements.ToList();
+            List<MapCollidable> mapTiles = map.Collidables.Elements.ToList();
             DxVector2 mapTransitionLocation;
             do
             {
-                MapCollidableComponent mapTile = ThreadLocalRandom.Current.FromCollection(mapTiles);
-                float x = ThreadLocalRandom.Current.NextFloat(mapTile.Spatial.Space.X,
-                    mapTile.Spatial.Space.X + mapTile.Spatial.Space.Width);
-                mapTransitionLocation = new DxVector2(x, mapTile.Spatial.Space.Y - 7.5f);
+                MapCollidable mapTile = ThreadLocalRandom.Current.FromCollection(mapTiles);
+                float x = ThreadLocalRandom.Current.NextFloat(mapTile.Space.X,
+                    mapTile.Space.X + mapTile.Space.Width);
+                mapTransitionLocation = new DxVector2(x, mapTile.Space.Y - 7.5f);
             } while(
                 map.Collidables.InRange(new DxRectangle(mapTransitionLocation.X, mapTransitionLocation.Y, 5, 5)).Any());
             levelEndSpawner.WithSpawnArea(new DxRectangle(mapTransitionLocation.X, mapTransitionLocation.Y, 1, 1));

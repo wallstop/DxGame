@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DXGame", "DXGame.csproj", "{9B58D322-95D0-4F4C-A742-DD643C7024FC}"
 EndProject
@@ -9,7 +9,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DXGameTest", "Test\DXGameTe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DxGameUtils", "DxGameUtils\DxGameUtils.csproj", "{8652FA2F-CE84-4DCD-9F14-3E920A993885}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapEditor", "MapEditor\MapEditor.csproj", "{0E891734-9C74-48E7-80FC-63446F92B2C2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapEditor", "MapEditor\MapEditor\MapEditor.csproj", "{6F736527-ED58-4194-90E9-36AB94940AAE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F2F41B50-64C2-48DF-A645-53B10D0E124E} = {F2F41B50-64C2-48DF-A645-53B10D0E124E}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapEditorLibrary", "MapEditor\MapEditorLibrary\MapEditorLibrary.csproj", "{F2F41B50-64C2-48DF-A645-53B10D0E124E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F6BE0738-25E8-45DA-B20D-739532A6EE24} = {F6BE0738-25E8-45DA-B20D-739532A6EE24}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapEditorUI", "MapEditor\MapEditorUI\MapEditorUI.csproj", "{F6BE0738-25E8-45DA-B20D-739532A6EE24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,18 +61,38 @@ Global
 		{8652FA2F-CE84-4DCD-9F14-3E920A993885}.Release|x64.Build.0 = Release|Any CPU
 		{8652FA2F-CE84-4DCD-9F14-3E920A993885}.Release|x86.ActiveCfg = Release|Any CPU
 		{8652FA2F-CE84-4DCD-9F14-3E920A993885}.Release|x86.Build.0 = Release|Any CPU
-		{0E891734-9C74-48E7-80FC-63446F92B2C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0E891734-9C74-48E7-80FC-63446F92B2C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0E891734-9C74-48E7-80FC-63446F92B2C2}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{0E891734-9C74-48E7-80FC-63446F92B2C2}.Debug|x64.Build.0 = Debug|Any CPU
-		{0E891734-9C74-48E7-80FC-63446F92B2C2}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{0E891734-9C74-48E7-80FC-63446F92B2C2}.Debug|x86.Build.0 = Debug|Any CPU
-		{0E891734-9C74-48E7-80FC-63446F92B2C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0E891734-9C74-48E7-80FC-63446F92B2C2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0E891734-9C74-48E7-80FC-63446F92B2C2}.Release|x64.ActiveCfg = Release|Any CPU
-		{0E891734-9C74-48E7-80FC-63446F92B2C2}.Release|x64.Build.0 = Release|Any CPU
-		{0E891734-9C74-48E7-80FC-63446F92B2C2}.Release|x86.ActiveCfg = Release|Any CPU
-		{0E891734-9C74-48E7-80FC-63446F92B2C2}.Release|x86.Build.0 = Release|Any CPU
+		{6F736527-ED58-4194-90E9-36AB94940AAE}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{6F736527-ED58-4194-90E9-36AB94940AAE}.Debug|x64.ActiveCfg = Debug|x86
+		{6F736527-ED58-4194-90E9-36AB94940AAE}.Debug|x86.ActiveCfg = Debug|x86
+		{6F736527-ED58-4194-90E9-36AB94940AAE}.Debug|x86.Build.0 = Debug|x86
+		{6F736527-ED58-4194-90E9-36AB94940AAE}.Release|Any CPU.ActiveCfg = Release|x86
+		{6F736527-ED58-4194-90E9-36AB94940AAE}.Release|x64.ActiveCfg = Release|x86
+		{6F736527-ED58-4194-90E9-36AB94940AAE}.Release|x86.ActiveCfg = Release|x86
+		{6F736527-ED58-4194-90E9-36AB94940AAE}.Release|x86.Build.0 = Release|x86
+		{F2F41B50-64C2-48DF-A645-53B10D0E124E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2F41B50-64C2-48DF-A645-53B10D0E124E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2F41B50-64C2-48DF-A645-53B10D0E124E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F2F41B50-64C2-48DF-A645-53B10D0E124E}.Debug|x64.Build.0 = Debug|Any CPU
+		{F2F41B50-64C2-48DF-A645-53B10D0E124E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F2F41B50-64C2-48DF-A645-53B10D0E124E}.Debug|x86.Build.0 = Debug|Any CPU
+		{F2F41B50-64C2-48DF-A645-53B10D0E124E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2F41B50-64C2-48DF-A645-53B10D0E124E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2F41B50-64C2-48DF-A645-53B10D0E124E}.Release|x64.ActiveCfg = Release|Any CPU
+		{F2F41B50-64C2-48DF-A645-53B10D0E124E}.Release|x64.Build.0 = Release|Any CPU
+		{F2F41B50-64C2-48DF-A645-53B10D0E124E}.Release|x86.ActiveCfg = Release|Any CPU
+		{F2F41B50-64C2-48DF-A645-53B10D0E124E}.Release|x86.Build.0 = Release|Any CPU
+		{F6BE0738-25E8-45DA-B20D-739532A6EE24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6BE0738-25E8-45DA-B20D-739532A6EE24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6BE0738-25E8-45DA-B20D-739532A6EE24}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F6BE0738-25E8-45DA-B20D-739532A6EE24}.Debug|x64.Build.0 = Debug|Any CPU
+		{F6BE0738-25E8-45DA-B20D-739532A6EE24}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F6BE0738-25E8-45DA-B20D-739532A6EE24}.Debug|x86.Build.0 = Debug|Any CPU
+		{F6BE0738-25E8-45DA-B20D-739532A6EE24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6BE0738-25E8-45DA-B20D-739532A6EE24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6BE0738-25E8-45DA-B20D-739532A6EE24}.Release|x64.ActiveCfg = Release|Any CPU
+		{F6BE0738-25E8-45DA-B20D-739532A6EE24}.Release|x64.Build.0 = Release|Any CPU
+		{F6BE0738-25E8-45DA-B20D-739532A6EE24}.Release|x86.ActiveCfg = Release|Any CPU
+		{F6BE0738-25E8-45DA-B20D-739532A6EE24}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

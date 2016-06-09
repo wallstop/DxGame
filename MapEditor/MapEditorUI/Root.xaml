@@ -8,6 +8,16 @@
         xmlns:local="clr-namespace:MapEditorUILibrary"
         mc:Ignorable="d" Height="300" Width="300">
     <Grid>
-        <TextBlock Text="Wow" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold"></TextBlock>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <DockPanel>
+            <ListBox>
+                <ListBoxItem ></ListBoxItem>
+            </ListBox>
+        </DockPanel>
+
+        <TextBlock Text="Wow" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" Margin="104,98,148,176"></TextBlock>
     </Grid>
 </ek:UIRoot>

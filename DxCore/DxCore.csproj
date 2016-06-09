@@ -1,0 +1,371 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BE7E2670-E97A-456E-9279-25DCB3541D5D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DxCore</RootNamespace>
+    <AssemblyName>DxCore</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GeoAPI, Version=1.7.4.0, Culture=neutral, PublicKeyToken=a1a0da7def465678, processorArchitecture=MSIL">
+      <HintPath>..\packages\GeoAPI.1.7.4\lib\net45\GeoAPI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Lidgren.Network, Version=2012.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lidgren.Network.1.0.2\lib\net451\Lidgren.Network.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MathNet.Numerics, Version=3.11.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.3.11.1\lib\net40\MathNet.Numerics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.5.1.1679\lib\net40\MonoGame.Framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1-beta1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.3.4\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.2.0-rc2-24027\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\Animation\Animation.cs" />
+    <Compile Include="Core\Animation\AnimationDescriptor.cs" />
+    <Compile Include="Core\Animation\AnimationFactory.cs" />
+    <Compile Include="Core\Animation\AnimationFrameOffset.cs" />
+    <Compile Include="Core\Animation\FrameDescriptor.cs" />
+    <Compile Include="Core\Behavior\Behavior.cs" />
+    <Compile Include="Core\Behavior\GoalInterpreter.cs" />
+    <Compile Include="Core\Behavior\Goals\AbstractGoal.cs" />
+    <Compile Include="Core\Behavior\Goals\BuffGoal.cs" />
+    <Compile Include="Core\Behavior\Goals\DebuffGoal.cs" />
+    <Compile Include="Core\Behavior\Goals\IGoal.cs" />
+    <Compile Include="Core\Behavior\Goals\MovementGoal.cs" />
+    <Compile Include="Core\Behavior\Goals\PainGoal.cs" />
+    <Compile Include="Core\Behavior\Goals\ProtectionGoal.cs" />
+    <Compile Include="Core\Behavior\Goals\SlayerGoal.cs" />
+    <Compile Include="Core\Behavior\Score.cs" />
+    <Compile Include="Core\Behavior\Utility.cs" />
+    <Compile Include="Core\Components\Advanced\AnimationComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Behavior\BehaviorComponent.cs" />
+    <Compile Include="Core\Components\Advanced\CollidableComponent.cs" />
+    <Compile Include="Core\Components\Advanced\CollisionDestructibleComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Command\AbstractCommandComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Command\PathfindingInputComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Command\PlayerInputListener.cs" />
+    <Compile Include="Core\Components\Advanced\Command\SimpleRelayingCommandComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Damage\DamageComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Damage\DeathEffectComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Entities\ExperienceDropperComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Entities\ItemDropperComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Entities\LevelComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Entities\ManagerComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Entities\RandomSpawner.cs" />
+    <Compile Include="Core\Components\Advanced\Entities\Spawner.cs" />
+    <Compile Include="Core\Components\Advanced\EntityTypeComponent.cs" />
+    <Compile Include="Core\Components\Advanced\FacingComponent.cs" />
+    <Compile Include="Core\Components\Advanced\FloatingHealthIndicator.cs" />
+    <Compile Include="Core\Components\Advanced\IEnvironmentComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Impulse\AttackCommandResponder.cs" />
+    <Compile Include="Core\Components\Advanced\Impulse\MapPlatformDropper.cs" />
+    <Compile Include="Core\Components\Advanced\Map\MapRotationTriggerComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Map\MapTransition.cs" />
+    <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
+    <Compile Include="Core\Components\Advanced\Physics\MapCollidablePhysicsComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Physics\PhysicsComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Physics\UnforcableMapCollidablePhysicsComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Physics\UnforcablePhysicsComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Player\ActivePlayerComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Player\PlayerNameComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Position\BoundedSpatialComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Position\MapBoundedSpatialComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Position\PositionalComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Position\SpatialComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Properties\EntityPropertiesComponent.cs" />
+    <Compile Include="Core\Components\Advanced\ShadowComponent.cs" />
+    <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
+    <Compile Include="Core\Components\Advanced\SkillComponent.cs" />
+    <Compile Include="Core\Components\Advanced\TeamComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Triggers\EventObserver.cs" />
+    <Compile Include="Core\Components\Advanced\Triggers\TimedTriggeredActionComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Triggers\TriggerComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Triggers\TriggeredActionComponent.cs" />
+    <Compile Include="Core\Components\Basic\Component.cs" />
+    <Compile Include="Core\Components\Basic\DrawableComponent.cs" />
+    <Compile Include="Core\Components\Basic\NetworkComponent.cs" />
+    <Compile Include="Core\Components\Basic\SpriteBatchEnder.cs" />
+    <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
+    <Compile Include="Core\Components\Developer\BoundingBoxWidget.cs" />
+    <Compile Include="Core\Components\Developer\CollisionTreeWidget.cs" />
+    <Compile Include="Core\Components\Developer\DeveloperSwitch.cs" />
+    <Compile Include="Core\Components\Developer\HealthAdjustor.cs" />
+    <Compile Include="Core\Components\Developer\KeysPressedWidget.cs" />
+    <Compile Include="Core\Components\Developer\LifeSuckerComponent.cs" />
+    <Compile Include="Core\Components\Developer\PathDrawer.cs" />
+    <Compile Include="Core\Components\Developer\TeamCounterWidget.cs" />
+    <Compile Include="Core\Components\Developer\TimePerFrameGraph.cs" />
+    <Compile Include="Core\Components\Network\NetworkClient.cs" />
+    <Compile Include="Core\Components\Network\NetworkServer.cs" />
+    <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
+    <Compile Include="Core\Components\Utils\RectangleAreaComparer.cs" />
+    <Compile Include="Core\DataStructures\CircularBuffer.cs" />
+    <Compile Include="Core\DataStructures\SortedList.cs" />
+    <Compile Include="Core\DataStructures\Tree.cs" />
+    <Compile Include="Core\EntityType.cs" />
+    <Compile Include="Core\Events\Event.cs" />
+    <Compile Include="Core\Events\EventListener.cs" />
+    <Compile Include="Core\Experience\Experience.cs" />
+    <Compile Include="Core\Frames\Frame.cs" />
+    <Compile Include="Core\Frames\SingleElementFrame.cs" />
+    <Compile Include="Core\GameId.cs" />
+    <Compile Include="Core\GameObject.cs" />
+    <Compile Include="Core\Generators\PlayerGenerator.cs" />
+    <Compile Include="Core\GraphicsWidgets\BlinkingCursor.cs" />
+    <Compile Include="Core\GraphicsWidgets\Graph.cs" />
+    <Compile Include="Core\GraphicsWidgets\HUD\AbilityBar.cs" />
+    <Compile Include="Core\GraphicsWidgets\HUD\BuffBar.cs" />
+    <Compile Include="Core\GraphicsWidgets\HUD\FpsTracker.cs" />
+    <Compile Include="Core\GraphicsWidgets\HUD\FPSWidget.cs" />
+    <Compile Include="Core\GraphicsWidgets\HUD\HudComponent.cs" />
+    <Compile Include="Core\GraphicsWidgets\HUD\HudRegion.cs" />
+    <Compile Include="Core\GraphicsWidgets\HUD\PlayerLevelIndicator.cs" />
+    <Compile Include="Core\GraphicsWidgets\TextBox.cs" />
+    <Compile Include="Core\GraphicsWidgets\TextComponent.cs" />
+    <Compile Include="Core\ICreatable.cs" />
+    <Compile Include="Core\IDrawable.cs" />
+    <Compile Include="Core\IIdentifiable.cs" />
+    <Compile Include="Core\Input\Input.cs" />
+    <Compile Include="Core\Input\InputEvent.cs" />
+    <Compile Include="Core\Input\InputHandler.cs" />
+    <Compile Include="Core\Input\KeyboardEvent.cs" />
+    <Compile Include="Core\Input\MouseButtons.cs" />
+    <Compile Include="Core\Input\MouseEvent.cs" />
+    <Compile Include="Core\IPersistable.cs" />
+    <Compile Include="Core\IProcessable.cs" />
+    <Compile Include="Core\IRemovable.cs" />
+    <Compile Include="Core\JsonPersistable.cs" />
+    <Compile Include="Core\Lerp\IDxVectorLerpable.cs" />
+    <Compile Include="Core\Level\ILevelProgressionStrategy.cs" />
+    <Compile Include="Core\Level\Level.cs" />
+    <Compile Include="Core\Map\BoundingBox.cs" />
+    <Compile Include="Core\Map\Map.cs" />
+    <Compile Include="Core\Map\MapCollidable.cs" />
+    <Compile Include="Core\Map\MapDescriptor.cs" />
+    <Compile Include="Core\Map\NavigableSurface.cs" />
+    <Compile Include="Core\Map\Tile.cs" />
+    <Compile Include="Core\Map\TilePosition.cs" />
+    <Compile Include="Core\Map\TileType.cs" />
+    <Compile Include="Core\Menus\HostMultiplayerMenu.cs" />
+    <Compile Include="Core\Menus\JoinMultiplayerMenu.cs" />
+    <Compile Include="Core\Menus\MainMenu.cs" />
+    <Compile Include="Core\Menus\Menu.cs" />
+    <Compile Include="Core\Menus\MenuItem.cs" />
+    <Compile Include="Core\Menus\PlayMenu.cs" />
+    <Compile Include="Core\Messaging\AttackBuilder.cs" />
+    <Compile Include="Core\Messaging\AttackRequest.cs" />
+    <Compile Include="Core\Messaging\CollisionMessage.cs" />
+    <Compile Include="Core\Messaging\CommandMessage.cs" />
+    <Compile Include="Core\Messaging\DamageMessage.cs" />
+    <Compile Include="Core\Messaging\DropThroughPlatformRequest.cs" />
+    <Compile Include="Core\Messaging\Entity\EntityCreatedMessage.cs" />
+    <Compile Include="Core\Messaging\Entity\EntityDeathMessage.cs" />
+    <Compile Include="Core\Messaging\Entity\EntityRemovedMessage.cs" />
+    <Compile Include="Core\Messaging\Entity\EntitySpawnedMessage.cs" />
+    <Compile Include="Core\Messaging\EnvironmentInteractionMessage.cs" />
+    <Compile Include="Core\Messaging\ExperiencedReceivedMessage.cs" />
+    <Compile Include="Core\Messaging\ExperienceDroppedMessage.cs" />
+    <Compile Include="Core\Messaging\Game\TimeSkewRequest.cs" />
+    <Compile Include="Core\Messaging\GlobalMessageBus.cs" />
+    <Compile Include="Core\Messaging\ITargetedMessage.cs" />
+    <Compile Include="Core\Messaging\ITypedMessageProcessor.cs" />
+    <Compile Include="Core\Messaging\IUntypedMessageProcessor.cs" />
+    <Compile Include="Core\Messaging\LeveledUpMessage.cs" />
+    <Compile Include="Core\Messaging\LevelEndRequest.cs" />
+    <Compile Include="Core\Messaging\MapRotationNotification.cs" />
+    <Compile Include="Core\Messaging\MapRotationRequest.cs" />
+    <Compile Include="Core\Messaging\Message.cs" />
+    <Compile Include="Core\Messaging\MessageHandler.cs" />
+    <Compile Include="Core\Messaging\Network\ClientCommands.cs" />
+    <Compile Include="Core\Messaging\Network\ClientConnectionRequest.cs" />
+    <Compile Include="Core\Messaging\Network\ClientInputUpdate.cs" />
+    <Compile Include="Core\Messaging\Network\ClientTimeSynchronizationRequest.cs" />
+    <Compile Include="Core\Messaging\Network\EventStream.cs" />
+    <Compile Include="Core\Messaging\Network\ServerTimeUpdate.cs" />
+    <Compile Include="Core\Messaging\Network\UpdateActivePlayer.cs" />
+    <Compile Include="Core\Messaging\PathFindingRequest.cs" />
+    <Compile Include="Core\Messaging\PhysicsMessage.cs" />
+    <Compile Include="Core\Models\BehaviorModel.cs" />
+    <Compile Include="Core\Models\CameraModel.cs" />
+    <Compile Include="Core\Models\CollisionModel.cs" />
+    <Compile Include="Core\Models\DeveloperModel.cs" />
+    <Compile Include="Core\Models\EnvironmentModel.cs" />
+    <Compile Include="Core\Models\EventModel.cs" />
+    <Compile Include="Core\Models\ExperienceModel.cs" />
+    <Compile Include="Core\Models\FrameModel.cs" />
+    <Compile Include="Core\Models\GameModel.cs" />
+    <Compile Include="Core\Models\HudModel.cs" />
+    <Compile Include="Core\Models\InputModel.cs" />
+    <Compile Include="Core\Models\MapModel.cs" />
+    <Compile Include="Core\Models\Model.cs" />
+    <Compile Include="Core\Models\NetworkModel.cs" />
+    <Compile Include="Core\Models\PathfindingModel.cs" />
+    <Compile Include="Core\Models\PlayerModel.cs" />
+    <Compile Include="Core\Network\ClientEventTracker.cs" />
+    <Compile Include="Core\Network\DxVectorLerpMessage.cs" />
+    <Compile Include="Core\Network\NetworkMessage.cs" />
+    <Compile Include="Core\Network\ServerEventTracker.cs" />
+    <Compile Include="Core\Pathfinding\CommandChain.cs" />
+    <Compile Include="Core\Pathfinding\DisplacementApproximator.cs" />
+    <Compile Include="Core\Pathfinding\ExplorableMesh.cs" />
+    <Compile Include="Core\Pathfinding\ExplorableMeshCache.cs" />
+    <Compile Include="Core\Pathfinding\Path.cs" />
+    <Compile Include="Core\Pathfinding\PathfindingConstants.cs" />
+    <Compile Include="Core\Pathfinding\PathfindingResult.cs" />
+    <Compile Include="Core\Pathfinding\Simulation.cs" />
+    <Compile Include="Core\Physics\Force.cs" />
+    <Compile Include="Core\Physics\Interaction.cs" />
+    <Compile Include="Core\Physics\WorldForces.cs" />
+    <Compile Include="Core\Player.cs" />
+    <Compile Include="Core\Primitives\DxCircle.cs" />
+    <Compile Include="Core\Primitives\DxColor.cs" />
+    <Compile Include="Core\Primitives\DxDegree.cs" />
+    <Compile Include="Core\Primitives\DxGameTime.cs" />
+    <Compile Include="Core\Primitives\DxLine.cs" />
+    <Compile Include="Core\Primitives\DxRadian.cs" />
+    <Compile Include="Core\Primitives\DxRectangle.cs" />
+    <Compile Include="Core\Primitives\DxUnit.cs" />
+    <Compile Include="Core\Primitives\DxVector2.cs" />
+    <Compile Include="Core\Primitives\IShape.cs" />
+    <Compile Include="Core\Properties\EntityProperties.cs" />
+    <Compile Include="Core\Properties\Property.cs" />
+    <Compile Include="Core\Properties\PropertyMutator.cs" />
+    <Compile Include="Core\Serializer.cs" />
+    <Compile Include="Core\Settings\AbstractSettings.cs" />
+    <Compile Include="Core\Settings\Controls.cs" />
+    <Compile Include="Core\Settings\GameSettings.cs" />
+    <Compile Include="Core\Settings\Scale.cs" />
+    <Compile Include="Core\Skills\ChargedSkill.cs" />
+    <Compile Include="Core\Skills\Skill.cs" />
+    <Compile Include="Core\State\Presentation.cs" />
+    <Compile Include="Core\State\State.cs" />
+    <Compile Include="Core\State\StateMachine.cs" />
+    <Compile Include="Core\State\StateMachineFactory.cs" />
+    <Compile Include="Core\State\Transition.cs" />
+    <Compile Include="Core\Team.cs" />
+    <Compile Include="Core\UniqueId.cs" />
+    <Compile Include="Core\Utils\Assert.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\CacheBuilder.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\ICache.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\ILoadingCache.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\LocalCache.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\LocalLoadingCache.cs" />
+    <Compile Include="Core\Utils\Cache\DiscardingQueue.cs" />
+    <Compile Include="Core\Utils\Cache\RemovalNotification.cs" />
+    <Compile Include="Core\Utils\Cache\Simple\AbstractSimpleCache.cs" />
+    <Compile Include="Core\Utils\Cache\Simple\ISimpleCache.cs" />
+    <Compile Include="Core\Utils\Cache\Simple\UnboundedLoadingSimpleCache.cs" />
+    <Compile Include="Core\Utils\Cache\Simple\UnboundedSimpleCache.cs" />
+    <Compile Include="Core\Utils\Check.cs" />
+    <Compile Include="Core\Utils\CollectionUtils.cs" />
+    <Compile Include="Core\Utils\ColorFactory.cs" />
+    <Compile Include="Core\Utils\ColorUtils.cs" />
+    <Compile Include="Core\Utils\CriticalRegion.cs" />
+    <Compile Include="Core\Utils\DateTimeConstants.cs" />
+    <Compile Include="Core\Utils\DictionaryUtils.cs" />
+    <Compile Include="Core\Utils\Distance\Directions.cs" />
+    <Compile Include="Core\Utils\Distance\Distance.cs" />
+    <Compile Include="Core\Utils\Distance\ISpatialTree.cs" />
+    <Compile Include="Core\Utils\Distance\KDTree.cs" />
+    <Compile Include="Core\Utils\Distance\QuadTree.cs" />
+    <Compile Include="Core\Utils\Distance\RTree.cs" />
+    <Compile Include="Core\Utils\EnumUtils.cs" />
+    <Compile Include="Core\Utils\FixedSizedBuffer.cs" />
+    <Compile Include="Core\Utils\GameElementCollection.cs" />
+    <Compile Include="Core\Utils\GameObjectUtils.cs" />
+    <Compile Include="Core\Utils\GenericUtils.cs" />
+    <Compile Include="Core\Utils\IBuilder.cs" />
+    <Compile Include="Core\Utils\IdBasedCounter.cs" />
+    <Compile Include="Core\Utils\ImmutablePair.cs" />
+    <Compile Include="Core\Utils\IPair.cs" />
+    <Compile Include="Core\Utils\LambdaUtils.cs" />
+    <Compile Include="Core\Utils\Lerp\LerpDataCollector.cs" />
+    <Compile Include="Core\Utils\LidgrenUtils.cs" />
+    <Compile Include="Core\Utils\MathUtils.cs" />
+    <Compile Include="Core\Utils\Objects.cs" />
+    <Compile Include="Core\Utils\Optional.cs" />
+    <Compile Include="Core\Utils\Pair.cs" />
+    <Compile Include="Core\Utils\ProducerConsumerCollectionExtensions.cs" />
+    <Compile Include="Core\Utils\RandomUtils.cs" />
+    <Compile Include="Core\Utils\SpringFunctions.cs" />
+    <Compile Include="Core\Utils\SpriteBatchUtils.cs" />
+    <Compile Include="Core\Utils\StringUtils.cs" />
+    <Compile Include="Core\Utils\TextureFactory.cs" />
+    <Compile Include="Core\Utils\ThreadLocalRandom.cs" />
+    <Compile Include="Core\Utils\TimeSpanUtils.cs" />
+    <Compile Include="Core\Utils\UintUtils.cs" />
+    <Compile Include="Core\Utils\Validate.cs" />
+    <Compile Include="Core\Utils\VectorUtils.cs" />
+    <Compile Include="Core\Utils\XnaUtils.cs" />
+    <Compile Include="DxGame.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Core\GraphicsWidgets\Utils\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

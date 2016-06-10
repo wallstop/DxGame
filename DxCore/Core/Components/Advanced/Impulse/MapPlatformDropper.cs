@@ -2,7 +2,6 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
-using DXGame.Core.Messaging;
 
 namespace DxCore.Core.Components.Advanced.Impulse
 {

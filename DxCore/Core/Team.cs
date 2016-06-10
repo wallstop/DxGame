@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using DxCore.Core.Utils.Cache.Simple;
 using DXGame.Core.Utils;
 using DXGame.Core.Utils.Cache;
-using DXGame.Core.Utils.Cache.Simple;
 using ProtoBuf;
 
 namespace DXGame.Core

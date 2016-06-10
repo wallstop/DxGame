@@ -1,9 +1,9 @@
 ﻿using System;
-using DXGame.Core.Utils.Cache;
-using DXGame.Core.Utils.Cache.Simple;
+using DxCore.Core.Utils.Cache.Simple;
+using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
-namespace DXGame.Core.Utils
+namespace DxCore.Core.Utils
 {
     /**
         Provides us a cache of transparency values. Creating new Colors is not cheap. 

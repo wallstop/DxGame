@@ -9,11 +9,10 @@ using DxCore.Core.Components.Developer;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Physics;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils.Distance;
 using DXGame.Core;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Core.Utils.Distance;
 
 namespace Babel.Skills.Gevurah
 {

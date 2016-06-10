@@ -1,7 +1,7 @@
-﻿using DXGame.Core.Primitives;
+﻿using DxCore.Core.Primitives;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DXGame.Core.State
+namespace DxCore.Core.State
 {
     /* Will be called for a State's Draw method */
 

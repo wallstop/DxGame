@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using DxCore;
-using DXGame.Core.Primitives;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

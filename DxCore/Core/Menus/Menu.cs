@@ -2,8 +2,8 @@
 using System.Linq;
 using DxCore.Core.Components.Advanced;
 using DxCore.Core.Components.Basic;
+using DxCore.Core.Primitives;
 using DXGame.Core;
-using DXGame.Core.Primitives;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

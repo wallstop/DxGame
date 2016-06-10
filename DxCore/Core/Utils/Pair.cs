@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using DXGame.Core.Utils;
 
-namespace DXGame.Core.Utils
+namespace DxCore.Core.Utils
 {
     [Serializable]
     [DataContract]

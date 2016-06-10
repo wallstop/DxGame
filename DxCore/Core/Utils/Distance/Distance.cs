@@ -1,6 +1,6 @@
-﻿using DXGame.Core.Primitives;
+﻿using DxCore.Core.Primitives;
 
-namespace DXGame.Core.Utils.Distance
+namespace DxCore.Core.Utils.Distance
 {
     public delegate DxVector2 Coordinate<in T>(T point);
 

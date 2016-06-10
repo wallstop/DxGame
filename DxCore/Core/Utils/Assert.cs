@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace DXGame.Core.Utils
+namespace DxCore.Core.Utils
 {
     public static class Assert
     {

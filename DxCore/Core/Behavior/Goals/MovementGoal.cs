@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Frames;
 using DxCore.Core.Models;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Behavior.Goals

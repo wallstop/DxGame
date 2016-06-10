@@ -19,12 +19,10 @@ using DxCore.Core.Experience;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Models;
+using DxCore.Core.Primitives;
 using DxCore.Core.State;
 using DXGame.Core;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.TowerGame.Components;
 
 namespace Babel.Enemies
 {

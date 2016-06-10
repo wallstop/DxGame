@@ -1,6 +1,6 @@
 ﻿using System;
+using DxCore.Core.Properties;
 using DXGame.Core;
-using DXGame.Core.Properties;
 
 namespace Babel.Enemies
 {

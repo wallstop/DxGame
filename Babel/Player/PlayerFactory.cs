@@ -1,5 +1,5 @@
 ﻿using DxCore.Core.Messaging;
-using DXGame.Core.Properties;
+using DxCore.Core.Properties;
 
 namespace Babel.Player
 {

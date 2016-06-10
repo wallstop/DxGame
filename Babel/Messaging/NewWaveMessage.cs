@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
-using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 
 namespace DXGame.TowerGame.Messaging

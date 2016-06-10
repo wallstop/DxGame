@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.State

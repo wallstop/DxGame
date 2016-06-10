@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils.Distance;
 using DXGame.Core;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
-using DXGame.Core.Utils.Distance;
 
 namespace DxCore.Core.Messaging
 {

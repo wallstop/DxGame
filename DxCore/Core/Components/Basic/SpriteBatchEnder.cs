@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using DxCore.Core.Primitives;
 using DXGame.Core;
-using DXGame.Core.Primitives;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DxCore.Core.Components.Basic

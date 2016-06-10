@@ -1,7 +1,6 @@
 ﻿using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DxCore.Core.Menus

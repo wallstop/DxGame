@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
+using DXGame.Core.Utils;
 
-namespace DXGame.Core.Utils.Distance
+namespace DxCore.Core.Utils.Distance
 {
     public delegate float Axis<in T>(T point);
 

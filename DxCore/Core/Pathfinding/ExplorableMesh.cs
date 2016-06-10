@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Map;
+using DxCore.Core.Utils;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Pathfinding

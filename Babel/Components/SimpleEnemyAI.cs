@@ -6,8 +6,8 @@ using DxCore.Core.Components.Advanced.Command;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Messaging;
 using DxCore.Core.Models;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
 using DXGame.Core.Utils;
 
 namespace Babel.Components

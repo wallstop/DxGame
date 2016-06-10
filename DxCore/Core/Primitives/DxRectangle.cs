@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using DxCore.Core.Utils;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
-namespace DXGame.Core.Primitives
+namespace DxCore.Core.Primitives
 {
     [Serializable]
     [DataContract]

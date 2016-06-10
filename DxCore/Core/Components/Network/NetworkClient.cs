@@ -11,11 +11,11 @@ using DxCore.Core.Messaging.Game;
 using DxCore.Core.Messaging.Network;
 using DxCore.Core.Models;
 using DxCore.Core.Network;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
+using DxCore.Core.Utils.Lerp;
 using DXGame.Core;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Core.Utils.Lerp;
 using Lidgren.Network;
 using NLog;
 

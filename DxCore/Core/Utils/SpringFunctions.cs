@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace DXGame.Core.Utils
+namespace DxCore.Core.Utils
 {
     public delegate double SpringFunction(double start, double end, double instant, double duration);
 

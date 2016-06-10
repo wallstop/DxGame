@@ -4,7 +4,6 @@ using DxCore.Core;
 using DxCore.Core.Components.Advanced.Triggers;
 using DxCore.Core.Messaging;
 using DXGame.Core;
-using DXGame.Core.Messaging;
 using DXGame.TowerGame.Messaging;
 
 namespace Babel.Components.Waves

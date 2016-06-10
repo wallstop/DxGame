@@ -1,4 +1,4 @@
-﻿using DXGame.Core.Primitives;
+﻿using DxCore.Core.Primitives;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;

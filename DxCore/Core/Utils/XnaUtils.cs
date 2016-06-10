@@ -1,4 +1,4 @@
-﻿using DXGame.Core.Primitives;
+﻿using DxCore.Core.Primitives;
 using Microsoft.Xna.Framework;
 
 namespace DXGame.Core.Utils

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
 

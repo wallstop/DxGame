@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Lidgren.Network;
 
-namespace DXGame.Core.Utils
+namespace DxCore.Core.Utils
 {
     public static class LidgrenUtils
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace DXGame.Core.Primitives
+namespace DxCore.Core.Primitives
 {
     [Serializable]
     [DataContract]

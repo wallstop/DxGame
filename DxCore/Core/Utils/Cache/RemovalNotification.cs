@@ -1,4 +1,6 @@
-﻿namespace DXGame.Core.Utils.Cache
+﻿using DXGame.Core.Utils;
+
+namespace DxCore.Core.Utils.Cache
 {
     public enum RemovalCause
     {

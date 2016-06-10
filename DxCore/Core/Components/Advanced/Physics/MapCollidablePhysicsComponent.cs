@@ -7,11 +7,11 @@ using DxCore.Core.Components.Utils;
 using DxCore.Core.Map;
 using DxCore.Core.Messaging;
 using DxCore.Core.Models;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
+using DxCore.Core.Utils.Distance;
 using DXGame.Core;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Core.Utils.Distance;
 
 namespace DxCore.Core.Components.Advanced.Physics
 {

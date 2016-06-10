@@ -4,8 +4,8 @@ using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Input;
 using DxCore.Core.Models;
-using DXGame.Core.Primitives;
-using DXGame.Core.Properties;
+using DxCore.Core.Primitives;
+using DxCore.Core.Properties;
 using Microsoft.Xna.Framework.Input;
 
 namespace DxCore.Core.Components.Developer

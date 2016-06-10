@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 
 namespace DxCore.Core.Skills
 {

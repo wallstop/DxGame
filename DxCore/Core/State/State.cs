@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.DataStructures;
 using DxCore.Core.Messaging;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
 using DXGame.Core;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
-using DXGame.Core.State;
 using DXGame.Core.Utils;
 using NLog;
 

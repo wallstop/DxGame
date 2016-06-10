@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DXGame.Core.Utils
+﻿namespace DxCore.Core.Utils
 {
     public interface IPair<T, U>
     {

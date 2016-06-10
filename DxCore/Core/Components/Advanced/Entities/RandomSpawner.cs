@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Models;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 
 namespace DxCore.Core.Components.Advanced.Entities
 {

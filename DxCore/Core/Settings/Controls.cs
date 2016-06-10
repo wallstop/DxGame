@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework.Input;
 
-namespace DXGame.Core.Settings
+namespace DxCore.Core.Settings
 {
     /**
 

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization;
+using DXGame.Core;
 using DXGame.Core.Utils;
 using NLog;
 
-namespace DXGame.Core.Settings
+namespace DxCore.Core.Settings
 {
     [DataContract]
     [Serializable]

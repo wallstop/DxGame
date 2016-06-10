@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Pathfinding

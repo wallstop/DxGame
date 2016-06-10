@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Animation

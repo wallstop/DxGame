@@ -1,6 +1,8 @@
 ﻿using System;
+using DXGame.Core.Utils;
+using DXGame.Core.Utils.Cache.Advanced;
 
-namespace DXGame.Core.Utils.Cache.Advanced
+namespace DxCore.Core.Utils.Cache.Advanced
 {
     public class LocalLoadingCache<K, V> : LocalCache<K, V>, ILoadingCache<K, V>
     {
@@ -8,7 +10,7 @@ namespace DXGame.Core.Utils.Cache.Advanced
 
         public LocalLoadingCache(CacheBuilder<K, V> cacheBuilder, Func<V> valueLoader) : base(cacheBuilder)
         {
-            Validate.IsNotNull(valueLoader, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(valueLoader)));
+            Validate.IsNotNull(valueLoader, this.GetFormattedNullOrDefaultMessage(nameof(valueLoader)));
             valueLoader_ = valueLoader;
         }
 

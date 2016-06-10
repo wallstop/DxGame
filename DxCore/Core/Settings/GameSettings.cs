@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
+using DXGame.Core;
 using DXGame.Core.Utils;
-using NLog;
 
-namespace DXGame.Core.Settings
+namespace DxCore.Core.Settings
 {
     /*
         This class will hold all of the Game-specific options like Keybinds, screen resolution, graphics fidelity, etc

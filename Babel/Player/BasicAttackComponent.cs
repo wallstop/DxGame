@@ -4,7 +4,6 @@ using DxCore;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
-using DXGame.Core.Messaging;
 
 namespace Babel.Player
 {

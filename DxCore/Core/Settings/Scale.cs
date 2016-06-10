@@ -1,4 +1,4 @@
-﻿namespace DXGame.Core.Settings
+﻿namespace DxCore.Core.Settings
 {
     /*
         Scale represents how large or small a particular thing is. This is a common metric and 

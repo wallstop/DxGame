@@ -9,12 +9,10 @@ using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Messaging;
 using DxCore.Core.Physics;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils.Distance;
 using DXGame.Core;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
-using DXGame.Core.State;
 using DXGame.Core.Utils;
-using DXGame.Core.Utils.Distance;
 
 namespace DxCore.Core.State
 {

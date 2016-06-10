@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
+using DxCore.Core.Primitives;
 using DXGame.Core;
-using DXGame.Core.Primitives;
 using Microsoft.Xna.Framework.Input;
 
 namespace DxCore.Core.Input

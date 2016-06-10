@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils.Cache.Simple;
+using DxCore.Core.Utils.Distance;
 using DXGame.Core;
-using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Core.Utils.Cache.Simple;
-using DXGame.Core.Utils.Distance;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
 

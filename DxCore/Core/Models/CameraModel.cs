@@ -1,5 +1,5 @@
 ﻿using System;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
 

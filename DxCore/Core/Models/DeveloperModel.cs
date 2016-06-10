@@ -5,10 +5,9 @@ using DxCore.Core.GraphicsWidgets.HUD;
 using DxCore.Core.Map;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
+using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DXGame.Core;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DxCore.Core.Models

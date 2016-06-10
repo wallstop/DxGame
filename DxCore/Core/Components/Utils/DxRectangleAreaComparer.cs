@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 
 namespace DxCore.Core.Components.Utils
 {

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using DxCore.Core.Utils;
+using DxCore.Core.Utils.Cache.Simple;
 using DXGame.Core.Utils;
-using DXGame.Core.Utils.Cache.Simple;
 using NLog;
 
 namespace DxCore.Core.Animation

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced.Position;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 using Microsoft.Xna.Framework.Input;
 
 namespace DxCore.Core.Components.Advanced

@@ -8,11 +8,10 @@ using DxCore.Core.Components.Advanced.Player;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Messaging;
+using DxCore.Core.Primitives;
 using DxCore.Core.Skills;
 using DxCore.Core.State;
 using DXGame.Core;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
 using Microsoft.Xna.Framework;
 
 namespace DxCore.Core.Generators

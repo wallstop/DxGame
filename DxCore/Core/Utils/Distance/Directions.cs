@@ -1,4 +1,4 @@
-﻿namespace DXGame.Core.Utils.Distance
+﻿namespace DxCore.Core.Utils.Distance
 {
     /**
         <summary> 

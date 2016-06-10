@@ -2,7 +2,7 @@
 using System.Linq;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Components.Network;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Models

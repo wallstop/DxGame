@@ -5,9 +5,8 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Messaging;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
-using DXGame.Core.Utils.Distance;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils.Distance;
 
 namespace DxCore.Core.Models
 {

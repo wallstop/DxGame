@@ -1,5 +1,5 @@
-﻿using DXGame.Core;
-using DXGame.Core.Primitives;
+﻿using DxCore.Core.Primitives;
+using DXGame.Core;
 
 namespace DxCore.Core.Components.Advanced
 {

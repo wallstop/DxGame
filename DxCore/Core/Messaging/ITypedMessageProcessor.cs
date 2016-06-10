@@ -1,6 +1,4 @@
-﻿using DXGame.Core.Messaging;
-
-namespace DxCore.Core.Messaging
+﻿namespace DxCore.Core.Messaging
 {
     public interface ITypedMessageProcessor
     {

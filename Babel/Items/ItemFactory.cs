@@ -4,8 +4,8 @@ using System.Linq;
 using System.Reflection;
 using DxCore.Core;
 using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Primitives;
 using DXGame.Core;
-using DXGame.Core.Primitives;
 
 namespace Babel.Items
 {

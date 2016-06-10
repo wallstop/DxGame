@@ -12,13 +12,12 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Models;
+using DxCore.Core.Primitives;
 using DxCore.Core.State;
+using DxCore.Core.Utils;
+using DxCore.Core.Utils.Distance;
 using DXGame.Core;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
-using DXGame.Core.State;
 using DXGame.Core.Utils;
-using DXGame.Core.Utils.Distance;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Babel.Skills.Gevurah

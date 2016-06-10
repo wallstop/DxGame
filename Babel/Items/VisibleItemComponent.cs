@@ -7,8 +7,8 @@ using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
+using DxCore.Core.Primitives;
 using DXGame.Core;
-using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using NLog;
 

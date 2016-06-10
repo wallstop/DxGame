@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
-namespace DXGame.Core.Primitives
+namespace DxCore.Core.Primitives
 {
     public enum Orientation
     {

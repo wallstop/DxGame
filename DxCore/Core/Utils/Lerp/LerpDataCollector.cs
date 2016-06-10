@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using DXGame.Core;
+using DXGame.Core.Utils;
 
-namespace DXGame.Core.Utils.Lerp
+namespace DxCore.Core.Utils.Lerp
 {
     public struct LerpData<T>
     {

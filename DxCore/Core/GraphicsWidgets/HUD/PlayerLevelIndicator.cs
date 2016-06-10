@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced.Entities;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Models;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

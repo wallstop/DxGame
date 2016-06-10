@@ -9,11 +9,10 @@ using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Messaging;
+using DxCore.Core.Primitives;
+using DxCore.Core.Properties;
+using DxCore.Core.Utils.Distance;
 using DXGame.Core;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
-using DXGame.Core.Properties;
-using DXGame.Core.Utils.Distance;
 using NLog;
 using Component = DxCore.Core.Components.Basic.Component;
 

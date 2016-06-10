@@ -2,8 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
-using DXGame.Core.Messaging;
-using DXGame.Core.Utils.Distance;
+using DxCore.Core.Utils.Distance;
 
 namespace DxCore.Core.Components.Advanced
 {

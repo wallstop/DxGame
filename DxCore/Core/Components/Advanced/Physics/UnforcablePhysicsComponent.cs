@@ -2,8 +2,8 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Physics;
+using DxCore.Core.Primitives;
 using DXGame.Core;
-using DXGame.Core.Primitives;
 
 namespace DxCore.Core.Components.Advanced.Physics
 {

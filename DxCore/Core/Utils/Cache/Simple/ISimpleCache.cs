@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DXGame.Core.Utils.Cache.Simple
+namespace DxCore.Core.Utils.Cache.Simple
 {
     /**
         <summary>

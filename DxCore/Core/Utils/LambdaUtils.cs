@@ -2,19 +2,20 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using DXGame.Core.Utils;
 
-namespace DXGame.Core.Utils
+namespace DxCore.Core.Utils
 {
     public static class LambdaUtils
     {
         public static int DelegateHashCode(Delegate method)
         {
-            if (method == null)
+            if(method == null)
             {
                 return 0;
             }
             int result = method.Method.GetHashCode() ^ method.GetType().GetHashCode();
-            if (method.Target != null)
+            if(method.Target != null)
             {
                 result ^= RuntimeHelpers.GetHashCode(method);
             }
@@ -25,13 +26,11 @@ namespace DXGame.Core.Utils
         [DataContract]
         public class LambdaComparer<T> : IComparer<T>
         {
-            [DataMember]
-            private readonly Func<T, T, int> lambdaComparer_;
+            [DataMember] private readonly Func<T, T, int> lambdaComparer_;
 
             public LambdaComparer(Func<T, T, int> lambdaComparer)
             {
-                Validate.IsNotNull(lambdaComparer,
-                    StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(lambdaComparer)));
+                Validate.IsNotNull(lambdaComparer, this.GetFormattedNullOrDefaultMessage(nameof(lambdaComparer)));
                 lambdaComparer_ = lambdaComparer;
             }
 

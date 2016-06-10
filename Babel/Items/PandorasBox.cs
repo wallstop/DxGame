@@ -4,8 +4,9 @@ using DxCore;
 using DxCore.Core;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Components.Advanced.Triggers;
+using DxCore.Core.Properties;
+using DxCore.Core.Utils;
 using DXGame.Core;
-using DXGame.Core.Properties;
 using DXGame.Core.Utils;
 using NLog;
 

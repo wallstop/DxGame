@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
+using DxCore.Core.Primitives;
 using DXGame.Core;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
 using NLog;
 
 namespace DxCore.Core.Components.Basic

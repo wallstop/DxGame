@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using DxCore.Core.Components.Basic;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils.Distance;
 using DXGame.Core.Utils;
-using DXGame.Core.Utils.Distance;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

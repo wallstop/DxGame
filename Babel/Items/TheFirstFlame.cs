@@ -9,8 +9,9 @@ using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Components.Advanced.Triggers;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
-using DXGame.Core.Primitives;
-using DXGame.Core.Properties;
+using DxCore.Core.Primitives;
+using DxCore.Core.Properties;
+using DxCore.Core.Utils;
 using DXGame.Core.Utils;
 
 namespace Babel.Items

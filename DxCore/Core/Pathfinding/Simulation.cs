@@ -6,8 +6,8 @@ using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Messaging;
 using DxCore.Core.Physics;
-using DXGame.Core.Primitives;
-using DXGame.Core.Utils.Cache.Simple;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils.Cache.Simple;
 using MathNet.Numerics;
 
 namespace DxCore.Core.Pathfinding

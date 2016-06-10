@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
+using DxCore.Core.Utils.Distance;
 using DXGame.Core;
-using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
-using DXGame.Core.Utils.Distance;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;

@@ -4,8 +4,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
+using DXGame.Core.Utils;
 
-namespace DXGame.Core.Utils.Cache.Simple
+namespace DxCore.Core.Utils.Cache.Simple
 {
     [Serializable]
     [DataContract]

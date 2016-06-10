@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 using DXGame.Core.Utils;
 using MathNet.Numerics;
 

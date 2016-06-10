@@ -1,8 +1,7 @@
 ﻿using DxCore.Core.Level;
 using DxCore.Core.Messaging;
+using DxCore.Core.Primitives;
 using DXGame.Core;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;

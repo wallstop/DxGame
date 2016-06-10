@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using DxCore.Core.Utils;
 using DXGame.Core.Utils;
 
-namespace DXGame.Core.Properties
+namespace DxCore.Core.Properties
 {
     /*
         The order in which PropertyMutators are applied, Highest first.
@@ -30,7 +31,7 @@ namespace DXGame.Core.Properties
             // Increases the property by 15%
             private readonly float BUFF_INCREASE = 1.15f;
 
-            public WearWolfBuff()
+            public WereWolfBuff()
                 : base(WereWolfBuff, WereWolfDebuff, "WereWolfBuff")
             {
             }

@@ -7,9 +7,8 @@ using DxCore.Core.Components.Advanced.Entities;
 using DxCore.Core.Events;
 using DxCore.Core.Messaging;
 using DxCore.Core.Models;
+using DxCore.Core.Primitives;
 using DXGame.Core;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
 using DXGame.TowerGame.Messaging;
 using NLog;
 

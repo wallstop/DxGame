@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced.Command;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

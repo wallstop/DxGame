@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DXGame.Core;
-using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 using NLog;
 

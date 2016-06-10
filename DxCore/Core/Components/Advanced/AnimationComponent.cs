@@ -4,10 +4,11 @@ using System.Runtime.Serialization;
 using DxCore.Core.Animation;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
+using DxCore.Core.Primitives;
 using DxCore.Core.State;
-using DXGame.Core.Primitives;
+using DxCore.Core.Utils;
+using DxCore.Core.Utils.Distance;
 using DXGame.Core.Utils;
-using DXGame.Core.Utils.Distance;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DxCore.Core.Components.Advanced

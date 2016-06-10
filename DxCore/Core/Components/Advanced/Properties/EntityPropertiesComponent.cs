@@ -7,9 +7,8 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Physics;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
-using DXGame.Core.Properties;
+using DxCore.Core.Primitives;
+using DxCore.Core.Properties;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Components.Advanced.Properties

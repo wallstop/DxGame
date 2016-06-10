@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Runtime.Serialization;
 using System.Threading;
 
-namespace DXGame.Core.Utils
+namespace DxCore.Core.Utils
 {
     /**
         <summary>

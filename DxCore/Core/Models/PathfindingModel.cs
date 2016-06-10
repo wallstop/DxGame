@@ -7,8 +7,8 @@ using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Map;
 using DxCore.Core.Messaging;
 using DxCore.Core.Pathfinding;
-using DXGame.Core.Messaging;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
 using DXGame.Core.Utils;
 using NLog;
 

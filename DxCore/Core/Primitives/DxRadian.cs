@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using DxCore.Core.Utils;
 using DXGame.Core.Utils;
 
-namespace DXGame.Core.Primitives
+namespace DxCore.Core.Primitives
 {
     /**
         Follows the XNA Coordinate Space

@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using DXGame.Core.Utils;
 using NLog;
 
-namespace DXGame.Core.Properties
+namespace DxCore.Core.Properties
 {
     public interface IProperty
     {

@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DXGame.Core;
-using DXGame.Core.Messaging;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Components.Advanced

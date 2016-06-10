@@ -1,6 +1,6 @@
 ﻿using System;
+using DxCore.Core.Primitives;
 using DXGame.Core;
-using DXGame.Core.Primitives;
 
 namespace DxCore.Core.Lerp
 {

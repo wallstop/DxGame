@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using DxCore.Core.Input;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 
 namespace DxCore.Core.Models
 {

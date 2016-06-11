@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using DxCore.Core.Utils;
 using DxCore.Core.Utils.Cache.Simple;
-using DXGame.Core.Utils;
-using DXGame.Core.Utils.Cache;
-using ProtoBuf;
 
-namespace DXGame.Core
+namespace DxCore.Core
 {
     /**
         Defines the affiliation of an entity. For example, players will generally be on one "team" v enemies, who are on another "team".
@@ -18,14 +16,12 @@ namespace DXGame.Core
 
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public sealed class Team : IEquatable<Team>
     {
         private static readonly UnboundedLoadingSimpleCache<string, Team> TeamSimpleCache =
             new UnboundedLoadingSimpleCache<string, Team>(name => new Team(name));
 
         [DataMember]
-        [ProtoMember(1)]
         public string Name { get; }
 
         public static Team PlayerTeam { get; } = TeamFor("Player");

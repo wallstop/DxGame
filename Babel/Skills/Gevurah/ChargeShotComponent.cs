@@ -12,8 +12,6 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
-using DXGame.Core;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Babel.Skills.Gevurah
@@ -33,13 +31,18 @@ namespace Babel.Skills.Gevurah
 
         [DataMember] private Texture2D arrow_;
 
-        [DataMember]
-        private HashSet<GameObject> entitiesHit_ = new HashSet<GameObject>();
-        
+        [DataMember] private HashSet<GameObject> entitiesHit_ = new HashSet<GameObject>();
+
         [DataMember] private SpatialComponent spatial_;
-        [DataMember] private Direction Direction { get; }
-        [DataMember] private double Damage { get; }
-        [DataMember] private TimeSpan LifeTime { get; }
+
+        [DataMember]
+        private Direction Direction { get; }
+
+        [DataMember]
+        private double Damage { get; }
+
+        [DataMember]
+        private TimeSpan LifeTime { get; }
 
         [DataMember] private TimeSpan currentDuration_;
 
@@ -80,7 +83,12 @@ namespace Babel.Skills.Gevurah
             {
                 return;
             }
-            DamageMessage damage = new DamageMessage {Source = sourceEntity, DamageCheck = ChargeShotDamageCheck, Target = destinationPhysics.Parent?.Id};
+            DamageMessage damage = new DamageMessage
+            {
+                Source = sourceEntity,
+                DamageCheck = ChargeShotDamageCheck,
+                Target = destinationPhysics.Parent?.Id
+            };
             damage.Emit();
         }
 
@@ -98,7 +106,7 @@ namespace Babel.Skills.Gevurah
             }
             return Tuple.Create(true, Damage);
         }
-        
+
         protected override void Update(DxGameTime gameTime)
         {
             currentDuration_ += gameTime.ElapsedGameTime;
@@ -109,7 +117,7 @@ namespace Babel.Skills.Gevurah
                 Parent?.Remove();
                 return;
             }
-            
+
             PhysicsMessage interaction = new PhysicsMessage();
             interaction.AffectedAreas.Add(spatial_.Space);
             interaction.Source = Parent;

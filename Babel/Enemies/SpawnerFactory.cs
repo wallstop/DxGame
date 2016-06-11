@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Babel.Messaging;
 using DxCore;
 using DxCore.Core;
 using DxCore.Core.Components.Advanced;
@@ -9,7 +10,6 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Models;
 using DxCore.Core.Primitives;
 using DXGame.Core;
-using DXGame.TowerGame.Messaging;
 using NLog;
 
 namespace Babel.Enemies

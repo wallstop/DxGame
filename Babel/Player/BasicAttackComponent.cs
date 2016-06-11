@@ -12,6 +12,7 @@ namespace Babel.Player
             
         </summary>
     */
+
     [DataContract]
     [Serializable]
     public class BasicAttackComponent : Component
@@ -27,10 +28,6 @@ namespace Babel.Player
                 int attackSpeed = entityProperties.EntityProperties.AttackSpeed.CurrentValue;
                 return TimeSpan.FromSeconds(60.0 / attackSpeed);
             }
-        }
-
-        public BasicAttackComponent()
-        {
         }
 
         public override void OnAttach()

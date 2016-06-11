@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using Babel.Messaging;
 using DxCore;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.GraphicsWidgets;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
-using DXGame.TowerGame.Messaging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Frames;
+using DxCore.Core.Utils;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Behavior.Goals

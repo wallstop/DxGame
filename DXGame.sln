@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DXGame", "DXGame.csproj", "{9B58D322-95D0-4F4C-A742-DD643C7024FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DXGameTest", "Test\DXGameTest\DXGameTest.csproj", "{883B9882-DA61-4D25-8F11-2270E6C317AF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BE7E2670-E97A-456E-9279-25DCB3541D5D} = {BE7E2670-E97A-456E-9279-25DCB3541D5D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DxGameUtils", "DxGameUtils\DxGameUtils.csproj", "{8652FA2F-CE84-4DCD-9F14-3E920A993885}"
 EndProject

@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using System.Threading;
 
-namespace DXGame.Core
+namespace DxCore.Core
 {
     /**
     <summary>

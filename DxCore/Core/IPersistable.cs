@@ -1,4 +1,4 @@
-﻿namespace DXGame.Core
+﻿namespace DxCore.Core
 {
     public interface IPersistable<out T>
     {

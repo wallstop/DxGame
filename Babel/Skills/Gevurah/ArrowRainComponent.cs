@@ -16,7 +16,6 @@ using DxCore.Core.Primitives;
 using DxCore.Core.State;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
-using DXGame.Core;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -28,6 +27,7 @@ namespace Babel.Skills.Gevurah
             
         </summary>
     */
+
     [Serializable]
     [DataContract]
     public class ArrowRainLauncher : DrawableComponent
@@ -51,11 +51,11 @@ namespace Babel.Skills.Gevurah
         [DataMember]
         private GameObject Source { get; }
 
-        [DataMember] readonly private List<CollisionMessage> collisionMessages_; 
+        [DataMember] private readonly List<CollisionMessage> collisionMessages_;
 
         public ArrowRainLauncher(GameObject source, DxVector2 position, Direction direction)
         {
-            Validate.IsNotNullOrDefault(source, StringUtils.GetFormattedNullOrDefaultMessage(this, "source"));
+            Validate.IsNotNullOrDefault(source, this.GetFormattedNullOrDefaultMessage("source"));
             Source = source;
             Validate.IsTrue(direction == Direction.East || direction == Direction.West,
                 $"Expected {nameof(direction)} to be East or West, but was {direction}");
@@ -83,7 +83,7 @@ namespace Babel.Skills.Gevurah
                     .WithSpatialComponent(Spatial)
                     .WithVelocity(velocity)
                     .Build();
-            
+
             collisionMessages_ = new List<CollisionMessage>();
         }
 
@@ -104,11 +104,11 @@ namespace Babel.Skills.Gevurah
 
         protected override void Update(DxGameTime gameTime)
         {
-            if(ReferenceEquals(null, (Physics.Parent)))
+            if(ReferenceEquals(null, Physics.Parent))
             {
                 Physics.Parent = Parent;
             }
-            if (ReferenceEquals(null, Spatial.Parent))
+            if(ReferenceEquals(null, Spatial.Parent))
             {
                 Spatial.Parent = Parent;
             }
@@ -116,7 +116,7 @@ namespace Babel.Skills.Gevurah
             List<CollisionMessage> collisionMessages = collisionMessages_;
             collisionMessages_.Clear();
             /* If our launch TTL has expired OR we've collided with the map, launch! */
-            if (timeToLaunch_ < gameTime.ElapsedGameTime || collisionMessages.Any())
+            if(timeToLaunch_ < gameTime.ElapsedGameTime || collisionMessages.Any())
             {
                 Launch();
             }
@@ -127,7 +127,7 @@ namespace Babel.Skills.Gevurah
             Spatial.Process(gameTime);
             Physics.Process(gameTime);
         }
-        
+
         public override void LoadContent()
         {
             Spatial.LoadContent();
@@ -168,6 +168,7 @@ namespace Babel.Skills.Gevurah
         
         </summary>
     */
+
     [Serializable]
     [DataContract]
     public class ArrowRainer : DrawableComponent
@@ -185,6 +186,7 @@ namespace Babel.Skills.Gevurah
         private static readonly int ARROW_RAIN_DEPTH = 500;
 
         /* Position & Velocity for each arrow */
+
         private readonly List<Tuple<DxVector2, DxVector2>> arrowSpritePositionsAndVelocities_ =
             new List<Tuple<DxVector2, DxVector2>>(MAX_ARROW_SPRITES);
 
@@ -192,31 +194,28 @@ namespace Babel.Skills.Gevurah
         private int pulses_;
         private TimeSpan PulseDelay { get; } = TimeSpan.FromSeconds(1 / 5.0);
         private TimeSpan Duration { get; } = TimeSpan.FromSeconds(3);
-        [NonSerialized]
-        private Texture2D arrowSprite_;
+        [NonSerialized] private Texture2D arrowSprite_;
         private DxVector2 Position { get; }
         private GameObject Source { get; }
 
         public ArrowRainer(GameObject source, DxVector2 position, Direction direction)
         {
-            Validate.IsNotNullOrDefault(source, StringUtils.GetFormattedNullOrDefaultMessage(this, "source"));
+            Validate.IsNotNullOrDefault(source, this.GetFormattedNullOrDefaultMessage("source"));
             Source = source;
             Validate.IsTrue(direction == Direction.East || direction == Direction.West,
                 $"Expected {nameof(direction)} to be East or West, but was {direction}");
-            Position = (direction == Direction.East
-                ? position
-                : new DxVector2(position.X - ARROW_RAIN_WIDTH, position.Y));
+            Position = direction == Direction.East ? position : new DxVector2(position.X - ARROW_RAIN_WIDTH, position.Y);
         }
 
         protected override void Update(DxGameTime gameTime)
         {
             elapsed_ += gameTime.ElapsedGameTime;
-            if (elapsed_ > Duration)
+            if(elapsed_ > Duration)
             {
                 Remove();
                 return;
             }
-            if (elapsed_.Divide(PulseDelay) > pulses_)
+            if(elapsed_.Divide(PulseDelay) > pulses_)
             {
                 ++pulses_;
                 SpawnMoreArrows();
@@ -239,7 +238,7 @@ namespace Babel.Skills.Gevurah
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            foreach (var arrowSpritePositionAndVelocity in arrowSpritePositionsAndVelocities_)
+            foreach(var arrowSpritePositionAndVelocity in arrowSpritePositionsAndVelocities_)
             {
                 var arrowSpritePosition = arrowSpritePositionAndVelocity.Item1;
                 var transparencyWeight = ThreadLocalRandom.Current.NextFloat(0.1f, 0.7f);
@@ -253,7 +252,7 @@ namespace Babel.Skills.Gevurah
             var newArrowCount = ThreadLocalRandom.Current.Next(1, MAX_NEW_ARROWS);
             /* Don't spawn more than our MAX_ARROW_SPRITES cap */
             newArrowCount = Math.Max(MAX_ARROW_SPRITES - arrowSpritePositionsAndVelocities_.Count, newArrowCount);
-            for (int i = 0; i < newArrowCount; ++i)
+            for(int i = 0; i < newArrowCount; ++i)
             {
                 SpawnArrow();
             }
@@ -262,7 +261,7 @@ namespace Babel.Skills.Gevurah
         private void SpawnArrow()
         {
             var chosenY = ThreadLocalRandom.Current.NextFloat(Position.Y, Position.Y + 5);
-            var xCoordinate = ThreadLocalRandom.Current.Next((int)Position.X, (int)(Position.X + ARROW_RAIN_WIDTH));
+            var xCoordinate = ThreadLocalRandom.Current.Next((int) Position.X, (int) (Position.X + ARROW_RAIN_WIDTH));
             var randomVelocityBoost = ThreadLocalRandom.Current.NextFloat(1.0f, 2.0f);
             arrowSpritePositionsAndVelocities_.Add(Tuple.Create(new DxVector2(xCoordinate, chosenY),
                 BASE_ARROW_VELOCITY * randomVelocityBoost));
@@ -273,14 +272,15 @@ namespace Babel.Skills.Gevurah
             var mapTilesInRange =
                 DxGame.Instance.Model<MapModel>()
                     .Map.Collidables.InRange(new DxRectangle(Position.X, Position.Y, ARROW_RAIN_WIDTH, ARROW_RAIN_DEPTH))
-                    .Select(tile => tile.Space).ToList();
+                    .Select(tile => tile.Space)
+                    .ToList();
             mapTilesInRange.Sort((tile1, tile2) => (int) (tile2.Y - tile1.Y));
             var scaleFactor = gameTime.ScaleFactor;
             /* 
                 We need to do a counting for loop because DxVector2s are structs 
                 (foreach would copy them instead of updating their references) 
             */
-            for (int i = 0; i < arrowSpritePositionsAndVelocities_.Count; ++i)
+            for(int i = 0; i < arrowSpritePositionsAndVelocities_.Count; ++i)
             {
                 arrowSpritePositionsAndVelocities_[i] =
                     Tuple.Create(
@@ -289,18 +289,18 @@ namespace Babel.Skills.Gevurah
                         arrowSpritePositionsAndVelocities_[i].Item2);
             }
 
-            foreach (var arrowSpritePositionAndVelocity in arrowSpritePositionsAndVelocities_.ToArray())
+            foreach(var arrowSpritePositionAndVelocity in arrowSpritePositionsAndVelocities_.ToArray())
             {
                 var arrowSpritePosition = arrowSpritePositionAndVelocity.Item1;
                 var boundingBox = new DxRectangle(arrowSpritePosition.X, arrowSpritePosition.Y, arrowSprite_.Width,
                     arrowSprite_.Height);
                 /* Naive check for map collision (none of this is great) */
-                if (mapTilesInRange.Any(mapTileInRange => mapTileInRange.Intersects(boundingBox)))
+                if(mapTilesInRange.Any(mapTileInRange => mapTileInRange.Intersects(boundingBox)))
                 {
                     arrowSpritePositionsAndVelocities_.Remove(arrowSpritePositionAndVelocity);
                 }
                 /* Naive check for max depth */
-                else if (arrowSpritePosition.Y > Position.Y + ARROW_RAIN_DEPTH)
+                else if(arrowSpritePosition.Y > Position.Y + ARROW_RAIN_DEPTH)
                 {
                     arrowSpritePositionsAndVelocities_.Remove(arrowSpritePositionAndVelocity);
                 }
@@ -313,7 +313,8 @@ namespace Babel.Skills.Gevurah
             var mapTilesInRange =
                 DxGame.Instance.Model<MapModel>()
                     .Map.Collidables.InRange(new DxRectangle(Position.X, Position.Y, ARROW_RAIN_WIDTH, ARROW_RAIN_DEPTH))
-                    .Select(tile => tile.Space).ToList();
+                    .Select(tile => tile.Space)
+                    .ToList();
             mapTilesInRange.Sort((tile1, tile2) => (int) (tile2.Y - tile1.Y));
 
             /* 
@@ -324,28 +325,27 @@ namespace Babel.Skills.Gevurah
             var maxDepth = (int) Position.Y + ARROW_RAIN_DEPTH;
             var rectangleBegin = (int) Position.X;
             var lastDepth = maxDepth;
-            for (int i = (int) Position.X; i < (int) Position.X + ARROW_RAIN_WIDTH; ++i)
+            for(int i = (int) Position.X; i < (int) Position.X + ARROW_RAIN_WIDTH; ++i)
             {
                 var index = i;
                 Func<DxRectangle, bool> intersections = tile => tile.X <= index && index < tile.X + tile.Width;
                 int depth = maxDepth;
-                if (mapTilesInRange.Any(intersections))
+                if(mapTilesInRange.Any(intersections))
                 {
                     depth = (int) mapTilesInRange.First(intersections).Y;
                 }
                 /* Are we at a different depth & have moved at least one pixel? */
-                if (depth != lastDepth && rectangleBegin != i)
+                if(depth != lastDepth && rectangleBegin != i)
                 {
                     /* If so, great, that means we're at a new rectangular bound, so cap the old one off & ship it */
-                    affectedAreas.Add(new DxRectangle(rectangleBegin, Position.Y, (i - rectangleBegin),
-                        (lastDepth - Position.Y)));
+                    affectedAreas.Add(new DxRectangle(rectangleBegin, Position.Y, i - rectangleBegin,
+                        lastDepth - Position.Y));
                     rectangleBegin = i;
                     lastDepth = depth;
                 }
             }
-            affectedAreas.Add(new DxRectangle(rectangleBegin, Position.Y,
-                (Position.X + ARROW_RAIN_WIDTH - rectangleBegin),
-                (lastDepth - Position.Y)));
+            affectedAreas.Add(new DxRectangle(rectangleBegin, Position.Y, Position.X + ARROW_RAIN_WIDTH - rectangleBegin,
+                lastDepth - Position.Y));
             return affectedAreas;
         }
 
@@ -364,7 +364,7 @@ namespace Babel.Skills.Gevurah
         private static Tuple<bool, double> ArrowRainDamage(GameObject source, GameObject destination)
         {
             /* Should probably check teams... */
-            if (source == destination)
+            if(source == destination)
             {
                 return Tuple.Create(false, 0.0);
             }

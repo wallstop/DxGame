@@ -13,6 +13,7 @@ namespace DxCore.Core.Models
 
     [Serializable]
     [DataContract]
+    [Obsolete("Pls find a better way of injecting behavior into the game")]
     public class GameModel : Model
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();

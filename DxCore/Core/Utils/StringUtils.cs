@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using DXGame.Core;
 
-namespace DXGame.Core.Utils
+namespace DxCore.Core.Utils
 {
     public static class StringUtils
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils;
 
-namespace DXGame.Core
+namespace DxCore.Core
 {
     /**
         <summary>

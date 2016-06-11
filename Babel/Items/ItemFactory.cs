@@ -5,7 +5,6 @@ using System.Reflection;
 using DxCore.Core;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Primitives;
-using DXGame.Core;
 
 namespace Babel.Items
 {

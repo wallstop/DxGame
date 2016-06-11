@@ -1,6 +1,7 @@
 ﻿using System;
+using DXGame.Core.Utils;
 
-namespace DXGame.Core.Utils.Cache.Advanced
+namespace DxCore.Core.Utils.Cache.Advanced
 {
     public interface ICache<in K, V>
     {

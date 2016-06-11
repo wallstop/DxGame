@@ -1,4 +1,6 @@
-﻿namespace DXGame.Core
+﻿using DXGame.Core;
+
+namespace DxCore.Core
 {
     public interface IIdentifiable
     {

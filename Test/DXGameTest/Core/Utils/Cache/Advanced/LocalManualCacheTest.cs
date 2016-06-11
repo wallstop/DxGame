@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
-using DXGame.Core.Utils;
-using DXGame.Core.Utils.Cache;
-using DXGame.Core.Utils.Cache.Advanced;
+using DxCore.Core.Utils;
+using DxCore.Core.Utils.Cache;
+using DxCore.Core.Utils.Cache.Advanced;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
@@ -82,10 +82,11 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
         public void TestNoRemovalNotificationSameEntry()
         {
             bool removalCalled = false;
-            Action<RemovalNotification<int, string>> removalNotifier = notification =>
-            {
-                Assert.Fail("Removal notification was called when calling put with same key value pair");
-            };
+            Action<RemovalNotification<int, string>> removalNotifier =
+                notification =>
+                {
+                    Assert.Fail("Removal notification was called when calling put with same key value pair");
+                };
 
             ICache<int, string> arbitraryCache =
                 CacheBuilder<int, string>.NewBuilder().WithRemovalListener(removalNotifier).Build();
@@ -140,7 +141,10 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
 
             TimeSpan writeExpiry = TimeSpan.FromMilliseconds(ThreadLocalRandom.Current.Next(1000, 1500));
             ICache<int, string> arbitraryCache =
-                CacheBuilder<int, string>.NewBuilder().WithRemovalListener(removalNotifier).WithExpireAfterWrite(writeExpiry).Build();
+                CacheBuilder<int, string>.NewBuilder()
+                    .WithRemovalListener(removalNotifier)
+                    .WithExpireAfterWrite(writeExpiry)
+                    .Build();
 
             arbitraryCache.Put(key, value);
             Thread.Sleep((int) writeExpiry.TotalMilliseconds * 2);
@@ -170,7 +174,10 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
 
             TimeSpan accessExpiry = TimeSpan.FromMilliseconds(ThreadLocalRandom.Current.Next(1000, 1500));
             ICache<int, string> arbitraryCache =
-                CacheBuilder<int, string>.NewBuilder().WithRemovalListener(removalNotifier).WithExpireAfterAccess(accessExpiry).Build();
+                CacheBuilder<int, string>.NewBuilder()
+                    .WithRemovalListener(removalNotifier)
+                    .WithExpireAfterAccess(accessExpiry)
+                    .Build();
 
             arbitraryCache.Put(key, value);
             Optional<string> maybeValue = arbitraryCache.GetIfPresent(key);

@@ -5,10 +5,9 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using DXGame.Core;
-using DXGame.Core.Components.Advanced.Map;
-using DXGame.Core.Map;
-using DXGame.Core.Primitives;
+using DxCore.Core;
+using DxCore.Core.Map;
+using DxCore.Core.Primitives;
 
 namespace DxGameUtils.Core
 {

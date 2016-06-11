@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DXGame.Core;
-using DXGame.Core.DataStructures;
-using DXGame.Core.Utils;
+using DxCore.Core.DataStructures;
+using DxCore.Core.Utils;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 

@@ -1,7 +1,5 @@
 ﻿using System;
 using DXGame.Core.Utils;
-using DXGame.Core.Utils.Cache;
-using DXGame.Core.Utils.Cache.Advanced;
 
 namespace DxCore.Core.Utils.Cache.Advanced
 {

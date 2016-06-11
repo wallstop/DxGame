@@ -4,8 +4,6 @@ using DxCore.Core;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Properties;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
 
 namespace Babel.Items
 {

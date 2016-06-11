@@ -1,5 +1,5 @@
-﻿using DXGame.Core;
-using DXGame.Core.Primitives;
+﻿using DxCore.Core;
+using DxCore.Core.Primitives;
 using NUnit.Framework;
 
 namespace DXGameTest.Core.Network

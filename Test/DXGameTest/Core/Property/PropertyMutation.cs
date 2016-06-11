@@ -1,5 +1,5 @@
 ﻿using System;
-using DXGame.Core.Properties;
+using DxCore.Core.Properties;
 using NUnit.Framework;
 
 namespace DXGameTest.Core.Property

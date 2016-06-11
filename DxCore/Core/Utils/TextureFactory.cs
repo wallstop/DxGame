@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using DxCore;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DXGame.Core.Utils
+namespace DxCore.Core.Utils
 {
     /**
         TextureFactory allows us to lazily-create color-based Textures, additionally creating only a single texture that is

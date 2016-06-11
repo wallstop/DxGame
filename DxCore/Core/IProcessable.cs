@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
 
-namespace DXGame.Core
+namespace DxCore.Core
 {
     public enum UpdatePriority
     {

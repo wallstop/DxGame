@@ -10,6 +10,7 @@ using DxCore.Core.Messaging.Network;
 using DxCore.Core.Models;
 using DxCore.Core.Network;
 using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
 using DXGame.Core;
 using DXGame.Core.Utils;
 using Lidgren.Network;
@@ -237,7 +238,7 @@ namespace DxCore.Core.Components.Network
             ServerEventTracker eventTracker = new ServerEventTracker(baseEventTracker_);
 
             MapModel mapModel = DxGame.Instance.Model<MapModel>();
-            PlayerGenerator playerGenerator = new PlayerGenerator(mapModel.RandomSpawnLocation.Center.ToDxVector2());
+            IPlayerGenerator playerGenerator = DxGame.Instance.PlayerGenerator.From(mapModel.RandomSpawnLocation.Center.ToDxVector2());
 
             SimpleRelayingCommandComponent networkPlayerCommand = new SimpleRelayingCommandComponent(TickRate);
 

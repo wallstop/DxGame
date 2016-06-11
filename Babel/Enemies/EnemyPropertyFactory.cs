@@ -1,4 +1,5 @@
 ﻿using System;
+using DxCore.Core;
 using DxCore.Core.Properties;
 using DXGame.Core;
 

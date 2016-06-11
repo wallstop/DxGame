@@ -1,6 +1,7 @@
 ﻿using System;
+using DXGame.Core.Utils;
 
-namespace DXGame.Core.Utils
+namespace DxCore.Core.Utils
 {
     /**
         <summary> Various utility methods for C#s build-in enum classes/types</summary>

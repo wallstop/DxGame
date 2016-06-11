@@ -1,4 +1,4 @@
-﻿using DXGame.Core;
+﻿using DxCore.Core;
 using NUnit.Framework;
 
 namespace DXGameTest.Core

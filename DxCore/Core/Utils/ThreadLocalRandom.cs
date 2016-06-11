@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using static System.Int32;
+using DXGame.Core.Utils;
 
-namespace DXGame.Core.Utils
+namespace DxCore.Core.Utils
 {
     /**
         Threadsafety is gauranteed if all access is via the .Current field
@@ -13,7 +13,7 @@ namespace DXGame.Core.Utils
 
     public sealed class ThreadLocalRandom : Random
     {
-        private const int HalfwayInt = MaxValue / 2;
+        private const int HalfwayInt = Int32.MaxValue / 2;
 
         private static readonly ThreadLocal<ThreadLocalRandom> RANDOM =
             new ThreadLocal<ThreadLocalRandom>(() => new ThreadLocalRandom());

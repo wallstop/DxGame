@@ -1,4 +1,5 @@
-﻿using DXGame.Core.Utils;
+﻿using DxCore.Core.Utils;
+using DXGame.Core.Utils;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using DXGame.Core.Utils.ArrayExtensions;
+using DxCore.Core.Utils.ArrayExtensions;
 
-namespace DXGame.Core.Utils
+namespace DxCore.Core.Utils
 {
     public static class Objects
     {

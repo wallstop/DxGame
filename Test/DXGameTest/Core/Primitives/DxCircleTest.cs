@@ -1,6 +1,6 @@
 ﻿using System;
-using DXGame.Core.Primitives;
-using DXGame.Core.Utils;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 

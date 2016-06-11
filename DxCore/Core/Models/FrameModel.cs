@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DxCore.Core.Frames;
+using DxCore.Core.Utils;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Models

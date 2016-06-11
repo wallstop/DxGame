@@ -12,7 +12,6 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Properties;
 using DxCore.Core.Utils.Distance;
-using DXGame.Core;
 using NLog;
 using Component = DxCore.Core.Components.Basic.Component;
 

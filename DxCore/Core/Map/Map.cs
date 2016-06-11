@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
 using DxCore.Core.Utils.Cache.Simple;
 using DxCore.Core.Utils.Distance;
 using DXGame.Core;
@@ -34,6 +35,7 @@ namespace DxCore.Core.Map
         [IgnoreDataMember] [NonSerialized] private readonly ISimpleCache<Tile, Texture2D> tileTextureCache_ =
             new UnboundedLoadingSimpleCache<Tile, Texture2D>(tile => DxGame.Instance.Content.Load<Texture2D>(tile.Asset));
 
+        // TODO: Have spawn locations be a part of the Map Descriptor
         public DxRectangle RandomSpawnLocation
         {
             get

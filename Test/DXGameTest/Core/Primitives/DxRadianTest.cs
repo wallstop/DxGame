@@ -1,5 +1,5 @@
 ﻿using System;
-using DXGame.Core.Primitives;
+using DxCore.Core.Primitives;
 using NUnit.Framework;
 
 namespace DXGameTest.Core.Primitives
@@ -21,7 +21,7 @@ namespace DXGameTest.Core.Primitives
             Assert.AreEqual(expectedNegativeXVector.X, negativeXVector.X, TOLERANCE);
             Assert.AreEqual(expectedNegativeXVector.Y, negativeXVector.Y, TOLERANCE);
 
-            var positiveYVector = new DxRadian((float) (Math.PI)).UnitVector;
+            var positiveYVector = new DxRadian((float) Math.PI).UnitVector;
             var expectedPositiveYVector = new DxVector2(0, 1);
             Assert.AreEqual(expectedPositiveYVector.X, positiveYVector.X, TOLERANCE);
             Assert.AreEqual(expectedPositiveYVector.Y, positiveYVector.Y, TOLERANCE);

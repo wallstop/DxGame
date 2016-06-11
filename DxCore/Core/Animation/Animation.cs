@@ -3,12 +3,9 @@ using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
-using DXGame.Core;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using IDrawable = DXGame.Core.IDrawable;
 
 namespace DxCore.Core.Animation
 {
@@ -32,13 +29,13 @@ namespace DxCore.Core.Animation
 
         public Animation(AnimationDescriptor descriptor, DrawPriority drawPriority = DrawPriority.NORMAL)
         {
-            Validate.IsNotNullOrDefault(descriptor, StringUtils.GetFormattedNullOrDefaultMessage(this, descriptor));
+            Validate.IsNotNullOrDefault(descriptor, this.GetFormattedNullOrDefaultMessage(descriptor));
             Validate.IsTrue(descriptor.FrameCount > 0,
                 $"Cannot initialize an {nameof(Animation)} with a FrameCount of {descriptor.FrameCount}");
             Validate.IsNotNullOrDefault(descriptor.FramesPerSecond > 0,
                 $"Cannot initialize an {nameof(Animation)} with a {nameof(descriptor.FramesPerSecond)} of {descriptor.FramesPerSecond}");
             Validate.IsNotNullOrDefault(descriptor.Asset,
-                StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(descriptor.Asset)));
+                this.GetFormattedNullOrDefaultMessage(nameof(descriptor.Asset)));
             AnimationDescriptor = descriptor;
             drawPriority_ = drawPriority;
         }
@@ -52,15 +49,17 @@ namespace DxCore.Core.Animation
                 lastUpdated_ += TimePerFrame;
                 currentFrame_ = currentFrame_.WrappedAdd(1, TotalFrames);
             }
-            
+
             /* We asume that Animations are horizontal strips without any spacing or anything between frames */
             int frameWidth = spriteSheet_.Width / TotalFrames;
             DxVector2 frameOffset;
             DxVector2 drawOffset;
             DxRectangle boundingBox;
-            AnimationDescriptor.FrameOffsets.OffsetForFrame(currentFrame_, out frameOffset, out drawOffset, out boundingBox);
+            AnimationDescriptor.FrameOffsets.OffsetForFrame(currentFrame_, out frameOffset, out drawOffset,
+                out boundingBox);
 
-            Rectangle frameOutline = new Rectangle(frameWidth * currentFrame_, 0, (int) boundingBox.Width, (int) boundingBox.Height);
+            Rectangle frameOutline = new Rectangle(frameWidth * currentFrame_, 0, (int) boundingBox.Width,
+                (int) boundingBox.Height);
             if(frameOutline.Width == 0)
             {
                 frameOutline.Width = frameWidth;
@@ -69,7 +68,7 @@ namespace DxCore.Core.Animation
             {
                 frameOutline.Height = spriteSheet_.Height;
             }
-            
+
             frameOutline.X += (int) frameOffset.X;
             frameOutline.Y += (int) frameOffset.Y;
 
@@ -85,7 +84,6 @@ namespace DxCore.Core.Animation
                 new Rectangle((int) position.X, (int) position.Y, (int) (frameOutline.Width * AnimationDescriptor.Scale),
                     (int) (frameOutline.Height * AnimationDescriptor.Scale)), frameOutline, null, 0, null, Color.White,
                 spriteEffects, 0);
-
         }
 
         public int CompareTo(IDrawable other)

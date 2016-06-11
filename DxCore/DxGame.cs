@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using DxCore.Core;
 using DxCore.Core.Components.Basic;
+using DxCore.Core.Generators;
+using DxCore.Core.Level;
 using DxCore.Core.Menus;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
@@ -12,8 +14,6 @@ using DxCore.Core.Models;
 using DxCore.Core.Primitives;
 using DxCore.Core.Settings;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -38,15 +38,15 @@ namespace DxCore
         Passive
     }
 
-    public class DxGame : Game
+    public abstract class DxGame : Game
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-
-        private static readonly Lazy<DxGame> singleton_ = new Lazy<DxGame>(() => new DxGame());
-
+        
         private UniqueId GameId { get; }
 
         private MessageHandler MessageHandler { get; }
+
+        private static DxGame singleton_ = null;
 
         public Scale Scale { get; private set; } = Scale.Medium;
 
@@ -55,7 +55,7 @@ namespace DxCore
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
         public GameElementCollection DxGameElements { get; private set; }
         // TODO: Thread safety? Move this to some kind of Context static class?
-        public static DxGame Instance => singleton_.Value;
+        public static DxGame Instance => singleton_;
         public double TargetFps => 60.0;
         private static readonly TimeSpan MINIMUM_FRAMERATE = TimeSpan.FromSeconds(1 / 10000.0);
         public GameElementCollection NewGameElements { get; } = new GameElementCollection();
@@ -112,8 +112,15 @@ namespace DxCore
         public GameSettings GameSettings { get; }
         public Controls Controls { get; }
 
-        private DxGame()
+        protected abstract void SetUp();
+        public abstract IPlayerGenerator PlayerGenerator { get; }
+        public abstract ILevelProgressionStrategy LevelProgressionStrategy { get; }
+
+        protected DxGame()
         {
+            Validate.IsNull(singleton_, "There can only be one instance of the game running");
+            singleton_ = this; // Danger dange race condition
+
             // TODO: See what parts of this can be offloaded to initialize
             GameSettings = new GameSettings();
             GameSettings.Load();

@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DXGame.Core.Utils;
-using DXGame.Core.Utils.Cache;
-using DXGame.Core.Utils.Cache.Advanced;
+using DxCore.Core.Utils;
+using DxCore.Core.Utils.Cache;
+using DxCore.Core.Utils.Cache.Advanced;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
@@ -82,6 +78,5 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
             cacheBuilder.WithExpireAfterAccess(expireAfterWriteSeconds);
             Assert.AreEqual(expireAfterWriteSeconds.Ticks, cacheBuilder.ExpireAfterAccessTicks);
         }
-
     }
 }

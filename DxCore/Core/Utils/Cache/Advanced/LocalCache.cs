@@ -3,9 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using DXGame.Core.Utils;
-using DXGame.Core.Utils.Cache;
-using DXGame.Core.Utils.Cache.Advanced;
 
 namespace DxCore.Core.Utils.Cache.Advanced
 {

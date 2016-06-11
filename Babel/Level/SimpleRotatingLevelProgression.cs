@@ -20,7 +20,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Models;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

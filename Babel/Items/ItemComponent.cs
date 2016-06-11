@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core;
 using DxCore.Core.Components.Basic;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils;
 
 namespace Babel.Items
 {

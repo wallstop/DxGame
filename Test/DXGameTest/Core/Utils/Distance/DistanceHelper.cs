@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DXGame.Core;
-using DXGame.Core.Primitives;
-using DXGame.Core.Utils;
+﻿using System.Collections.Generic;
+using DxCore.Core;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
 
 namespace DXGameTest.Core.Utils.Distance
 {
-
     public class TestPoint
     {
         public DxVector2 Point { get; }
@@ -29,7 +24,7 @@ namespace DXGameTest.Core.Utils.Distance
         public override bool Equals(object other)
         {
             var testObject = other as TestPoint;
-            if (testObject != null)
+            if(testObject != null)
             {
                 return Id.Equals(testObject.Id);
             }
@@ -45,9 +40,9 @@ namespace DXGameTest.Core.Utils.Distance
             float yMin = range.Top;
             float xMax = range.Right;
             float yMax = range.Bottom;
-            
+
             List<DxRectangle> generatedRectangles = new List<DxRectangle>(numPoints);
-            for (int i = 0; i < numPoints; ++i)
+            for(int i = 0; i < numPoints; ++i)
             {
                 float x = ThreadLocalRandom.Current.NextFloat(xMin, xMax);
                 float y = ThreadLocalRandom.Current.NextFloat(yMin, yMax);
@@ -57,7 +52,7 @@ namespace DXGameTest.Core.Utils.Distance
                 generatedRectangles.Add(rectangle);
             }
             return generatedRectangles;
-        } 
+        }
 
         public static List<DxVector2> GeneratePointsInRange(DxRectangle range, int numPoints)
         {
@@ -65,9 +60,9 @@ namespace DXGameTest.Core.Utils.Distance
             float yMin = range.Top;
             float xMax = range.Right;
             float yMax = range.Bottom;
-            
+
             List<DxVector2> generatedPoints = new List<DxVector2>(numPoints);
-            for (int i = 0; i < numPoints; ++i)
+            for(int i = 0; i < numPoints; ++i)
             {
                 float x = ThreadLocalRandom.Current.NextFloat(xMin, xMax);
                 float y = ThreadLocalRandom.Current.NextFloat(yMin, yMax);

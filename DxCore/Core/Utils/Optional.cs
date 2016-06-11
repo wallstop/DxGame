@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace DXGame.Core.Utils
+namespace DxCore.Core.Utils
 {
     /**
 
@@ -12,6 +12,7 @@ namespace DXGame.Core.Utils
 
     [Serializable]
     [DataContract]
+    [Obsolete("Optional is deprecated, consider using out values instead")]
     public struct Optional<T>
     {
         private static readonly Optional<T> EMPTY = new Optional<T>(default(T), false);

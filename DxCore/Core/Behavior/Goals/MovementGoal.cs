@@ -4,6 +4,7 @@ using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Frames;
 using DxCore.Core.Models;
 using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Behavior.Goals

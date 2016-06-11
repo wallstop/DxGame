@@ -1,6 +1,8 @@
 ﻿#region Using Statements
 
 using System;
+using Babel.Main;
+using DxCore;
 
 #endregion
 
@@ -18,7 +20,7 @@ namespace DXGame.Main
         [STAThread]
         private static void Main(string[] args)
         {
-            using (var game = DxGame.Instance)
+            using (var game = new BabelGame())
             {
                 game.Run();
             }

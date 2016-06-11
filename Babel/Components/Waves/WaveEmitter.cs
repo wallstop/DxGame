@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using Babel.Messaging;
 using DxCore.Core;
 using DxCore.Core.Components.Advanced.Triggers;
 using DxCore.Core.Messaging;
-using DXGame.Core;
-using DXGame.TowerGame.Messaging;
 
 namespace Babel.Components.Waves
 {

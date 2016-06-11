@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using DxCore.Core.Utils;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 

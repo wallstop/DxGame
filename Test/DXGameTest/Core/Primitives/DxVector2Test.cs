@@ -1,5 +1,5 @@
-﻿using DXGame.Core.Primitives;
-using DXGame.Core.Utils;
+﻿using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
@@ -13,7 +13,7 @@ namespace DXGameTest.Core.Primitives
         public void TestUnitVector()
         {
             int numTestIterations = 100000;
-            for (int i = 0; i < numTestIterations; ++i)
+            for(int i = 0; i < numTestIterations; ++i)
             {
                 var generatedVector = GenerateRandomVector();
                 var unitVector = generatedVector.UnitVector;
@@ -24,7 +24,8 @@ namespace DXGameTest.Core.Primitives
 
         private static DxVector2 GenerateRandomVector()
         {
-            return new DxVector2(ThreadLocalRandom.Current.NextFloat(int.MinValue, int.MaxValue), ThreadLocalRandom.Current.NextFloat(int.MinValue, int.MaxValue));
+            return new DxVector2(ThreadLocalRandom.Current.NextFloat(int.MinValue, int.MaxValue),
+                ThreadLocalRandom.Current.NextFloat(int.MinValue, int.MaxValue));
         }
     }
 }

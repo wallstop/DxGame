@@ -1,15 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils;
+using DXGame.Core;
 using NLog;
-using ProtoBuf;
 
-namespace DXGame.Core
+namespace DxCore.Core
 {
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public abstract class JsonPersistable<T> : IPersistable<T>
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
@@ -42,7 +41,7 @@ namespace DXGame.Core
         public static T StaticLoad(string fileName)
         {
             var settingsAsText = File.ReadAllText(fileName);
-            var settingsAsJsonByteArray = StringUtils.GetBytes(settingsAsText);
+            var settingsAsJsonByteArray = settingsAsText.GetBytes();
             return Serializer<T>.JsonDeserialize(settingsAsJsonByteArray);
         }
     }

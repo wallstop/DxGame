@@ -1,5 +1,5 @@
 ﻿using System;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
@@ -25,8 +25,10 @@ namespace DXGameTest.Core.Utils
                     Assert.GreaterOrEqual(lastValue, scaledValue,
                         $"Expected {springFunctionName} to be decreasing, but was not. {scaledValue} > {lastValue} at {i} out of {numDivisions}");
 
-                    Assert.LessOrEqual(scaledValue, min, $"{scaledValue} was outside of range [{min}, {max}] for {springFunctionName}");
-                    Assert.GreaterOrEqual(scaledValue, max, $"{scaledValue} was outside of range [{min}, {max}] for {springFunctionName}");
+                    Assert.LessOrEqual(scaledValue, min,
+                        $"{scaledValue} was outside of range [{min}, {max}] for {springFunctionName}");
+                    Assert.GreaterOrEqual(scaledValue, max,
+                        $"{scaledValue} was outside of range [{min}, {max}] for {springFunctionName}");
                 }
             }
         }
@@ -49,8 +51,10 @@ namespace DXGameTest.Core.Utils
                     Assert.LessOrEqual(lastValue, scaledValue,
                         $"Expected {springFunctionName} to be increasing, but was not. {scaledValue} > {lastValue} at {i} out of {numDivisions}");
 
-                    Assert.GreaterOrEqual(scaledValue, min, $"{scaledValue} was outside of range [{min}, {max}] for {springFunctionName}");
-                    Assert.LessOrEqual(scaledValue, max, $"{scaledValue} was outside of range [{min}, {max}] for {springFunctionName}");
+                    Assert.GreaterOrEqual(scaledValue, min,
+                        $"{scaledValue} was outside of range [{min}, {max}] for {springFunctionName}");
+                    Assert.LessOrEqual(scaledValue, max,
+                        $"{scaledValue} was outside of range [{min}, {max}] for {springFunctionName}");
                 }
             }
         }

@@ -5,8 +5,7 @@ using DxCore.Core.Components.Advanced.Entities;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Advanced.Properties;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils;
 
 namespace DxCore.Core
 {

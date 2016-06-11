@@ -77,6 +77,7 @@
     <Compile Include="Enemies\EnemyFactory.cs" />
     <Compile Include="Enemies\EnemyPropertyFactory.cs" />
     <Compile Include="Enemies\SpawnerFactory.cs" />
+    <Compile Include="Generators\BabelPlayerGenerator.cs" />
     <Compile Include="Items\Fragarach.cs" />
     <Compile Include="Items\Gram.cs" />
     <Compile Include="Items\ItemComponent.cs" />
@@ -87,6 +88,7 @@
     <Compile Include="Items\TheFirstFlame.cs" />
     <Compile Include="Items\VisibleItemComponent.cs" />
     <Compile Include="Level\SimpleRotatingLevelProgression.cs" />
+    <Compile Include="Main\BabelGame.cs" />
     <Compile Include="Messaging\NewWaveMessage.cs" />
     <Compile Include="Player\BasicAttackComponent.cs" />
     <Compile Include="Player\PlayerFactory.cs" />

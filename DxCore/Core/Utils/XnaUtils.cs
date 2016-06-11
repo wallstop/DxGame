@@ -1,7 +1,7 @@
 ﻿using DxCore.Core.Primitives;
 using Microsoft.Xna.Framework;
 
-namespace DXGame.Core.Utils
+namespace DxCore.Core.Utils
 {
     public static class XnaUtils
     {

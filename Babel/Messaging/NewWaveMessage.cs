@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils;
 
-namespace DXGame.TowerGame.Messaging
+namespace Babel.Messaging
 {
     /**
         <summary>

@@ -12,7 +12,6 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Properties;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
 
 namespace Babel.Items
 {

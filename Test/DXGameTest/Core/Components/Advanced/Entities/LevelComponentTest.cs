@@ -1,7 +1,7 @@
-﻿using DXGame.Core;
-using DXGame.Core.Components.Advanced.Entities;
-using DXGame.Core.Experience;
-using DXGame.Core.Messaging;
+﻿using DxCore.Core;
+using DxCore.Core.Components.Advanced.Entities;
+using DxCore.Core.Experience;
+using DxCore.Core.Messaging;
 using NUnit.Framework;
 
 namespace DXGameTest.Core.Components.Advanced.Entities

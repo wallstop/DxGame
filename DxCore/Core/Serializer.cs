@@ -2,55 +2,15 @@
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization.Json;
 using System.Text;
-using DXGame.Core.Utils;
-using ProtoBuf;
-using Salar.Bois;
+using DxCore.Core.Utils;
 
-namespace DXGame.Core
+namespace DxCore.Core
 {
     public static class Serializer<T>
     {
         private static readonly Encoding ENCODING = Encoding.Default;
 
         // TODO: Move all of these to thread-local storage
-
-        public static byte[] NetSerializer(T input)
-        {
-            using(MemoryStream memoryStream = new MemoryStream())
-            {
-                NetSerializer.Serializer serializer = new NetSerializer.Serializer(new[] {typeof(T)});
-                serializer.Serialize(memoryStream, input);
-                return memoryStream.ToArray();
-            }
-        }
-
-        public static T NetDeserialize(byte[] data)
-        {
-            using(MemoryStream memoryStream = new MemoryStream(data))
-            {
-                NetSerializer.Serializer deserializer = new NetSerializer.Serializer(new[] {typeof(T)});
-                return (T) deserializer.Deserialize(memoryStream);
-            }
-        }
-
-        public static byte[] SolarBoisSerialize(T input)
-        {
-            using(MemoryStream memoryStream = new MemoryStream())
-            {
-                BoisSerializer serializer = new BoisSerializer();
-                serializer.Serialize(input, memoryStream);
-                return memoryStream.ToArray();
-            }
-        }
-
-        public static T SolarBoisDeserializer(byte[] data)
-        {
-            using(MemoryStream memoryStream = new MemoryStream(data))
-            {
-                BoisSerializer deserializer = new BoisSerializer();
-                return deserializer.Deserialize<T>(memoryStream);
-            }
-        }
 
         public static byte[] BinarySerialize(T input)
         {
@@ -87,7 +47,8 @@ namespace DXGame.Core
             using(MemoryStream memoryStream = new MemoryStream(data))
             {
                 /* TODO: Use Global instance? */
-                DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(T), new DataContractJsonSerializerSettings { UseSimpleDictionaryFormat = true });
+                DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(T),
+                    new DataContractJsonSerializerSettings {UseSimpleDictionaryFormat = true});
                 memoryStream.Position = 0;
                 return (T) deserializer.ReadObject(memoryStream);
             }
@@ -95,13 +56,13 @@ namespace DXGame.Core
 
         public static T JsonDeserialize(string data)
         {
-            return JsonDeserialize(StringUtils.GetBytes(data));
+            return JsonDeserialize(data.GetBytes());
         }
 
         public static T ReadFromJsonFile(string path)
         {
             var settingsAsText = File.ReadAllText(path, ENCODING);
-            var settingsAsJsonByteArray = StringUtils.GetBytes(settingsAsText);
+            var settingsAsJsonByteArray = settingsAsText.GetBytes();
             return JsonDeserialize(settingsAsJsonByteArray);
         }
 

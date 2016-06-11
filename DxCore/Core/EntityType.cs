@@ -1,16 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using DxCore.Core.Utils;
 using DxCore.Core.Utils.Cache.Simple;
-using DXGame.Core.Utils;
-using DXGame.Core.Utils.Cache;
-using ProtoBuf;
 
-namespace DXGame.Core
+namespace DxCore.Core
 {
     [Serializable]
     [DataContract]
-    [ProtoContract]
     public sealed class EntityType : IEquatable<EntityType>
     {
         private static readonly UnboundedLoadingSimpleCache<string, EntityType> EntityTypeSimpleCache =
@@ -19,7 +16,6 @@ namespace DXGame.Core
         public static IReadOnlyCollection<EntityType> EntityTypes => EntityTypeSimpleCache.Elements;
 
         [DataMember]
-        [ProtoMember(1)]
         public string Name { get; }
 
         private EntityType(string name)

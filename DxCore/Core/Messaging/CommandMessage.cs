@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
 using DXGame.Core;
 using DXGame.Core.Utils;

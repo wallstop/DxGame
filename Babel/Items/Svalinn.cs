@@ -3,8 +3,6 @@ using System.Runtime.Serialization;
 using DxCore.Core;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
 
 namespace Babel.Items
 {
@@ -42,13 +40,11 @@ namespace Babel.Items
             if(rng > chance)
             {
                 /* Didn't meat trigger requirements - bail */
-                return;
             }
 
             /* Trigger chain lightening effect */
 
             // TODO: Chain and stuff (Emit Physics Message -> Damage message -> Repeat)
-
         }
 
         protected override void InternalAttach(GameObject parent)
@@ -71,6 +67,6 @@ namespace Babel.Items
 
         //public 
 
-
+        // TODO
     }
 }

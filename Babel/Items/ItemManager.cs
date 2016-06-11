@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils;
 
 namespace Babel.Items
 {
@@ -22,7 +22,7 @@ namespace Babel.Items
     [Serializable]
     public class ItemManager : Component
     {
-       [DataMember] private readonly Dictionary<Type, ItemComponent> itemsByType_;
+        [DataMember] private readonly Dictionary<Type, ItemComponent> itemsByType_;
 
         public ItemManager()
         {

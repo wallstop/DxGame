@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
+using DxCore.Core.Utils;
 using DXGame.Core;
 using DXGame.Core.Utils;
 

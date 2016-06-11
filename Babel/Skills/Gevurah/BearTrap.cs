@@ -9,7 +9,7 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -24,7 +24,7 @@ namespace Babel.Skills.Gevurah
         [DataMember] private readonly SpatialComponent spatial_;
 
         [DataMember]
-        private bool Triggered { get; set; } = false;
+        private bool Triggered { get; set; }
 
         [DataMember] private Texture2D bearTrap_;
 
@@ -41,18 +41,18 @@ namespace Babel.Skills.Gevurah
 
         protected override void Update(DxGameTime gameTime)
         {
-            if (Triggered)
+            if(Triggered)
             {
                 Remove();
                 Parent.Remove();
                 Particle particle =
                     Particle.Builder()
-                            .WithColor(Color.Gray)
-                            .WithPosition(spatial_.Position)
-                            .WithGrowRate(1.0f)
-                            .WithTimeToLive(TimeSpan.FromSeconds(1))
-                            .WithRadius(10)
-                            .Build();
+                        .WithColor(Color.Gray)
+                        .WithPosition(spatial_.Position)
+                        .WithGrowRate(1.0f)
+                        .WithTimeToLive(TimeSpan.FromSeconds(1))
+                        .WithRadius(10)
+                        .Build();
                 EntityCreatedMessage entityCreated = new EntityCreatedMessage(particle);
                 entityCreated.Emit();
                 return;
@@ -78,7 +78,7 @@ namespace Babel.Skills.Gevurah
 
         private Tuple<bool, double> DamageCheck(GameObject source, GameObject destination)
         {
-            if (source == destination)
+            if(source == destination)
             {
                 return Tuple.Create(false, 0.0);
             }

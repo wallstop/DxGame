@@ -16,5 +16,7 @@
     {
         Level InitialLevel { get; }
         Level DetermineNextLevel(Level currentLevel);
+
+        void Init();
     }
 }

@@ -34,7 +34,7 @@ namespace DXGameTest.Core.Components.Advanced.Entities
             ExperiencedReceivedMessage experiencedReceived =
                 new ExperiencedReceivedMessage(new Experience(ludicrousExperience));
 
-            playerPlaceholder.MessageHandler.ProcessTypedMessage<ExperiencedReceivedMessage>(experiencedReceived);
+            playerPlaceholder.MessageHandler.HandleTypedMessage<ExperiencedReceivedMessage>(experiencedReceived);
             /* We expect that the player should have leveled up more than once (how many times, we don't really care) */
             Assert.IsTrue(levelComponent.Level > 1);
         }

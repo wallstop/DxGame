@@ -56,6 +56,12 @@ namespace Babel.Level
             return GenerateLevel();
         }
 
+        public void Init()
+        {
+            LoadContent();
+            Initialize();
+        }
+
         private DxCore.Core.Level.Level GenerateLevel()
         {
             if(currentMapIndex_ == maps_.Count)

@@ -115,6 +115,7 @@
     <Folder Include="Actions\" />
     <Folder Include="Components\PropertyModifiers\" />
     <Folder Include="Components\Widgets\" />
+    <Folder Include="Models\" />
     <Folder Include="Physics\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

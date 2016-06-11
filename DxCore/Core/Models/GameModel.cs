@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Generators;
+using DxCore.Core.Level;
 using NLog;
 
 namespace DxCore.Core.Models
@@ -34,9 +36,8 @@ namespace DxCore.Core.Models
             EventModel eventModel = new EventModel();
             DxGame.Instance.AttachModel(eventModel);
 
-            SimpleRotatingLevelProgression levelProgression = new SimpleRotatingLevelProgression();
-            levelProgression.LoadContent();
-            levelProgression.Initialize();
+            ILevelProgressionStrategy levelProgression = DxGame.Instance.LevelProgressionStrategy;
+            levelProgression.Init();
 
             mapModel_ = new MapModel(levelProgression);
             DxGame.Instance.AttachModel(mapModel_);
@@ -62,8 +63,8 @@ namespace DxCore.Core.Models
 
         public void InitializePlayer()
         {
-            PlayerGenerator playerGenerator = new PlayerGenerator(mapModel_.PlayerSpawn);
-            var generatedObjects = playerGenerator.Generate();
+            IPlayerGenerator playerGenerator = DxGame.Instance.PlayerGenerator.From(mapModel_.PlayerSpawn);
+            List<GameObject> generatedObjects = playerGenerator.Generate();
 
             // TODO: We need to throw this away if we're doing a network game
             // TODO: Split these out into some kind of unified loading... thing

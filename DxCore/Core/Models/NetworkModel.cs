@@ -12,9 +12,9 @@ namespace DxCore.Core.Models
     {
         private readonly List<NetworkComponent> connections_ = new List<NetworkComponent>();
         // TODO: Empty checks
-        public IEnumerable<NetworkClient> Clients => connections_.OfType<NetworkClient>();
+        public IEnumerable<AbstractNetworkClient> Clients => connections_.OfType<AbstractNetworkClient>();
 
-        public IEnumerable<NetworkServer> Servers => connections_.OfType<NetworkServer>();
+        public IEnumerable<AbstractNetworkServer> Servers => connections_.OfType<AbstractNetworkServer>();
 
         public override bool ShouldSerialize => false;
 
@@ -22,13 +22,14 @@ namespace DxCore.Core.Models
         {
         }
 
-        public NetworkModel WithClient(NetworkClient client)
+        // TODO: Get outta here
+        public NetworkModel WithClient(AbstractNetworkClient client)
         {
             AddNetworkComponent(client);
             return this;
         }
 
-        public NetworkModel WithServer(NetworkServer server)
+        public NetworkModel WithServer(AbstractNetworkServer server)
         {
             // Really? Why not more?
             Validate.IsEmpty(Servers, $"Cannot add {server}. Can only add one server to a NetworkModel");
@@ -36,12 +37,12 @@ namespace DxCore.Core.Models
             return this;
         }
 
-        public void AttachServer(NetworkServer server)
+        public void AttachServer(AbstractNetworkServer server)
         {
             WithServer(server);
         }
 
-        public void AttachClient(NetworkClient client)
+        public void AttachClient(AbstractNetworkClient client)
         {
             WithClient(client);
         }

@@ -6,7 +6,6 @@ using System.Threading;
 using DxCore.Core.Network;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
 using Lidgren.Network;
 using NLog;
 
@@ -18,6 +17,8 @@ namespace DxCore.Core.Components.Basic
 
     public abstract class NetworkComponent : Component
     {
+        public static readonly TimeSpan DEFAULT_TICK_RATE = TimeSpan.FromSeconds(1.0 / 60); // 60 FPS
+
         protected const int REQUIRED_MESSAGE_CHANNEL = 0;
         protected const int LERP_DATA_CHANNEL = 1;
         protected const int TIME_SYNCHRONIZATION_CHANNEL = 2;
@@ -35,7 +36,7 @@ namespace DxCore.Core.Components.Basic
 
         private static readonly TimeSpan NETWORK_POLL_DELAY = TimeSpan.FromMilliseconds(1.0 / 10);
 
-        public abstract TimeSpan TickRate { get; }
+        public virtual TimeSpan TickRate => DEFAULT_TICK_RATE;
 
         protected Stopwatch TransmissionClock { get; }
 
@@ -48,15 +49,16 @@ namespace DxCore.Core.Components.Basic
             This setup assumes that this NetworkComponent will ONLY EVER be accessed from a single-threaded
             context. If that situation no longer applies, we'll have to use some mutexes :(
         */
+
         public NetPeer Connection
         {
             get { return connection_; }
-            set
+            protected set
             {
                 /*
                     If we're assigning to ourselves, don't do anything. This avoids unecessary nasty thread start/stop times
                 */
-                if (value == connection_)
+                if(value == connection_)
                 {
                     return;
                 }
@@ -65,14 +67,14 @@ namespace DxCore.Core.Components.Basic
                 {
                     ConnectionListener.Abort();
                 }
-                catch (NullReferenceException e)
+                catch(NullReferenceException e)
                 {
-                    // This handles the startup case
+                    // This handles the startup case (TODO: Handle better)
                     LOG.Info(
                         "Caught a NullReferenceException while attempting to abort a connection listener. First time assignment?",
                         e);
                 }
-                catch (Exception e)
+                catch(Exception e)
                 {
                     LOG.Error(e, "Caught an exception while attempting to abort a connection listener");
                 }
@@ -86,8 +88,10 @@ namespace DxCore.Core.Components.Basic
 
         protected Dictionary<Type, Action<NetworkMessage, NetConnection>> networkMessageHandlers_;
 
-        protected NetworkComponent()
+        protected NetworkComponent(NetPeerConfiguration configuration)
         {
+            Validate.IsNotNullOrDefault(configuration, this.GetFormattedNullOrDefaultMessage(configuration));
+            Connection = new NetClient(configuration);
             MessageQueue = new ConcurrentQueue<NetIncomingMessage>();
             networkMessageHandlers_ = new Dictionary<Type, Action<NetworkMessage, NetConnection>>();
             TransmissionClock = Stopwatch.StartNew();
@@ -103,17 +107,17 @@ namespace DxCore.Core.Components.Basic
         {
             try
             {
-                while (true)
+                while(true)
                 {
                     NetIncomingMessage message;
-                    while ((message = Connection.ReadMessage()) != null)
+                    while((message = Connection.ReadMessage()) != null)
                     {
                         MessageQueue.Enqueue(message);
                     }
                     Thread.Sleep(NETWORK_POLL_DELAY);
                 }
             }
-            catch (ThreadInterruptedException e)
+            catch(ThreadInterruptedException e)
             {
                 LOG.Info($"Shutting down reader for Connection {Connection}", e);
             }
@@ -128,31 +132,28 @@ namespace DxCore.Core.Components.Basic
 
         public override bool ShouldSerialize => false;
 
-        public abstract NetworkComponent WithConfiguration(NetPeerConfiguration config);
-
         protected static T ConvertMessageType<T>(NetworkMessage message) where T : class
         {
             return GenericUtils.CheckedCast<T>(message,
-                $"Received message expecting type {typeof (T)}, but was unable to dynamic cast");
+                $"Received message expecting type {typeof(T)}, but was unable to dynamic cast");
         }
 
         // We need to know the GameTime in order to Receive Data
         public void ReceiveData(DxGameTime gameTime)
         {
             int maxMessages = MessageQueue.Count;
-            for (int i = 0; i < maxMessages; ++i)
+            for(int i = 0; i < maxMessages; ++i)
             {
                 NetIncomingMessage incomingMessage;
                 bool couldDequeue = MessageQueue.TryDequeue(out incomingMessage);
-                if (!couldDequeue)
+                if(!couldDequeue)
                 {
                     // If we couldn't dequeue anything, hard-bail
-                    LOG.Info(
-                        $"Expected {maxMessages} messages, but only received {i} before we could not dequeue any.");
+                    LOG.Info($"Expected {maxMessages} messages, but only received {i} before we could not dequeue any.");
                     return;
                 }
 
-                if (incomingMessage == null)
+                if(incomingMessage == null)
                 {
                     LOG.Info("Found a null message inside the MessageQueue. This shouldn't happen.");
                     continue;
@@ -164,10 +165,7 @@ namespace DxCore.Core.Components.Basic
             PostReceiveData(gameTime);
         }
 
-        protected virtual void PostReceiveData(DxGameTime gameTime)
-        {
-            
-        }
+        protected virtual void PostReceiveData(DxGameTime gameTime) {}
 
         protected void ProcessData(NetIncomingMessage message)
         {

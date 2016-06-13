@@ -14,23 +14,13 @@ using DxCore.Core.Network;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Lerp;
-using DXGame.Core;
-using DXGame.Core.Utils;
 using Lidgren.Network;
 using NLog;
 
 namespace DxCore.Core.Components.Network
 {
-    public struct NetworkClientConfig
+    public abstract class AbstractNetworkClient : NetworkComponent
     {
-        public string IpAddress { get; set; }
-        public int Port { get; set; }
-        public string PlayerName { get; set; }
-    }
-
-    public class NetworkClient : NetworkComponent
-    {
-        private static readonly TimeSpan TICK_RATE = TimeSpan.FromSeconds(1.0 / 60); // 60 FPS
         private static readonly TimeSpan TIME_SYNCHRONIZATION_RATE = TimeSpan.FromSeconds(1);
         private TimeSpan lastSynchronizedTime_ = TimeSpan.Zero;
 
@@ -45,29 +35,18 @@ namespace DxCore.Core.Components.Network
 
         private UniqueId playerId_;
 
-        public NetworkClient WithNetworkClientConfig(NetworkClientConfig configuration)
+        protected AbstractNetworkClient(NetPeerConfiguration netPeerConfig, NetworkClientConfig clientConfig)
+            : base(netPeerConfig)
         {
-            Validate.IsNotNullOrDefault(configuration,
-                "Cannot create a NetworkClient with a null/default NetworkClientConfig");
-            ClientConfig = configuration;
-            return this;
-        }
-
-        public override TimeSpan TickRate => TICK_RATE;
-
-        public override NetworkComponent WithConfiguration(NetPeerConfiguration configuration)
-        {
-            Validate.IsNotNullOrDefault(configuration,
-                "Cannot create a NetworkClient with a null/default NetPeerConfiguration");
-            Connection = new NetClient(configuration);
-            return this;
+            Validate.IsNotNullOrDefault(clientConfig, this.GetFormattedNullOrDefaultMessage(clientConfig));
+            ClientConfig = clientConfig;
         }
 
         public override void EstablishConnection()
         {
             ClientConnection.Start();
 
-            ClientConnectionRequest request = new ClientConnectionRequest(ClientConfig.PlayerName);
+            ClientConnectionRequest request = new ClientConnectionRequest(ClientConfig.Metadata);
             NetOutgoingMessage outMessage = request.ToNetOutgoingMessage(ClientConnection);
             ClientConnection.Connect(ClientConfig.IpAddress, ClientConfig.Port, outMessage);
         }
@@ -104,6 +83,8 @@ namespace DxCore.Core.Components.Network
             */
             SendClientCommandments(gameTime);
         }
+
+        // TODO: Move this stuff out
 
         private void SendTimeSynchronizationRequest(DxGameTime gameTime)
         {

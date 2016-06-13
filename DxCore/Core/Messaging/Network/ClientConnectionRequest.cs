@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Network;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Messaging.Network
 {
@@ -11,12 +11,14 @@ namespace DxCore.Core.Messaging.Network
     public class ClientConnectionRequest : NetworkMessage
     {
         [DataMember]
-        public string PlayerName { get; private set; }
+        public Dictionary<string, object> Metadata { get; }
 
-        public ClientConnectionRequest(string playerName)
+        public ClientConnectionRequest() : this(new Dictionary<string, object>()) {}
+
+        public ClientConnectionRequest(Dictionary<string, object> metadata)
         {
-            Validate.IsNotEmpty(playerName);
-            PlayerName = playerName;
+            Validate.IsNotNull(metadata, this.GetFormattedNullOrDefaultMessage(nameof(metadata)));
+            Metadata = metadata;
         }
     }
 }

@@ -1,4 +1,7 @@
 ﻿using System;
+using Babel.Models;
+using Babel.Network;
+using DxCore;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Network;
 using DxCore.Core.GraphicsWidgets;
@@ -11,7 +14,7 @@ using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DxCore.Core.Menus
+namespace Babel.Menus
 {
     public class JoinMultiplayerMenu : Menu
     {
@@ -121,25 +124,20 @@ namespace DxCore.Core.Menus
         protected void ConnectAction()
         {
             NetPeerConfiguration config = new NetPeerConfiguration("DxGame");
-            var networkClientConfig = new NetworkClientConfig
-            {
-                IpAddress = AddressBox.Text,
-                Port = Convert.ToInt32(PortBox.Text),
-                PlayerName = "DickButt"
-            };
+            NetworkClientConfig networkClientConfig = new NetworkClientConfig(AddressBox.Text,
+                Convert.ToInt32(PortBox.Text));
+            networkClientConfig.Metadata[BabelNetworkConfig.PlayerName] = "DickButt";
 
-            var client =
-                ((NetworkClient) new NetworkClient().WithConfiguration(config)).WithNetworkClientConfig(
-                    networkClientConfig);
+            BabelNetworkClient client = new BabelNetworkClient(networkClientConfig, config);
             client.Initialize();
-            var networkModel = DxGame.Instance.Model<NetworkModel>();
+
+            NetworkModel networkModel = DxGame.Instance.Model<NetworkModel>();
             networkModel.AttachClient(client);
             client.EstablishConnection();
 
-            var game = DxGame.Instance;
             Remove();
-            game.UpdateMode = UpdateMode.Cooperative;
-            game.AttachModel(new GameModel());
+            DxGame.Instance.UpdateMode = UpdateMode.Cooperative;
+            DxGame.Instance.AttachModel(new GameModel());
         }
     }
 }

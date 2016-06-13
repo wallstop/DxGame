@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DxCore.Core;
 using DxCore.Core.Components.Advanced;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
-using DXGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DxCore.Core.Menus
+namespace Babel.Menus
 {
     public abstract class Menu : DrawableComponent
     {

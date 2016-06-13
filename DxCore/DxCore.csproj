@@ -146,8 +146,10 @@
     <Compile Include="Core\Components\Developer\PathDrawer.cs" />
     <Compile Include="Core\Components\Developer\TeamCounterWidget.cs" />
     <Compile Include="Core\Components\Developer\TimePerFrameGraph.cs" />
-    <Compile Include="Core\Components\Network\NetworkClient.cs" />
-    <Compile Include="Core\Components\Network\NetworkServer.cs" />
+    <Compile Include="Core\Components\Network\AbstractNetworkClient.cs" />
+    <Compile Include="Core\Components\Network\AbstractNetworkServer.cs" />
+    <Compile Include="Core\Components\Network\NetworkClientConfig.cs" />
+    <Compile Include="Core\Network\Port.cs" />
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
     <Compile Include="Core\Components\Utils\RectangleAreaComparer.cs" />
     <Compile Include="Core\DataStructures\CircularBuffer.cs" />
@@ -197,12 +199,6 @@
     <Compile Include="Core\Map\Tile.cs" />
     <Compile Include="Core\Map\TilePosition.cs" />
     <Compile Include="Core\Map\TileType.cs" />
-    <Compile Include="Core\Menus\HostMultiplayerMenu.cs" />
-    <Compile Include="Core\Menus\JoinMultiplayerMenu.cs" />
-    <Compile Include="Core\Menus\MainMenu.cs" />
-    <Compile Include="Core\Menus\Menu.cs" />
-    <Compile Include="Core\Menus\MenuItem.cs" />
-    <Compile Include="Core\Menus\PlayMenu.cs" />
     <Compile Include="Core\Messaging\AttackBuilder.cs" />
     <Compile Include="Core\Messaging\AttackRequest.cs" />
     <Compile Include="Core\Messaging\CollisionMessage.cs" />
@@ -244,7 +240,6 @@
     <Compile Include="Core\Models\EventModel.cs" />
     <Compile Include="Core\Models\ExperienceModel.cs" />
     <Compile Include="Core\Models\FrameModel.cs" />
-    <Compile Include="Core\Models\GameModel.cs" />
     <Compile Include="Core\Models\HudModel.cs" />
     <Compile Include="Core\Models\InputModel.cs" />
     <Compile Include="Core\Models\MapModel.cs" />

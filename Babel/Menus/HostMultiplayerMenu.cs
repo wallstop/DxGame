@@ -1,4 +1,7 @@
 ﻿using System;
+using Babel.Models;
+using Babel.Network;
+using DxCore;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Network;
 using DxCore.Core.GraphicsWidgets;
@@ -12,7 +15,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
 
-namespace DxCore.Core.Menus
+namespace Babel.Menus
 {
     public class HostMultiplayerMenu : Menu
     {
@@ -98,7 +101,7 @@ namespace DxCore.Core.Menus
             // TODO: Change this to 4 / whatever our max player limit is
             config.MaximumConnections = 1;
 
-            NetworkServer server = (NetworkServer) new NetworkServer().WithConfiguration(config);
+            BabelNetworkServer server = new BabelNetworkServer(config);
             server.Initialize();
             var networkModel = DxGame.Instance.Model<NetworkModel>();
             networkModel.AttachServer(server);

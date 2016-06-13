@@ -2,8 +2,6 @@
 using System.IO;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
 using NLog;
 
 namespace DxCore.Core.Settings
@@ -23,14 +21,12 @@ namespace DxCore.Core.Settings
             try
             {
                 var settingsAsText = File.ReadAllText(Path);
-                var settingsAsJsonByteArray = StringUtils.GetBytes(settingsAsText);
-                loadedSettings =
-                    Serializer<T>.JsonDeserialize(settingsAsJsonByteArray);
+                var settingsAsJsonByteArray = settingsAsText.GetBytes();
+                loadedSettings = Serializer<T>.JsonDeserialize(settingsAsJsonByteArray);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
-                LOG.Error(e, $"Caught unexpected exception while loading settings file for {typeof (T)} at {Path}"
-                    );
+                LOG.Error(e, $"Caught unexpected exception while loading settings file for {typeof(T)} at {Path}");
                 loadedSettings = DefaultSettings;
                 DefaultSettings.Save(fileName);
             }
@@ -45,9 +41,9 @@ namespace DxCore.Core.Settings
             {
                 Serializer<T>.WriteToJsonFile(CurrentSettings, Path);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
-                LOG.Error(e, $"Caught unexpected exception while saving {typeof (T)} {this} at {Path}");
+                LOG.Error(e, $"Caught unexpected exception while saving {typeof(T)} {this} at {Path}");
             }
         }
 

@@ -89,7 +89,17 @@
     <Compile Include="Items\VisibleItemComponent.cs" />
     <Compile Include="Level\SimpleRotatingLevelProgression.cs" />
     <Compile Include="Main\BabelGame.cs" />
+    <Compile Include="Menus\HostMultiplayerMenu.cs" />
+    <Compile Include="Menus\JoinMultiplayerMenu.cs" />
+    <Compile Include="Menus\MainMenu.cs" />
+    <Compile Include="Menus\Menu.cs" />
+    <Compile Include="Menus\MenuItem.cs" />
+    <Compile Include="Menus\PlayMenu.cs" />
     <Compile Include="Messaging\NewWaveMessage.cs" />
+    <Compile Include="Models\GameModel.cs" />
+    <Compile Include="Network\BabelNetworkClient.cs" />
+    <Compile Include="Network\BabelNetworkConfig.cs" />
+    <Compile Include="Network\BabelNetworkServer.cs" />
     <Compile Include="Player\BasicAttackComponent.cs" />
     <Compile Include="Player\PlayerFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -115,7 +125,6 @@
     <Folder Include="Actions\" />
     <Folder Include="Components\PropertyModifiers\" />
     <Folder Include="Components\Widgets\" />
-    <Folder Include="Models\" />
     <Folder Include="Physics\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

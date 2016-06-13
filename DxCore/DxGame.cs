@@ -4,9 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using DxCore.Core;
 using DxCore.Core.Components.Basic;
-using DxCore.Core.Generators;
-using DxCore.Core.Level;
-using DxCore.Core.Menus;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Messaging.Game;
@@ -77,6 +74,8 @@ namespace DxCore
 
         public Stopwatch GameTimer { get; }
 
+        // TODO: Move all this crap out somewhow
+
         public DxRectangle ScreenRegion
         {
             get
@@ -113,8 +112,6 @@ namespace DxCore
         public Controls Controls { get; }
 
         protected abstract void SetUp();
-        public abstract IPlayerGenerator PlayerGenerator { get; }
-        public abstract ILevelProgressionStrategy LevelProgressionStrategy { get; }
 
         protected DxGame()
         {
@@ -213,7 +210,7 @@ namespace DxCore
         }
 
         // TODO: Figure out a better way to attach shit to the game
-        private void AddAndInitializeComponent(Component component)
+        protected void AddAndInitializeComponent(Component component)
         {
             component.LoadContent();
             component.Initialize();
@@ -288,21 +285,6 @@ namespace DxCore
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             AddAndInitializeComponent(new SpriteBatchInitializer());
             AddAndInitializeComponent(new SpriteBatchEnder());
-            MainMenu playMenu = new MainMenu();
-            AddAndInitializeComponent(playMenu);
-
-            FrameModel frameModel = new FrameModel();
-            AttachModel(frameModel);
-
-            NetworkModel netModel = new NetworkModel();
-            AttachModel(netModel);
-
-            InputModel inputModel = new InputModel();
-            AttachModel(inputModel);
-
-            CameraModel cameraModel = new CameraModel();
-            AttachModel(cameraModel);
-
             base.Initialize();
         }
 
@@ -417,24 +399,25 @@ namespace DxCore
         private void PassiveUpdate(DxGameTime gameTime)
         {
             NetworkModel networkModel = Model<NetworkModel>();
-            networkModel.ReceiveData(gameTime);
-            networkModel.SendData(gameTime);
+            networkModel?.ReceiveData(gameTime);
+            networkModel?.SendData(gameTime);
         }
 
         private void CooperativeUpdate(DxGameTime gameTime)
         {
             NetworkModel networkModel = Model<NetworkModel>();
             InputModel inputModel = Model<InputModel>();
-            inputModel.Process(gameTime);
+            inputModel?.Process(gameTime);
             
-            networkModel.ReceiveData(gameTime);
-            networkModel.Process(gameTime);
+            networkModel?.ReceiveData(gameTime);
+            networkModel?.Process(gameTime);
 
+            // TODO: Move this out of here
             DeveloperModel developerModel = Model<DeveloperModel>();
             developerModel.Process(gameTime);
 
             UpdateElements();
-            networkModel.SendData(gameTime);
+            networkModel?.SendData(gameTime);
         }
 
         private void ActiveUpdate(DxGameTime gameTime)
@@ -450,13 +433,13 @@ namespace DxCore
             var networkModel = Model<NetworkModel>();
 
             // Should probably thread this... but wait until we have perf testing :)
-            networkModel.ReceiveData(gameTime);
+            networkModel?.ReceiveData(gameTime);
             /* We may end up modifying these as we iterate over them, so take an immutable copy */
             foreach(var processable in DxGameElements.Processables)
             {
                 processable.Process(gameTime);
             }
-            networkModel.SendData(gameTime);
+            networkModel?.SendData(gameTime);
             UpdateElements();
 
             base.Update(gameTime.ToGameTime());

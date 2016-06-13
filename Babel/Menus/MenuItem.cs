@@ -1,10 +1,9 @@
 ﻿using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
 
-namespace DxCore.Core.Menus
+namespace Babel.Menus
 {
     public class MenuItem
     {

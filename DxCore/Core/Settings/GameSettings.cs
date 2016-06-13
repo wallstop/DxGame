@@ -2,8 +2,6 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Settings
 {
@@ -32,7 +30,7 @@ namespace DxCore.Core.Settings
                 int width = (int) (ScreenWidth * hudScale * HUD_WIDTH_SCALE);
                 int height = (int) (ScreenHeight * hudScale * HUD_HEIGHT_SCALE);
                 int x = (ScreenWidth - width) / 2;
-                int y = (ScreenHeight - height);
+                int y = ScreenHeight - height;
                 return new DxRectangle(x, y, width, height);
             }
         }
@@ -47,7 +45,7 @@ namespace DxCore.Core.Settings
 
         private static double ScalarForHud(Scale scaleFactor)
         {
-            switch (scaleFactor)
+            switch(scaleFactor)
             {
                 case Scale.Ants:
                     return .1;
@@ -66,7 +64,7 @@ namespace DxCore.Core.Settings
         public override string ToString()
         {
             byte[] json = Serializer<GameSettings>.JsonSerialize(this);
-            string jsonAsText = StringUtils.GetString(json);
+            string jsonAsText = json.GetString();
             return jsonAsText;
         }
     }

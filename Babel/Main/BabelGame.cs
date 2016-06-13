@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Babel.Generators;
 using Babel.Level;
+using Babel.Menus;
 using DxCore;
 using DxCore.Core.Generators;
 using DxCore.Core.Level;
+using DxCore.Core.Models;
 using DxCore.Core.Primitives;
 
 namespace Babel.Main
@@ -23,7 +21,23 @@ namespace Babel.Main
             // TODO
         }
 
-        public override IPlayerGenerator PlayerGenerator => babelPlayerGenerator_;
-        public override ILevelProgressionStrategy LevelProgressionStrategy => levelProgression_;
+        protected override void Initialize()
+        {
+            MainMenu playMenu = new MainMenu();
+            AddAndInitializeComponent(playMenu);
+
+            FrameModel frameModel = new FrameModel();
+            AttachModel(frameModel);
+
+            NetworkModel netModel = new NetworkModel();
+            AttachModel(netModel);
+
+            InputModel inputModel = new InputModel();
+            AttachModel(inputModel);
+
+            CameraModel cameraModel = new CameraModel();
+            AttachModel(cameraModel);
+            base.Initialize();
+        }
     }
 }

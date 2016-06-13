@@ -1,31 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DxCore.Core.Components.Advanced.Command;
 using DxCore.Core.Components.Basic;
-using DxCore.Core.Generators;
 using DxCore.Core.Lerp;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Network;
-using DxCore.Core.Models;
 using DxCore.Core.Network;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
 using Lidgren.Network;
 using NLog;
 
 namespace DxCore.Core.Components.Network
 {
-    /*
-        TODO: Lots of things. We need to handle all kinds of messages, and some other things.
-    */
-
-    public class NetworkServer : NetworkComponent
+    // TODO: Make moar better abstract
+    public abstract class AbstractNetworkServer : NetworkComponent
     {
-        private static readonly TimeSpan TICK_RATE = TimeSpan.FromSeconds(1.0 / 60); // 60 FPS
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        protected static readonly Logger LOG = LogManager.GetCurrentClassLogger();
         public NetServer ServerConnection => Connection as NetServer;
         public Dictionary<NetConnection, ClientEventTracker> ClientFrameStates { get; }
 
@@ -35,16 +26,21 @@ namespace DxCore.Core.Components.Network
             client connects, we can shit out "the world thus far" to them in a 
             succinct manner.
         */
-        private readonly ServerEventTracker baseEventTracker_ = new ServerEventTracker();
+        protected readonly ServerEventTracker baseEventTracker_ = new ServerEventTracker();
 
-        public NetworkServer()
+        protected AbstractNetworkServer(NetPeerConfiguration configuration) : base(configuration)
         {
             ClientFrameStates = new Dictionary<NetConnection, ClientEventTracker>();
         }
 
         protected override void InternalSendData(DxGameTime gameTime)
         {
-            // TODO: Function-ize
+            InternalDefaultSendMessageStream(gameTime);
+            InternalDefaultSendLerpData(gameTime);
+        }
+
+        protected void InternalDefaultSendMessageStream(DxGameTime gameTime)
+        {
             foreach(KeyValuePair<NetConnection, ClientEventTracker> connectionEventTrackingPair in ClientFrameStates)
             {
                 List<Message> events = connectionEventTrackingPair.Value.ServerEventTracker.RetrieveEvents();
@@ -80,7 +76,10 @@ namespace DxCore.Core.Components.Network
                     }
                 }
             }
+        }
 
+        protected void InternalDefaultSendLerpData(DxGameTime gameTime)
+        {
             List<IDxVectorLerpable> dxVectorLerpables =
                 DxGame.Instance.DxGameElements.OfType<IDxVectorLerpable>().ToList();
 
@@ -97,22 +96,7 @@ namespace DxCore.Core.Components.Network
             }
         }
 
-        protected override void InitializeNetworkMessageListeners()
-        {
-            networkMessageHandlers_[typeof(ClientConnectionRequest)] = HandleClientConnectionRequest;
-            networkMessageHandlers_[typeof(ClientTimeSynchronizationRequest)] = HandleClientTimeSynchronizationRequest;
-            networkMessageHandlers_[typeof(ClientCommands)] = HandleClientCommands;
-        }
-
-        public override TimeSpan TickRate => TICK_RATE;
-
-        public override NetworkComponent WithConfiguration(NetPeerConfiguration configuration)
-        {
-            // Make sure we enable Approvals so we can accept Client Connections
-            configuration.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
-            Connection = new NetServer(configuration);
-            return this;
-        }
+        protected abstract override void InitializeNetworkMessageListeners();
 
         public override void EstablishConnection()
         {
@@ -142,8 +126,6 @@ namespace DxCore.Core.Components.Network
                         $"Received MessageType {incomingMessage.MessageType}. Currently not handling. ({incomingMessage})");
                     // TODO: Handle
                     break;
-                //ProcessUnhandledMessageType(incomingMessage);
-                //break;
             }
         }
 
@@ -190,67 +172,6 @@ namespace DxCore.Core.Components.Network
             LOG.Info($"Approving NetworkServer client connection {message.SenderConnection}");
             message.SenderConnection.Approve();
             ProcessData(message);
-        }
-
-        protected void HandleClientDataDiff(NetworkMessage message, NetConnection connection)
-        {
-            // TODO: Nice lerp logic. For now, just ignore client messages
-
-            //var clientConnection = clientDataDiffMessage.Connection;
-        }
-
-        protected void HandleClientDataKeyFrame(NetworkMessage message, NetConnection connection)
-        {
-            // TODO: Nice lerp logic. For now, just ignore client messages
-        }
-
-        protected void HandleClientTimeSynchronizationRequest(NetworkMessage message, NetConnection connection)
-        {
-            ClientTimeSynchronizationRequest timeSynchronizationRequest =
-                ConvertMessageType<ClientTimeSynchronizationRequest>(message);
-
-            ServerTimeUpdate timeUpdate = new ServerTimeUpdate(timeSynchronizationRequest.ClientSideGameTime,
-                DxGame.Instance.CurrentTime);
-            NetOutgoingMessage outgoingTimeUpdate = timeUpdate.ToNetOutgoingMessage(ServerConnection);
-            ServerConnection.SendMessage(outgoingTimeUpdate, connection, NetDeliveryMethod.Unreliable);
-        }
-
-        protected void HandleClientCommands(NetworkMessage message, NetConnection connection)
-        {
-            ClientEventTracker eventTracker;
-            if(!ClientFrameStates.TryGetValue(connection, out eventTracker))
-            {
-                LOG.Error($"Encountered unexpected client commands from {connection}");
-                return;
-            }
-
-            ClientCommands clientCommands = ConvertMessageType<ClientCommands>(message);
-            eventTracker.PlayerCommand.RelayCommands(clientCommands.ClientCommandments);
-        }
-
-        protected void HandleClientConnectionRequest(NetworkMessage message, NetConnection connection)
-        {
-            ClientConnectionRequest clientConnectionRequest = ConvertMessageType<ClientConnectionRequest>(message);
-
-            Validate.IsFalse(ClientFrameStates.ContainsKey(connection),
-                $"Received ClientConnectionRequest that we're already tracking, this is an issue! Request: {clientConnectionRequest}");
-
-            ServerEventTracker eventTracker = new ServerEventTracker(baseEventTracker_);
-
-            MapModel mapModel = DxGame.Instance.Model<MapModel>();
-            IPlayerGenerator playerGenerator = DxGame.Instance.PlayerGenerator.From(mapModel.RandomSpawnLocation.Center.ToDxVector2());
-
-            SimpleRelayingCommandComponent networkPlayerCommand = new SimpleRelayingCommandComponent(TickRate);
-
-            ClientEventTracker clientEventTracker = new ClientEventTracker(eventTracker, networkPlayerCommand);
-            ClientFrameStates.Add(connection, clientEventTracker);
-            LOG.Info(
-                $"Successfully initialized ClientConnection {connection} for player {clientConnectionRequest.PlayerName}");
-
-            GameObject player = playerGenerator.GeneratePlayer(networkPlayerCommand, false);
-            player.Create();
-            UpdateActivePlayer updateActivePlayerRequest = new UpdateActivePlayer(player.Id);
-            eventTracker.AttachNetworkMessage(updateActivePlayerRequest);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using DxCore;
 
 namespace MapEditor
 {
@@ -12,10 +13,12 @@ namespace MapEditor
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        public static void Main()
         {
-            using (var game = new MapEditor())
+            using(DxGame game = new MapEditor())
+            {
                 game.Run();
+            }
         }
     }
 #endif

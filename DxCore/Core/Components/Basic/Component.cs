@@ -4,7 +4,6 @@ using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
-using DXGame.Core;
 using NLog;
 
 namespace DxCore.Core.Components.Basic
@@ -146,7 +145,7 @@ namespace DxCore.Core.Components.Basic
             Parent = null;
             EntityRemovedMessage entityRemoved = new EntityRemovedMessage(this);
             entityRemoved.Emit();
-            // TODO: Gotta figure out deregistration
+            // TODO: Gotta figure out deregistration (WHAT DID I MEAN WHEN I WROTE THIS???)
         }
 
         protected virtual void Update(DxGameTime gameTime) {}

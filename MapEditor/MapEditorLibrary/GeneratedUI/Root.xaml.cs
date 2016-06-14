@@ -74,12 +74,13 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_4 = new TextBlock();
             this.e_0.Children.Add(this.e_4);
             this.e_4.Name = "e_4";
-            this.e_4.Margin = new Thickness(104F, 98F, 148F, 176F);
+            this.e_4.Margin = new Thickness(108F, 0F, 143F, 274F);
             this.e_4.HorizontalAlignment = HorizontalAlignment.Center;
             this.e_4.VerticalAlignment = VerticalAlignment.Center;
             this.e_4.Text = "Wow";
             this.e_4.FontSize = 20F;
             this.e_4.FontStyle = FontStyle.Bold;
+            Grid.SetRowSpan(this.e_4, 2);
             FontManager.Instance.AddFont("Segoe UI", 20F, FontStyle.Bold, "Segoe_UI_15_Bold");
         }
         

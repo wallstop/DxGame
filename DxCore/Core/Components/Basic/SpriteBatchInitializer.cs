@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
-using DXGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -11,7 +10,12 @@ namespace DxCore.Core.Components.Basic
     [DataContract]
     public class SpriteBatchInitializer : DrawableComponent
     {
-        public SpriteBatchInitializer()
+        private static readonly Lazy<SpriteBatchInitializer> SINGLETON =
+            new Lazy<SpriteBatchInitializer>(() => new SpriteBatchInitializer());
+
+        public static SpriteBatchInitializer Instance => SINGLETON.Value;
+
+        private SpriteBatchInitializer()
         {
             DrawPriority = DrawPriority.INIT_SPRITEBATCH;
         }
@@ -21,6 +25,7 @@ namespace DxCore.Core.Components.Basic
             // TODO: Change this ugly color
             DxGame.Instance.GraphicsDevice.Clear(Color.DarkGray);
 
+            // TODO: Make this super pluggable and stuff
             DxRectangle screen = DxGame.Instance.ScreenRegion;
 
             Matrix cameraShift = Matrix.CreateTranslation(screen.X, screen.Y, 0);

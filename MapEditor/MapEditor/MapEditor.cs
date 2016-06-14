@@ -1,29 +1,23 @@
 ﻿using System;
-using System.Runtime.Remoting.Contexts;
+using DxCore;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
+using MapEditorLibrary.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace MapEditor
 {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class MapEditor : Game
+    public class MapEditor : DxGame
     {
-        private GraphicsDeviceManager Graphics { get; set; }
-        private SpriteBatch SpriteBatch { get; set; }
-
-        private Root UI { get; set; }
-
         private int NativeScreenWidth { get; set; }
         private int NativeScreenHeight { get; set; }
 
         public MapEditor()
         {
-            Graphics = new GraphicsDeviceManager(this);
             Graphics.DeviceCreated += HandleDeviceCreated;
             Graphics.PreparingDeviceSettings += HandlePreparingDeviceSettings;
             Content.RootDirectory = "Content";
@@ -50,6 +44,8 @@ namespace MapEditor
             eventArgs.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 16;
         }
 
+        protected override void SetUp() {}
+
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -69,12 +65,10 @@ namespace MapEditor
         /// </summary>
         protected override void LoadContent()
         {
-            // Don't need this with EmptyKeys?
-            SpriteBatch = new SpriteBatch(GraphicsDevice);
-
             SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_15_Bold");
             FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
-            UI = new Root();
+            RootUiComponent uiRoot = new RootUiComponent(new Root());
+            uiRoot.Create();
 
             FontManager.Instance.LoadFonts(Content);
 
@@ -88,38 +82,6 @@ namespace MapEditor
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
-        }
-
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Update(GameTime gameTime)
-        {
-            if(GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            UI.UpdateInput(gameTime.ElapsedGameTime.TotalMilliseconds);
-            UI.UpdateLayout(gameTime.ElapsedGameTime.TotalMilliseconds);
-
-            // TODO: Add your update logic here
-
-            base.Update(gameTime);
-        }
-
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Draw(GameTime gameTime)
-        {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            UI.Draw(gameTime.ElapsedGameTime.TotalMilliseconds);
-            // TODO: Add your drawing code here
-
-            base.Draw(gameTime);
         }
     }
 }

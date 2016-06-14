@@ -37,40 +37,41 @@ namespace DxCore
 
     public abstract class DxGame : Game
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        
-        private UniqueId GameId { get; }
+        protected static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        private MessageHandler MessageHandler { get; }
+        protected UniqueId GameId { get; }
 
-        private static DxGame singleton_ = null;
+        protected MessageHandler MessageHandler { get; }
+
+        protected static DxGame singleton_ = null;
 
         public Scale Scale { get; private set; } = Scale.Medium;
 
         public Rectangle Screen { get; protected set; }
-        public SpriteBatch SpriteBatch { get; private set; }
+        public SpriteBatch SpriteBatch { get; protected set; }
+        protected GraphicsDeviceManager Graphics { get; set; }
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
-        public GameElementCollection DxGameElements { get; private set; }
+        public GameElementCollection DxGameElements { get; protected set; }
         // TODO: Thread safety? Move this to some kind of Context static class?
         public static DxGame Instance => singleton_;
         public double TargetFps => 60.0;
-        private static readonly TimeSpan MINIMUM_FRAMERATE = TimeSpan.FromSeconds(1 / 10000.0);
+        protected static readonly TimeSpan MINIMUM_FRAMERATE = TimeSpan.FromSeconds(1 / 10000.0);
         public GameElementCollection NewGameElements { get; } = new GameElementCollection();
         public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
 
-        public GameId GameGuid { get; private set; }  
+        public GameId GameGuid { get; protected set; }  
 
-        public DxGameTime CurrentTime { get; private set; } = new DxGameTime();
+        public DxGameTime CurrentTime { get; protected set; } = new DxGameTime();
 
         public UpdateMode UpdateMode { get; set; } = UpdateMode.Active;
 
         /* TODO: Remove public access to this, this was made public for network testing */
         public List<Model> Models { get; } = new List<Model>();
 
-        private TimeSpan lastFrameTick_;
-        private TimeSpan compensatedGameTime_;
+        protected TimeSpan lastFrameTick_;
+        protected TimeSpan compensatedGameTime_;
 
-        private double timeSkewMilliseconds_;
+        protected double timeSkewMilliseconds_;
 
         public Stopwatch GameTimer { get; }
 
@@ -126,7 +127,7 @@ namespace DxCore
             Controls.Load();
 
             Screen = new Rectangle(0, 0, GameSettings.ScreenWidth, GameSettings.ScreenHeight);
-            var graphics = new GraphicsDeviceManager(this)
+            Graphics = new GraphicsDeviceManager(this)
             {
                 PreferredBackBufferHeight = Screen.Height,
                 PreferredBackBufferWidth = Screen.Width
@@ -136,7 +137,7 @@ namespace DxCore
             IsFixedTimeStep = false;
 
             // LOL VSYNC
-            graphics.SynchronizeWithVerticalRetrace = false;
+            Graphics.SynchronizeWithVerticalRetrace = false;
 
             DxGameElements = new GameElementCollection();
             Content.RootDirectory = "Content";
@@ -151,7 +152,7 @@ namespace DxCore
             timeSkewMilliseconds_ = 0;
             lastFrameTick_ = TimeSpan.Zero;
             compensatedGameTime_ = TimeSpan.Zero;
-            GameTimer = Stopwatch.StartNew(); 
+            GameTimer = Stopwatch.StartNew();
         }
 
         /**
@@ -234,7 +235,7 @@ namespace DxCore
             }
         }
 
-        private void HandleEntityRemovedMessage(EntityRemovedMessage entityRemoved)
+        protected void HandleEntityRemovedMessage(EntityRemovedMessage entityRemoved)
         {
             Component removedComponent;
             if(entityRemoved.TryGetRemovedEntity(out removedComponent))
@@ -251,12 +252,12 @@ namespace DxCore
             }
         }
 
-        private void HandleTimeSkewRequest(TimeSkewRequest timeSkewRequest)
+        protected void HandleTimeSkewRequest(TimeSkewRequest timeSkewRequest)
         {
             timeSkewMilliseconds_ = timeSkewRequest.OffsetMilliseconds;
         }
 
-        private void AddAndInitializeGameObject(GameObject gameObject)
+        protected void AddAndInitializeGameObject(GameObject gameObject)
         {
             foreach(var component in gameObject.Components)
             {
@@ -265,7 +266,7 @@ namespace DxCore
             NewGameElements.Add(gameObject);
         }
 
-        private void RemoveGameObject(GameObject gameObject)
+        protected void RemoveGameObject(GameObject gameObject)
         {
             if(ReferenceEquals(gameObject, null))
             {
@@ -275,7 +276,7 @@ namespace DxCore
             RemovedGameElements.Add(gameObject);
         }
 
-        private void RemoveComponent(Component component)
+        protected void RemoveComponent(Component component)
         {
             RemovedGameElements.Add(component);
         }
@@ -283,8 +284,8 @@ namespace DxCore
         protected override void Initialize()
         {
             SpriteBatch = new SpriteBatch(GraphicsDevice);
-            AddAndInitializeComponent(new SpriteBatchInitializer());
-            AddAndInitializeComponent(new SpriteBatchEnder());
+            AddAndInitializeComponent(SpriteBatchInitializer.Instance);
+            AddAndInitializeComponent(SpriteBatchEnder.Instance);
             base.Initialize();
         }
 
@@ -298,7 +299,7 @@ namespace DxCore
             base.UnloadContent();
         }
 
-        private void UpdateElements()
+        protected void UpdateElements()
         {
             foreach(object newGameElement in NewGameElements)
             {
@@ -361,7 +362,7 @@ namespace DxCore
             }
         }
 
-        private DxGameTime DetermineGameTime(GameTime gameTime)
+        protected DxGameTime DetermineGameTime(GameTime gameTime)
         {
             TimeSpan wallclock;
             TimeSpan actualElapsed;
@@ -396,14 +397,14 @@ namespace DxCore
             return dxGameTime;
         }
 
-        private void PassiveUpdate(DxGameTime gameTime)
+        protected void PassiveUpdate(DxGameTime gameTime)
         {
             NetworkModel networkModel = Model<NetworkModel>();
             networkModel?.ReceiveData(gameTime);
             networkModel?.SendData(gameTime);
         }
 
-        private void CooperativeUpdate(DxGameTime gameTime)
+        protected void CooperativeUpdate(DxGameTime gameTime)
         {
             NetworkModel networkModel = Model<NetworkModel>();
             InputModel inputModel = Model<InputModel>();
@@ -420,7 +421,7 @@ namespace DxCore
             networkModel?.SendData(gameTime);
         }
 
-        private void ActiveUpdate(DxGameTime gameTime)
+        protected void ActiveUpdate(DxGameTime gameTime)
         {
             // TODO: Fix update & draw lockstep so they're de-synced. Sync Update() to 60/30/whatever FPS, Draw() unlocked (or locked to player preference)
 

@@ -85,7 +85,7 @@ namespace DxCore.Core.GraphicsWidgets
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             spriteBatch.Draw(Background, destinationRectangle: SpatialComponent.Space.ToRectangle());
-            spriteBatch.DrawString(SpriteFont, Text, SpatialComponent.Position.ToVector2(), TextColor);
+            spriteBatch.DrawString(SpriteFont, Text, SpatialComponent.Position.Vector2, TextColor);
 
             // TODO: Change this to some kind of focused-style state, possible set via the owner
             if(InFocus)

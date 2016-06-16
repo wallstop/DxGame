@@ -3,7 +3,6 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Models;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework.Input;
 
 namespace DxCore.Core.Components.Developer
@@ -27,14 +26,11 @@ namespace DxCore.Core.Components.Developer
 
         protected override void Update(DxGameTime gameTime)
         {
-            var inputModel = DxGame.Instance.Model<InputModel>();
-            var finishedEvents = inputModel.FinishedEvents;
-            if (finishedEvents.Any(inputEvent => inputEvent.Key == DEV_KEY))
+            InputModel inputModel = DxGame.Instance.Model<InputModel>();
+            if (inputModel?.FinishedEvents?.Any(inputEvent => inputEvent.Key == DEV_KEY) ?? false)
             {
                 DeveloperMode = DeveloperMode.Rotate();
             }
-
-            base.Update(gameTime);
         }
     }
 }

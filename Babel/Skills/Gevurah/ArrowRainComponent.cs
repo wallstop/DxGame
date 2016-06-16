@@ -243,7 +243,7 @@ namespace Babel.Skills.Gevurah
                 var arrowSpritePosition = arrowSpritePositionAndVelocity.Item1;
                 var transparencyWeight = ThreadLocalRandom.Current.NextFloat(0.1f, 0.7f);
                 var transparency = ColorFactory.Transparency(transparencyWeight);
-                spriteBatch.Draw(arrowSprite_, arrowSpritePosition.ToVector2(), transparency);
+                spriteBatch.Draw(arrowSprite_, arrowSpritePosition.Vector2, transparency);
             }
         }
 

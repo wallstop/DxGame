@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Utils.Distance
 {
@@ -15,10 +14,13 @@ namespace DxCore.Core.Utils.Distance
 
         [DataMember]
         public List<QuadTreeNode<T>> Children { get; }
+
         [DataMember]
         public DxRectangle Boundary { get; }
+
         [DataMember]
         public List<T> Points { get; }
+
         [DataMember]
         public bool Terminal { get; }
 
@@ -27,7 +29,7 @@ namespace DxCore.Core.Utils.Distance
             Boundary = boundary;
             Terminal = pointsInSpace.Count() <= bucketSize;
             Children = new List<QuadTreeNode<T>>(NUM_CHILDREN);
-            if (Terminal)
+            if(Terminal)
             {
                 Points = pointsInSpace;
                 return;
@@ -39,10 +41,9 @@ namespace DxCore.Core.Utils.Distance
                 boundary.QuadrantFour
             };
 
-            foreach (DxRectangle quadrant in quadrants)
+            foreach(DxRectangle quadrant in quadrants)
             {
-                var pointsInRange =
-                    pointsInSpace.Where(element => quadrant.Contains(coordinate(element))).ToList();
+                var pointsInRange = pointsInSpace.Where(element => quadrant.Contains(coordinate(element))).ToList();
                 var node = new QuadTreeNode<T>(quadrant, coordinate, pointsInRange, bucketSize);
                 Children.Add(node);
             }
@@ -54,31 +55,27 @@ namespace DxCore.Core.Utils.Distance
     public class QuadTree<T> : ISpatialTree<T>
     {
         private static readonly int DEFAULT_BUCKET_SIZE = 12;
-        [DataMember]
-        private readonly DxRectangle boundary_;
-        [DataMember]
-        private readonly Coordinate<T> coordinate_;
-        [DataMember]
-        private readonly QuadTreeNode<T> head_;
+        [DataMember] private readonly DxRectangle boundary_;
+        [DataMember] private readonly Coordinate<T> coordinate_;
+        [DataMember] private readonly QuadTreeNode<T> head_;
 
         public QuadTree(Coordinate<T> coordinate, DxRectangle boundary, IEnumerable<T> points)
-            : this(coordinate, boundary, points, DEFAULT_BUCKET_SIZE)
-        {
-        }
+            : this(coordinate, boundary, points, DEFAULT_BUCKET_SIZE) {}
 
         public QuadTree(Coordinate<T> coordinate, DxRectangle boundary, IEnumerable<T> points, int bucketSize)
         {
             Validate.IsTrue(bucketSize > 0, $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
-            Validate.IsNotNull(coordinate, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(coordinate)));
+            Validate.IsNotNull(coordinate, this.GetFormattedNullOrDefaultMessage(nameof(coordinate)));
             coordinate_ = coordinate;
             boundary_ = boundary;
             head_ = new QuadTreeNode<T>(boundary, coordinate_, points.ToList(), bucketSize);
         }
 
         // TODO: Simplifiy all these trees into a better structure (too much copy paste) 
-        public List<T> Elements {
-            get {
-
+        public List<T> Elements
+        {
+            get
+            {
                 Queue<QuadTreeNode<T>> nodesToVisit = new Queue<QuadTreeNode<T>>();
                 nodesToVisit.Enqueue(head_);
 
@@ -86,21 +83,22 @@ namespace DxCore.Core.Utils.Distance
                 do
                 {
                     var currentNode = nodesToVisit.Dequeue();
-                    if (currentNode.Terminal)
+                    if(currentNode.Terminal)
                     {
                         elements.AddRange(currentNode.Points);
                         continue;
                     }
 
-                    foreach (var node in currentNode.Children)
+                    foreach(var node in currentNode.Children)
                     {
                         nodesToVisit.Enqueue(node);
                     }
-                } while (nodesToVisit.Any());
+                } while(nodesToVisit.Any());
 
                 return elements;
             }
         }
+
         public List<DxRectangle> Nodes => Divisions;
 
         public List<DxRectangle> Divisions
@@ -115,16 +113,16 @@ namespace DxCore.Core.Utils.Distance
                 {
                     QuadTreeNode<T> currentNode = nodesToVisit.Dequeue();
                     quadrants.Add(currentNode.Boundary);
-                    if (currentNode.Terminal)
+                    if(currentNode.Terminal)
                     {
                         continue;
                     }
 
-                    foreach (var node in currentNode.Children)
+                    foreach(var node in currentNode.Children)
                     {
                         nodesToVisit.Enqueue(node);
                     }
-                } while (nodesToVisit.Any());
+                } while(nodesToVisit.Any());
 
                 return quadrants;
             }
@@ -132,7 +130,7 @@ namespace DxCore.Core.Utils.Distance
 
         public List<T> InRange(IShape range)
         {
-            if (!range.Intersects(boundary_))
+            if(!range.Intersects(boundary_))
             {
                 return Enumerable.Empty<T>().ToList();
             }
@@ -144,23 +142,23 @@ namespace DxCore.Core.Utils.Distance
             do
             {
                 QuadTreeNode<T> currentNode = nodesToVisit.Dequeue();
-                if (!range.Intersects(currentNode.Boundary))
+                if(!range.Intersects(currentNode.Boundary))
                 {
                     continue;
                 }
 
-                if (currentNode.Terminal)
+                if(currentNode.Terminal)
                 {
                     elementsInRange.AddRange(currentNode.Points.Where(element => range.Contains(coordinate_(element))));
                 }
                 else
                 {
-                    foreach (var child in currentNode.Children)
+                    foreach(var child in currentNode.Children)
                     {
                         nodesToVisit.Enqueue(child);
                     }
                 }
-            } while (nodesToVisit.Any());
+            } while(nodesToVisit.Any());
             return elementsInRange;
         }
 
@@ -171,22 +169,23 @@ namespace DxCore.Core.Utils.Distance
             </summary>
         */
 
-        public Optional<T> Closest(DxVector2 position)
+        public bool Closest(DxVector2 position, out T result)
         {
             // wtf resharper impure method?
-            if (!boundary_.Contains(position))
+            if(!boundary_.Contains(position))
             {
-                return Optional<T>.Empty;
+                result = default(T);
+                return false;
             }
 
             var currentNode = head_;
-            
+
             /* Drill down until we're at the terminal node that contains our target */
-            while (!currentNode.Terminal)
+            while(!currentNode.Terminal)
             {
                 var children = currentNode.Children;
                 var closestChild = children.FirstOrDefault(child => child.Boundary.Contains(position));
-                if (ReferenceEquals(closestChild, null))
+                if(ReferenceEquals(closestChild, null))
                 {
                     break;
                 }
@@ -201,25 +200,27 @@ namespace DxCore.Core.Utils.Distance
             searchBoundary.Width *= 3;
             searchBoundary.Height *= 3;
             List<T> points = InRange(searchBoundary);
-            if (!points.Any())
+            if(!points.Any())
             {
-                return Optional<T>.Empty;
+                result = default(T);
+                return false;
             }
 
             /* Points? Walk the list once to find the closest one */
             var closest = points[0];
             var smallestMagnitude = (position - coordinate_(closest)).MagnitudeSquared;
-            foreach (var point in points)
+            foreach(var point in points)
             {
                 var magnitude = (position - coordinate_(point)).MagnitudeSquared;
-                if (magnitude < smallestMagnitude)
+                if(magnitude < smallestMagnitude)
                 {
                     closest = point;
                     smallestMagnitude = magnitude;
                 }
             }
 
-            return new Optional<T>(closest);
+            result = closest;
+            return true;
         }
 
         public List<T> InRange(DxVector2 point, float radius)

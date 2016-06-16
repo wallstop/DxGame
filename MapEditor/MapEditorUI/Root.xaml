@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MapEditorUILibrary"
         mc:Ignorable="d" Height="300" Width="300">
-    <Grid>
+    <Grid Margin="0,0,0,280">
         <Grid.RowDefinitions>
             <RowDefinition Height="20"></RowDefinition>
             <RowDefinition></RowDefinition>

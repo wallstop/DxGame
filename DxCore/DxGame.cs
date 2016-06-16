@@ -286,6 +286,10 @@ namespace DxCore
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             AddAndInitializeComponent(SpriteBatchInitializer.Instance);
             AddAndInitializeComponent(SpriteBatchEnder.Instance);
+
+            InputModel inputModel = new InputModel();
+            AttachModel(inputModel);
+
             base.Initialize();
         }
 

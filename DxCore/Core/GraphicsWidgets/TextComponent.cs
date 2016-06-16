@@ -43,7 +43,7 @@ namespace DxCore.Core.GraphicsWidgets
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            spriteBatch.DrawString(spriteFont_, Text, position_.Position.ToVector2(), DxColor.Color);
+            spriteBatch.DrawString(spriteFont_, Text, position_.Position.Vector2, DxColor.Color);
         }
 
         public override void LoadContent()

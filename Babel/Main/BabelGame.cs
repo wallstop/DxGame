@@ -24,9 +24,6 @@ namespace Babel.Main
             NetworkModel netModel = new NetworkModel();
             AttachModel(netModel);
 
-            InputModel inputModel = new InputModel();
-            AttachModel(inputModel);
-
             CameraModel cameraModel = new CameraModel();
             AttachModel(cameraModel);
             base.Initialize();

@@ -56,6 +56,7 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_0 = new Grid();
             this.Content = this.e_0;
             this.e_0.Name = "e_0";
+            this.e_0.Margin = new Thickness(0F, 0F, 0F, 280F);
             RowDefinition row_e_0_0 = new RowDefinition();
             row_e_0_0.Height = new GridLength(20F, GridUnitType.Pixel);
             this.e_0.RowDefinitions.Add(row_e_0_0);

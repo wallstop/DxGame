@@ -9,7 +9,6 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Pathfinding;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
 using NLog;
 
 namespace DxCore.Core.Models
@@ -35,34 +34,29 @@ namespace DxCore.Core.Models
             /* If the provided entity is null or we're already at our destination, there's nothing to do */
             if(entityIsNull || entity.ComponentOfType<SpatialComponent>().Space.Contains(target))
             {
-                LOG.Warn($"No work to do - we're either null or at our destination");
+                LOG.Warn("No work to do - we're either null or at our destination");
                 return PathfindingResult.EmptyResult;
             }
 
-            var mapModel = DxGame.Instance.Model<MapModel>();
-            var navigationMesh = NavigableSurface.SurfaceFor(mapModel);
-            var closestNode = navigationMesh.NodeQuery.Closest(target);
-            if(!closestNode.HasValue)
+            MapModel mapModel = DxGame.Instance.Model<MapModel>();
+            NavigableSurface navigationMesh = NavigableSurface.SurfaceFor(mapModel);
+            NavigableSurface.Node closestNode;
+            if(!navigationMesh.NodeQuery.Closest(target, out closestNode))
             {
                 LOG.Info($"Could not find a Node close to {target}");
                 return PathfindingResult.EmptyResult;
             }
 
-            NavigableSurface.Node targetNode = closestNode.Value;
+            NavigableSurface.Node targetNode = closestNode;
             SpatialComponent spatial = entity.ComponentOfType<SpatialComponent>();
 
-            Optional<NavigableSurface.Node> maybeOriginalNode =
-                navigationMesh.NodeQuery.Closest(ClosestPlatformPoint(spatial));
-            /*
-                TODO: Have an initial pathfind round to snap ourselves to the nearest point. This currently does not work
-                well if we are in midair or not aligned perfectly to a NavigableSurface point
-            */
-            if(!maybeOriginalNode.HasValue)
+            NavigableSurface.Node originalNode;
+            if(!navigationMesh.NodeQuery.Closest(ClosestPlatformPoint(spatial), out originalNode))
             {
                 LOG.Warn($"Could not determine the closest node to {spatial.Space}");
                 return PathfindingResult.EmptyResult;
             }
-            NavigableSurface.Node originalNode = maybeOriginalNode.Value;
+
             NavigableSurface.Node current = originalNode;
 
             ExplorableMesh explorableMesh = ExplorableMeshCache.MeshFor(entity, navigationMesh);
@@ -161,14 +155,12 @@ namespace DxCore.Core.Models
             DxVector2 groundPoint = ClosestPlatformPoint(spatial);
 
             // TODO: Fix this and go to closest node instead of "starting" there
-            Optional<NavigableSurface.Node> maybeStartingPoint = mesh.NavigableSurface.NodeQuery.Closest(groundPoint);
-            if(!maybeStartingPoint.HasValue)
+            NavigableSurface.Node startingPoint;
+            if(!mesh.NavigableSurface.NodeQuery.Closest(groundPoint, out startingPoint))
             {
                 LOG.Warn($"Could not explore the mesh - there is no point near {groundPoint}");
                 return;
             }
-
-            NavigableSurface.Node startingPoint = maybeStartingPoint.Value;
             NavigableSurface.Node current = startingPoint;
             TimeSpan maxTime = TimeSpan.FromSeconds(0.010);
             Stopwatch timer = Stopwatch.StartNew();

@@ -32,21 +32,12 @@ namespace DxCore.Core.Components.Basic
         <code>
             public class NameableComponent : Component
             {
-                private string name_;
-            
-                public string Name
-                { 
-                    get { return name_; }
-                }
+                public string Name { get; }
 
-                public NameableComponent(Game game)
+                public NameableComponent(string name)
                     : base(game)
                 {
-                }
-   
-                public NameableComponent WithName(string name)
-                {
-                    Debug.Assert(!GenericUtils.IsNullOrDefault(name), "NameableComponent cannot be initialized with a null name");
+                            Debug.Assert(!GenericUtils.IsNullOrDefault(name), "NameableComponent cannot be initialized with a null name");
                     name_ = name;
                 }
             }

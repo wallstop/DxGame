@@ -136,7 +136,7 @@ namespace DxCore.Core.Components.Advanced
 
         protected static Vector2 DetermineHealthBarOrigin(DxVector2 position, DxVector2 floatDistance)
         {
-            return (position + floatDistance).ToVector2();
+            return (position + floatDistance).Vector2;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)

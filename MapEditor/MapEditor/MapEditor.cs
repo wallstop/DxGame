@@ -1,5 +1,6 @@
 ﻿using System;
 using DxCore;
+using DxCore.Core.Models;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
 using MapEditorLibrary.Core;
@@ -39,7 +40,7 @@ namespace MapEditor
             Graphics.PreferredBackBufferHeight = 720;
             Graphics.PreferMultiSampling = true;
             Graphics.GraphicsProfile = GraphicsProfile.HiDef;
-            Graphics.SynchronizeWithVerticalRetrace = true;
+            Graphics.SynchronizeWithVerticalRetrace = false;
             Graphics.PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8;
             eventArgs.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 16;
         }
@@ -65,14 +66,15 @@ namespace MapEditor
         /// </summary>
         protected override void LoadContent()
         {
-            SpriteFont font = Content.Load<SpriteFont>("Segoe_UI_15_Bold");
-            FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
+            // TODO: Offload
             RootUiComponent uiRoot = new RootUiComponent(new Root());
             uiRoot.Create();
 
-            FontManager.Instance.LoadFonts(Content);
+            DeveloperModel devModel = new DeveloperModel();
+            DxGame.Instance.AttachModel(devModel);
 
-            // TODO: use this.Content to load your game content here
+            FontManager.Instance.LoadFonts(Content);
+            base.LoadContent();
         }
 
         /// <summary>

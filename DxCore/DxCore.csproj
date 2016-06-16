@@ -311,6 +311,7 @@
     <Compile Include="Core\Utils\DictionaryUtils.cs" />
     <Compile Include="Core\Utils\Distance\Directions.cs" />
     <Compile Include="Core\Utils\Distance\Distance.cs" />
+    <Compile Include="Core\Utils\Distance\EmptyTree.cs" />
     <Compile Include="Core\Utils\Distance\ISpatialTree.cs" />
     <Compile Include="Core\Utils\Distance\KDTree.cs" />
     <Compile Include="Core\Utils\Distance\QuadTree.cs" />

@@ -7,6 +7,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Distance;
 using DXGame.Core;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -34,7 +35,7 @@ namespace DxCore.Core.Models
             components_.Add(fpsTracker);
             devSwitch_ = new DeveloperSwitch();
             var mapTreeWidget =
-                new CollisionTreeWidget<MapCollidable>(() => DxGame.Instance.Model<MapModel>().Map.Collidables);
+                new CollisionTreeWidget<MapCollidable>(() => DxGame.Instance.Model<MapModel>()?.Map?.Collidables ?? EmptyTree<MapCollidable>.Instance);
             components_.Add(mapTreeWidget);
             var boundingBoxWidget = new BoundingBoxWidget();
             components_.Add(boundingBoxWidget);

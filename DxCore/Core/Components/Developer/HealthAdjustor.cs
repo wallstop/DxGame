@@ -28,9 +28,19 @@ namespace DxCore.Core.Components.Developer
         protected override void Update(DxGameTime gameTime)
         {
             InputModel input = DxGame.Instance.Model<InputModel>();
-
             PlayerModel playerModel = DxGame.Instance.Model<PlayerModel>();
+
+            if(ReferenceEquals(input, null) || ReferenceEquals(playerModel, null))
+            {
+                return;
+            }
+
             Player activePlayer = playerModel.ActivePlayer;
+            if(ReferenceEquals(activePlayer, null))
+            {
+                return;
+            }
+
             EntityProperties entityProperties =
                 activePlayer.Object.ComponentOfType<EntityPropertiesComponent>().EntityProperties;
             foreach(KeyboardEvent keyboardEvent in input.FinishedEvents)

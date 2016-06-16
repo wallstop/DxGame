@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Utils.Distance
 {
@@ -13,10 +12,13 @@ namespace DxCore.Core.Utils.Distance
     {
         [DataMember]
         public DxRectangle Boundary { get; }
+
         [DataMember]
         public bool Terminal { get; }
+
         [DataMember]
         public List<T> Rectangles { get; }
+
         [DataMember]
         public List<RTreeNode<T>> Children { get; }
 
@@ -26,7 +28,7 @@ namespace DxCore.Core.Utils.Distance
             float minY = float.MaxValue;
             float maxX = float.MinValue;
             float maxY = float.MinValue;
-            foreach (T rectangularObject in rectangles)
+            foreach(T rectangularObject in rectangles)
             {
                 var rectangle = boundingBox(rectangularObject);
                 minX = Math.Min(minX, rectangle.X);
@@ -35,14 +37,13 @@ namespace DxCore.Core.Utils.Distance
                 maxY = Math.Max(maxY, rectangle.Y + rectangle.Height);
             }
 
-            Boundary = new DxRectangle(minX, minY, (maxX - minX), (maxY - minY));
+            Boundary = new DxRectangle(minX, minY, maxX - minX, maxY - minY);
             Terminal = rectangles.Count <= bucketSize;
-            if (Terminal)
+            if(Terminal)
             {
                 Rectangles = rectangles;
                 return;
             }
-
 
             /*
                 http://www.dtic.mil/get-tr-doc/pdf?AD=ADA324493
@@ -60,13 +61,13 @@ namespace DxCore.Core.Utils.Distance
 
             double slicesPerAxis = Math.Sqrt(branchFactor);
             int rectanglesPerPagePerAxis = (int) (slicesPerAxis * targetSize);
-            rectangles.Sort((box1, box2) => (boundingBox(box1).Center.X.CompareTo(boundingBox(box2).Center.X)));
+            rectangles.Sort((box1, box2) => boundingBox(box1).Center.X.CompareTo(boundingBox(box2).Center.X));
             IEnumerable<List<T>> partitionedByX = rectangles.Partition(rectanglesPerPagePerAxis);
-            foreach (var xSlice in partitionedByX)
+            foreach(var xSlice in partitionedByX)
             {
-                xSlice.Sort((box1, box2) => (boundingBox(box1).Center.Y.CompareTo(boundingBox(box2).Center.Y)));
+                xSlice.Sort((box1, box2) => boundingBox(box1).Center.Y.CompareTo(boundingBox(box2).Center.Y));
                 IEnumerable<List<T>> partitionedByY = xSlice.Partition(intTargetSize);
-                foreach (var ySlice in partitionedByY)
+                foreach(var ySlice in partitionedByY)
                 {
                     var node = new RTreeNode<T>(boundingBox, ySlice, bucketSize, branchFactor);
                     Children.Add(node);
@@ -82,14 +83,12 @@ namespace DxCore.Core.Utils.Distance
         private static readonly int DEFAULT_BUCKET_SIZE = 10;
         private static readonly int DEFAULT_BRANCH_FACTOR = 4;
 
-        [DataMember]
-        private readonly DxRectangle boundary_;
-        [DataMember]
-        private readonly BoundingBox<T> boundingBox_;
-        [DataMember]
-        private readonly RTreeNode<T> head_;
+        [DataMember] private readonly DxRectangle boundary_;
+        [DataMember] private readonly BoundingBox<T> boundingBox_;
+        [DataMember] private readonly RTreeNode<T> head_;
 
-        public List<T> Elements {
+        public List<T> Elements
+        {
             get
             {
                 var nodesToVisit = new Queue<RTreeNode<T>>();
@@ -99,23 +98,23 @@ namespace DxCore.Core.Utils.Distance
                 do
                 {
                     var currentNode = nodesToVisit.Dequeue();
-                    if (!currentNode.Terminal)
+                    if(!currentNode.Terminal)
                     {
-                        foreach (var node in currentNode.Children)
+                        foreach(var node in currentNode.Children)
                         {
                             nodesToVisit.Enqueue(node);
                         }
                         continue;
                     }
                     elements.AddRange(currentNode.Rectangles);
-                    
-                } while (nodesToVisit.Any());
+                } while(nodesToVisit.Any());
 
                 return elements;
             }
         }
 
-        public List<DxRectangle> Nodes {
+        public List<DxRectangle> Nodes
+        {
             get
             {
                 var nodesToVisit = new Queue<RTreeNode<T>>();
@@ -125,16 +124,16 @@ namespace DxCore.Core.Utils.Distance
                 do
                 {
                     var currentNode = nodesToVisit.Dequeue();
-                    if (!currentNode.Terminal)
+                    if(!currentNode.Terminal)
                     {
-                        foreach (var node in currentNode.Children)
+                        foreach(var node in currentNode.Children)
                         {
                             nodesToVisit.Enqueue(node);
                         }
                         continue;
                     }
                     nodeBoundaries.Add(currentNode.Boundary);
-                } while (nodesToVisit.Any());
+                } while(nodesToVisit.Any());
 
                 return nodeBoundaries;
             }
@@ -151,31 +150,28 @@ namespace DxCore.Core.Utils.Distance
                 do
                 {
                     var currentNode = nodesToVisit.Dequeue();
-                    if (!currentNode.Terminal)
+                    if(!currentNode.Terminal)
                     {
-                        foreach (var node in currentNode.Children)
+                        foreach(var node in currentNode.Children)
                         {
                             nodesToVisit.Enqueue(node);
                         }
                         continue;
                     }
                     rectangles.AddRange(currentNode.Rectangles.Select(rectangle => boundingBox_(rectangle)));
-                } while (nodesToVisit.Any());
+                } while(nodesToVisit.Any());
 
                 return rectangles;
             }
         }
 
         public RTree(BoundingBox<T> boundingBox, List<T> rectangles)
-            : this(boundingBox, rectangles, DEFAULT_BUCKET_SIZE, DEFAULT_BRANCH_FACTOR)
-        {
-        }
+            : this(boundingBox, rectangles, DEFAULT_BUCKET_SIZE, DEFAULT_BRANCH_FACTOR) {}
 
-        public RTree(BoundingBox<T> boundingBox, List<T> rectangles, int bucketSize,
-            int branchFactor)
+        public RTree(BoundingBox<T> boundingBox, List<T> rectangles, int bucketSize, int branchFactor)
         {
             Validate.IsTrue(bucketSize > 0, $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
-            Validate.IsNotNull(boundingBox, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(boundingBox)));
+            Validate.IsNotNull(boundingBox, this.GetFormattedNullOrDefaultMessage(nameof(boundingBox)));
             boundingBox_ = boundingBox;
             head_ = new RTreeNode<T>(boundingBox, rectangles, bucketSize, branchFactor);
             boundary_ = head_.Boundary;
@@ -183,7 +179,7 @@ namespace DxCore.Core.Utils.Distance
 
         public List<T> InRange(IShape range)
         {
-            if (!range.Intersects(boundary_))
+            if(!range.Intersects(boundary_))
             {
                 return Enumerable.Empty<T>().ToList();
             }
@@ -195,31 +191,31 @@ namespace DxCore.Core.Utils.Distance
             do
             {
                 RTreeNode<T> currentNode = nodesToVisit.Dequeue();
-                if (!range.Intersects(currentNode.Boundary))
+                if(!range.Intersects(currentNode.Boundary))
                 {
                     continue;
                 }
 
-                if (currentNode.Terminal)
+                if(currentNode.Terminal)
                 {
                     elementsInRange.AddRange(
                         currentNode.Rectangles.Where(element => range.Intersects(boundingBox_(element))));
                 }
                 else
                 {
-                    foreach (var child in currentNode.Children)
+                    foreach(var child in currentNode.Children)
                     {
                         nodesToVisit.Enqueue(child);
                     }
                 }
-            } while (nodesToVisit.Any());
+            } while(nodesToVisit.Any());
             return elementsInRange;
         }
 
-        public Optional<T> Closest(DxVector2 position)
+        public bool Closest(DxVector2 position, out T result)
         {
             // TODO
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using DxCore.Core.Primitives;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Utils.Distance
 {
@@ -17,6 +16,6 @@ namespace DxCore.Core.Utils.Distance
         List<DxRectangle> Divisions { get; }
         List<T> InRange(IShape range);
         // TODO: Make Optional
-        Optional<T> Closest(DxVector2 position);
+        bool Closest(DxVector2 position, out T result);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
 namespace DxCore.Core.Primitives
@@ -13,6 +12,8 @@ namespace DxCore.Core.Primitives
         CounterClockwise
     }
 
+    // TODO: Immutable?
+
     [Serializable]
     [DataContract]
     public struct DxVector2 : IEquatable<DxVector2>, IEquatable<Vector2>, IComparable<DxVector2>
@@ -23,6 +24,8 @@ namespace DxCore.Core.Primitives
         public float Magnitude => (float) Math.Sqrt(MagnitudeSquared);
         public DxRadian Radian => new DxRadian(this);
         public DxDegree Degree => new DxDegree(this);
+        public Vector2 Vector2 => new Vector2((int) Math.Round(X), (int) Math.Round(Y));
+
         public static DxVector2 EmptyVector => new DxVector2();
 
         public DxVector2 UnitVector
@@ -181,10 +184,6 @@ namespace DxCore.Core.Primitives
             return Objects.HashCode(X, Y);
         }
 
-        public Vector2 ToVector2()
-        {
-            return new Vector2((int)Math.Round(X), (int)Math.Round(Y));
-        }
 
         public override string ToString()
         {

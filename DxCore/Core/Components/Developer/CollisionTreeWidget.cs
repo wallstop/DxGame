@@ -26,7 +26,7 @@ namespace DxCore.Core.Components.Developer
         public CollisionTreeWidget(CollisionTreeProducer<T> collisionTreeProducer)
         {
             Validate.IsNotNullOrDefault(collisionTreeProducer,
-                StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(collisionTreeProducer)));
+                this.GetFormattedNullOrDefaultMessage(nameof(collisionTreeProducer)));
             producer_ = collisionTreeProducer;
         }
 

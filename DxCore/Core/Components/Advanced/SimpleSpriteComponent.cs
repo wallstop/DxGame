@@ -44,7 +44,7 @@ namespace DxCore.Core.Components.Advanced
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            spriteBatch.Draw(texture_, position_.Position.ToVector2(), null, Color.White, 0.0f, Vector2.Zero, 1.0f,
+            spriteBatch.Draw(texture_, position_.Position.Vector2, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
                 SpriteEffects.None, 0);
         }
 

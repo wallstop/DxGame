@@ -182,9 +182,9 @@ namespace DxCore.Core.Utils.Distance
             return elementsInRange;
         }
 
-        public Optional<T> Closest(DxVector2 position)
+        public bool Closest(DxVector2 position, out T result)
         {
-            // TODO
+            // TODO (LOL)
             throw new NotImplementedException();
         }
     }

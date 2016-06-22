@@ -15,13 +15,13 @@ namespace DxCore.Core
         Normal = 5,
         HudLayer = 8,
         Low = 10,
-        MenuLayer = 50,
         EndSpritebatch = 1000,
         /* 
             User primitives (actual GPU shader calls) must be made after sprite batch has finished 
             (http://stackoverflow.com/questions/27431038/going-back-to-spritebatch-draw-after-using-graphicsdevice-drawuserprimitives) 
         */
-        UserPrimitives = 1001
+        UserPrimitives = 1001,
+        MenuLayer = 1002,
     }
 
     public interface IDrawable : IComparable<IDrawable>

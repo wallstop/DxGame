@@ -1,6 +1,7 @@
 ﻿using System;
 using DxCore;
 using DxCore.Core.Models;
+using DxCore.Core.Primitives;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
 using MapEditorLibrary.Core;
@@ -70,6 +71,9 @@ namespace MapEditor
             // TODO: Offload
             RootUiComponent uiRoot = new RootUiComponent(new Root());
             uiRoot.Create();
+
+            MapGridComponent mapGrid = new MapGridComponent(new DxUnit(3), 15, 15, 100, 100);
+            mapGrid.Create();
 
             DeveloperModel devModel = new DeveloperModel();
             DxGame.Instance.AttachModel(devModel);

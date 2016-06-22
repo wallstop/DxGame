@@ -7,6 +7,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MapEditorUILibrary"
         mc:Ignorable="d" Height="350" Width="604">
+    <ek:UIRoot.Background>
+        <SolidColorBrush Opacity="0" />
+    </ek:UIRoot.Background>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -20,7 +23,7 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <!--<Canvas Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity=".7"> -->
-        <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity=".7">
+        <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity="0.95">
             <TabControl >
                 <TabItem Header="Block">
                     <DataGrid Name="blockData"></DataGrid>

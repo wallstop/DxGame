@@ -8,6 +8,7 @@ using DxCore.Core.Messaging.Network;
 using DxCore.Core.Network;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using Lidgren.Network;
 using NLog;
 
@@ -138,13 +139,13 @@ namespace DxCore.Core.Components.Network
 
         protected void ProcessUnhandledMessageType(NetIncomingMessage message)
         {
-            Validate.IsTrue(false,
+            Validate.Hard.IsTrue(false,
                 $"NetworkServer currently doesn't support messages of the type {message.MessageType}. Message: {message}");
         }
 
         protected void ProcessError(NetIncomingMessage message)
         {
-            Validate.IsTrue(false,
+            Validate.Hard.IsTrue(false,
                 $"Received IncomingMessage with error type, this shouldn't happen! Message: {message}");
         }
 

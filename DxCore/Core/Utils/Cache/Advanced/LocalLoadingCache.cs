@@ -9,7 +9,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
 
         public LocalLoadingCache(CacheBuilder<K, V> cacheBuilder, Func<V> valueLoader) : base(cacheBuilder)
         {
-            Validate.IsNotNull(valueLoader, this.GetFormattedNullOrDefaultMessage(nameof(valueLoader)));
+            Validate.Validate.Hard.IsNotNull(valueLoader, this.GetFormattedNullOrDefaultMessage(nameof(valueLoader)));
             valueLoader_ = valueLoader;
         }
 

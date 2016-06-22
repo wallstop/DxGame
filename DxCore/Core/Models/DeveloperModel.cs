@@ -30,7 +30,7 @@ namespace DxCore.Core.Models
 
         public DeveloperModel()
         {
-            DrawPriority = DrawPriority.HUD_LAYER;
+            DrawPriority = DrawPriority.HudLayer;
             var fpsTracker = new FpsWidget();
             components_.Add(fpsTracker);
             devSwitch_ = new DeveloperSwitch();

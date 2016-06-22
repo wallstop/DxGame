@@ -3,6 +3,7 @@ using System.Threading;
 using DxCore.Core.Components.Advanced;
 using DxCore.Core.Map;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core;
 using DXGame.Core.Utils;
 
@@ -15,9 +16,9 @@ namespace DxCore.Core.Pathfinding
 
         public static ExplorableMesh MeshFor(GameObject entity, NavigableSurface surface)
         {
-            Validate.IsNotNullOrDefault(entity,
+            Validate.Hard.IsNotNullOrDefault(entity,
                 $"Cannot retrieve an {typeof(ExplorableMesh)} for a null {nameof(entity)}");
-            Validate.IsNotNullOrDefault(surface,
+            Validate.Hard.IsNotNullOrDefault(surface,
                 $"Cannot retrieve an {typeof(ExplorableMesh)} for a null {surface.GetType()}");
             return PopulateOrRetrieveMesh(entity, surface);
         }

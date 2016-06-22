@@ -5,8 +5,7 @@ using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
@@ -47,15 +46,15 @@ namespace DxCore.Core.Components.Advanced
             EntityPropertiesComponent properties, PositionalComponent position)
         {
             ValidateFloatDistance(floatDistance);
-            Validate.IsNotNullOrDefault(properties, this.GetFormattedNullOrDefaultMessage(properties));
-            Validate.IsNotNullOrDefault(position, this.GetFormattedNullOrDefaultMessage(position));
+            Validate.Hard.IsNotNullOrDefault(properties, this.GetFormattedNullOrDefaultMessage(properties));
+            Validate.Hard.IsNotNullOrDefault(position, this.GetFormattedNullOrDefaultMessage(position));
 
             floatDistance_ = floatDistance;
             ForegroundColor = new DxColor(foregroundColor);
             BackgroundColor = new DxColor(backgroundColor);
             entityProperties_ = properties;
             position_ = position;
-            DrawPriority = DrawPriority.HUD_LAYER;
+            DrawPriority = DrawPriority.HudLayer;
         }
 
         public override void Remove()
@@ -109,9 +108,9 @@ namespace DxCore.Core.Components.Advanced
 
             public FloatingHealthIndicator Build()
             {
-                Validate.IsNotNullOrDefault(position_,
+                Validate.Hard.IsNotNullOrDefault(position_,
                     StringUtils.GetFormattedNullOrDefaultMessage(typeof(FloatingHealthIndicator), position_));
-                Validate.IsNotNullOrDefault(entityProperties_,
+                Validate.Hard.IsNotNullOrDefault(entityProperties_,
                     StringUtils.GetFormattedNullOrDefaultMessage(typeof(FloatingHealthIndicator), entityProperties_));
 
                 return new FloatingHealthIndicator(floatDistance_, foregroundColor_, backgroundColor_, entityProperties_,
@@ -121,9 +120,9 @@ namespace DxCore.Core.Components.Advanced
 
         private static void ValidateFloatDistance(DxVector2 floatDistance)
         {
-            Validate.IsNotNull(floatDistance,
+            Validate.Hard.IsNotNull(floatDistance,
                 $"Cannot intialize {typeof(FloatingHealthIndicator)} with a null floatDistance");
-            Validate.IsTrue(floatDistance.Y <= 0,
+            Validate.Hard.IsTrue(floatDistance.Y <= 0,
                 $"Cannot use {floatDistance} as a valid FloatDistance for {typeof(FloatingHealthIndicator)} ");
         }
 
@@ -141,8 +140,8 @@ namespace DxCore.Core.Components.Advanced
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            var origin = DetermineHealthBarOrigin(position_.Position, floatDistance_);
-            var foregroundWidth = (int) Math.Ceiling(PercentHealthRemaining * HEALTH_BAR_PIXEL_WIDTH);
+            Vector2 origin = DetermineHealthBarOrigin(position_.Position, floatDistance_);
+            int foregroundWidth = (int) Math.Ceiling(PercentHealthRemaining * HEALTH_BAR_PIXEL_WIDTH);
             spriteBatch.Draw(foregroundTexture_,
                 new Rectangle((int) origin.X, (int) origin.Y, foregroundWidth, HEALTH_BAR_PIXEL_HEIGHT),
                 ForegroundColor.Color);

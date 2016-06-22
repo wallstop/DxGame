@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
@@ -75,7 +76,7 @@ namespace DxCore.Core.Primitives
 
         public int CompareTo(DxGameTime other)
         {
-            if(Check.IsNullOrDefault(other))
+            if(Validate.Check.IsNullOrDefault(other))
             {
                 return 1;
             }

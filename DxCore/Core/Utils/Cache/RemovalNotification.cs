@@ -17,7 +17,7 @@ namespace DxCore.Core.Utils.Cache
 
         public RemovalNotification(K key, V value, RemovalCause removalCause)
         {
-            Validate.IsNotNull(removalCause);
+            Validate.Validate.Hard.IsNotNull(removalCause);
             Key = key;
             Value = value;
             RemovalCause = removalCause;

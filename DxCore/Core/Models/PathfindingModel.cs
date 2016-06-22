@@ -9,6 +9,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Pathfinding;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using NLog;
 
 namespace DxCore.Core.Models
@@ -25,7 +26,7 @@ namespace DxCore.Core.Models
 
         public PathfindingResult Pathfind(GameObject entity, DxVector2 target)
         {
-            var entityIsNull = Check.IsNullOrDefault(entity);
+            var entityIsNull = Validate.Check.IsNullOrDefault(entity);
             if(entityIsNull)
             {
                 LOG.Info("Pathfinding called with null entity");

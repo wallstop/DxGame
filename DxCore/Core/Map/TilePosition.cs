@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Map
 {
@@ -31,8 +32,8 @@ namespace DxCore.Core.Map
 
         public TilePosition(int x, int y)
         {
-            Validate.IsTrue(0 <= x);
-            Validate.IsTrue(0 <= y);
+            Validate.Hard.IsTrue(0 <= x);
+            Validate.Hard.IsTrue(0 <= y);
             X = x;
             Y = y;
         }

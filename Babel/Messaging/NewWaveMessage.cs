@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace Babel.Messaging
 {
@@ -20,7 +21,7 @@ namespace Babel.Messaging
 
         public NewWaveMessage(int waveNumber)
         {
-            Validate.IsTrue(waveNumber > 0, $"Expected {nameof(waveNumber)} to be positive, but was {waveNumber}");
+            Validate.Hard.IsTrue(waveNumber > 0, $"Expected {nameof(waveNumber)} to be positive, but was {waveNumber}");
             WaveNumber = waveNumber;
         }
     }

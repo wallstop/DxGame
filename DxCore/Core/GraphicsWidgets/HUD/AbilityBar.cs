@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -27,7 +28,7 @@ namespace DxCore.Core.GraphicsWidgets.HUD
 
         private IEnumerable<Rectangle> SkillAreas(int numSkills)
         {
-            Validate.IsTrue(numSkills >= 0, $"Cannot generate a skill area for {numSkills} skills");
+            Validate.Hard.IsTrue(numSkills >= 0, $"Cannot generate a skill area for {numSkills} skills");
             /*  
                 We want n skills, that means we need n + 1 gaps (one at the start, 
                 one in between every skill, and one at the end (1 + n - 1 + 1) -> n + 1 

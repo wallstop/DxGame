@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Components.Advanced.Triggers
 {
@@ -38,10 +38,10 @@ namespace DxCore.Core.Components.Advanced.Triggers
         public TriggeredActionComponent(Func<TimeSpan, DxGameTime, bool> endTrigger, Func<DxGameTime, int> tickTrigger,
             T source, Action<T> action, Action<T> finalAction)
         {
-            Validate.IsNotNullOrDefault(endTrigger, this.GetFormattedNullOrDefaultMessage(nameof(endTrigger)));
-            Validate.IsNotNullOrDefault(tickTrigger, this.GetFormattedNullOrDefaultMessage(nameof(tickTrigger)));
-            Validate.IsNotNull(action, this.GetFormattedNullOrDefaultMessage(nameof(action)));
-            Validate.IsNotNullOrDefault(finalAction, this.GetFormattedNullOrDefaultMessage(nameof(finalAction)));
+            Validate.Hard.IsNotNullOrDefault(endTrigger, this.GetFormattedNullOrDefaultMessage(nameof(endTrigger)));
+            Validate.Hard.IsNotNullOrDefault(tickTrigger, this.GetFormattedNullOrDefaultMessage(nameof(tickTrigger)));
+            Validate.Hard.IsNotNull(action, this.GetFormattedNullOrDefaultMessage(nameof(action)));
+            Validate.Hard.IsNotNullOrDefault(finalAction, this.GetFormattedNullOrDefaultMessage(nameof(finalAction)));
 
             endTrigger_ = endTrigger;
             tickTrigger_ = tickTrigger;
@@ -106,10 +106,10 @@ namespace DxCore.Core.Components.Advanced.Triggers
         public TriggeredActionComponent(Func<TimeSpan, DxGameTime, bool> endTrigger, Func<DxGameTime, int> tickTrigger,
             Action action, Action finalAction)
         {
-            Validate.IsNotNullOrDefault(endTrigger, this.GetFormattedNullOrDefaultMessage(nameof(endTrigger)));
-            Validate.IsNotNullOrDefault(tickTrigger, this.GetFormattedNullOrDefaultMessage(nameof(tickTrigger)));
-            Validate.IsNotNull(action, this.GetFormattedNullOrDefaultMessage(nameof(action)));
-            Validate.IsNotNullOrDefault(finalAction, this.GetFormattedNullOrDefaultMessage(nameof(finalAction)));
+            Validate.Hard.IsNotNullOrDefault(endTrigger, this.GetFormattedNullOrDefaultMessage(nameof(endTrigger)));
+            Validate.Hard.IsNotNullOrDefault(tickTrigger, this.GetFormattedNullOrDefaultMessage(nameof(tickTrigger)));
+            Validate.Hard.IsNotNull(action, this.GetFormattedNullOrDefaultMessage(nameof(action)));
+            Validate.Hard.IsNotNullOrDefault(finalAction, this.GetFormattedNullOrDefaultMessage(nameof(finalAction)));
 
             endTrigger_ = endTrigger;
             tickTrigger_ = tickTrigger;

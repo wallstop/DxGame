@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Messaging
 {
@@ -23,8 +23,8 @@ namespace DxCore.Core.Messaging
 
         public LeveledUpMessage(GameObject entity, int newLevel)
         {
-            Validate.IsNotNullOrDefault(entity, StringUtils.GetFormattedNullOrDefaultMessage(this, entity));
-            Validate.IsTrue(newLevel > 0,
+            Validate.Hard.IsNotNullOrDefault(entity, this.GetFormattedNullOrDefaultMessage(entity));
+            Validate.Hard.IsTrue(newLevel > 0,
                 $"Cannot create a {typeof(LeveledUpMessage)} with a {nameof(newLevel)} of {newLevel}");
             Entity = entity;
             NewLevel = newLevel;

@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Cache.Simple;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using NLog;
 
 namespace DxCore.Core.Animation
@@ -55,13 +55,13 @@ namespace DxCore.Core.Animation
         public static AnimationDescriptor AnimationFor(string category, string animation)
         {
             AnimationDescriptor animationDescriptor = SearchCache(category, animation);
-            if(Check.IsNullOrDefault(animationDescriptor))
+            if(Validate.Check.IsNullOrDefault(animationDescriptor))
             {
                 LOG.Info($"Found no {typeof(AnimationDescriptor)} for {category}, {animation}, attempting to generate static files");
                 GenerateStaticStandardAnimationTypes(category);
                 animationDescriptor = SearchCache(category, animation);
             }
-            Validate.IsNotNullOrDefault(animationDescriptor, $"Could not find a {typeof(AnimationDescriptor)} for {category}, {animation}");
+            Validate.Hard.IsNotNullOrDefault(animationDescriptor, $"Could not find a {typeof(AnimationDescriptor)} for {category}, {animation}");
             return animationDescriptor;
         }
 

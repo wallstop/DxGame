@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Network;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Messaging.Network
 {
@@ -17,7 +18,7 @@ namespace DxCore.Core.Messaging.Network
 
         public ClientConnectionRequest(Dictionary<string, object> metadata)
         {
-            Validate.IsNotNull(metadata, this.GetFormattedNullOrDefaultMessage(nameof(metadata)));
+            Validate.Hard.IsNotNull(metadata, this.GetFormattedNullOrDefaultMessage(nameof(metadata)));
             Metadata = metadata;
         }
     }

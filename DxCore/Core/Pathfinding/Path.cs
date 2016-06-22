@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Map;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Pathfinding
@@ -31,8 +32,8 @@ namespace DxCore.Core.Pathfinding
 
         public Path(CommandChain directions, TimeSpan time, NavigableSurface.Node end)
         {
-            Validate.IsNotNull(directions);
-            Validate.IsNotNull(end);
+            Validate.Hard.IsNotNull(directions);
+            Validate.Hard.IsNotNull(end);
             Time = time;
             Directions = directions;
             End = end;

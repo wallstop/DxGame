@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 using NLog;
 
@@ -83,7 +84,7 @@ namespace DxCore.Core.Properties
 
         public Property(Property<T> copy)
         {
-            Validate.IsNotNull(copy, StringUtils.GetFormattedNullOrDefaultMessage(this, copy));
+            Validate.Hard.IsNotNull(copy, StringUtils.GetFormattedNullOrDefaultMessage(this, copy));
             BaseValue = copy.BaseValue;
             Name = copy.Name;
             listeners_.AddRange(copy.listeners_);
@@ -112,7 +113,7 @@ namespace DxCore.Core.Properties
 
         public void AttachListener(PropertyListener<T> listener)
         {
-            Validate.IsNotNullOrDefault(listener,
+            Validate.Hard.IsNotNullOrDefault(listener,
                 $"Cannot attach a null {typeof(PropertyListener<T>)} to a {typeof(Property<T>)} ({Name})");
             listeners_.Add(listener);
         }

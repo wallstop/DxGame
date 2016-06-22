@@ -4,7 +4,7 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Events;
 using DxCore.Core.Models;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Components.Advanced.Triggers
 {
@@ -15,10 +15,10 @@ namespace DxCore.Core.Components.Advanced.Triggers
     {
         [DataMember]
         private Func<Event, bool> Acceptance { get; }
-        
+
         [DataMember]
         private Action<Event> Action { get; }
-        
+
         [DataMember]
         public EventListener Listener { get; }
 
@@ -64,9 +64,8 @@ namespace DxCore.Core.Components.Advanced.Triggers
 
             public EventObserver Build()
             {
-                Validate.IsNotNull(eventAcceptance_,
-                    StringUtils.GetFormattedNullOrDefaultMessage(this, "EventAcceptance"));
-                Validate.IsNotNull(action_, StringUtils.GetFormattedNullOrDefaultMessage(this, action_));
+                Validate.Hard.IsNotNull(eventAcceptance_, this.GetFormattedNullOrDefaultMessage("EventAcceptance"));
+                Validate.Hard.IsNotNull(action_, this.GetFormattedNullOrDefaultMessage(action_));
                 return new EventObserver(eventAcceptance_, action_);
             }
 

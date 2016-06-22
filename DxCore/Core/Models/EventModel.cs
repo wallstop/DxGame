@@ -8,6 +8,7 @@ using DxCore.Core.Events;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Models
@@ -81,7 +82,7 @@ namespace DxCore.Core.Models
 
         public void AttachEventListener(EventListener listener)
         {
-            Validate.IsNotNullOrDefault(listener, $"Cannot attach a null {nameof(listener)} to the {typeof(EventModel)}");
+            Validate.Hard.IsNotNullOrDefault(listener, $"Cannot attach a null {nameof(listener)} to the {typeof(EventModel)}");
             listeners_.Add(new WeakReference<EventListener>(listener));
         }
 
@@ -131,7 +132,7 @@ namespace DxCore.Core.Models
 
         public List<Event> EventsWithin(TimeSpan timeSpan, DxGameTime gameTime)
         {
-            Validate.IsTrue(timeSpan <= Expiry, $"{timeSpan} was longer than our expiry ({Expiry})");
+            Validate.Hard.IsTrue(timeSpan <= Expiry, $"{timeSpan} was longer than our expiry ({Expiry})");
             return
                 events_.Where(gameEvent => gameTime.TotalGameTime - timeSpan >= gameEvent.GameTime.TotalGameTime)
                     .ToList();
@@ -145,7 +146,7 @@ namespace DxCore.Core.Models
 
         public List<Event> EventsFor(EventRequest request, DxGameTime gameTime)
         {
-            Validate.IsNotNull(request, $"Cannot retrieve {typeof(Event)}s for a null {typeof(EventRequest)}");
+            Validate.Hard.IsNotNull(request, $"Cannot retrieve {typeof(Event)}s for a null {typeof(EventRequest)}");
             TimeSpan cutoff = gameTime.TotalGameTime;
             return
                 events_.Where(

@@ -6,7 +6,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 
 namespace DxCore.Core.Components.Advanced.Damage
@@ -35,7 +35,7 @@ namespace DxCore.Core.Components.Advanced.Damage
 
         public DeathEffectComponent(DeathEffect deathEffect)
         {
-            Validate.IsNotNull(deathEffect, this.GetFormattedNullOrDefaultMessage(nameof(DeathEffect)));
+            Validate.Hard.IsNotNull(deathEffect, this.GetFormattedNullOrDefaultMessage(nameof(DeathEffect)));
             deathEffect_ = deathEffect;
         }
 
@@ -67,7 +67,7 @@ namespace DxCore.Core.Components.Advanced.Damage
         public static void SimpleEnemyBloodParticles(DxRectangle deathSpace)
         {
             /* Make sure we didn't accidentally get a bogus space */
-            if(Check.IsNullOrDefault(deathSpace))
+            if(Validate.Check.IsNullOrDefault(deathSpace))
             {
                 return;
             }
@@ -128,7 +128,7 @@ namespace DxCore.Core.Components.Advanced.Damage
                         .WithMaxDistance(maximumDistance)
                         .WithTransparencyWeight(transparencyWeight)
                         .Build();
-                
+
                 EntityCreatedMessage particlesCreated = new EntityCreatedMessage(particle);
                 particlesCreated.Emit();
             }

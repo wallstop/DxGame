@@ -7,7 +7,7 @@ using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Components.Advanced
 {
@@ -120,15 +120,15 @@ namespace DxCore.Core.Components.Advanced
 
             public virtual CollidableComponent Build()
             {
-                Validate.IsNotNull(spatial_, StringUtils.GetFormattedNullOrDefaultMessage(this, spatial_));
+                Validate.Hard.IsNotNull(spatial_, this.GetFormattedNullOrDefaultMessage(spatial_));
                 return new CollidableComponent(collidableDirections_, spatial_);
             }
 
             public CollidableComponentBuilder WithCollidableDirections(IEnumerable<CollidableDirection> directions)
             {
                 var collidableDirections = directions as IList<CollidableDirection> ?? directions.ToList();
-                Validate.IsNotNull(collidableDirections,
-                    StringUtils.GetFormattedNullOrDefaultMessage(this, collidableDirections));
+                Validate.Hard.IsNotNull(collidableDirections,
+                    this.GetFormattedNullOrDefaultMessage(collidableDirections));
                 collidableDirections_.Clear();
                 collidableDirections_.AddRange(collidableDirections.Distinct());
                 return this;

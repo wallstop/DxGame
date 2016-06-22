@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Cache.Simple;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core
 {
@@ -27,7 +28,7 @@ namespace DxCore.Core
 
         public static EntityType EntityTypeFor(string name)
         {
-            Validate.IsNotNullOrDefault(name, StringUtils.GetFormattedNullOrDefaultMessage(typeof(EntityType), "name"));
+            Validate.Hard.IsNotNullOrDefault(name, StringUtils.GetFormattedNullOrDefaultMessage(typeof(EntityType), "name"));
             return EntityTypeSimpleCache.Get(name);
         }
 

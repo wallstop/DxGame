@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Events
@@ -30,8 +31,8 @@ namespace DxCore.Core.Events
 
         public Event(Message message, DxGameTime gameTime)
         {
-            Validate.IsNotNull(message);
-            Validate.IsNotNull(gameTime);
+            Validate.Hard.IsNotNull(message);
+            Validate.Hard.IsNotNull(gameTime);
             Message = message; // TODO: Copy?
             GameTime = gameTime;
         }

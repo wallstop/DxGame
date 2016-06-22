@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
-using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Messaging.Entity
 {
@@ -20,7 +19,7 @@ namespace DxCore.Core.Messaging.Entity
 
         private EntityRemovedMessage(Component removedComponent = null, GameObject removedGameObject = null)
         {
-            Validate.IsTrue(!ReferenceEquals(removedComponent, null) ^ !ReferenceEquals(removedGameObject, null),
+            Validate.Hard.IsTrue(!ReferenceEquals(removedComponent, null) ^ !ReferenceEquals(removedGameObject, null),
                 "Expected only one of component / object to be spawned");
 
             removedComponent_ = removedComponent;

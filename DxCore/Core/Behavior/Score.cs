@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Behavior
 {
@@ -19,11 +19,9 @@ namespace DxCore.Core.Behavior
     [DataContract]
     public class Score : IComparable<Score>, IEquatable<Score>
     {
-        private static readonly Score MIN = new Score(float.MinValue);
-        private static readonly Score MAX = new Score(float.MaxValue);
+        public static Score Min { get; } = new Score(float.MinValue);
 
-        public static Score Min => MIN;
-        public static Score Max => MAX;
+        public static Score Max { get; } = new Score(float.MaxValue);
 
         [DataMember]
         private float Value { get; }
@@ -35,10 +33,10 @@ namespace DxCore.Core.Behavior
 
         public Score(Score other)
         {
-            Validate.IsNotNull(other, StringUtils.GetFormattedNullOrDefaultMessage(this, other));
+            Validate.Hard.IsNotNull(other, this.GetFormattedNullOrDefaultMessage(other));
             Value = other.Value;
         }
-        
+
         /* TODO: Weighting & math operations of scores */
 
         public int CompareTo(Score other)

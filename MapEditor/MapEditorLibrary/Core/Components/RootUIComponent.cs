@@ -1,12 +1,14 @@
 ﻿using DxCore;
+using DxCore.Core;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MapEditorLibrary.Core
+namespace MapEditorLibrary.Core.Components
 {
     public class RootUiComponent : DrawableComponent
     {
@@ -14,7 +16,8 @@ namespace MapEditorLibrary.Core
 
         public RootUiComponent(Root rootUi)
         {
-            Validate.IsNotNullOrDefault(rootUi);
+            Validate.Hard.IsNotNullOrDefault(rootUi);
+            DrawPriority = DrawPriority.MenuLayer;
             UI = rootUi;
         }
 

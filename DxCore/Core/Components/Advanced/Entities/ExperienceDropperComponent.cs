@@ -6,8 +6,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Components.Advanced.Entities
 {
@@ -27,9 +26,9 @@ namespace DxCore.Core.Components.Advanced.Entities
 
         public ExperienceDropperComponent(float radius, Experience.Experience experience)
         {
-            Validate.IsTrue(radius > 0,
+            Validate.Hard.IsTrue(radius > 0,
                 $"Cannot create a {typeof(ExperienceDropperComponent)} with a radius of {radius}");
-            Validate.IsNotNullOrDefault(experience, this.GetFormattedNullOrDefaultMessage(experience));
+            Validate.Hard.IsNotNullOrDefault(experience, this.GetFormattedNullOrDefaultMessage(experience));
             Radius = radius;
             Experience = experience;
         }

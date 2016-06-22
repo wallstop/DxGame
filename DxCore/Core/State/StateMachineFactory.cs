@@ -12,6 +12,7 @@ using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core;
 using DXGame.Core.Utils;
 
@@ -49,17 +50,17 @@ namespace DxCore.Core.State
 
         public static void BuildAndAttachBasicMovementStateMachineAndAnimations(GameObject entity, string entityName)
         {
-            Validate.IsNotNull(entity, $"Cannot make a {typeof(StateMachine)} for a null {typeof(GameObject)}");
+            Validate.Hard.IsNotNull(entity, $"Cannot make a {typeof(StateMachine)} for a null {typeof(GameObject)}");
             /* Need properties for movement forces */
             var entityProperties = entity.ComponentOfType<EntityPropertiesComponent>();
-            Validate.IsNotNull(entityProperties,
+            Validate.Hard.IsNotNull(entityProperties,
                 $"Cannot make a {typeof(StateMachine)} for a null {typeof(EntityPropertiesComponent)}");
             /* Need physics to apply the forces to */
             var physics = entity.ComponentOfType<PhysicsComponent>();
-            Validate.IsNotNull(physics, $"Cannot make a {typeof(StateMachine)} for a null {typeof(PhysicsComponent)}");
+            Validate.Hard.IsNotNull(physics, $"Cannot make a {typeof(StateMachine)} for a null {typeof(PhysicsComponent)}");
             /* Need position to tie into animation */
             var position = entity.ComponentOfType<PositionalComponent>();
-            Validate.IsNotNull(position,
+            Validate.Hard.IsNotNull(position,
                 $"Cannot make a {typeof(StateMachine)} for a null {typeof(PositionalComponent)}");
 
             StateMachine.StateMachineBuilder stateMachineBuilder = StateMachine.Builder();

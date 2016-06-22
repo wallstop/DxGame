@@ -3,8 +3,7 @@ using System.Linq;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Components.Network;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Models
 {
@@ -18,10 +17,6 @@ namespace DxCore.Core.Models
 
         public override bool ShouldSerialize => false;
 
-        public NetworkModel()
-        {
-        }
-
         // TODO: Get outta here
         public NetworkModel WithClient(AbstractNetworkClient client)
         {
@@ -32,7 +27,7 @@ namespace DxCore.Core.Models
         public NetworkModel WithServer(AbstractNetworkServer server)
         {
             // Really? Why not more?
-            Validate.IsEmpty(Servers, $"Cannot add {server}. Can only add one server to a NetworkModel");
+            Validate.Hard.IsEmpty(Servers, $"Cannot add {server}. Can only add one server to a NetworkModel");
             AddNetworkComponent(server);
             return this;
         }
@@ -57,15 +52,15 @@ namespace DxCore.Core.Models
 
         protected void AddNetworkComponent(NetworkComponent netComponent)
         {
-            Validate.IsNotNullOrDefault(netComponent, $"Cannot add a null/default NetworkComponent to {GetType()}");
-            Validate.IsTrue(!connections_.Contains(netComponent),
+            Validate.Hard.IsNotNullOrDefault(netComponent, $"Cannot add a null/default NetworkComponent to {GetType()}");
+            Validate.Hard.IsTrue(!connections_.Contains(netComponent),
                 $"Cannot add NetworkComponent {netComponent}. This component already exists in {connections_}");
             connections_.Add(netComponent);
         }
 
         public void ReceiveData(DxGameTime gameTime)
         {
-            foreach (NetworkComponent connection in connections_)
+            foreach(NetworkComponent connection in connections_)
             {
                 connection.ReceiveData(gameTime);
             }
@@ -73,7 +68,7 @@ namespace DxCore.Core.Models
 
         public void SendData(DxGameTime gameTime)
         {
-            foreach (NetworkComponent connection in connections_)
+            foreach(NetworkComponent connection in connections_)
             {
                 connection.SendData(gameTime);
             }
@@ -81,12 +76,12 @@ namespace DxCore.Core.Models
 
         public void ShutDown()
         {
-            foreach (var client in Clients)
+            foreach(var client in Clients)
             {
                 client.Shutdown();
             }
 
-            foreach (var server in Servers)
+            foreach(var server in Servers)
             {
                 server.Shutdown();
             }

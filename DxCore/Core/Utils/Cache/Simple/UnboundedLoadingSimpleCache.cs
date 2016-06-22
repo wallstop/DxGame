@@ -21,7 +21,7 @@ namespace DxCore.Core.Utils.Cache.Simple
 
         public UnboundedLoadingSimpleCache(Func<U, T> producer)
         {
-            Validate.IsNotNull(producer, StringUtils.GetFormattedNullOrDefaultMessage(this, "producer"));
+            Validate.Validate.Hard.IsNotNull(producer, StringUtils.GetFormattedNullOrDefaultMessage(this, "producer"));
             Producer = producer;
         }
 

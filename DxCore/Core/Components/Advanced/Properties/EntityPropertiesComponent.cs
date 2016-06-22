@@ -10,6 +10,7 @@ using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Properties;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Components.Advanced.Properties
@@ -75,8 +76,8 @@ namespace DxCore.Core.Components.Advanced.Properties
 
         public EntityPropertiesComponent(EntityProperties entityProperties, LevelUpResponse levelUpResponse)
         {
-            Validate.IsNotNull(entityProperties, this.GetFormattedNullOrDefaultMessage(entityProperties));
-            Validate.IsNotNullOrDefault(levelUpResponse, this.GetFormattedNullOrDefaultMessage(levelUpResponse));
+            Validate.Hard.IsNotNull(entityProperties, this.GetFormattedNullOrDefaultMessage(entityProperties));
+            Validate.Hard.IsNotNullOrDefault(levelUpResponse, this.GetFormattedNullOrDefaultMessage(levelUpResponse));
             EntityProperties = entityProperties;
             LevelUpResponse = levelUpResponse;
         }

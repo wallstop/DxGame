@@ -8,7 +8,7 @@ using DxCore.Core.Primitives;
 using DxCore.Core.State;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DxCore.Core.Components.Advanced
@@ -90,14 +90,14 @@ namespace DxCore.Core.Components.Advanced
 
             public AnimationComponent Build()
             {
-                Validate.IsNotNull(position_, this.GetFormattedNullOrDefaultMessage(position_));
-                Validate.IsNotNull(stateMachine_, this.GetFormattedNullOrDefaultMessage(stateMachine_));
+                Validate.Hard.IsNotNull(position_, this.GetFormattedNullOrDefaultMessage(position_));
+                Validate.Hard.IsNotNull(stateMachine_, this.GetFormattedNullOrDefaultMessage(stateMachine_));
                 return new AnimationComponent(stateMachine_, animationsForStates_, position_);
             }
 
             public AnimationComponentBuilder WithPosition(PositionalComponent position)
             {
-                Validate.IsNull(position_, $"Cannot double-assign a {typeof(PositionalComponent)} to a {GetType()}");
+                Validate.Hard.IsNull(position_, $"Cannot double-assign a {typeof(PositionalComponent)} to a {GetType()}");
                 position_ = position;
                 return this;
             }
@@ -110,8 +110,8 @@ namespace DxCore.Core.Components.Advanced
 
             public AnimationComponentBuilder WithStateAndAsset(State.State state, AnimationDescriptor descriptor)
             {
-                Validate.IsNotNullOrDefault(state, this.GetFormattedNullOrDefaultMessage(nameof(descriptor)));
-                Validate.IsFalse(animationsForStates_.ContainsKey(state),
+                Validate.Hard.IsNotNullOrDefault(state, this.GetFormattedNullOrDefaultMessage(nameof(descriptor)));
+                Validate.Hard.IsFalse(animationsForStates_.ContainsKey(state),
                     this.GetFormattedAlreadyContainsMessage(state, animationsForStates_.Keys));
                 var animation = new Animation.Animation(descriptor);
                 animationsForStates_.Add(state, animation);

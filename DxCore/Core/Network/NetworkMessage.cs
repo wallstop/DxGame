@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using Lidgren.Network;
 using NLog;
 
@@ -40,7 +38,7 @@ namespace DxCore.Core.Network
 
         public static NetworkMessage FromNetIncomingMessage(NetIncomingMessage message)
         {
-            Validate.IsNotNull(message,
+            Validate.Hard.IsNotNull(message,
                 $"Cannot create a {typeof(NetworkMessage)} from a null {typeof(NetIncomingMessage)}!");
             try
             {
@@ -58,7 +56,7 @@ namespace DxCore.Core.Network
 
         public NetOutgoingMessage ToNetOutgoingMessage(NetPeer sender)
         {
-            Validate.IsNotNull(sender,
+            Validate.Hard.IsNotNull(sender,
                 $"Cannot create a NetOutgoingMessage from {this}, the provided sender connection is null!");
             var message = sender.CreateMessage();
             byte[] byteStream = Serializer<NetworkMessage>.BinarySerialize(this);

@@ -7,6 +7,7 @@ using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Cache.Simple;
 using DxCore.Core.Utils.Distance;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework.Graphics;
@@ -58,7 +59,7 @@ namespace DxCore.Core.Map
 
         public static Dictionary<TilePosition, MapCollidable> DetermineCollidables(MapDescriptor mapDescriptor)
         {
-            Validate.IsNotNullOrDefault(mapDescriptor);
+            Validate.Hard.IsNotNullOrDefault(mapDescriptor);
             Dictionary<TilePosition, MapCollidable> mapCollidables =
                 new Dictionary<TilePosition, MapCollidable>(mapDescriptor.Tiles.Count);
 
@@ -75,12 +76,12 @@ namespace DxCore.Core.Map
 
         public Map(MapDescriptor descriptor)
         {
-            Validate.IsNotNullOrDefault(descriptor, this.GetFormattedNullOrDefaultMessage(nameof(descriptor)));
+            Validate.Hard.IsNotNullOrDefault(descriptor, this.GetFormattedNullOrDefaultMessage(nameof(descriptor)));
             MapDescriptor = descriptor;
 
             MapCollidables = DetermineCollidables(descriptor);
             Collidables = new RTree<MapCollidable>(mapCollidable => mapCollidable.Space, MapCollidables.Values.ToList());
-            DrawPriority = DrawPriority.MAP;
+            DrawPriority = DrawPriority.Map;
 
             PlayerSpawn = RandomSpawnLocation.Position;
         }

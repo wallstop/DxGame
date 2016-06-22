@@ -11,6 +11,7 @@ using DxCore.Core.Models;
 using DxCore.Core.Primitives;
 using DxCore.Core.Settings;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -37,6 +38,8 @@ namespace DxCore
 
     public abstract class DxGame : Game
     {
+        private static readonly Object GameLock = new Object();
+
         protected static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
         protected UniqueId GameId { get; }
@@ -116,8 +119,11 @@ namespace DxCore
 
         protected DxGame()
         {
-            Validate.IsNull(singleton_, "There can only be one instance of the game running");
-            singleton_ = this; // Danger dange race condition
+            lock(GameLock)
+            {
+                Validate.Hard.IsNull(singleton_, "There can only be one instance of the game running in a single process");
+                singleton_ = this;
+            }
 
             // TODO: See what parts of this can be offloaded to initialize
             GameSettings = new GameSettings();

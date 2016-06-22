@@ -14,6 +14,7 @@ using DxCore.Core.Network;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Lerp;
+using DxCore.Core.Utils.Validate;
 using Lidgren.Network;
 using NLog;
 
@@ -38,7 +39,7 @@ namespace DxCore.Core.Components.Network
         protected AbstractNetworkClient(NetPeerConfiguration netPeerConfig, NetworkClientConfig clientConfig)
             : base(netPeerConfig)
         {
-            Validate.IsNotNullOrDefault(clientConfig, this.GetFormattedNullOrDefaultMessage(clientConfig));
+            Validate.Hard.IsNotNullOrDefault(clientConfig, this.GetFormattedNullOrDefaultMessage(clientConfig));
             ClientConfig = clientConfig;
         }
 

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core;
 using DXGame.Core.Utils;
 
@@ -37,10 +38,10 @@ namespace DxCore.Core.Frames
 
             public virtual Frame Build()
             {
-                Validate.IsNotNull(gameTime_, this.GetFormattedNullOrDefaultMessage(gameTime_));
-                Validate.NoNullElements(gameObjects_.Keys,
+                Validate.Hard.IsNotNull(gameTime_, this.GetFormattedNullOrDefaultMessage(gameTime_));
+                Validate.Hard.NoNullElements(gameObjects_.Keys,
                     $"Cannot create a {typeof(Frame)} that has a null {typeof(UniqueId)} in it's object mapping");
-                Validate.NoNullElements(gameObjects_.Values,
+                Validate.Hard.NoNullElements(gameObjects_.Values,
                     $"Cannot create a {typeof(Frame)} that has a null {typeof(GameObject)} in it's object mapping");
 
                 return new Frame(gameTime_, gameObjects_);
@@ -54,7 +55,7 @@ namespace DxCore.Core.Frames
 
             public FrameBuilder WithGameObject(GameObject gameObject)
             {
-                Validate.IsNotNull(gameObject);
+                Validate.Hard.IsNotNull(gameObject);
                 gameObjects_[gameObject.Id] = gameObject;
                 return this;
             }

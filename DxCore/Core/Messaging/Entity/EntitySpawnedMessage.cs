@@ -2,8 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Messaging.Entity
 {
@@ -23,7 +22,7 @@ namespace DxCore.Core.Messaging.Entity
         [DataMember] private Component spawnedComponent_;
 
         [DataMember] private GameObject spawnedGameObject_;
-        
+
         public EntitySpawnedMessage(UniqueId spawnerId, Component spawnedComponent)
             : this(spawnerId, spawnedComponent, null) {}
 
@@ -32,8 +31,8 @@ namespace DxCore.Core.Messaging.Entity
         private EntitySpawnedMessage(UniqueId spawnerId, Component spawnedComponent = null,
             GameObject spawnedObject = null)
         {
-            Validate.IsNotNull(spawnerId, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(spawnerId)));
-            Validate.IsTrue(!ReferenceEquals(spawnedComponent, null) ^ !ReferenceEquals(spawnedObject, null),
+            Validate.Hard.IsNotNull(spawnerId, this.GetFormattedNullOrDefaultMessage(nameof(spawnerId)));
+            Validate.Hard.IsTrue(!ReferenceEquals(spawnedComponent, null) ^ !ReferenceEquals(spawnedObject, null),
                 "Expected only one of component / object to be spawned");
             SpawnerId = spawnerId;
             spawnedComponent_ = spawnedComponent;

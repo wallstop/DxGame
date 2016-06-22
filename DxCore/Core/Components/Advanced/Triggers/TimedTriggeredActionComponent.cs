@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Components.Advanced.Triggers
 {
@@ -53,7 +53,7 @@ namespace DxCore.Core.Components.Advanced.Triggers
 
         public TickRate(TimeSpan tickRate)
         {
-            Validate.IsNotNullOrDefault(tickRate, this.GetFormattedNullOrDefaultMessage(nameof(tickRate)));
+            Validate.Hard.IsNotNullOrDefault(tickRate, this.GetFormattedNullOrDefaultMessage(nameof(tickRate)));
             Rate = tickRate;
             /* TODO: Find a better way of passing in "last ticked". Maybe we want to immediately tick? */
             lastTicked_ = DxGame.Instance.CurrentTime.TotalGameTime;

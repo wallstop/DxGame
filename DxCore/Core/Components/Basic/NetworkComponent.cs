@@ -6,6 +6,7 @@ using System.Threading;
 using DxCore.Core.Network;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using Lidgren.Network;
 using NLog;
 
@@ -90,7 +91,7 @@ namespace DxCore.Core.Components.Basic
 
         protected NetworkComponent(NetPeerConfiguration configuration)
         {
-            Validate.IsNotNullOrDefault(configuration, this.GetFormattedNullOrDefaultMessage(configuration));
+            Validate.Hard.IsNotNullOrDefault(configuration, this.GetFormattedNullOrDefaultMessage(configuration));
             Connection = new NetClient(configuration);
             MessageQueue = new ConcurrentQueue<NetIncomingMessage>();
             networkMessageHandlers_ = new Dictionary<Type, Action<NetworkMessage, NetConnection>>();
@@ -125,7 +126,7 @@ namespace DxCore.Core.Components.Basic
 
         public virtual NetworkComponent WithConnection(NetPeer connection)
         {
-            Validate.IsNotNullOrDefault(connection, "Cannot create a NetworkComponent with a null/default NetPeer");
+            Validate.Hard.IsNotNullOrDefault(connection, "Cannot create a NetworkComponent with a null/default NetPeer");
             Connection = connection;
             return this;
         }
@@ -169,7 +170,7 @@ namespace DxCore.Core.Components.Basic
 
         protected void ProcessData(NetIncomingMessage message)
         {
-            Validate.IsNotNull(message, "Cannot process server data on a null message!");
+            Validate.Hard.IsNotNull(message, "Cannot process server data on a null message!");
             NetworkMessage networkMessage = null;
             try
             {
@@ -181,7 +182,7 @@ namespace DxCore.Core.Components.Basic
             }
             finally
             {
-                Validate.IsNotNull(networkMessage,
+                Validate.Hard.IsNotNull(networkMessage,
                     $"Could not properly format a NetworkMessage from NetIncomingMessage {message}");
             }
 

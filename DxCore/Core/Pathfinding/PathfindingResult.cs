@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Pathfinding
@@ -24,8 +25,8 @@ namespace DxCore.Core.Pathfinding
 
         public PathfindingResult(LinkedList<ImmutablePair<TimeSpan, CommandChain>> path, LinkedList<DxVector2> waypoints, bool success = false)
         {
-            Validate.IsNotNull(path, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(path)));
-            Validate.IsNotNull(waypoints, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(waypoints)));
+            Validate.Hard.IsNotNull(path, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(path)));
+            Validate.Hard.IsNotNull(waypoints, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(waypoints)));
             Path = path;
             WayPoints = waypoints;
             Successful = success;

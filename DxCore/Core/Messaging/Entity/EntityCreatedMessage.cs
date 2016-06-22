@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
-using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Messaging.Entity
 {
@@ -10,12 +9,6 @@ namespace DxCore.Core.Messaging.Entity
     [Serializable]
     public class EntityCreatedMessage : Message
     {
-        private static readonly Predicate<object> NON_SERIALIZATION_CHECK = entity =>
-        {
-            var component = entity as Component;
-            return component != null && !component.ShouldSerialize;
-        };
-
         [DataMember] private Component spawnedComponent_;
 
         [DataMember] private GameObject spawnedGameObject_;
@@ -26,7 +19,7 @@ namespace DxCore.Core.Messaging.Entity
 
         private EntityCreatedMessage(Component spawnedComponent = null, GameObject spawnedObject = null)
         {
-            Validate.IsTrue(!ReferenceEquals(spawnedComponent, null) ^ !ReferenceEquals(spawnedObject, null),
+            Validate.Hard.IsTrue(!ReferenceEquals(spawnedComponent, null) ^ !ReferenceEquals(spawnedObject, null),
                 "Expected only one of component / object to be spawned");
             spawnedComponent_ = spawnedComponent;
             spawnedGameObject_ = spawnedObject;

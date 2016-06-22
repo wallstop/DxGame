@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core;
 using DXGame.Core.Utils;
 using NLog;
@@ -87,9 +88,9 @@ namespace DxCore.Core.Map
 
             public MapDescriptorBuilder WithTile(TilePosition tilePosition, Tile tile)
             {
-                Validate.IsTrue(0 <= tilePosition.X);
-                Validate.IsTrue(0 <= tilePosition.Y);
-                Validate.IsNotNull(tile);
+                Validate.Hard.IsTrue(0 <= tilePosition.X);
+                Validate.Hard.IsTrue(0 <= tilePosition.Y);
+                Validate.Hard.IsNotNull(tile);
                 if(tiles_.ContainsKey(tilePosition))
                 {
                     LOG.Info("Overwriting tile at {0}", tilePosition);
@@ -130,13 +131,13 @@ namespace DxCore.Core.Map
 
             public MapDescriptor Build()
             {
-                Validate.IsTrue(0 < width_, $"Cannot create a {typeof(MapDescriptor)} with a width of {width_}");
-                Validate.IsTrue(0 < height_, $"Cannot create a {typeof(MapDescriptor)} with a height of {height_}");
-                Validate.IsTrue(0 < tileWidth_,
+                Validate.Hard.IsTrue(0 < width_, $"Cannot create a {typeof(MapDescriptor)} with a width of {width_}");
+                Validate.Hard.IsTrue(0 < height_, $"Cannot create a {typeof(MapDescriptor)} with a height of {height_}");
+                Validate.Hard.IsTrue(0 < tileWidth_,
                     $"Cannot create a {typeof(MapDescriptor)} with a tile width of {tileWidth_}");
-                Validate.IsTrue(0 < tileHeight_,
+                Validate.Hard.IsTrue(0 < tileHeight_,
                     $"Cannot create a {typeof(MapDescriptor)} with a tile  height of {tileHeight_}");
-                Validate.IsNotEmpty(tiles_, $"Cannot create a {typeof(MapDescriptor)} without any tiles");
+                Validate.Hard.IsNotEmpty(tiles_, $"Cannot create a {typeof(MapDescriptor)} without any tiles");
                 return new MapDescriptor(tiles_.ToDictionary(), width_, height_, tileWidth_, tileHeight_);
             }
         }

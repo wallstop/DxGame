@@ -76,7 +76,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\RootUIComponent.cs" />
+    <Compile Include="Core\Components\MapGridComponent.cs" />
+    <Compile Include="Core\Components\RootUIComponent.cs" />
     <Compile Include="GeneratedUI\Root.xaml.cs" />
     <Compile Include="GeneratedUI\Root.xaml_bindings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

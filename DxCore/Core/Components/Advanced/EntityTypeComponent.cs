@@ -2,8 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Components.Advanced
 {
@@ -16,7 +15,7 @@ namespace DxCore.Core.Components.Advanced
 
         public EntityTypeComponent(EntityType entityType)
         {
-            Validate.IsNotNull(entityType, StringUtils.GetFormattedNullOrDefaultMessage(this, entityType));
+            Validate.Hard.IsNotNull(entityType, this.GetFormattedNullOrDefaultMessage(entityType));
             EntityType = entityType;
         }
     }

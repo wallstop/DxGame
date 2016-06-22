@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Frames;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Behavior.Goals
 {
@@ -21,9 +21,9 @@ namespace DxCore.Core.Behavior.Goals
 
         protected AbstractGoal(GameObject goalChaser, TimeSpan timeout, Frame reference)
         {
-            Validate.IsNotNull(goalChaser, this.GetFormattedNullOrDefaultMessage(goalChaser));
-            Validate.IsNotNull(timeout, this.GetFormattedNullOrDefaultMessage("timeout"));
-            Validate.IsNotNull(reference, this.GetFormattedNullOrDefaultMessage(reference));
+            Validate.Hard.IsNotNull(goalChaser, this.GetFormattedNullOrDefaultMessage(goalChaser));
+            Validate.Hard.IsNotNull(timeout, this.GetFormattedNullOrDefaultMessage("timeout"));
+            Validate.Hard.IsNotNull(reference, this.GetFormattedNullOrDefaultMessage(reference));
             goalChaser_ = goalChaser;
             Reference = reference;
             Timeout = timeout;

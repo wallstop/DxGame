@@ -10,6 +10,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -30,7 +31,7 @@ namespace Babel.Skills.Gevurah
 
         public BearTrap(SpatialComponent spatial)
         {
-            Validate.IsNotNull(spatial, this.GetFormattedNullOrDefaultMessage(spatial));
+            Validate.Hard.IsNotNull(spatial, this.GetFormattedNullOrDefaultMessage(spatial));
             spatial_ = spatial;
         }
 

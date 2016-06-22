@@ -2,8 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 
 namespace DxCore.Core.Components.Advanced.Position
@@ -85,8 +84,8 @@ namespace DxCore.Core.Components.Advanced.Position
 
             public override PositionalComponent Build()
             {
-                Validate.IsTrue(xBounds_.Magnitude > 0);
-                Validate.IsTrue(yBounds_.Magnitude > 0);
+                Validate.Hard.IsTrue(xBounds_.Magnitude > 0);
+                Validate.Hard.IsTrue(yBounds_.Magnitude > 0);
                 return new BoundedSpatialComponent(position_, dimensions_, xBounds_, yBounds_);
             }
         }

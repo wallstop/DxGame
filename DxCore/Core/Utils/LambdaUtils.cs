@@ -30,7 +30,7 @@ namespace DxCore.Core.Utils
 
             public LambdaComparer(Func<T, T, int> lambdaComparer)
             {
-                Validate.IsNotNull(lambdaComparer, this.GetFormattedNullOrDefaultMessage(nameof(lambdaComparer)));
+                Validate.Validate.Hard.IsNotNull(lambdaComparer, this.GetFormattedNullOrDefaultMessage(nameof(lambdaComparer)));
                 lambdaComparer_ = lambdaComparer;
             }
 

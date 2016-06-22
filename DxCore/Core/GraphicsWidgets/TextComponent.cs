@@ -4,6 +4,7 @@ using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -31,11 +32,11 @@ namespace DxCore.Core.GraphicsWidgets
 
         public TextComponent(PositionalComponent position, SpriteFont spriteFont, string spriteFontName)
         {
-            Validate.IsNotNullOrDefault(position, this.GetFormattedNullOrDefaultMessage(position));
+            Validate.Hard.IsNotNullOrDefault(position, this.GetFormattedNullOrDefaultMessage(position));
             position_ = position;
-            Validate.IsNotNullOrDefault(spriteFont, this.GetFormattedNullOrDefaultMessage(spriteFont));
+            Validate.Hard.IsNotNullOrDefault(spriteFont, this.GetFormattedNullOrDefaultMessage(spriteFont));
             spriteFont_ = spriteFont;
-            Validate.IsNotNullOrDefault(spriteFontName, this.GetFormattedNullOrDefaultMessage(nameof(spriteFontName)));
+            Validate.Hard.IsNotNullOrDefault(spriteFontName, this.GetFormattedNullOrDefaultMessage(nameof(spriteFontName)));
             spriteFontName_ = spriteFontName;
             Text = "";
             DxColor = new DxColor(Color.White);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Animation
 {
@@ -12,11 +12,13 @@ namespace DxCore.Core.Animation
             DAO for storing frame-specific offsets for animations
         </summary>
     */
+
     [Serializable]
     [DataContract]
     public class AnimationFrameOffset
     {
-        private static readonly Lazy<AnimationFrameOffset> SINGLETON = new Lazy<AnimationFrameOffset>(() => new AnimationFrameOffset());
+        private static readonly Lazy<AnimationFrameOffset> SINGLETON =
+            new Lazy<AnimationFrameOffset>(() => new AnimationFrameOffset());
 
         public static AnimationFrameOffset Instance => SINGLETON.Value;
 
@@ -24,6 +26,7 @@ namespace DxCore.Core.Animation
         private Dictionary<int, FrameDescriptor> OffsetsByFrame { get; set; }
 
         /* Fallback in case no frame-specific information is found */
+
         [DataMember]
         private FrameDescriptor Fallback { get; set; }
 
@@ -32,17 +35,18 @@ namespace DxCore.Core.Animation
             OffsetsByFrame = new Dictionary<int, FrameDescriptor>();
         }
 
-        public AnimationFrameOffset(Dictionary<int, FrameDescriptor> offsetsByFrame) : this(offsetsByFrame, FrameDescriptor.Instance) {}
+        public AnimationFrameOffset(Dictionary<int, FrameDescriptor> offsetsByFrame)
+            : this(offsetsByFrame, FrameDescriptor.Instance) {}
 
         public AnimationFrameOffset(Dictionary<int, FrameDescriptor> offsetsByFrame, FrameDescriptor fallback)
         {
-            Validate.IsNotNull(offsetsByFrame,
-                StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(offsetsByFrame)));
+            Validate.Hard.IsNotNull(offsetsByFrame, this.GetFormattedNullOrDefaultMessage(nameof(offsetsByFrame)));
             OffsetsByFrame = offsetsByFrame;
             Fallback = fallback;
         }
 
-        public void OffsetForFrame(int frameNumber, out DxVector2 frameOffset, out DxVector2 drawOffset, out DxRectangle boundingBox)
+        public void OffsetForFrame(int frameNumber, out DxVector2 frameOffset, out DxVector2 drawOffset,
+            out DxRectangle boundingBox)
         {
             FrameDescriptor frameDescriptor;
             if(OffsetsByFrame.TryGetValue(frameNumber, out frameDescriptor))
@@ -56,7 +60,6 @@ namespace DxCore.Core.Animation
             frameOffset = Fallback.FrameOffset;
             drawOffset = Fallback.DrawOffset;
             boundingBox = Fallback.BoundingBox;
-            return;
         }
     }
 }

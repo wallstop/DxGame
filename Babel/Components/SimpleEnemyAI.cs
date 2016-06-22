@@ -8,6 +8,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Models;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace Babel.Components
@@ -79,7 +80,7 @@ namespace Babel.Components
 
             public SimpleEnemyAI Build()
             {
-                Validate.IsNotNull(spatialComponent_, "AI requires a spatial component to make decisions.");
+                Validate.Hard.IsNotNull(spatialComponent_, "AI requires a spatial component to make decisions.");
                 // Construct and return the desired object
                 return new SimpleEnemyAI(spatialComponent_);
             }

@@ -4,6 +4,7 @@ using System.Linq;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Models
@@ -31,7 +32,7 @@ namespace DxCore.Core.Models
 
         public ExperienceModel(ExperienceFunction experienceFunction)
         {
-            Validate.IsNotNullOrDefault(experienceFunction,
+            Validate.Hard.IsNotNullOrDefault(experienceFunction,
                 StringUtils.GetFormattedNullOrDefaultMessage(this, experienceFunction));
             entitiesContributingToExperienceByPlayer_ = new Dictionary<Player, int>();
             ExperienceFunction = experienceFunction;

@@ -2,6 +2,7 @@
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework.Graphics;
@@ -26,9 +27,9 @@ namespace DxCore.Core.Models
 
         public MapModel(ILevelProgressionStrategy levelProgressionStrategy)
         {
-            Validate.IsNotNullOrDefault(levelProgressionStrategy,
+            Validate.Hard.IsNotNullOrDefault(levelProgressionStrategy,
                 this.GetFormattedNullOrDefaultMessage(levelProgressionStrategy));
-            DrawPriority = DrawPriority.MAP;
+            DrawPriority = DrawPriority.Map;
             LevelProgressionStrategy = levelProgressionStrategy;
 
             Level = LevelProgressionStrategy.InitialLevel;

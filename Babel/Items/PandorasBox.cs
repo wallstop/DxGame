@@ -6,6 +6,7 @@ using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Components.Advanced.Triggers;
 using DxCore.Core.Properties;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using NLog;
 
 namespace Babel.Items
@@ -52,7 +53,7 @@ namespace Babel.Items
 
         protected override void InternalDetach(GameObject parent)
         {
-            Validate.IsNotNullOrDefault(AttachedPandorasBox);
+            Validate.Hard.IsNotNullOrDefault(AttachedPandorasBox);
             AttachedPandorasBox.DecreaseStackCount();
         }
     }
@@ -90,10 +91,10 @@ namespace Babel.Items
         public AttachedPandorasBox(TimeSpan triggerDelay, double triggerThreshold, GameObject source,
             EntityProperties playerProperties)
         {
-            Validate.IsInOpenInterval(triggerThreshold, 0, 1,
+            Validate.Hard.IsInOpenInterval(triggerThreshold, 0, 1,
                 $"Cannot create an {typeof(AttachedPandorasBox)} with a {nameof(triggerThreshold)} of {triggerThreshold})");
-            Validate.IsNotNull(source, this.GetFormattedNullOrDefaultMessage(source));
-            Validate.IsNotNull(playerProperties, this.GetFormattedNullOrDefaultMessage(nameof(playerProperties)));
+            Validate.Hard.IsNotNull(source, this.GetFormattedNullOrDefaultMessage(source));
+            Validate.Hard.IsNotNull(playerProperties, this.GetFormattedNullOrDefaultMessage(nameof(playerProperties)));
             source_ = source;
             triggerDelay_ = triggerDelay;
             triggerThreshold_ = triggerThreshold;
@@ -111,7 +112,7 @@ namespace Babel.Items
 
         public void DecreaseStackCount()
         {
-            Validate.IsTrue(StackCount > 0,
+            Validate.Hard.IsTrue(StackCount > 0,
                 $"Cannot decrease the stack count of a {nameof(AttachedPandorasBox)} below 0!");
             --StackCount;
         }
@@ -194,10 +195,10 @@ namespace Babel.Items
 
         public AttachedHealer(int amountToHeal, int numTicks)
         {
-            Validate.IsTrue(amountToHeal >= 0,
+            Validate.Hard.IsTrue(amountToHeal >= 0,
                 $"Cannot create an {typeof(AttachedHealer)} with an {nameof(amountToHeal)} of {amountToHeal}");
             AmountToHeal = amountToHeal;
-            Validate.IsTrue(numTicks > 0,
+            Validate.Hard.IsTrue(numTicks > 0,
                 $"Cannot create an {typeof(AttachedHealer)} with a {nameof(numTicks)} of {numTicks}");
             NumTicks = numTicks;
         }
@@ -205,7 +206,7 @@ namespace Babel.Items
         public void Tick(EntityProperties entityProperties)
         {
             ++ticks_;
-            Validate.IsTrue(ticks_ <= NumTicks, "Ticked too many times!");
+            Validate.Hard.IsTrue(ticks_ <= NumTicks, "Ticked too many times!");
 
             int target = (int) Math.Round(ticks_ * HealPerTick);
             int amountToHeal = Math.Max(0, target - amountHealed_);

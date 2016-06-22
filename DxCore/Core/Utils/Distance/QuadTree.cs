@@ -64,8 +64,8 @@ namespace DxCore.Core.Utils.Distance
 
         public QuadTree(Coordinate<T> coordinate, DxRectangle boundary, IEnumerable<T> points, int bucketSize)
         {
-            Validate.IsTrue(bucketSize > 0, $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
-            Validate.IsNotNull(coordinate, this.GetFormattedNullOrDefaultMessage(nameof(coordinate)));
+            Validate.Validate.Hard.IsTrue(bucketSize > 0, $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
+            Validate.Validate.Hard.IsNotNull(coordinate, this.GetFormattedNullOrDefaultMessage(nameof(coordinate)));
             coordinate_ = coordinate;
             boundary_ = boundary;
             head_ = new QuadTreeNode<T>(boundary, coordinate_, points.ToList(), bucketSize);
@@ -191,7 +191,7 @@ namespace DxCore.Core.Utils.Distance
                 }
                 currentNode = closestChild;
             }
-            Validate.IsTrue(currentNode.Terminal);
+            Validate.Validate.Hard.IsTrue(currentNode.Terminal);
 
             /* We need to find all nodes that are above and beyond us (http://gamedev.stackexchange.com/questions/27264/how-do-i-optimize-searching-for-the-nearest-point). IE, two layers out, one layer in. */
             DxRectangle searchBoundary = currentNode.Boundary;

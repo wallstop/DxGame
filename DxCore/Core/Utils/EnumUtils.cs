@@ -16,7 +16,7 @@ namespace DxCore.Core.Utils
 
         public static T Rotate<T>(this T currentValue) where T : struct
         {
-            Validate.IsTrue(typeof (T).IsEnum, "Cannot rotate a non-enum type");
+            Validate.Validate.Hard.IsTrue(typeof (T).IsEnum, "Cannot rotate a non-enum type");
             T[] enumValues = (T[]) Enum.GetValues(currentValue.GetType());
             int nextIndex = (Array.IndexOf(enumValues, currentValue) + 1) % enumValues.Length;
             return enumValues[nextIndex];

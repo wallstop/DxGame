@@ -290,7 +290,6 @@
     <Compile Include="Core\State\Transition.cs" />
     <Compile Include="Core\Team.cs" />
     <Compile Include="Core\UniqueId.cs" />
-    <Compile Include="Core\Utils\Assert.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\CacheBuilder.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\ICache.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\ILoadingCache.cs" />
@@ -302,7 +301,6 @@
     <Compile Include="Core\Utils\Cache\Simple\ISimpleCache.cs" />
     <Compile Include="Core\Utils\Cache\Simple\UnboundedLoadingSimpleCache.cs" />
     <Compile Include="Core\Utils\Cache\Simple\UnboundedSimpleCache.cs" />
-    <Compile Include="Core\Utils\Check.cs" />
     <Compile Include="Core\Utils\CollectionUtils.cs" />
     <Compile Include="Core\Utils\ColorFactory.cs" />
     <Compile Include="Core\Utils\ColorUtils.cs" />
@@ -341,7 +339,8 @@
     <Compile Include="Core\Utils\ThreadLocalRandom.cs" />
     <Compile Include="Core\Utils\TimeSpanUtils.cs" />
     <Compile Include="Core\Utils\UintUtils.cs" />
-    <Compile Include="Core\Utils\Validate.cs" />
+    <Compile Include="Core\Utils\Validate\Validator.cs" />
+    <Compile Include="Core\Utils\Validate\Validate.cs" />
     <Compile Include="Core\Utils\VectorUtils.cs" />
     <Compile Include="Core\Utils\XnaUtils.cs" />
     <Compile Include="DxGame.cs" />

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Network;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Messaging.Network
@@ -19,7 +20,7 @@ namespace DxCore.Core.Messaging.Network
 
         public EventStream(List<Message> messages)
         {
-            Validate.IsNotNull(messages);
+            Validate.Hard.IsNotNull(messages);
             Messages = messages.ToList();
         }
     }

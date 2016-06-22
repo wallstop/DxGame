@@ -6,18 +6,34 @@
         xmlns:c="clr-namespace:EmptyKeys.UserInterface.Designer.Charts;assembly=EmptyKeys.UserInterface.Designer"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MapEditorUILibrary"
-        mc:Ignorable="d" Height="300" Width="300">
-    <Grid Margin="0,0,0,280">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="20"></RowDefinition>
-            <RowDefinition></RowDefinition>
-        </Grid.RowDefinitions>
-        <DockPanel>
-            <ListBox>
-                <ListBoxItem ></ListBoxItem>
-            </ListBox>
-        </DockPanel>
+        mc:Ignorable="d" Height="350" Width="604">
 
-        <TextBlock Text="Wow" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" Margin="108,0,143,274" Grid.RowSpan="2"></TextBlock>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <!--<Canvas Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity=".7"> -->
+        <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity=".7">
+            <TabControl >
+                <TabItem Header="Block">
+                    <DataGrid Name="blockData"></DataGrid>
+                </TabItem>
+                <TabItem Header="Platform">
+                    <DataGrid Name="platformData"></DataGrid>
+                </TabItem>
+            </TabControl>
+            <StackPanel Orientation="Vertical">
+                <Button Content="Load" />
+                <Button Content="Delete" AllowDrop="True"/>
+            </StackPanel>
+        </StackPanel>
+        <!--</Canvas>-->
     </Grid>
 </ek:UIRoot>

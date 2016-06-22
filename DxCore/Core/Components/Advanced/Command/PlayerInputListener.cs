@@ -8,7 +8,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Models;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Components.Advanced.Command
 {
@@ -68,7 +68,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         public PlayerInputListener(Func<List<KeyboardEvent>> playerInputProducer)
         {
-            Validate.IsNotNullOrDefault(playerInputProducer,
+            Validate.Hard.IsNotNullOrDefault(playerInputProducer,
                 this.GetFormattedNullOrDefaultMessage(nameof(playerInputProducer)));
             PlayerInputProducer = playerInputProducer;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Events
@@ -19,7 +20,7 @@ namespace DxCore.Core.Events
 
         public EventListener(Action<Event> eventConsumer)
         {
-            Validate.IsNotNullOrDefault(eventConsumer, this.GetFormattedNullOrDefaultMessage("EventConsumer"));
+            Validate.Hard.IsNotNullOrDefault(eventConsumer, this.GetFormattedNullOrDefaultMessage("EventConsumer"));
             EventConsumer = eventConsumer;
         }
 

@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core;
 using DXGame.Core.Utils;
 
@@ -27,7 +28,7 @@ namespace DxCore.Core.Network
 
         public DxVectorLerpMessage(UniqueId entityId, DxVector2 currentLerpValue)
         {
-            Validate.IsNotNull(entityId);
+            Validate.Hard.IsNotNull(entityId);
             EntityId = entityId;
             CurrentLerpValue = currentLerpValue;
         }

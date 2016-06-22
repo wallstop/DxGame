@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Map
@@ -50,15 +51,15 @@ namespace DxCore.Core.Map
 
         public Tile(Tile copy)
         {
-            Validate.IsNotNull(copy, this.GetFormattedNullOrDefaultMessage(copy));
+            Validate.Hard.IsNotNull(copy, this.GetFormattedNullOrDefaultMessage(copy));
             Type = copy.Type;
             Asset = copy.Asset;
         }
 
         public Tile(TileType type, string asset)
         {
-            Validate.IsNotNull(type, this.GetFormattedNullOrDefaultMessage(type));
-            Validate.IsNotNullOrDefault(asset, this.GetFormattedNullOrDefaultMessage(nameof(asset)));
+            Validate.Hard.IsNotNull(type, this.GetFormattedNullOrDefaultMessage(type));
+            Validate.Hard.IsNotNullOrDefault(asset, this.GetFormattedNullOrDefaultMessage(nameof(asset)));
             Type = type;
             Asset = asset;
         }

@@ -5,8 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Messaging
 {
@@ -21,20 +20,21 @@ namespace DxCore.Core.Messaging
 
         [DataMember] private readonly GameObject source_;
 
-        [DataMember] public ReadOnlyCollection<IShape> AttackAreas { get; set; } 
+        [DataMember]
+        public ReadOnlyCollection<IShape> AttackAreas { get; set; }
 
         public AttackBuilder(GameObject source, List<IShape> attackAreas)
         {
-            Validate.IsNotNullOrDefault(source, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(source)));
+            Validate.Hard.IsNotNullOrDefault(source, this.GetFormattedNullOrDefaultMessage(nameof(source)));
             source_ = source;
-            Validate.IsNotNullOrDefault(attackAreas, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(attackAreas)));
+            Validate.Hard.IsNotNullOrDefault(attackAreas, this.GetFormattedNullOrDefaultMessage(nameof(attackAreas)));
             AttackAreas = new ReadOnlyCollection<IShape>(attackAreas);
             Target = source.Id;
         }
 
         public List<PhysicsMessage> Build()
         {
-            Validate.IsNotNullOrDefault(source_, StringUtils.GetFormattedNullOrDefaultMessage(this, "source"));
+            Validate.Hard.IsNotNullOrDefault(source_, this.GetFormattedNullOrDefaultMessage("source"));
 
             List<PhysicsMessage> attackInteractions = new List<PhysicsMessage>(attackMessageGenerators_.Count);
             attackInteractions.AddRange(
@@ -44,8 +44,8 @@ namespace DxCore.Core.Messaging
 
         public AttackBuilder WithPhysicsMessageGenerator(PhysicsMessageGenerator physicsMessageGenerator)
         {
-            Validate.IsNotNullOrDefault(physicsMessageGenerator,
-                StringUtils.GetFormattedNullOrDefaultMessage(this, physicsMessageGenerator));
+            Validate.Hard.IsNotNullOrDefault(physicsMessageGenerator,
+                this.GetFormattedNullOrDefaultMessage(physicsMessageGenerator));
             attackMessageGenerators_.Add(physicsMessageGenerator);
             return this;
         }

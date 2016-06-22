@@ -138,8 +138,8 @@ namespace DxCore.Core.Utils.Distance
 
         public KDTree(Coordinate<T> coordinate, DxRectangle boundary, List<T> points, int bucketSize)
         {
-            Validate.IsTrue(bucketSize > 0, $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
-            Validate.IsNotNull(coordinate, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(coordinate)));
+            Validate.Validate.Hard.IsTrue(bucketSize > 0, $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
+            Validate.Validate.Hard.IsNotNull(coordinate, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(coordinate)));
             coordinate_ = coordinate;
             boundary_ = boundary;
             head_ = new KDTreeNode<T>(boundary, coordinate_, points, bucketSize, true);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Network;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Components.Network
 {
@@ -30,10 +31,10 @@ namespace DxCore.Core.Components.Network
 
         public NetworkClientConfig(string ipAddress, Port port)
         {
-            Validate.IsNotNullOrDefault(ipAddress,
+            Validate.Hard.IsNotNullOrDefault(ipAddress,
                 StringUtils.GetFormattedNullOrDefaultMessage(typeof(NetworkClientConfig), nameof(ipAddress)));
             IpAddress = ipAddress;
-            Validate.IsNotNullOrDefault(port,
+            Validate.Hard.IsNotNullOrDefault(port,
                 StringUtils.GetFormattedNullOrDefaultMessage(typeof(NetworkClientConfig), port));
             Port = port;
             Metadata = new Dictionary<string, object>();

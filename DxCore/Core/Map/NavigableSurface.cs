@@ -8,6 +8,7 @@ using DxCore.Core.Models;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Map
 {
@@ -57,7 +58,7 @@ namespace DxCore.Core.Map
 
         public static NavigableSurface SurfaceFor(MapModel mapModel)
         {
-            Validate.IsNotNullOrDefault(mapModel, $"Cannot retrieve the MapId from a null {typeof (MapModel)}");
+            Validate.Hard.IsNotNullOrDefault(mapModel, $"Cannot retrieve the MapId from a null {typeof (MapModel)}");
             return PopulateOrRetrieveMesh(mapModel);
         }
 

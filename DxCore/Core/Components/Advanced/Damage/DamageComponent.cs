@@ -4,7 +4,7 @@ using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Components.Advanced.Damage
 {
@@ -63,8 +63,7 @@ namespace DxCore.Core.Components.Advanced.Damage
 
             public DamageComponent Build()
             {
-                Validate.IsNotNull(entityProperties_,
-                    StringUtils.GetFormattedNullOrDefaultMessage(this, entityProperties_));
+                Validate.Hard.IsNotNull(entityProperties_, this.GetFormattedNullOrDefaultMessage(entityProperties_));
                 return new DamageComponent(entityProperties_);
             }
 

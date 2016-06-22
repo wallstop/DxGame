@@ -2,6 +2,7 @@
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -58,12 +59,12 @@ namespace DxCore.Core.GraphicsWidgets
 
             public BlinkingCursor Build()
             {
-                Validate.IsNotNullOrDefault(cursorTexture_,
+                Validate.Hard.IsNotNullOrDefault(cursorTexture_,
                     StringUtils.GetFormattedNullOrDefaultMessage(this, "CursorTexture"));
-                Validate.IsTrue(blinkRate_ > TimeSpan.Zero,
+                Validate.Hard.IsTrue(blinkRate_ > TimeSpan.Zero,
                     $"Cannot create a {typeof (BlinkingCursor)} with a BlinkRate of {blinkRate_}");
-                Validate.IsTrue(space_.Height > 0, $"Cannot create a {typeof(BlinkingCursor)} with a negative height ({space_.Height})!");
-                Validate.IsTrue(space_.Width > 0, $"Cannot create a {typeof(BlinkingCursor)} with a negative width ({space_.Width})!");
+                Validate.Hard.IsTrue(space_.Height > 0, $"Cannot create a {typeof(BlinkingCursor)} with a negative height ({space_.Height})!");
+                Validate.Hard.IsTrue(space_.Width > 0, $"Cannot create a {typeof(BlinkingCursor)} with a negative width ({space_.Width})!");
                 /* Space can always be set (and will probably be updated) post-construction, so it's ok to have a default rectangle space */
                 return new BlinkingCursor(cursorTexture_, blinkRate_, space_);
             }

@@ -170,8 +170,8 @@ namespace DxCore.Core.Utils.Distance
 
         public RTree(BoundingBox<T> boundingBox, List<T> rectangles, int bucketSize, int branchFactor)
         {
-            Validate.IsTrue(bucketSize > 0, $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
-            Validate.IsNotNull(boundingBox, this.GetFormattedNullOrDefaultMessage(nameof(boundingBox)));
+            Validate.Validate.Hard.IsTrue(bucketSize > 0, $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
+            Validate.Validate.Hard.IsNotNull(boundingBox, this.GetFormattedNullOrDefaultMessage(nameof(boundingBox)));
             boundingBox_ = boundingBox;
             head_ = new RTreeNode<T>(boundingBox, rectangles, bucketSize, branchFactor);
             boundary_ = head_.Boundary;

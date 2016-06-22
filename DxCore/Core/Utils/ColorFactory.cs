@@ -60,7 +60,7 @@ namespace DxCore.Core.Utils
 
         private static float RoundTransparencyWeight(float transparencyWeight)
         {
-            Validate.IsInClosedInterval(transparencyWeight, 0, 1.0);
+            Validate.Validate.Hard.IsInClosedInterval(transparencyWeight, 0, 1.0);
             /* Clamp transparencyWeight to nearest 0.01 so we reduce the space of our possible key set (by some) */
             return (float) Math.Round(transparencyWeight, NUM_PRECISION_DIGITS);
         }

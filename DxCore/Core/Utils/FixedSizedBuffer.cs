@@ -25,7 +25,7 @@ namespace DxCore.Core.Utils
 
         public FixedSizedBuffer(int limit)
         {
-            Validate.IsTrue(limit > 0, $"Cannot create a {typeof(FixedSizedBuffer<T>)} with a limit of {limit}");
+            Validate.Validate.Hard.IsTrue(limit > 0, $"Cannot create a {typeof(FixedSizedBuffer<T>)} with a limit of {limit}");
             Limit = limit;
             backingList_ = new List<T>(limit);
         }

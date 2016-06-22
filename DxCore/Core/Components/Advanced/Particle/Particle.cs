@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,6 +16,8 @@ namespace DxCore.Core.Components.Advanced.Particle
             Simple "Particle" class. Operates on its own Physics system (for now) to avoid Physics components picking up / interacting with them. 
         </summary>
     */
+
+        // TODO: Get rid of this crap and turn it into an emitter
 
     [Serializable]
     [DataContract]
@@ -110,9 +113,9 @@ namespace DxCore.Core.Components.Advanced.Particle
                 {
                     game_ = DxGame.Instance;
                 }
-                Validate.IsTrue(radius_ > 0, $"Cannot create {typeof (Particle)}s with a negative radius ({radius_})");
-                Validate.IsTrue(maxDistance_ >= 0, $"Cannot create {typeof(Particle)}s with a negative maxDistance ({maxDistance_})");
-                Validate.IsTrue(transparencyWeight_ >= 0 && transparencyWeight_ <= 1.0f, $"Cannot create {typeof (Particle)}s with an transparencyWeight that is not [0, 1] (was {transparencyWeight_})");
+                Validate.Hard.IsTrue(radius_ > 0, $"Cannot create {typeof (Particle)}s with a negative radius ({radius_})");
+                Validate.Hard.IsTrue(maxDistance_ >= 0, $"Cannot create {typeof(Particle)}s with a negative maxDistance ({maxDistance_})");
+                Validate.Hard.IsTrue(transparencyWeight_ >= 0 && transparencyWeight_ <= 1.0f, $"Cannot create {typeof (Particle)}s with an transparencyWeight that is not [0, 1] (was {transparencyWeight_})");
                 return new Particle(color_, radius_, growRate_, position_, velocity_, acceleration_, timeToLive_, maxDistance_, transparencyWeight_);
             }
 

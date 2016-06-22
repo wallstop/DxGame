@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Map;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Pathfinding
@@ -34,7 +35,7 @@ namespace DxCore.Core.Pathfinding
  
         public ExplorableMesh(NavigableSurface surface)
         {
-            Validate.IsNotNull(surface, this.GetFormattedNullOrDefaultMessage(surface));
+            Validate.Hard.IsNotNull(surface, this.GetFormattedNullOrDefaultMessage(surface));
             foreach(NavigableSurface.Node node in surface.NodeQuery.Elements)
             {
                 paths_[node] = new HashSet<Path>();
@@ -45,8 +46,8 @@ namespace DxCore.Core.Pathfinding
 
         public void AttachPath(NavigableSurface.Node start, Path path)
         {
-            Validate.IsNotNull(start);
-            Validate.IsNotNull(path);
+            Validate.Hard.IsNotNull(start);
+            Validate.Hard.IsNotNull(path);
             if(Objects.Equals(start, NavigableSurface.Node.EmptyNode))
             {
                 return;
@@ -63,7 +64,7 @@ namespace DxCore.Core.Pathfinding
          */
         public List<Path> PathsFrom(NavigableSurface.Node start)
         {
-            Validate.IsNotNull(start);
+            Validate.Hard.IsNotNull(start);
             if(Objects.Equals(start, NavigableSurface.Node.EmptyNode))
             {
                 return Enumerable.Empty<Path>().ToList();

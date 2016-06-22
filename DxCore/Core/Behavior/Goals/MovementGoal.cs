@@ -5,6 +5,7 @@ using DxCore.Core.Frames;
 using DxCore.Core.Models;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Behavior.Goals
@@ -30,11 +31,11 @@ namespace DxCore.Core.Behavior.Goals
             : base(goalChaser, timeout, reference)
         {
             var mapModel = DxGame.Instance.Model<MapModel>();
-            Validate.IsTrue(mapModel.MapBounds.Contains(target),
+            Validate.Hard.IsTrue(mapModel.MapBounds.Contains(target),
                 $"{target} was not found to be within {mapModel.MapBounds}");
             /* We need a position if we're going to move somewhere (and probably a physics) */
             var positionalComponent = goalChaser.ComponentOfType<PositionalComponent>();
-            Validate.IsNotNull(positionalComponent, this.GetFormattedNullOrDefaultMessage(positionalComponent));
+            Validate.Hard.IsNotNull(positionalComponent, this.GetFormattedNullOrDefaultMessage(positionalComponent));
             Target = target;
         }
 

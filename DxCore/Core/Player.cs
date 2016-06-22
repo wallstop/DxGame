@@ -6,6 +6,7 @@ using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core
 {
@@ -40,7 +41,7 @@ namespace DxCore.Core
 
         public static Player PlayerFrom(GameObject existingPlayer, string name)
         {
-            Validate.IsNotNull(existingPlayer, StringUtils.GetFormattedNullOrDefaultMessage(typeof(Player), name));
+            Validate.Hard.IsNotNull(existingPlayer, StringUtils.GetFormattedNullOrDefaultMessage(typeof(Player), name));
             return new Player(existingPlayer) {Name = name};
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Properties
@@ -93,8 +94,8 @@ namespace DxCore.Core.Properties
             MutatePriority priority = MutatePriority.Medium)
         {
             // TODO: Remove these or do property validation checks
-            Validate.IsNotNull(mutator, $"Cannot initialize {GetType()} with a null {nameof(mutator)}");
-            Validate.IsNotNullOrDefault(name, $"Cannot initialize {GetType()} with a null/default {nameof(name)}");
+            Validate.Hard.IsNotNull(mutator, $"Cannot initialize {GetType()} with a null {nameof(mutator)}");
+            Validate.Hard.IsNotNullOrDefault(name, $"Cannot initialize {GetType()} with a null/default {nameof(name)}");
             mutator_ = mutator;
             Name = name;
             Priority = priority;

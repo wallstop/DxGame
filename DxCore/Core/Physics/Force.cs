@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Physics
@@ -52,7 +53,7 @@ namespace DxCore.Core.Physics
         public Force(DxVector2 initialVelocity, DxVector2 acceleration, DissipationFunction dissipationFunction,
             string name, bool dissipated = false)
         {
-            Validate.IsNotNull(dissipationFunction,
+            Validate.Hard.IsNotNull(dissipationFunction,
                 StringUtils.GetFormattedNullOrDefaultMessage(this, dissipationFunction));
             Dissipation = dissipationFunction;
             Dissipated = dissipated;

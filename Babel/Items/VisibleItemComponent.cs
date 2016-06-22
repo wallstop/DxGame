@@ -9,6 +9,7 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using NLog;
 
 namespace Babel.Items
@@ -38,10 +39,10 @@ namespace Babel.Items
 
         public VisibleItemComponent(SpatialComponent spatial, Type itemComponentType)
         {
-            Validate.IsNotNullOrDefault(spatial, this.GetFormattedNullOrDefaultMessage(spatial));
-            Validate.IsNotNullOrDefault(itemComponentType,
+            Validate.Hard.IsNotNullOrDefault(spatial, this.GetFormattedNullOrDefaultMessage(spatial));
+            Validate.Hard.IsNotNullOrDefault(itemComponentType,
                 this.GetFormattedNullOrDefaultMessage(nameof(itemComponentType)));
-            Validate.IsTrue(typeof(ItemComponent).IsAssignableFrom(itemComponentType),
+            Validate.Hard.IsTrue(typeof(ItemComponent).IsAssignableFrom(itemComponentType),
                 $"Expected {itemComponentType} to be an instance of {typeof(ItemComponent)}");
             Spatial = spatial;
             Activated = false;
@@ -62,7 +63,7 @@ namespace Babel.Items
 
         public static GameObject Generate(VisibleItemComponent visibleItemComponent)
         {
-            Validate.IsNotNullOrDefault(visibleItemComponent,
+            Validate.Hard.IsNotNullOrDefault(visibleItemComponent,
                 $"Cannot generate a {typeof(GameObject)} from a null {typeof(VisibleItemComponent)}");
             SimpleSpriteComponent spriteAspect =
                 SimpleSpriteComponent.Builder()

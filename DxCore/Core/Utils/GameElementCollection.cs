@@ -44,7 +44,7 @@ namespace DxCore.Core.Utils
 
         public GameElementCollection(GameElementCollection copy)
         {
-            Validate.IsNotNull(copy, this.GetFormattedNullOrDefaultMessage(copy));
+            Validate.Validate.Hard.IsNotNull(copy, this.GetFormattedNullOrDefaultMessage(copy));
             drawables_ = new SortedList<IDrawable>(copy.drawables_);
             processables_ = new SortedList<IProcessable>(copy.processables_);
         }

@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Components.Advanced.Triggers
 {
@@ -44,8 +44,8 @@ namespace DxCore.Core.Components.Advanced.Triggers
 
         public TriggerComponent(Trigger trigger, Action action, TimeSpan checkFrequency = new TimeSpan())
         {
-            Validate.IsNotNull(trigger, this.GetFormattedNullOrDefaultMessage(nameof(trigger)));
-            Validate.IsNotNull(action, this.GetFormattedNullOrDefaultMessage(nameof(action)));
+            Validate.Hard.IsNotNull(trigger, this.GetFormattedNullOrDefaultMessage(nameof(trigger)));
+            Validate.Hard.IsNotNull(action, this.GetFormattedNullOrDefaultMessage(nameof(action)));
             Trigger = trigger;
             Action = action;
             lastChecked_ = TimeSpan.Zero;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Pathfinding
@@ -23,7 +24,7 @@ namespace DxCore.Core.Pathfinding
 
         public CommandChain(params Commandment [] commandments)
         {
-            Validate.IsNotNull(commandments);
+            Validate.Hard.IsNotNull(commandments);
             commandments_ = commandments.ToList();
         }
 

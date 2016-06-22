@@ -16,7 +16,7 @@ namespace DxCore.Core.Components.Basic
 
         private SpriteBatchEnder()
         {
-            DrawPriority = DrawPriority.END_SPRITEBATCH;
+            DrawPriority = DrawPriority.EndSpritebatch;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)

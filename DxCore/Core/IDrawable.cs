@@ -8,19 +8,20 @@ namespace DxCore.Core
 {
     public enum DrawPriority
     {
-        INIT_SPRITEBATCH = -100,
-        HIGHEST = -99,
-        MAP = -80,
-        HIGH = 1,
-        NORMAL = 5,
-        HUD_LAYER = 8,
-        LOW = 10,
-        END_SPRITEBATCH = 1000,
+        InitSpritebatch = -100,
+        Highest = -99,
+        Map = -80,
+        High = 1,
+        Normal = 5,
+        HudLayer = 8,
+        Low = 10,
+        MenuLayer = 50,
+        EndSpritebatch = 1000,
         /* 
             User primitives (actual GPU shader calls) must be made after sprite batch has finished 
             (http://stackoverflow.com/questions/27431038/going-back-to-spritebatch-draw-after-using-graphicsdevice-drawuserprimitives) 
         */
-        USER_PRIMITIVES = 1001
+        UserPrimitives = 1001
     }
 
     public interface IDrawable : IComparable<IDrawable>

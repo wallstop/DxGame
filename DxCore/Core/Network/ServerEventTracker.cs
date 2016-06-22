@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core;
 using DXGame.Core.Utils;
 
@@ -56,7 +57,7 @@ namespace DxCore.Core.Network
 
         public ServerEventTracker(ServerEventTracker copy)
         {
-            Validate.IsNotNullOrDefault(copy, this.GetFormattedNullOrDefaultMessage(copy));
+            Validate.Hard.IsNotNullOrDefault(copy, this.GetFormattedNullOrDefaultMessage(copy));
             events_ = copy.events_.ToList();
             clientSpecificMessages_ = new List<NetworkMessage>();
             trackerId_ = new UniqueId();

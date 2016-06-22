@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Cache.Simple;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core
 {
@@ -59,7 +60,7 @@ namespace DxCore.Core
 
         public static Team TeamFor(string name)
         {
-            Validate.IsNotEmpty(name, $"Cannot have {typeof(Team)}s with null/empty Names");
+            Validate.Hard.IsNotEmpty(name, $"Cannot have {typeof(Team)}s with null/empty Names");
             return TeamSimpleCache.Get(name);
         }
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using NLog;
 
 namespace DxCore.Core.Messaging
@@ -68,8 +68,7 @@ namespace DxCore.Core.Messaging
         [Serializable]
         internal sealed class TypedHandlerDeregistration<T> where T : Message
         {
-            [DataMember]
-            private readonly Action<T> typedHandler_;
+            [DataMember] private readonly Action<T> typedHandler_;
 
             [DataMember]
             private Dictionary<Type, object> HandlersByType { get; set; }
@@ -90,7 +89,7 @@ namespace DxCore.Core.Messaging
 
         public MessageHandler(UniqueId ownerId)
         {
-            Validate.IsNotNull(ownerId);
+            Validate.Hard.IsNotNull(ownerId);
             Owner = ownerId;
             acceptAllFunctions_ = new List<Action<Message>>();
             handlersByType_ = new Dictionary<Type, object>();
@@ -99,10 +98,12 @@ namespace DxCore.Core.Messaging
         /**
             Binds this MessageHandler to a specific Game Id. Messages that originates from any other GameId will be ignored. MessageHandlers can only be bound once.
         */
+
         public void BindToGame(GameId game, Action<Message> rejectionFunction)
         {
-            Validate.IsNotNullOrDefault(game, $"Cannot bind a {nameof(MessageHandler)} to a null GameId");
-            Validate.IsNull(boundGameId_, $"Cannot re-bind a {nameof(MessageHandler)} (already bound to {boundGameId_})");
+            Validate.Hard.IsNotNullOrDefault(game, $"Cannot bind a {nameof(MessageHandler)} to a null GameId");
+            Validate.Hard.IsNull(boundGameId_,
+                $"Cannot re-bind a {nameof(MessageHandler)} (already bound to {boundGameId_})");
             boundGameId_ = game;
             wrongGameRejectionFunction_ = rejectionFunction;
         }

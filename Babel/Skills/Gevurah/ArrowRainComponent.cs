@@ -16,6 +16,7 @@ using DxCore.Core.Primitives;
 using DxCore.Core.State;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -55,9 +56,9 @@ namespace Babel.Skills.Gevurah
 
         public ArrowRainLauncher(GameObject source, DxVector2 position, Direction direction)
         {
-            Validate.IsNotNullOrDefault(source, this.GetFormattedNullOrDefaultMessage("source"));
+            Validate.Hard.IsNotNullOrDefault(source, this.GetFormattedNullOrDefaultMessage("source"));
             Source = source;
-            Validate.IsTrue(direction == Direction.East || direction == Direction.West,
+            Validate.Hard.IsTrue(direction == Direction.East || direction == Direction.West,
                 $"Expected {nameof(direction)} to be East or West, but was {direction}");
             Direction = direction;
             // TODO: Un-hardcode bounding box
@@ -200,9 +201,9 @@ namespace Babel.Skills.Gevurah
 
         public ArrowRainer(GameObject source, DxVector2 position, Direction direction)
         {
-            Validate.IsNotNullOrDefault(source, this.GetFormattedNullOrDefaultMessage("source"));
+            Validate.Hard.IsNotNullOrDefault(source, this.GetFormattedNullOrDefaultMessage("source"));
             Source = source;
-            Validate.IsTrue(direction == Direction.East || direction == Direction.West,
+            Validate.Hard.IsTrue(direction == Direction.East || direction == Direction.West,
                 $"Expected {nameof(direction)} to be East or West, but was {direction}");
             Position = direction == Direction.East ? position : new DxVector2(position.X - ARROW_RAIN_WIDTH, position.Y);
         }

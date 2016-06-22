@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Components.Advanced.Player
 {
@@ -15,7 +15,7 @@ namespace DxCore.Core.Components.Advanced.Player
 
         public PlayerNameComponent(string playerName)
         {
-            Validate.IsNotNullOrDefault(playerName, this.GetFormattedNullOrDefaultMessage(nameof(playerName)));
+            Validate.Hard.IsNotNullOrDefault(playerName, this.GetFormattedNullOrDefaultMessage(nameof(playerName)));
             Name = playerName;
         }
     }

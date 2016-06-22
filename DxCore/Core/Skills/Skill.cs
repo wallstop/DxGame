@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Skills
@@ -91,9 +92,9 @@ namespace DxCore.Core.Skills
 
             protected void ValidateArguments()
             {
-                Validate.IsNotNullOrDefault(cooldown_, this.GetFormattedNullOrDefaultMessage("Cooldown"));
-                Validate.IsNotNull(skillFunction_, this.GetFormattedNullOrDefaultMessage(skillFunction_));
-                Validate.IsTrue(Commandments.ABILITY_COMMANDMENTS.Contains(ability_),
+                Validate.Hard.IsNotNullOrDefault(cooldown_, this.GetFormattedNullOrDefaultMessage("Cooldown"));
+                Validate.Hard.IsNotNull(skillFunction_, this.GetFormattedNullOrDefaultMessage(skillFunction_));
+                Validate.Hard.IsTrue(Commandments.ABILITY_COMMANDMENTS.Contains(ability_),
                     $"{ability_} was expected to be an ability-type {typeof(Commandment)}, but was not.");
             }
 

@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
+using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -27,14 +28,14 @@ namespace DxCore.Core.Animation
         private int TotalFrames => AnimationDescriptor.FrameCount;
         private float Scale => (float) AnimationDescriptor.Scale;
 
-        public Animation(AnimationDescriptor descriptor, DrawPriority drawPriority = DrawPriority.NORMAL)
+        public Animation(AnimationDescriptor descriptor, DrawPriority drawPriority = DrawPriority.Normal)
         {
-            Validate.IsNotNullOrDefault(descriptor, this.GetFormattedNullOrDefaultMessage(descriptor));
-            Validate.IsTrue(descriptor.FrameCount > 0,
+            Validate.Hard.IsNotNullOrDefault(descriptor, this.GetFormattedNullOrDefaultMessage(descriptor));
+            Validate.Hard.IsTrue(descriptor.FrameCount > 0,
                 $"Cannot initialize an {nameof(Animation)} with a FrameCount of {descriptor.FrameCount}");
-            Validate.IsNotNullOrDefault(descriptor.FramesPerSecond > 0,
+            Validate.Hard.IsNotNullOrDefault(descriptor.FramesPerSecond > 0,
                 $"Cannot initialize an {nameof(Animation)} with a {nameof(descriptor.FramesPerSecond)} of {descriptor.FramesPerSecond}");
-            Validate.IsNotNullOrDefault(descriptor.Asset,
+            Validate.Hard.IsNotNullOrDefault(descriptor.Asset,
                 this.GetFormattedNullOrDefaultMessage(nameof(descriptor.Asset)));
             AnimationDescriptor = descriptor;
             drawPriority_ = drawPriority;

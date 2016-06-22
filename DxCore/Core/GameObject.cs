@@ -7,6 +7,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using NLog;
 
 namespace DxCore.Core
@@ -169,7 +170,7 @@ namespace DxCore.Core
             public GameObjectBuilder WithComponents(IEnumerable<Component> components)
             {
                 var enumerable = components as Component[] ?? components.ToArray();
-                Validate.IsNotNull(enumerable, this.GetFormattedNullOrDefaultMessage(nameof(components)));
+                Validate.Hard.IsNotNull(enumerable, this.GetFormattedNullOrDefaultMessage(nameof(components)));
                 foreach(var component in enumerable)
                 {
                     WithComponent(component);
@@ -179,8 +180,8 @@ namespace DxCore.Core
 
             public GameObjectBuilder WithComponent(Component component)
             {
-                Validate.IsNotNullOrDefault(component, this.GetFormattedNullOrDefaultMessage(component));
-                Validate.IsFalse(components_.Contains(component),
+                Validate.Hard.IsNotNullOrDefault(component, this.GetFormattedNullOrDefaultMessage(component));
+                Validate.Hard.IsFalse(components_.Contains(component),
                     $"Cannot create a {GetType()} with the same component {component} more than once");
                 components_.Add(component);
                 return this;

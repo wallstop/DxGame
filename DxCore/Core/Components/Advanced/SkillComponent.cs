@@ -8,6 +8,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Skills;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Components.Advanced
@@ -31,8 +32,8 @@ namespace DxCore.Core.Components.Advanced
 
         public SkillComponent(List<Skill> skills)
         {
-            Validate.IsNotNull(skills, this.GetFormattedNullOrDefaultMessage(skills));
-            Validate.NoNullElements(skills, this.GetFormattedNullOrDefaultMessage(typeof(Skill)));
+            Validate.Hard.IsNotNull(skills, this.GetFormattedNullOrDefaultMessage(skills));
+            Validate.Hard.NoNullElements(skills, this.GetFormattedNullOrDefaultMessage(typeof(Skill)));
             Skills =
                 new ReadOnlyDictionary<Commandment, Skill>(skills.ToDictionary(skill => skill.Ability, skill => skill));
             commandMessages_ = new List<CommandMessage>();

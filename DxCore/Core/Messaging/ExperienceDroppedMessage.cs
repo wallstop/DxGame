@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core;
 using DXGame.Core.Utils;
 
@@ -25,9 +26,9 @@ namespace DxCore.Core.Messaging
         public ExperienceDroppedMessage(Team sourceTeam, DxVector2 position, float radius,
             Experience.Experience experience)
         {
-            Validate.IsTrue(radius > 0,
+            Validate.Hard.IsTrue(radius > 0,
                 $"Canot create a {nameof(ExperienceDroppedMessage)} with a {nameof(radius)} of {radius}");
-            Validate.IsNotNullOrDefault(experience, StringUtils.GetFormattedNullOrDefaultMessage(this, experience));
+            Validate.Hard.IsNotNullOrDefault(experience, StringUtils.GetFormattedNullOrDefaultMessage(this, experience));
             SourceTeam = Optional<Team>.Of(sourceTeam);
             Position = position;
             Radius = radius;

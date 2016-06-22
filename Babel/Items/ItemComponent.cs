@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using DxCore.Core;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace Babel.Items
 {
@@ -25,7 +26,7 @@ namespace Babel.Items
 
         public void Detach(GameObject parent)
         {
-            Validate.IsTrue(StackCount > 0, $"Cannot detach {this} - it has a stack count of 0!");
+            Validate.Hard.IsTrue(StackCount > 0, $"Cannot detach {this} - it has a stack count of 0!");
             // TODO: Dispose when fully detached?
             --StackCount;
             InternalDetach(parent);

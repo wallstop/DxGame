@@ -58,7 +58,7 @@ namespace DxCore.Core.Components.Developer
                 MaxValue = (float)DxGame.Instance.TargetElapsedTime.TotalMilliseconds,
                 Type = Graph.GraphType.Line
             };
-            DrawPriority = DrawPriority.USER_PRIMITIVES;
+            DrawPriority = DrawPriority.UserPrimitives;
         }
 
         protected override void Update(DxGameTime gameTime)

@@ -8,8 +8,7 @@ using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Components.Advanced.Physics
 {
@@ -61,7 +60,7 @@ namespace DxCore.Core.Components.Advanced.Physics
 
         public virtual void AttachForce(Force force)
         {
-            Validate.IsNotNull(force, this.GetFormattedNullOrDefaultMessage(force));
+            Validate.Hard.IsNotNull(force, this.GetFormattedNullOrDefaultMessage(force));
             forces_.Add(force);
             Velocity += force.InitialVelocity;
         }
@@ -139,7 +138,7 @@ namespace DxCore.Core.Components.Advanced.Physics
 
             public virtual PhysicsComponentBuilder WithForce(Force force)
             {
-                Validate.IsNotNull(force, this.GetFormattedNullOrDefaultMessage(force));
+                Validate.Hard.IsNotNull(force, this.GetFormattedNullOrDefaultMessage(force));
                 forces_.Add(force);
                 return this;
             }

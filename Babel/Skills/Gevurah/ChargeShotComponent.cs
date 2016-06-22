@@ -12,6 +12,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
+using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Babel.Skills.Gevurah
@@ -48,7 +49,7 @@ namespace Babel.Skills.Gevurah
 
         public ChargeShotComponent(SpatialComponent spatial, Direction facing, TimeSpan timeCharged)
         {
-            Validate.IsNotNullOrDefault(spatial, this.GetFormattedNullOrDefaultMessage(spatial));
+            Validate.Hard.IsNotNullOrDefault(spatial, this.GetFormattedNullOrDefaultMessage(spatial));
             spatial_ = spatial;
             Direction = facing;
             double maxMillis = MAX_CHARGE_TIME.TotalMilliseconds;

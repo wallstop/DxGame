@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using NLog;
 
 namespace DxCore.Core.Models
@@ -32,8 +33,8 @@ namespace DxCore.Core.Models
 
         public PlayerModel WithActivePlayer(Player player)
         {
-            Validate.IsNotNull(player, $"Cannot initialize {GetType()} with a null/default ActivePlayer ({player})");
-            if(!Check.IsNullOrDefault(ActivePlayer))
+            Validate.Hard.IsNotNull(player, $"Cannot initialize {GetType()} with a null/default ActivePlayer ({player})");
+            if(Validate.Check.IsNotNullOrDefault(ActivePlayer))
             {
                 LOG.Info($"Re-initializing {GetType()} with a different active player {nameof(ActivePlayer)}");
             }
@@ -46,11 +47,11 @@ namespace DxCore.Core.Models
 
         public PlayerModel WithPlayers(Player[] players)
         {
-            Validate.IsNotNull(players, $"Cannot initialize {GetType()} with null/default {nameof(players)})");
+            Validate.Hard.IsNotNull(players, $"Cannot initialize {GetType()} with null/default {nameof(players)})");
 
             LOG.Info("Initialized ");
             Players = players;
-            if(Check.IsNotNullOrDefault(ActivePlayer))
+            if(Validate.Check.IsNotNullOrDefault(ActivePlayer))
             {
                 Players.Add(ActivePlayer);
             }

@@ -7,8 +7,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Components.Advanced.Entities
 {
@@ -34,7 +33,7 @@ namespace DxCore.Core.Components.Advanced.Entities
 
         protected Spawner(DxRectangle spawnArea, SpawnTrigger spawnTrigger)
         {
-            Validate.IsNotNull(spawnTrigger);
+            Validate.Hard.IsNotNull(spawnTrigger);
             SpawnTrigger = spawnTrigger;
             spawnArea_ = spawnArea;
         }
@@ -89,7 +88,7 @@ namespace DxCore.Core.Components.Advanced.Entities
 
             public virtual Spawner Build()
             {
-                Validate.IsNotNullOrDefault(spawnTrigger_,
+                Validate.Hard.IsNotNullOrDefault(spawnTrigger_,
                     this.GetFormattedNullOrDefaultMessage(nameof(Entities.SpawnTrigger)));
                 return new Spawner(spawnArea_, spawnTrigger_);
             }
@@ -123,8 +122,7 @@ namespace DxCore.Core.Components.Advanced.Entities
 
         public SimpleImmediateSpawner(GameObject objectToSpawn)
         {
-            Validate.IsNotNullOrDefault(objectToSpawn,
-                this.GetFormattedNullOrDefaultMessage(nameof(objectToSpawn)));
+            Validate.Hard.IsNotNullOrDefault(objectToSpawn, this.GetFormattedNullOrDefaultMessage(nameof(objectToSpawn)));
             objectToSpawn_ = objectToSpawn;
             alreadySpawned_ = false;
         }

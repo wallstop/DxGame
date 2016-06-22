@@ -67,8 +67,8 @@ namespace DxCore.Core.Utils
 
         public static DxRectangle RectangleFrom(DxVector2 position, DxVector2 dimensions)
         {
-            Validate.IsTrue(dimensions.X >= 0);
-            Validate.IsTrue(dimensions.Y >= 0);
+            Validate.Validate.Hard.IsTrue(dimensions.X >= 0);
+            Validate.Validate.Hard.IsTrue(dimensions.Y >= 0);
             return new DxRectangle(
                 /*
                     The position may be anywhere, so if it's -.05, we actually want it to wrap to -1. Similarly, 

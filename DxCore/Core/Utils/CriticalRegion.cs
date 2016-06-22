@@ -28,8 +28,8 @@ namespace DxCore.Core.Utils
 
         public CriticalRegion(ReaderWriterLockSlim readWriteLock, LockType lockType)
         {
-            Validate.IsNotNull(readWriteLock);
-            Validate.IsNotNull(lockType);
+            Validate.Validate.Hard.IsNotNull(readWriteLock);
+            Validate.Validate.Hard.IsNotNull(lockType);
             lock_ = readWriteLock;
             type_ = lockType;
             switch (lockType)

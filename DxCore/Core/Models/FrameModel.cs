@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DxCore.Core.Frames;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Models
@@ -19,7 +20,7 @@ namespace DxCore.Core.Models
 
         public FrameModel WithFrameRetention(TimeSpan timespan)
         {
-            Validate.IsNotNullOrDefault(timespan, this.GetFormattedNullOrDefaultMessage(timespan));
+            Validate.Hard.IsNotNullOrDefault(timespan, this.GetFormattedNullOrDefaultMessage(timespan));
             FrameRetention = timespan;
             return this;
         }
@@ -28,7 +29,7 @@ namespace DxCore.Core.Models
 
         public void AttachFrame(Frame frame)
         {
-            Validate.IsTrue(!Frames.Contains(frame),
+            Validate.Hard.IsTrue(!Frames.Contains(frame),
                 $"Cannot attach frame {frame} to {GetType()}. This frame already exists in {Frames}");
             Frames.Add(frame);
         }

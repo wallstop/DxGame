@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Input;
 using DxCore.Core.Network;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Messaging.Network
@@ -17,7 +18,7 @@ namespace DxCore.Core.Messaging.Network
 
         public ClientInputUpdate(List<KeyboardEvent> clientKeyboardEvents)
         {
-            Validate.IsNotNullOrDefault(clientKeyboardEvents,
+            Validate.Hard.IsNotNullOrDefault(clientKeyboardEvents,
                 StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(clientKeyboardEvents)));
             ClientKeyboardEvents = clientKeyboardEvents;
         }

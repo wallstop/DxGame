@@ -4,7 +4,7 @@ using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -35,9 +35,9 @@ namespace DxCore.Core.Components.Advanced
 
         private SimpleSpriteComponent(string asset, PositionalComponent position, DxRectangle boundingBox)
         {
-            Validate.IsNotNullOrDefault(asset, this.GetFormattedNullOrDefaultMessage(nameof(asset)));
+            Validate.Hard.IsNotNullOrDefault(asset, this.GetFormattedNullOrDefaultMessage(nameof(asset)));
             assetName_ = asset;
-            Validate.IsNotNullOrDefault(position, this.GetFormattedNullOrDefaultMessage(position));
+            Validate.Hard.IsNotNullOrDefault(position, this.GetFormattedNullOrDefaultMessage(position));
             position_ = position;
             boundingBox_ = boundingBox;
         }
@@ -50,11 +50,11 @@ namespace DxCore.Core.Components.Advanced
 
         public override void Initialize()
         {
-            Validate.IsNotNull(DxGame.Instance.Content, this.GetFormattedNullOrDefaultMessage(DxGame.Instance.Content));
+            Validate.Hard.IsNotNull(DxGame.Instance.Content, this.GetFormattedNullOrDefaultMessage(DxGame.Instance.Content));
             texture_ = DxGame.Instance.Content.Load<Texture2D>(assetName_);
             // Assign boundingBox to be the shape of the texture only if it hasn't been custom-set
             // TODO: Change to an isLoaded bool flag / state
-            if(Check.IsNullOrDefault(boundingBox_))
+            if(Validate.Check.IsNullOrDefault(boundingBox_))
             {
                 boundingBox_ = new DxRectangle(0, 0, texture_.Width, texture_.Height);
             }

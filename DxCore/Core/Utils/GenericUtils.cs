@@ -8,7 +8,7 @@ namespace DxCore.Core.Utils
         public static T CheckedCast<T>(object typedObject, string message) where T : class
         {
             var casted = typedObject as T;
-            Validate.IsNotNull(casted, message);
+            Validate.Validate.Hard.IsNotNull(casted, message);
             return casted;
         }
 

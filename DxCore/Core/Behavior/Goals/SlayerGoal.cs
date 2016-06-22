@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Frames;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core;
 using DXGame.Core.Utils;
 
@@ -25,7 +26,7 @@ namespace DxCore.Core.Behavior.Goals
         public SlayerGoal(GameObject goalChaser, GameObject target, TimeSpan timeout, Frame reference)
             : base(goalChaser, timeout, reference)
         {
-            Validate.IsNotNull(target.ComponentOfType<EntityPropertiesComponent>(),
+            Validate.Hard.IsNotNull(target.ComponentOfType<EntityPropertiesComponent>(),
                 $"The target of a {nameof(SlayerGoal)} must have an {nameof(EntityPropertiesComponent)}");
             target_ = target;
         }

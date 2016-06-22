@@ -8,6 +8,7 @@ using DxCore.Core.Input;
 using DxCore.Core.Models;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -197,9 +198,9 @@ namespace DxCore.Core.GraphicsWidgets
 
             public TextBox Build()
             {
-                Validate.IsNotNullOrDefault(spriteFont_, this.GetFormattedNullOrDefaultMessage(spriteFont_));
-                Validate.IsTrue(maxLength_ > 0, $"Cannot create a {typeof(TextBox)} with a MaxLength of {maxLength_}");
-                Validate.IsNotNullOrDefault(spatial_, this.GetFormattedNullOrDefaultMessage(spatial_));
+                Validate.Hard.IsNotNullOrDefault(spriteFont_, this.GetFormattedNullOrDefaultMessage(spriteFont_));
+                Validate.Hard.IsTrue(maxLength_ > 0, $"Cannot create a {typeof(TextBox)} with a MaxLength of {maxLength_}");
+                Validate.Hard.IsNotNullOrDefault(spatial_, this.GetFormattedNullOrDefaultMessage(spatial_));
 
                 const string testString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
                 var stringMeasurement = spriteFont_.MeasureString(testString);

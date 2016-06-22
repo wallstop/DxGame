@@ -15,7 +15,7 @@ namespace DxCore.Core.GraphicsWidgets.HUD
     {
         protected HudComponent()
         {
-            DrawPriority = DrawPriority.HUD_LAYER;
+            DrawPriority = DrawPriority.HudLayer;
         }
     }
 }

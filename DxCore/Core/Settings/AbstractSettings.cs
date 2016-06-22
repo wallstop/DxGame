@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using NLog;
 
 namespace DxCore.Core.Settings
@@ -59,7 +60,7 @@ namespace DxCore.Core.Settings
 
         protected virtual void CopySettings(T other)
         {
-            Validate.IsNotNull(other, $"Cannot copy Settings for a null {GetType()}");
+            Validate.Hard.IsNotNull(other, $"Cannot copy Settings for a null {GetType()}");
             this.MapAllFieldsFrom(other);
         }
     }

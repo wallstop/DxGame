@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using NLog;
 
 namespace DxCore.Core.Messaging
@@ -80,7 +78,9 @@ namespace DxCore.Core.Messaging
             }
         }
 
-        private static Dictionary<UniqueId, MessageHandler> UntypedTargetedSinks { get; } = new Dictionary<UniqueId, MessageHandler>();
+        private static Dictionary<UniqueId, MessageHandler> UntypedTargetedSinks { get; } =
+            new Dictionary<UniqueId, MessageHandler>();
+
         private static HashSet<MessageHandler> GlobalSinks { get; } = new HashSet<MessageHandler>();
 
         private static HashSet<MessageHandler> Handler<T>() where T : Message
@@ -116,15 +116,14 @@ namespace DxCore.Core.Messaging
 
         public static Action Register<T>(UniqueId handlerOwnerId, MessageHandler messageHandler) where T : Message
         {
-            Validate.IsNotNullOrDefault(handlerOwnerId);
-            Validate.IsNotNullOrDefault(messageHandler);
+            Validate.Hard.IsNotNullOrDefault(handlerOwnerId);
+            Validate.Hard.IsNotNullOrDefault(messageHandler);
 
             Dictionary<UniqueId, MessageHandler> targetedHandlers = TargetedHandlers<T>();
             MessageHandler existingHandler;
             if(!targetedHandlers.TryGetValue(handlerOwnerId, out existingHandler))
             {
                 targetedHandlers[handlerOwnerId] = messageHandler;
-
             }
             else if(!ReferenceEquals(existingHandler, messageHandler))
             {
@@ -146,11 +145,12 @@ namespace DxCore.Core.Messaging
 
         /* TODO: This naming convention is garbage, please redo. No one is going to understand what any of this crap means */
 
-            /**
+        /**
                 <summary>
                     Registers an untyped message handler for all messages that are for the specified target
                 </summary>   
             */
+
         public static Action RegisterTargetedGlobal(UniqueId handlerOwnerId, MessageHandler messageHandler)
         {
             if(UntypedTargetedSinks.ContainsKey(handlerOwnerId))
@@ -171,7 +171,7 @@ namespace DxCore.Core.Messaging
 
         public static void TypedBroadcast<T>(T typedMessage) where T : Message
         {
-            BroadcastGlobal<T>(typedMessage);
+            BroadcastGlobal(typedMessage);
             ITargetedMessage targetedMessage = typedMessage as ITargetedMessage;
             if(!ReferenceEquals(targetedMessage, null))
             {
@@ -188,7 +188,7 @@ namespace DxCore.Core.Messaging
             {
                 handler.HandleTypedMessage(typedMessage);
             }
-            BroadcastGlobal<T>(typedMessage);
+            BroadcastGlobal(typedMessage);
         }
 
         private static void BroadcastGlobal<T>(T typedMessage) where T : Message

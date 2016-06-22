@@ -1,5 +1,4 @@
 ﻿using System;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Utils.Cache.Advanced
 {
@@ -40,7 +39,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
         public CacheBuilder<K, V> WithExpireAfterAccess(TimeSpan duration)
         {
             long durationTicks = duration.Ticks;
-            Validate.IsTrue(durationTicks >= 0, "Cannot expire after access for a negative duration");
+            Validate.Validate.Hard.IsTrue(durationTicks >= 0, "Cannot expire after access for a negative duration");
             expireAfterAccessTicks_ = durationTicks;
             return this;
         }
@@ -48,14 +47,14 @@ namespace DxCore.Core.Utils.Cache.Advanced
         public CacheBuilder<K, V> WithExpireAfterWrite(TimeSpan duration)
         {
             long durationTicks = duration.Ticks;
-            Validate.IsTrue(durationTicks >= 0, "Cannot expire after write for a negative duration");
+            Validate.Validate.Hard.IsTrue(durationTicks >= 0, "Cannot expire after write for a negative duration");
             expireAfterWriteTicks_ = durationTicks;
             return this;
         }
 
         public CacheBuilder<K, V> WithRemovalListener(Action<RemovalNotification<K, V>> removalListener)
         {
-            Validate.IsNotNull(removalListener, "Cannot register a null removalListener");
+            Validate.Validate.Hard.IsNotNull(removalListener, "Cannot register a null removalListener");
             RemovalListener = removalListener;
             return this;
         }

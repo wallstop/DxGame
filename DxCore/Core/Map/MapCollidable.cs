@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core;
 using DXGame.Core.Utils;
 
@@ -22,8 +23,8 @@ namespace DxCore.Core.Map
 
         public MapCollidable(Tile tile, DxRectangle space)
         {
-            Validate.IsNotNullOrDefault(tile);
-            Validate.IsNotNullOrDefault(space);
+            Validate.Hard.IsNotNullOrDefault(tile);
+            Validate.Hard.IsNotNullOrDefault(space);
             Tile = tile;
             Space = space;
         }

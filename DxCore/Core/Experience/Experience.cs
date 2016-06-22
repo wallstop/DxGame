@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 
 namespace DxCore.Core.Experience
@@ -20,7 +21,7 @@ namespace DxCore.Core.Experience
 
         public Experience(int experience)
         {
-            Validate.IsTrue(experience >= 0, $"Cannot create an {typeof(Experience)} with a value of {experience}");
+            Validate.Hard.IsTrue(experience >= 0, $"Cannot create an {typeof(Experience)} with a value of {experience}");
             Value = experience;
         }
     }

@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.State
 {
@@ -23,21 +23,20 @@ namespace DxCore.Core.State
     {
         [DataMember]
         public Priority Priority { get; private set; }
+
         [DataMember]
         public Trigger Trigger { get; private set; }
+
         [DataMember]
-        public DxCore.Core.State.State State { get; private set; }
+        public State State { get; private set; }
 
-        public Transition(Trigger trigger, DxCore.Core.State.State state)
-            : this(trigger, state, Priority.Medium)
-        {
-        }
+        public Transition(Trigger trigger, State state) : this(trigger, state, Priority.Medium) {}
 
-        public Transition(Trigger trigger, DxCore.Core.State.State state, Priority priority)
+        public Transition(Trigger trigger, State state, Priority priority)
         {
-            Validate.IsNotNull(trigger, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(trigger)));
-            Validate.IsNotNull(state, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(state)));
-            Validate.IsNotNull(priority, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(priority)));
+            Validate.Hard.IsNotNull(trigger, this.GetFormattedNullOrDefaultMessage(nameof(trigger)));
+            Validate.Hard.IsNotNull(state, this.GetFormattedNullOrDefaultMessage(nameof(state)));
+            Validate.Hard.IsNotNull(priority, this.GetFormattedNullOrDefaultMessage(nameof(priority)));
             Trigger = trigger;
             Priority = priority;
             State = state;

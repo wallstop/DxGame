@@ -10,7 +10,7 @@ namespace DxCore.Core.Models
         public HudModel()
         {
             // If we have this here, do we actually need a HudComponent at all?
-            DrawPriority = DrawPriority.HUD_LAYER;
+            DrawPriority = DrawPriority.HudLayer;
         }
 
         public override void Initialize()

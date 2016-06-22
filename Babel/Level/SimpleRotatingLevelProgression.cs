@@ -21,6 +21,7 @@ using DxCore.Core.Models;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -198,7 +199,7 @@ namespace Babel.Level
                     .Select(MapDescriptor.StaticLoad)
                     .Select(mapDescriptor => new Map(mapDescriptor));
             maps_.AddRange(maps);
-            Validate.IsNotEmpty(maps_, $"Failed to find maps! Check {MAP_PATH} for valid descriptors");
+            Validate.Hard.IsNotEmpty(maps_, $"Failed to find maps! Check {MAP_PATH} for valid descriptors");
             base.LoadContent();
         }
 
@@ -297,7 +298,7 @@ namespace Babel.Level
 
         public LevelEndTrigger(GameObject mapTransitionObject)
         {
-            Validate.IsNotNullOrDefault(mapTransitionObject,
+            Validate.Hard.IsNotNullOrDefault(mapTransitionObject,
                 this.GetFormattedNullOrDefaultMessage("MapTransitionObject"));
             mapTransitionObject_ = mapTransitionObject;
         }
@@ -335,7 +336,7 @@ namespace Babel.Level
 
         public WaveNotifierTrigger(GameObject waveNotifier)
         {
-            Validate.IsNotNullOrDefault(waveNotifier, this.GetFormattedNullOrDefaultMessage(nameof(waveNotifier)));
+            Validate.Hard.IsNotNullOrDefault(waveNotifier, this.GetFormattedNullOrDefaultMessage(nameof(waveNotifier)));
             waveNotifier_ = waveNotifier;
             alreadyActivated_ = false;
         }

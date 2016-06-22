@@ -6,8 +6,7 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.State
 {
@@ -21,8 +20,7 @@ namespace DxCore.Core.State
         [DataMember]
         public State CurrentState { get; private set; }
 
-        [DataMember]
-        private ReadOnlyDictionary<UniqueId, State> statesById_; 
+        [DataMember] private ReadOnlyDictionary<UniqueId, State> statesById_;
 
         protected StateMachine(State initialState, Dictionary<UniqueId, State> statesById)
         {
@@ -77,12 +75,11 @@ namespace DxCore.Core.State
         {
             private State initialState_;
 
-            private readonly Dictionary<UniqueId, State> uniqueStates_ = new Dictionary<UniqueId, State>(); 
+            private readonly Dictionary<UniqueId, State> uniqueStates_ = new Dictionary<UniqueId, State>();
 
             public StateMachine Build()
             {
-                Validate.IsNotNullOrDefault(initialState_,
-                    StringUtils.GetFormattedNullOrDefaultMessage(this, "InitialState"));
+                Validate.Hard.IsNotNullOrDefault(initialState_, this.GetFormattedNullOrDefaultMessage("InitialState"));
                 return new StateMachine(initialState_, uniqueStates_);
             }
 

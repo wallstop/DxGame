@@ -27,7 +27,7 @@ namespace DxCore.Core.Components.Basic
     {
         protected DrawableComponent()
         {
-            DrawPriority = DrawPriority.NORMAL;
+            DrawPriority = DrawPriority.Normal;
         }
 
         public int CompareTo(DrawableComponent other)

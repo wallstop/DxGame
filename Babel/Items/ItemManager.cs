@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace Babel.Items
 {
@@ -31,7 +32,7 @@ namespace Babel.Items
 
         public void Attach(Type itemComponentType)
         {
-            Validate.IsNotNullOrDefault(itemComponentType, $"Cannot Attach a null {nameof(itemComponentType)}");
+            Validate.Hard.IsNotNullOrDefault(itemComponentType, $"Cannot Attach a null {nameof(itemComponentType)}");
             if(!itemsByType_.ContainsKey(itemComponentType))
             {
                 ItemComponent itemComponent = ItemFactory.Generate(itemComponentType);

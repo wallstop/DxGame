@@ -7,8 +7,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Components.Advanced.Entities
 {
@@ -36,10 +35,11 @@ namespace DxCore.Core.Components.Advanced.Entities
 
         public ItemDropperComponent(double percentChance, Func<DxVector2, List<GameObject>> itemProduction)
         {
-            Validate.IsInClosedInterval(percentChance, 0, 1,
+            Validate.Hard.IsInClosedInterval(percentChance, 0, 1,
                 $"Cannot create a {typeof(ItemDropperComponent)} with a {nameof(percentChance)} of {percentChance}");
             PercentChance = percentChance;
-            Validate.IsNotNullOrDefault(itemProduction, this.GetFormattedNullOrDefaultMessage(nameof(itemProduction)));
+            Validate.Hard.IsNotNullOrDefault(itemProduction,
+                this.GetFormattedNullOrDefaultMessage(nameof(itemProduction)));
             ItemProduction = itemProduction;
         }
 

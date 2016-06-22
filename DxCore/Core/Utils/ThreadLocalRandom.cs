@@ -97,7 +97,7 @@ namespace DxCore.Core.Utils
 
         public T FromEnum<T>() where T : struct
         {
-            Validate.IsTrue(typeof(T).IsEnum, "Cannot generate a random enum for a non-enum type");
+            Validate.Validate.Hard.IsTrue(typeof(T).IsEnum, "Cannot generate a random enum for a non-enum type");
             T[] enumValues = (T[])Enum.GetValues(typeof(T));
             int nextIndex = (Array.IndexOf(enumValues, Next(0, enumValues.Length)));
             return enumValues[nextIndex];
@@ -105,7 +105,7 @@ namespace DxCore.Core.Utils
 
         public T FromCollection<T>(ICollection<T> collection)
         {
-            Validate.IsNotEmpty(collection, "Cannot pick a random element from an empty collection");
+            Validate.Validate.Hard.IsNotEmpty(collection, "Cannot pick a random element from an empty collection");
             int randomIndex = Next(0, collection.Count);
             return collection.ElementAt(randomIndex);
         }

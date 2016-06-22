@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core
 {
@@ -30,7 +31,7 @@ namespace DxCore.Core
 
         public GameId(GameId copy)
         {
-            Validate.IsNotNullOrDefault(copy);
+            Validate.Hard.IsNotNullOrDefault(copy);
             id_ = copy.id_;
         }
 

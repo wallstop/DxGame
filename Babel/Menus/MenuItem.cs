@@ -1,5 +1,6 @@
 ﻿using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
 
@@ -17,28 +18,28 @@ namespace Babel.Menus
 
         public MenuItem WithText(string text)
         {
-            Validate.IsNotNull(text, $"{GetType()} cannot be initialized with null text");
+            Validate.Hard.IsNotNull(text, $"{GetType()} cannot be initialized with null text");
             Text = text;
             return this;
         }
 
         public MenuItem WithAction(MenuAction action)
         {
-            Validate.IsNotNull(action, $"{GetType()} cannot be initialized with a null action");
+            Validate.Hard.IsNotNull(action, $"{GetType()} cannot be initialized with a null action");
             Action = action;
             return this;
         }
 
         public MenuItem WithSpace(DxRectangle space)
         {
-            Validate.IsNotNull(space, $"{GetType()} cannot be initialized with a null space");
+            Validate.Hard.IsNotNull(space, $"{GetType()} cannot be initialized with a null space");
             Space = space;
             return this;
         }
 
         public MenuItem WithSpriteFont(SpriteFont spriteFont)
         {
-            Validate.IsNotNull(spriteFont, $"{GetType()} cannot be initialized with a null SpriteFont");
+            Validate.Hard.IsNotNull(spriteFont, $"{GetType()} cannot be initialized with a null SpriteFont");
             SpriteFont = spriteFont;
             return this;
         }

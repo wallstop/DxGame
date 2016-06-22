@@ -135,6 +135,11 @@ namespace DxCore.Core.Primitives
             return lhs;
         }
 
+        public static implicit operator DxVector2(Vector2 vector)
+        {
+            return new DxVector2(vector);
+        }
+
         public static Orientation Orientation(DxVector2 point1, DxVector2 point2, DxVector2 point3)
         {
             int orientation =

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.Serialization;
+using DxCore.Core.Utils;
 
 namespace DxCore.Core.Primitives
 {
     [Serializable]
     [DataContract]
-    public struct DxLine
+    public struct DxLine : IEquatable<DxLine>
     {
         [DataMember]
         public DxVector2 Start { get; set; }
@@ -35,10 +36,10 @@ namespace DxCore.Core.Primitives
 
         public bool Intersects(DxLine other)
         {
-            var firstOrientation = DxVector2.Orientation(Start, End, other.Start);
-            var secondOrientation = DxVector2.Orientation(Start, End, other.End);
-            var thirdOrientation = DxVector2.Orientation(other.Start, other.End, Start);
-            var fourthOrientation = DxVector2.Orientation(other.Start, other.End, End);
+            Orientation firstOrientation = DxVector2.Orientation(Start, End, other.Start);
+            Orientation secondOrientation = DxVector2.Orientation(Start, End, other.End);
+            Orientation thirdOrientation = DxVector2.Orientation(other.Start, other.End, Start);
+            Orientation fourthOrientation = DxVector2.Orientation(other.Start, other.End, End);
             return (firstOrientation != secondOrientation) && (thirdOrientation != fourthOrientation);
         }
 
@@ -46,6 +47,40 @@ namespace DxCore.Core.Primitives
         {
             var localCopy = this;
             return rectangle.Lines.Any(line => localCopy.Intersects(line));
+        }
+
+        public override bool Equals(object other)
+        {
+            if(other is DxLine)
+            {
+                return Equals((DxLine) other);
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Objects.HashCode(Start, End);
+        }
+
+        public override string ToString()
+        {
+            return $"{{ Start:{Start}, End:{End} }}";
+        }
+
+        public bool Equals(DxLine other)
+        {
+            return this == other;
+        }
+
+        public static bool operator ==(DxLine lhs, DxLine rhs)
+        {
+            return lhs.Start == rhs.Start && lhs.End == rhs.End;
+        }
+
+        public static bool operator !=(DxLine lhs, DxLine rhs)
+        {
+            return !(lhs == rhs);
         }
     }
 }

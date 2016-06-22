@@ -10,6 +10,7 @@ namespace DxCore.Core.Components.Developer
     public enum DeveloperMode
     {
         FullOn,
+        KindaOn,
         NotSoOn
     }
 

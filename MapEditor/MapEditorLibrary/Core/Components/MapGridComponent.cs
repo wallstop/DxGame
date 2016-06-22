@@ -22,9 +22,6 @@ namespace MapEditorLibrary.Core.Components
 
         public DxUnit Unit { get; }
 
-        /* A digital frontier. I tried to picture clusters of information as they moved through the computer... what did they look like? Chips? Motorcycles? Were the circuits like freeways? I kept dreaming of a world I thought I'd never see. And then, one day, I got in. */
-        private List<Rectangle> TheGrid { get; set; } = new List<Rectangle>();
-
         public MapGridComponent(DxUnit unit, int tileUnitWidth, int tileUnitHeight, int mapWidth, int mapHeight)
         {
             Validate.Hard.IsNotNullOrDefault(unit, () => this.GetFormattedNullOrDefaultMessage(unit));
@@ -37,32 +34,21 @@ namespace MapEditorLibrary.Core.Components
             MapWidth = mapWidth;
             Validate.Hard.IsPositive(mapHeight, () => $"Cannot create a {GetType()} with {mapHeight} map height");
             MapHeight = mapHeight;
-
-            RegenerateGrid();
         }
-
-        // TODO: If we want, we can make the properties mutatable and regenerate the grid every time they mutate
-        private void RegenerateGrid()
-        {
-            TheGrid = new List<Rectangle>(MapWidth * MapHeight);
-            int width = (int )Math.Round(TileUnitWidth * Unit.Value);
-            int height = (int) Math.Round(TileUnitHeight * Unit.Value);
-            for(int i = 0; i < MapWidth; ++i)
-            {
-                for(int j = 0; j < MapHeight; ++j)
-                {
-                    Rectangle rectangle = new Rectangle(i * width, j * height, width, height);
-                    TheGrid.Add(rectangle);
-                }
-            }
-        }
-
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            foreach(Rectangle tile in TheGrid)
+            int width = (int) Math.Round(TileUnitWidth * Unit.Value);
+            int height = (int) Math.Round(TileUnitHeight * Unit.Value);
+            for(int i = 0; i < MapWidth; ++i)
             {
-                spriteBatch.DrawBorder(tile, 1, Color.Red);
+                spriteBatch.DrawLine(new DxVector2(width * i, 0), new DxVector2(width * i, MapHeight * height),
+                    Color.Red, 1, 0.9f);
+            }
+            for(int j = 0; j < MapHeight; ++j)
+            {
+                spriteBatch.DrawLine(new DxVector2(0, j * height), new DxVector2(MapWidth * width, j * height), Color.Red, 1,
+                    0.9f);
             }
         }
     }

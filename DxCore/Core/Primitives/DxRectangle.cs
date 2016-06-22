@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
 namespace DxCore.Core.Primitives
@@ -98,7 +97,19 @@ namespace DxCore.Core.Primitives
 
         public Rectangle ToRectangle()
         {
-            return new Rectangle((int) Math.Round(X), (int) Math.Round(Y), (int) Math.Round(Width), (int) Math.Round(Height));
+            return new Rectangle((int) Math.Round(X), (int) Math.Round(Y), (int) Math.Round(Width),
+                (int) Math.Round(Height));
+        }
+
+        public static implicit operator Rectangle(DxRectangle rectangle)
+        {
+            return new Rectangle((int) Math.Round(rectangle.X), (int) Math.Round(rectangle.Y),
+                (int) Math.Round(rectangle.Width), (int) Math.Round(rectangle.Height));
+        }
+
+        public static implicit operator DxRectangle(Rectangle rectangle)
+        {
+            return new DxRectangle(rectangle);
         }
 
         public static DxRectangle FromRange(DxVector2 source, float radius)

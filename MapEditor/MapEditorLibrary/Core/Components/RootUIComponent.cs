@@ -2,10 +2,10 @@
 using DxCore.Core;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
+using MapEditorLibrary.Controls;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MapEditorLibrary.Core.Components
@@ -19,6 +19,7 @@ namespace MapEditorLibrary.Core.Components
             Validate.Hard.IsNotNullOrDefault(rootUi);
             DrawPriority = DrawPriority.MenuLayer;
             UI = rootUi;
+            UI.DataContext = new AssetManagerView();
         }
 
         public override void LoadContent()

@@ -26,15 +26,31 @@
         <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity="0.95">
             <TabControl >
                 <TabItem Header="Block">
-                    <DataGrid Name="blockData"></DataGrid>
+                    <ListBox Name="blockData" ItemsSource="{Binding Blocks}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                <Image Source="{Binding Tile}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </TabItem>
                 <TabItem Header="Platform">
-                    <DataGrid Name="platformData"></DataGrid>
+                    <ListBox Name="platformData" ItemsSource="{Binding Platforms}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <Image Source="{Binding Tile}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </TabItem>
             </TabControl>
             <StackPanel Orientation="Vertical">
-                <Button Content="Load" />
-                <Button Content="Delete" AllowDrop="True"/>
+                <Button Content="Load" Command="{Binding LoadCommand}" />
+                <Button Content="Delete" Command="{Binding DeleteCommand}"/>
             </StackPanel>
         </StackPanel>
         <!--</Canvas>-->

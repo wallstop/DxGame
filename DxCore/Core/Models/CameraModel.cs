@@ -37,6 +37,7 @@ namespace DxCore.Core.Models
             {
                 return;
             }
+
             double scalar = magnitude / (DxGame.Instance.TargetFps / 8);
             scalar = Math.Max(scalar, MIN_SPEED);
             DxVector2 adjustment = displacement.UnitVector * scalar * gameTime.ScaleFactor;

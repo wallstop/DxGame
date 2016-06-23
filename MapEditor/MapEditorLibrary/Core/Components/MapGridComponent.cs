@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
@@ -20,7 +16,12 @@ namespace MapEditorLibrary.Core.Components
         public int MapWidth { get; }
         public int MapHeight { get; }
 
+        public Color Color { get; set; } = Color.White;
+
         public DxUnit Unit { get; }
+
+        private int TileWidth => (int) Math.Round(TileUnitWidth * Unit.Value);
+        private int TileHeight => (int) Math.Round(TileUnitHeight * Unit.Value);
 
         public MapGridComponent(DxUnit unit, int tileUnitWidth, int tileUnitHeight, int mapWidth, int mapHeight)
         {
@@ -28,7 +29,8 @@ namespace MapEditorLibrary.Core.Components
             Unit = unit;
             Validate.Hard.IsPositive(tileUnitWidth, () => $"Cannot create a {GetType()} with {tileUnitWidth} unit width");
             TileUnitWidth = tileUnitWidth;
-            Validate.Hard.IsPositive(tileUnitHeight, () => $"Cannot create a {GetType()} with {tileUnitHeight} unit height");
+            Validate.Hard.IsPositive(tileUnitHeight,
+                () => $"Cannot create a {GetType()} with {tileUnitHeight} unit height");
             TileUnitHeight = tileUnitHeight;
             Validate.Hard.IsPositive(mapWidth, () => $"Cannot create a {GetType()} with {mapWidth} map width");
             MapWidth = mapWidth;
@@ -36,19 +38,29 @@ namespace MapEditorLibrary.Core.Components
             MapHeight = mapHeight;
         }
 
+        public Rectangle TileForPoint(Point point)
+        {
+            // Probably works?
+            Validate.Hard.IsInClosedInterval(point.X, 0, MapWidth * TileWidth);
+            Validate.Hard.IsInClosedInterval(point.Y, 0, MapHeight * TileHeight);
+
+            int x = point.X / TileWidth * TileWidth;
+            int y = point.Y / TileHeight * TileHeight;
+
+            return new Rectangle(x, y, TileWidth, TileHeight);
+        }
+
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            int width = (int) Math.Round(TileUnitWidth * Unit.Value);
-            int height = (int) Math.Round(TileUnitHeight * Unit.Value);
             for(int i = 0; i < MapWidth; ++i)
             {
-                spriteBatch.DrawLine(new DxVector2(width * i, 0), new DxVector2(width * i, MapHeight * height),
-                    Color.Red, 1, 0.9f);
+                spriteBatch.DrawLine(new DxVector2(TileWidth * i, 0),
+                    new DxVector2(TileWidth * i, MapHeight * TileHeight), Color, 1, 0.9f);
             }
             for(int j = 0; j < MapHeight; ++j)
             {
-                spriteBatch.DrawLine(new DxVector2(0, j * height), new DxVector2(MapWidth * width, j * height), Color.Red, 1,
-                    0.9f);
+                spriteBatch.DrawLine(new DxVector2(0, j * TileHeight),
+                    new DxVector2(MapWidth * TileWidth, j * TileHeight), Color, 1, 0.9f);
             }
         }
     }

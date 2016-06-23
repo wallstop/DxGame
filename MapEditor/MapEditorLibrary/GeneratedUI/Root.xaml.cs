@@ -32,11 +32,11 @@ namespace EmptyKeys.UserInterface.Generated {
         
         private TabControl e_2;
         
-        private StackPanel e_5;
+        private StackPanel e_9;
         
-        private Button e_6;
+        private Button e_10;
         
-        private Button e_7;
+        private Button e_11;
         
         public Root() : 
                 base() {
@@ -89,21 +89,25 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_1.Children.Add(this.e_2);
             this.e_2.Name = "e_2";
             this.e_2.ItemsSource = Get_e_2_Items();
-            // e_5 element
-            this.e_5 = new StackPanel();
-            this.e_1.Children.Add(this.e_5);
-            this.e_5.Name = "e_5";
-            this.e_5.Orientation = Orientation.Vertical;
-            // e_6 element
-            this.e_6 = new Button();
-            this.e_5.Children.Add(this.e_6);
-            this.e_6.Name = "e_6";
-            this.e_6.Content = "Load";
-            // e_7 element
-            this.e_7 = new Button();
-            this.e_5.Children.Add(this.e_7);
-            this.e_7.Name = "e_7";
-            this.e_7.Content = "Delete";
+            // e_9 element
+            this.e_9 = new StackPanel();
+            this.e_1.Children.Add(this.e_9);
+            this.e_9.Name = "e_9";
+            this.e_9.Orientation = Orientation.Vertical;
+            // e_10 element
+            this.e_10 = new Button();
+            this.e_9.Children.Add(this.e_10);
+            this.e_10.Name = "e_10";
+            this.e_10.Content = "Load";
+            Binding binding_e_10_Command = new Binding("LoadCommand");
+            this.e_10.SetBinding(Button.CommandProperty, binding_e_10_Command);
+            // e_11 element
+            this.e_11 = new Button();
+            this.e_9.Children.Add(this.e_11);
+            this.e_11.Name = "e_11";
+            this.e_11.Content = "Delete";
+            Binding binding_e_11_Command = new Binding("DeleteCommand");
+            this.e_11.SetBinding(Button.CommandProperty, binding_e_11_Command);
         }
         
         private static System.Collections.ObjectModel.ObservableCollection<object> Get_e_2_Items() {
@@ -113,20 +117,56 @@ namespace EmptyKeys.UserInterface.Generated {
             e_3.Name = "e_3";
             e_3.Header = "Block";
             // blockData element
-            DataGrid blockData = new DataGrid();
+            ListBox blockData = new ListBox();
             e_3.Content = blockData;
             blockData.Name = "blockData";
+            Func<UIElement, UIElement> blockData_dtFunc = blockData_dtMethod;
+            blockData.ItemTemplate = new DataTemplate(blockData_dtFunc);
+            Binding binding_blockData_ItemsSource = new Binding("Blocks");
+            blockData.SetBinding(ListBox.ItemsSourceProperty, binding_blockData_ItemsSource);
             items.Add(e_3);
-            // e_4 element
-            TabItem e_4 = new TabItem();
-            e_4.Name = "e_4";
-            e_4.Header = "Platform";
+            // e_6 element
+            TabItem e_6 = new TabItem();
+            e_6.Name = "e_6";
+            e_6.Header = "Platform";
             // platformData element
-            DataGrid platformData = new DataGrid();
-            e_4.Content = platformData;
+            ListBox platformData = new ListBox();
+            e_6.Content = platformData;
             platformData.Name = "platformData";
-            items.Add(e_4);
+            Func<UIElement, UIElement> platformData_dtFunc = platformData_dtMethod;
+            platformData.ItemTemplate = new DataTemplate(platformData_dtFunc);
+            Binding binding_platformData_ItemsSource = new Binding("Platforms");
+            platformData.SetBinding(ListBox.ItemsSourceProperty, binding_platformData_ItemsSource);
+            items.Add(e_6);
             return items;
+        }
+        
+        private static UIElement blockData_dtMethod(UIElement parent) {
+            // e_4 element
+            StackPanel e_4 = new StackPanel();
+            e_4.Parent = parent;
+            e_4.Name = "e_4";
+            // e_5 element
+            Image e_5 = new Image();
+            e_4.Children.Add(e_5);
+            e_5.Name = "e_5";
+            Binding binding_e_5_Source = new Binding("Tile");
+            e_5.SetBinding(Image.SourceProperty, binding_e_5_Source);
+            return e_4;
+        }
+        
+        private static UIElement platformData_dtMethod(UIElement parent) {
+            // e_7 element
+            StackPanel e_7 = new StackPanel();
+            e_7.Parent = parent;
+            e_7.Name = "e_7";
+            // e_8 element
+            Image e_8 = new Image();
+            e_7.Children.Add(e_8);
+            e_8.Name = "e_8";
+            Binding binding_e_8_Source = new Binding("Tile");
+            e_8.SetBinding(Image.SourceProperty, binding_e_8_Source);
+            return e_7;
         }
     }
 }

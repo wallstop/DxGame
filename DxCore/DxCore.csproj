@@ -149,6 +149,7 @@
     <Compile Include="Core\Components\Network\AbstractNetworkClient.cs" />
     <Compile Include="Core\Components\Network\AbstractNetworkServer.cs" />
     <Compile Include="Core\Components\Network\NetworkClientConfig.cs" />
+    <Compile Include="Core\Input\IMeasuredInputEvent.cs" />
     <Compile Include="Core\Network\Port.cs" />
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
     <Compile Include="Core\Components\Utils\RectangleAreaComparer.cs" />
@@ -178,11 +179,10 @@
     <Compile Include="Core\ICreatable.cs" />
     <Compile Include="Core\IDrawable.cs" />
     <Compile Include="Core\IIdentifiable.cs" />
-    <Compile Include="Core\Input\Input.cs" />
-    <Compile Include="Core\Input\InputEvent.cs" />
+    <Compile Include="Core\Input\IInputEvent.cs" />
     <Compile Include="Core\Input\InputHandler.cs" />
     <Compile Include="Core\Input\KeyboardEvent.cs" />
-    <Compile Include="Core\Input\MouseButtons.cs" />
+    <Compile Include="Core\Input\MouseButton.cs" />
     <Compile Include="Core\Input\MouseEvent.cs" />
     <Compile Include="Core\IPersistable.cs" />
     <Compile Include="Core\IProcessable.cs" />

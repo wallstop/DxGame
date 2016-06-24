@@ -18,5 +18,10 @@ namespace DxCore.Core.Models
         {
             // No-op in base
         }
+
+        public override void Create()
+        {
+            DxGame.Instance.AttachModel(this);
+        }
     }
 }

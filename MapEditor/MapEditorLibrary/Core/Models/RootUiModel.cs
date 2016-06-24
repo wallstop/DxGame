@@ -1,4 +1,9 @@
-﻿using DxCore;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DxCore;
 using DxCore.Core;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
@@ -7,14 +12,15 @@ using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
 using MapEditorLibrary.Controls;
 using Microsoft.Xna.Framework.Graphics;
+using Model = DxCore.Core.Models.Model;
 
-namespace MapEditorLibrary.Core.Components
+namespace MapEditorLibrary.Core.Models
 {
-    public class RootUiComponent : DrawableComponent
+    public class RootUiModel : Model
     {
-        private Root UI { get; }
+        public Root UI { get; }
 
-        public RootUiComponent(Root rootUi)
+        public RootUiModel(Root rootUi)
         {
             Validate.Hard.IsNotNullOrDefault(rootUi);
             DrawPriority = DrawPriority.MenuLayer;
@@ -26,6 +32,8 @@ namespace MapEditorLibrary.Core.Components
         {
             SpriteFont font = DxGame.Instance.Content.Load<SpriteFont>("Segoe_UI_15_Bold");
             FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
+
+            // I guess we bind controls here?
         }
 
         protected override void Update(DxGameTime gameTime)

@@ -28,7 +28,7 @@ namespace DxCore.Core.Components.Developer
         protected override void Update(DxGameTime gameTime)
         {
             InputModel inputModel = DxGame.Instance.Model<InputModel>();
-            if (inputModel?.FinishedEvents?.Any(inputEvent => inputEvent.Key == DEV_KEY) ?? false)
+            if (inputModel?.InputHandler.FinishedKeyboardEvents?.Any(inputEvent => inputEvent.Source == DEV_KEY) ?? false)
             {
                 DeveloperMode = DeveloperMode.Rotate();
             }

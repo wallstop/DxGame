@@ -16,16 +16,14 @@ namespace Babel.Main
         protected override void Initialize()
         {
             MainMenu playMenu = new MainMenu();
-            AddAndInitializeComponent(playMenu);
+            playMenu.Create();
 
             FrameModel frameModel = new FrameModel();
-            AttachModel(frameModel);
+            frameModel.Create();
 
             NetworkModel netModel = new NetworkModel();
-            AttachModel(netModel);
-
-            CameraModel cameraModel = new CameraModel();
-            AttachModel(cameraModel);
+            netModel.Create();
+            
             base.Initialize();
         }
     }

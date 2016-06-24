@@ -18,6 +18,7 @@ namespace DxCore.Core.Primitives
     [DataContract]
     public struct DxVector2 : IEquatable<DxVector2>, IEquatable<Vector2>, IComparable<DxVector2>
     {
+        private static readonly DxVector2 EmptyVector2 = new DxVector2();
         [DataMember] public float X;
         [DataMember] public float Y;
         public float MagnitudeSquared => X * X + Y * Y;
@@ -25,8 +26,9 @@ namespace DxCore.Core.Primitives
         public DxRadian Radian => new DxRadian(this);
         public DxDegree Degree => new DxDegree(this);
         public Vector2 Vector2 => new Vector2((int) Math.Round(X), (int) Math.Round(Y));
+        public DxVector2 Inverse => new DxVector2(-X, -Y);
 
-        public static DxVector2 EmptyVector => new DxVector2();
+        public static DxVector2 EmptyVector => EmptyVector2;
 
         public DxVector2 UnitVector
         {
@@ -138,6 +140,11 @@ namespace DxCore.Core.Primitives
         public static implicit operator DxVector2(Vector2 vector)
         {
             return new DxVector2(vector);
+        }
+
+        public static implicit operator DxVector2(Point other)
+        {
+            return new DxVector2(other);
         }
 
         public static Orientation Orientation(DxVector2 point1, DxVector2 point2, DxVector2 point3)

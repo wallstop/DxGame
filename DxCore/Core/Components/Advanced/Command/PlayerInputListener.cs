@@ -89,7 +89,7 @@ namespace DxCore.Core.Components.Advanced.Command
         public static List<KeyboardEvent> RipEventsFromLocalInputModel()
         {
             InputModel inputModel = DxGame.Instance.Model<InputModel>();
-            List<KeyboardEvent> inputEvents = inputModel.Events.ToList();
+            List<KeyboardEvent> inputEvents = inputModel.InputHandler.CurrentKeyboardEvents.ToList();
             return inputEvents;
         }
 
@@ -109,7 +109,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         private static bool CheckForMoveLeft(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Left))
+            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Left))
             {
                 commandment = Commandment.MoveLeft;
                 return true;
@@ -119,7 +119,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         private static bool CheckForMoveRight(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Right))
+            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Right))
             {
                 commandment = Commandment.MoveRight;
                 return true;
@@ -129,7 +129,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         private static bool CheckForMoveUp(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Jump))
+            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Jump))
             {
                 commandment = Commandment.MoveUp;
                 return true;
@@ -139,7 +139,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         private static bool CheckForMoveDown(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if(inputEvents.Any(keyEvent => keyEvent.Key == DxGame.Instance.Controls.Down && keyEvent.HeldDown))
+            if(inputEvents.Any(keyEvent => keyEvent.Source == DxGame.Instance.Controls.Down && keyEvent.HeldDown))
             {
                 commandment = Commandment.MoveDown;
                 return true;
@@ -149,7 +149,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         private static bool CheckForAttack(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Attack))
+            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Attack))
             {
                 commandment = Commandment.Attack;
                 return true;
@@ -159,7 +159,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         private static bool CheckForAbility1(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability1))
+            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Ability1))
             {
                 commandment = Commandment.Ability1;
                 return true;
@@ -169,7 +169,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         private static bool CheckForAbility2(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability2))
+            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Ability2))
             {
                 commandment = Commandment.Ability2;
                 return true;
@@ -179,7 +179,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         private static bool CheckForAbility3(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability3))
+            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Ability3))
             {
                 commandment = Commandment.Ability3;
                 return true;
@@ -189,7 +189,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         private static bool CheckForAbility4(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Ability4))
+            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Ability4))
             {
                 commandment = Commandment.Ability4;
                 return true;
@@ -199,7 +199,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         private static bool CheckForMovement(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Movement))
+            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Movement))
             {
                 commandment = Commandment.Movement;
                 return true;
@@ -209,7 +209,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         private static bool CheckForInteraction(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if(inputEvents.Any(inputEvent => inputEvent.Key == DxGame.Instance.Controls.Interact))
+            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Interact))
             {
                 commandment = Commandment.InteractWithEnvironment;
                 return true;

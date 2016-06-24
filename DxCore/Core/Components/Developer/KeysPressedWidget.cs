@@ -35,13 +35,13 @@ namespace DxCore.Core.Components.Developer
         protected override void Update(DxGameTime gameTime)
         {
             InputModel inputModel = DxGame.Instance.Model<InputModel>();
-            currentEvents_ = inputModel.Events.ToList();
+            currentEvents_ = inputModel.InputHandler.CurrentKeyboardEvents.ToList();
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             string keyText =
-                currentEvents_.Select(keyboardEvent => keyboardEvent.Key)
+                currentEvents_.Select(keyboardEvent => keyboardEvent.Source)
                     .Select(key => key.ToString())
                     .Aggregate("", (i, j) => i + " " + j);
 

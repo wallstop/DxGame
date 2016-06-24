@@ -38,7 +38,7 @@ namespace DxCore
 
     public abstract class DxGame : Game
     {
-        private static readonly Object GameLock = new Object();
+        private static readonly object GameLock = new object();
 
         protected static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
@@ -46,7 +46,7 @@ namespace DxCore
 
         protected MessageHandler MessageHandler { get; }
 
-        protected static DxGame singleton_ = null;
+        protected static DxGame singleton_;
 
         public Scale Scale { get; private set; } = Scale.Medium;
 
@@ -62,7 +62,7 @@ namespace DxCore
         public GameElementCollection NewGameElements { get; } = new GameElementCollection();
         public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
 
-        public GameId GameGuid { get; protected set; }  
+        public GameId GameGuid { get; protected set; }
 
         public DxGameTime CurrentTime { get; protected set; } = new DxGameTime();
 
@@ -90,23 +90,21 @@ namespace DxCore
                     return new DxRectangle(Screen);
                 }
 
-                MapModel mapModel = Model<MapModel>();
-                if(ReferenceEquals(mapModel, null))
-                {
-                    return new DxRectangle(Screen);
-                }
-
-                // TODO: Pump out exclusively to camera model
-
                 float x = Screen.Width / 2.0f - cameraModel.Position.X;
-                x = MathHelper.Clamp(x,
-                    Math.Max(float.MinValue, -(mapModel.MapBounds.X + mapModel.MapBounds.Width - Screen.Width)),
-                    mapModel.MapBounds.X);
-
                 float y = Screen.Height / 2.0f - cameraModel.Position.Y;
-                y = MathHelper.Clamp(y,
-                    Math.Max(float.MinValue, -(mapModel.MapBounds.Y + mapModel.MapBounds.Height - Screen.Height)),
-                    mapModel.MapBounds.Y);
+
+                // Attempt to bind by map rules
+                MapModel mapModel = Model<MapModel>();
+                if(!ReferenceEquals(mapModel, null))
+                {
+                    x = MathHelper.Clamp(x,
+                        Math.Max(float.MinValue, -(mapModel.MapBounds.X + mapModel.MapBounds.Width - Screen.Width)),
+                        mapModel.MapBounds.X);
+
+                    y = MathHelper.Clamp(y,
+                        Math.Max(float.MinValue, -(mapModel.MapBounds.Y + mapModel.MapBounds.Height - Screen.Height)),
+                        mapModel.MapBounds.Y);
+                }
 
                 return new DxRectangle(x, y, Screen.Width, Screen.Height);
             }
@@ -121,7 +119,8 @@ namespace DxCore
         {
             lock(GameLock)
             {
-                Validate.Hard.IsNull(singleton_, "There can only be one instance of the game running in a single process");
+                Validate.Hard.IsNull(singleton_,
+                    "There can only be one instance of the game running in a single process");
                 singleton_ = this;
             }
 
@@ -192,7 +191,7 @@ namespace DxCore
 
         public void ProcessTypedMessage<T>(T message) where T : Message
         {
-            GlobalMessageBus.TypedBroadcast<T>(message);
+            GlobalMessageBus.TypedBroadcast(message);
         }
 
         public T Model<T>() where T : Model
@@ -237,7 +236,6 @@ namespace DxCore
             if(entityCreated.TryGetCreatedEntity(out createdGameObject))
             {
                 AddAndInitializeGameObject(createdGameObject);
-                return;
             }
         }
 
@@ -254,7 +252,6 @@ namespace DxCore
             if(entityRemoved.TryGetRemovedEntity(out removedGameObject))
             {
                 RemoveGameObject(removedGameObject);
-                return;
             }
         }
 
@@ -294,7 +291,10 @@ namespace DxCore
             AddAndInitializeComponent(SpriteBatchEnder.Instance);
 
             InputModel inputModel = new InputModel();
-            AttachModel(inputModel);
+            inputModel.Create();
+
+            CameraModel cameraModel = new CameraModel();
+            cameraModel.Create();
 
             base.Initialize();
         }
@@ -380,7 +380,7 @@ namespace DxCore
             {
                 // Chill out dawg, let's hang out here
             }
-            
+
             TimeSpan elapsed = MathUtils.Min(actualElapsed, TargetElapsedTime);
             TimeSpan currentTime = compensatedGameTime_ + elapsed;
             if(TargetElapsedTime.TotalMilliseconds < Math.Abs(timeSkewMilliseconds_))
@@ -419,7 +419,7 @@ namespace DxCore
             NetworkModel networkModel = Model<NetworkModel>();
             InputModel inputModel = Model<InputModel>();
             inputModel?.Process(gameTime);
-            
+
             networkModel?.ReceiveData(gameTime);
             networkModel?.Process(gameTime);
 

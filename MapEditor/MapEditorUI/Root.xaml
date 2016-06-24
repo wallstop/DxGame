@@ -30,7 +30,7 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel>
-                                <Image Source="{Binding Tile}"/>
+                                <Image Source="{Binding Tile}" Width="50" Height="50"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

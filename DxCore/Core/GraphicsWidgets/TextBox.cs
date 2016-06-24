@@ -104,10 +104,10 @@ namespace DxCore.Core.GraphicsWidgets
             {
                 var inputModel = DxGame.Instance.Model<InputModel>();
                 IEnumerable<KeyboardEvent> finishedKeys =
-                    inputModel.FinishedEvents.Where(key => ValidKeys.Contains(key.Key));
+                    inputModel.InputHandler.FinishedKeyboardEvents.Where(key => ValidKeys.Contains(key.Source));
                 HandleKeyboardEvents(finishedKeys);
                 IEnumerable<KeyboardEvent> longPressedKeys =
-                    inputModel.Events.Where(key => key.HeldDown && ValidKeys.Contains(key.Key));
+                    inputModel.InputHandler.CurrentKeyboardEvents.Where(key => key.HeldDown && ValidKeys.Contains(key.Source));
                 HandleKeyboardEvents(longPressedKeys);
             }
 
@@ -146,7 +146,7 @@ namespace DxCore.Core.GraphicsWidgets
             foreach(KeyboardEvent keyEvent in events)
             {
                 var minCursorPos = Math.Max(0, CursorPosition - 1);
-                switch(keyEvent.Key)
+                switch(keyEvent.Source)
                 {
                     case Keys.Left:
                         CursorPosition = minCursorPos;
@@ -163,11 +163,11 @@ namespace DxCore.Core.GraphicsWidgets
                         postCursor = postCursor.Substring(Math.Min(1, postCursor.Length));
                         break;
                     default:
-                        if(KeyboardEvent.KeyCharacters.ContainsKey(keyEvent.Key))
+                        if(KeyboardEvent.KeyCharacters.ContainsKey(keyEvent.Source))
                         {
                             // If this is slow, use a StringBuilder (don't care enough right now)
                             // The length of the word has increased - ok to do unchecked ++CursorPosition
-                            typedText += KeyboardEvent.KeyCharacters[keyEvent.Key];
+                            typedText += KeyboardEvent.KeyCharacters[keyEvent.Source];
                             ++CursorPosition;
                         }
                         break;

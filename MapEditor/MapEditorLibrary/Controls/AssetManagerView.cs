@@ -64,7 +64,9 @@ namespace MapEditorLibrary.Controls
                     {
                         using(Stream fileStream = loadAssetDialog.OpenFile())
                         {
+
                             Texture2D imageAsTexture = Texture2D.FromStream(DxGame.Instance.GraphicsDevice, fileStream);
+
                             BitmapImage tileImage = new BitmapImage {Texture = new MonoGameTexture(imageAsTexture)};
 
                             Blocks.Add(new TileModel(tileImage));

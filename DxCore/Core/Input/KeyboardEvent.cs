@@ -14,9 +14,9 @@ namespace DxCore.Core.Input
 
     [Serializable]
     [DataContract]
-    public class KeyboardEvent : InputEvent
+    public class KeyboardEvent : IInputEvent<Keys>
     {
-        private static readonly TimeSpan HELD_DOWN_TRHESHOLD = TimeSpan.FromSeconds(1.0f / 2.0f);
+        private static readonly TimeSpan HeldDownThreshold = TimeSpan.FromSeconds(1.0f / 2.0f);
 
         public static readonly IReadOnlyDictionary<Keys, char> KeyCharacters = new Dictionary<Keys, char>
         {
@@ -103,14 +103,13 @@ namespace DxCore.Core.Input
         public static Keys[] AlphaNumericKeys => AlphaKeys.Concat(NumericKeys).ToArray();
 
         [DataMember]
-        public Keys Key { get; set; }
-
-        [DataMember]
         public TimeSpan Duration { get; set; }
 
         [DataMember]
         public TimeSpan StartTime { get; set; }
 
-        public bool HeldDown => Duration >= HELD_DOWN_TRHESHOLD;
+        public bool HeldDown => Duration >= HeldDownThreshold;
+        public int RepeatCount { get; set; } = 1;
+        public Keys Source { get; set; }
     }
 }

@@ -150,6 +150,8 @@ namespace EmptyKeys.UserInterface.Generated {
             Image e_5 = new Image();
             e_4.Children.Add(e_5);
             e_5.Name = "e_5";
+            e_5.Height = 50F;
+            e_5.Width = 50F;
             Binding binding_e_5_Source = new Binding("Tile");
             e_5.SetBinding(Image.SourceProperty, binding_e_5_Source);
             return e_4;

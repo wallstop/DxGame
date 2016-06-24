@@ -9,27 +9,66 @@ namespace DxCore.Core.Models
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
+        private Func<DxVector2> NoOpTarget => () => Position;
+
         private const float MIN_SPEED = 1.5f;
 
         private const float IGNORE_THRESHOLD = 5f;
 
         public DxVector2 Position { get; private set; }
 
+        private Func<DxVector2> Target { get; set; }
+
+        public CameraModel()
+        {
+            TrackActivePlayer();
+        }
+
+        public void TrackActivePlayer()
+        {
+            Target = () =>
+            {
+                PlayerModel playerModel = DxGame.Instance.Model<PlayerModel>();
+                if(ReferenceEquals(playerModel, null))
+                {
+                    return Position;
+                }
+
+                Player activePlayer = playerModel.ActivePlayer;
+                if(ReferenceEquals(activePlayer, null))
+                {
+                    return Position;
+                }
+
+                DxVector2 target = activePlayer.Position.Center;
+                return target;
+            };
+        }
+
+        public void TrackPlayer(Player player)
+        {
+            Target = () => player.Position.Center;
+        }
+
+        public void MoveTo(DxVector2 target)
+        {
+            Target = () => target;
+        }
+
+        public void MoveBy(DxVector2 translation)
+        {
+            Position += translation;
+        }
+
+        public void SnapTo(DxVector2 target)
+        {
+            Position = target;
+            Target = NoOpTarget;
+        }
+
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            PlayerModel playerModel = DxGame.Instance.Model<PlayerModel>();
-            if(ReferenceEquals(playerModel, null))
-            {
-                return;
-            }
-
-            Player activePlayer = playerModel.ActivePlayer;
-            if(ReferenceEquals(activePlayer, null))
-            {
-                return;
-            }
-
-            DxVector2 target = activePlayer.Position.Center;
+            DxVector2 target = Target.Invoke();
 
             DxVector2 displacement = target - Position;
             float magnitude = displacement.Magnitude;

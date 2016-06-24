@@ -43,13 +43,13 @@ namespace DxCore.Core.Components.Developer
 
             EntityProperties entityProperties =
                 activePlayer.Object.ComponentOfType<EntityPropertiesComponent>().EntityProperties;
-            foreach(KeyboardEvent keyboardEvent in input.FinishedEvents)
+            foreach(KeyboardEvent keyboardEvent in input.InputHandler.FinishedKeyboardEvents)
             {
-                if(keyboardEvent.Key == HEALTH_DOWN)
+                if(keyboardEvent.Source == HEALTH_DOWN)
                 {
                     entityProperties.Health.BaseValue -= HEALTH_SCALE;
                 }
-                else if(keyboardEvent.Key == HEALTH_UP)
+                else if(keyboardEvent.Source == HEALTH_UP)
                 {
                     entityProperties.Health.BaseValue += HEALTH_SCALE;
                 }

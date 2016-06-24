@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DxCore;
 using DxCore.Core;
-using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils.Validate;
 using EmptyKeys.UserInterface;
+using EmptyKeys.UserInterface.Controls;
+using EmptyKeys.UserInterface.Controls.Primitives;
 using EmptyKeys.UserInterface.Generated;
+using EmptyKeys.UserInterface.Input;
 using MapEditorLibrary.Controls;
 using Microsoft.Xna.Framework.Graphics;
 using Model = DxCore.Core.Models.Model;
@@ -20,12 +18,15 @@ namespace MapEditorLibrary.Core.Models
     {
         public Root UI { get; }
 
+        private AssetManagerView AssetManagerView { get; }
+
         public RootUiModel(Root rootUi)
         {
             Validate.Hard.IsNotNullOrDefault(rootUi);
             DrawPriority = DrawPriority.MenuLayer;
             UI = rootUi;
-            UI.DataContext = new AssetManagerView();
+            AssetManagerView = new AssetManagerView();
+            UI.DataContext = AssetManagerView;
         }
 
         public override void LoadContent()
@@ -34,6 +35,9 @@ namespace MapEditorLibrary.Core.Models
             FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
 
             // I guess we bind controls here?
+    
+            // TODO: We don't really want drag-drop. What we really want is double click to select
+            
         }
 
         protected override void Update(DxGameTime gameTime)

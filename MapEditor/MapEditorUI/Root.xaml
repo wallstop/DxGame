@@ -26,23 +26,23 @@
         <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity="0.95">
             <TabControl >
                 <TabItem Header="Block">
-                    <ListBox Name="blockData" ItemsSource="{Binding Blocks}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                <Image Source="{Binding Tile}" Width="50" Height="50"/>
-                                </StackPanel>
+                    <ListBox Name="blockData" ItemsSource="{Binding Blocks}" ek:DragDrop.IsDragSource="True" ek:DragDrop.IsDropTarget="True">
+                        <ListBox.ItemTemplate >
+                            <DataTemplate >
+
+                                <Image Source="{Binding Tile}" MaxHeight="50" MinHeight="50" MaxWidth="50" MinWidth="50"/>
                             </DataTemplate>
+                            
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </TabItem>
                 <TabItem Header="Platform">
-                    <ListBox Name="platformData" ItemsSource="{Binding Platforms}">
+                    <ListBox Name="platformData" ItemsSource="{Binding Platforms}" ek:DragDrop.IsDragSource="True" ek:DragDrop.IsDropTarget="True">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel>
+                       
                                     <Image Source="{Binding Tile}" />
-                                </StackPanel>
+                             
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>

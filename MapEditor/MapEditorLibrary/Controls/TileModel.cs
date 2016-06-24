@@ -1,6 +1,8 @@
 ﻿using DxCore.Core.Utils.Validate;
+using EmptyKeys.UserInterface.Media;
 using EmptyKeys.UserInterface.Media.Imaging;
 using EmptyKeys.UserInterface.Mvvm;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace MapEditorLibrary.Controls
 {
@@ -8,10 +10,13 @@ namespace MapEditorLibrary.Controls
     {
         public BitmapImage Tile { get; }
 
-        public TileModel(BitmapImage tile)
+        public Texture2D Texture { get; }
+
+        public TileModel(Texture2D texture)
         {
-            Validate.Hard.IsNotNull(tile);
-            Tile = tile;
+            Validate.Hard.IsNotNull(texture);
+            Texture = texture;
+            Tile = new BitmapImage {Texture = new MonoGameTexture(texture)};
         }
     }
 }

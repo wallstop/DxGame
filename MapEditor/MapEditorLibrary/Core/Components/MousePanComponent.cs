@@ -24,9 +24,8 @@ namespace MapEditorLibrary.Core.Components
         {
             bool previouslyEnabled = Enabled;
             Enabled =
-                DxGame.Instance.Model<InputModel>()?
-                    .InputHandler?.CurrentMouseEvents?.Any(mouseEvent => mouseEvent.Source == MouseButton.Middle) ??
-                false;
+                DxGame.Instance.Model<InputModel>()
+                    .InputHandler.CurrentMouseEvents.Any(mouseEvent => mouseEvent.Source == MouseButton.Middle);
             if(Enabled && !previouslyEnabled)
             {
                 LastPosition = Mouse.GetState().Position;

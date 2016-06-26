@@ -24,7 +24,7 @@ namespace DxCore.Core.Primitives
 
         public DxVector2 Dimensions => new DxVector2(Width, Height);
 
-        public Point Center => new Point((int) ((X + Width) / 2), (int) ((Y + Height) / 2));
+        public DxVector2 Center => new DxVector2((X + Width) / 2,(Y + Height) / 2);
         /* 
             Cartesian quadrants of this rectangle:
             https://en.wikipedia.org/wiki/Quadrant_%28plane_geometry%29

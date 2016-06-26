@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DXGame.Core;
 
 namespace DxCore.Core.Messaging
 {
@@ -19,7 +18,7 @@ namespace DxCore.Core.Messaging
 
         [DataMember]
         public GameId GameId { get; private set; }
-        
+
         public static Message EmptyMessage { get; set; } = new Message(TimeSpan.Zero, GameId.Empty);
 
         protected Message() : this(DxGame.Instance.CurrentTime.TotalGameTime, DxGame.Instance.GameGuid) {}
@@ -32,7 +31,7 @@ namespace DxCore.Core.Messaging
 
         public static void EmitTyped<T>(T message) where T : Message
         {
-            DxGame.Instance.ProcessTypedMessage<T>(message);
+            DxGame.Instance.ProcessTypedMessage(message);
         }
 
         public void EmitUntyped()

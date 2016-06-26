@@ -18,7 +18,6 @@ namespace DxCore.Core.Primitives
     [DataContract]
     public struct DxVector2 : IEquatable<DxVector2>, IEquatable<Vector2>, IComparable<DxVector2>
     {
-        private static readonly DxVector2 EmptyVector2 = new DxVector2();
         [DataMember] public float X;
         [DataMember] public float Y;
         public float MagnitudeSquared => X * X + Y * Y;
@@ -28,7 +27,7 @@ namespace DxCore.Core.Primitives
         public Vector2 Vector2 => new Vector2((int) Math.Round(X), (int) Math.Round(Y));
         public DxVector2 Inverse => new DxVector2(-X, -Y);
 
-        public static DxVector2 EmptyVector => EmptyVector2;
+        public static DxVector2 EmptyVector { get; } = new DxVector2();
 
         public DxVector2 UnitVector
         {
@@ -147,9 +146,15 @@ namespace DxCore.Core.Primitives
             return new DxVector2(other);
         }
 
+        public static implicit operator Point(DxVector2 vector)
+        {
+            return new Point((int) Math.Round(vector.X), (int) Math.Round(vector.Y));
+        }
+
         public DxVector2 ClampTo(DxRectangle shape)
         {
-            return new DxVector2(MathHelper.Clamp(X, shape.X, shape.X + shape.Width), MathHelper.Clamp(Y, shape.Y, shape.Y + shape.Height));
+            return new DxVector2(MathHelper.Clamp(X, shape.X, shape.X + shape.Width),
+                MathHelper.Clamp(Y, shape.Y, shape.Y + shape.Height));
         }
 
         public static Orientation Orientation(DxVector2 point1, DxVector2 point2, DxVector2 point3)
@@ -200,7 +205,6 @@ namespace DxCore.Core.Primitives
         {
             return Objects.HashCode(X, Y);
         }
-
 
         public override string ToString()
         {

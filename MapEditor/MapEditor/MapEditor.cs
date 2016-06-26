@@ -61,8 +61,8 @@ namespace MapEditor
             // TODO: Clean up init
 
             base.Initialize();
-            GameObject uiRoot = GameObject.From(new RootUiModel(new Root()));
-            uiRoot.Create();
+            RootUiModel rootUiModel = new RootUiModel(new Root());
+            rootUiModel.Create();
 
             MapGridComponent mapGrid = new MapGridComponent(new DxUnit(3), 15, 15, 100, 100);
             GameObject mapGridObject = GameObject.From(mapGrid);
@@ -70,6 +70,10 @@ namespace MapEditor
 
             GameObject mousePanner = GameObject.From(new MousePanComponent());
             mousePanner.Create();
+
+            MapCreatorComponent mapCreator = new MapCreatorComponent(mapGrid);
+            mapCreator.Create();
+            mapGridObject.AttachComponent(mapCreator);
 
             DeveloperModel devModel = new DeveloperModel();
             devModel.Create();

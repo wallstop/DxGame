@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DXGameTest</RootNamespace>
     <AssemblyName>DXGameTest</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -127,6 +127,7 @@
     <Compile Include="Core\Property\PropertyMutation.cs" />
     <Compile Include="Core\Property\PropertyMutatorComparer.cs" />
     <Compile Include="Core\SortedListTest.cs" />
+    <Compile Include="Core\TestBase.cs" />
     <Compile Include="Core\TestUtils.cs" />
     <Compile Include="Core\UniqueIdTest.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\CacheBuilderTest.cs" />
@@ -157,6 +158,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Babel\Babel.csproj">
+      <Project>{670a47c4-18df-4a35-a6e2-48c1af010c0b}</Project>
+      <Name>Babel</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\DxCore\DxCore.csproj">
       <Project>{be7e2670-e97a-456e-9279-25dcb3541d5d}</Project>
       <Name>DxCore</Name>
@@ -166,7 +171,6 @@
       <Name>DXGame</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

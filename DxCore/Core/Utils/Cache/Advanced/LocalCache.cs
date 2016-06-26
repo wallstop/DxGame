@@ -79,7 +79,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
             return (int) Math.Round(1.0 * Stopwatch.Frequency / new TimeSpan(ticks).TotalSeconds);
         }
 
-        public Optional<V> GetIfPresent(K key)
+        public bool GetIfPresent(K key, out V value)
         {
             try
             {
@@ -88,9 +88,10 @@ namespace DxCore.Core.Utils.Cache.Advanced
                 bool exists = cache_.TryGetValue(key, out lockedValue);
                 if(!exists)
                 {
-                    return Optional<V>.Empty;
+                    value = default(V);
+                    return false;
                 }
-                return UpdateOrExpireStampedAndLockedValueForRead(key, lockedValue);
+                return UpdateOrExpireStampedAndLockedValueForRead(key, lockedValue, out value);
             }
             finally
             {
@@ -98,7 +99,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
             }
         }
 
-        private Optional<V> UpdateOrExpireStampedAndLockedValueForRead(K key, StampedAndLockedValue<V> lockedValue)
+        private bool UpdateOrExpireStampedAndLockedValueForRead(K key, StampedAndLockedValue<V> lockedValue, out V outValue)
         {
             long nowTicks = NowTick;
 
@@ -108,7 +109,8 @@ namespace DxCore.Core.Utils.Cache.Advanced
                 if(lockedValue.IsExpired(nowTicks))
                 {
                     TryExpireEntries(nowTicks);
-                    return Optional<V>.Empty;
+                    outValue = default(V);
+                    return false;
                 }
 
                 /* Neat, new read, record it */
@@ -126,7 +128,8 @@ namespace DxCore.Core.Utils.Cache.Advanced
                         lockedValue.Lock.ExitWriteLock();
                     }
                 }
-                return value;
+                outValue = value;
+                return true;
             }
             finally
             {
@@ -152,9 +155,8 @@ namespace DxCore.Core.Utils.Cache.Advanced
                         return newLockedValue;
                     }, (keyArg, existingValue) =>
                     {
-                        Optional<V> maybeExistingValue = UpdateOrExpireStampedAndLockedValueForRead(keyArg,
-                            existingValue);
-                        if(!maybeExistingValue.HasValue)
+                        V outValue;
+                        if(!UpdateOrExpireStampedAndLockedValueForRead(keyArg, existingValue, out outValue))
                         {
                             StampedAndLockedValue<V> newLockedValue = NewStampedAndLockedValue(valueLoader);
                             RecordWrite(key, currentTicks);

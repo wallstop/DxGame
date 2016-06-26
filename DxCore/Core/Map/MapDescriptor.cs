@@ -20,7 +20,7 @@ namespace DxCore.Core.Map
     [DataContract]
     public class MapDescriptor : JsonPersistable<MapDescriptor>
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public static string MapExtension => ".mdtr";
 
@@ -60,7 +60,7 @@ namespace DxCore.Core.Map
 
         private MapDescriptor(Dictionary<TilePosition, Tile> tiles, int width, int height, int tileWidth, int tileHeight)
         {
-            LOG.Info("Created a map that's {0} by {1} with {2} tiles of size ({3}, {4})", width, height, tiles.Count,
+            Logger.Info("Created a map that's {0} by {1} with {2} tiles of size ({3}, {4})", width, height, tiles.Count,
                 tileWidth, tileHeight);
             Tiles = tiles;
             Width = width;
@@ -91,7 +91,7 @@ namespace DxCore.Core.Map
                 Validate.Hard.IsNotNull(tile);
                 if(tiles_.ContainsKey(tilePosition))
                 {
-                    LOG.Info("Overwriting tile at {0}", tilePosition);
+                    Logger.Info("Overwriting tile at {0}", tilePosition);
                 }
 
                 tiles_[tilePosition] = tile;
@@ -129,13 +129,18 @@ namespace DxCore.Core.Map
 
             public MapDescriptor Build()
             {
-                Validate.Hard.IsTrue(0 < width_, () => $"Cannot create a {typeof(MapDescriptor)} with a width of {width_}");
-                Validate.Hard.IsTrue(0 < height_, () => $"Cannot create a {typeof(MapDescriptor)} with a height of {height_}");
+                Validate.Hard.IsTrue(0 < width_,
+                    () => $"Cannot create a {typeof(MapDescriptor)} with a width of {width_}");
+                Validate.Hard.IsTrue(0 < height_,
+                    () => $"Cannot create a {typeof(MapDescriptor)} with a height of {height_}");
                 Validate.Hard.IsTrue(0 < tileWidth_,
                     () => $"Cannot create a {typeof(MapDescriptor)} with a tile width of {tileWidth_}");
                 Validate.Hard.IsTrue(0 < tileHeight_,
                     () => $"Cannot create a {typeof(MapDescriptor)} with a tile  height of {tileHeight_}");
-                Validate.Hard.IsNotEmpty(tiles_, () => $"Cannot create a {typeof(MapDescriptor)} without any tiles");
+                if(Validate.Check.IsNotEmpty(tiles_))
+                {
+                    Logger.Warn($"Creating {typeof(MapDescriptor)} without any tiles");
+                }
                 return new MapDescriptor(tiles_.ToDictionary(), width_, height_, tileWidth_, tileHeight_);
             }
         }

@@ -14,16 +14,21 @@ namespace DXGameTest.Core.Network
 {
     public class SimpleNetworkSerialization
     {
-        private DxGame game_;
         private GameObject gameObject_;
         private MapCollidablePhysicsComponent physics_;
         private SpatialComponent spatial_;
+
+        private class TestGame : DxGame
+        {
+            protected override void SetUp()
+            {
+            }
+        }
+
         // TODO
         [SetUp]
         public void SetUp()
         {
-            game_ = DxGame.Instance;
-            game_.RunOneFrame();
             var bounds = new DxRectangle(0, 0, 5000, 5000);
             spatial_ = (SpatialComponent)
                     BoundedSpatialComponent.Builder().WithBounds(bounds).WithPosition(new DxVector2(200, 400)).Build();

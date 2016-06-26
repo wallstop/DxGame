@@ -1,5 +1,6 @@
 ﻿using System;
 using DxCore.Core.Components.Basic;
+using DxCore.Core.Map;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
@@ -21,8 +22,8 @@ namespace MapEditorLibrary.Core.Components
 
         public DxUnit Unit { get; }
 
-        private int TileWidth => (int) Math.Round(TileUnitWidth * Unit.Value);
-        private int TileHeight => (int) Math.Round(TileUnitHeight * Unit.Value);
+        public int TileWidth => (int) Math.Round(TileUnitWidth * Unit.Value);
+        public int TileHeight => (int) Math.Round(TileUnitHeight * Unit.Value);
 
         public DxRectangle Bounds => new DxRectangle(0, 0, TileWidth * MapWidth, TileHeight * MapHeight);
 
@@ -43,16 +44,16 @@ namespace MapEditorLibrary.Core.Components
             new UpdateCameraBounds(Bounds).Emit();
         }
 
-        public Rectangle TileForPoint(Point point)
+        public TilePosition PositionForPoint(DxVector2 point)
         {
             // Probably works?
             Validate.Hard.IsInClosedInterval(point.X, 0, MapWidth * TileWidth);
             Validate.Hard.IsInClosedInterval(point.Y, 0, MapHeight * TileHeight);
 
-            int x = point.X / TileWidth * TileWidth;
-            int y = point.Y / TileHeight * TileHeight;
+            int x = (int)Math.Round(point.X) / TileWidth;
+            int y = (int)Math.Round(point.Y) / TileHeight;
 
-            return new Rectangle(x, y, TileWidth, TileHeight);
+            return new TilePosition(x, y);
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)

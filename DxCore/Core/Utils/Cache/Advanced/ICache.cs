@@ -5,7 +5,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
 {
     public interface ICache<in K, V>
     {
-        Optional<V> GetIfPresent(K key);
+        bool GetIfPresent(K key, out V value);
 
         V Get(K key, Func<V> valueLoader);
 

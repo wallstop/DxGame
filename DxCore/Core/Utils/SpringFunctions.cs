@@ -35,6 +35,8 @@ namespace DxCore.Core.Utils
 
         /* Spring Functions borrowed from http://robertpenner.com/easing/ */
 
+        /* TODO: These functions are shit. Implement from scratch, please. */
+
         public static double Linear(double start, double end, double instant, double duration)
         {
             return (instant / duration) * (end - start) + start;
@@ -208,6 +210,10 @@ namespace DxCore.Core.Utils
 
         public static double ElasticEaseIn(double start, double end, double instant, double duration)
         {
+            if(instant == 0)
+            {
+                return start;
+            }
             if((instant /= duration).FuzzyCompare(1) == 0)
             {
                 return start + end;

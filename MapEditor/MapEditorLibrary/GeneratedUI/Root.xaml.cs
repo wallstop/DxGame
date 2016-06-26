@@ -138,7 +138,7 @@ namespace EmptyKeys.UserInterface.Generated {
             blockData.ItemTemplate = new DataTemplate(blockData_dtFunc);
             Binding binding_blockData_ItemsSource = new Binding("Blocks");
             blockData.SetBinding(ListBox.ItemsSourceProperty, binding_blockData_ItemsSource);
-            Binding binding_blockData_SelectedItem = new Binding("SelectedTile");
+            Binding binding_blockData_SelectedItem = new Binding("SelectedBlock");
             binding_blockData_SelectedItem.Mode = BindingMode.OneWayToSource;
             blockData.SetBinding(ListBox.SelectedItemProperty, binding_blockData_SelectedItem);
             items.Add(e_3);
@@ -152,10 +152,11 @@ namespace EmptyKeys.UserInterface.Generated {
             platformData.Name = "platformData";
             Func<UIElement, UIElement> platformData_dtFunc = platformData_dtMethod;
             platformData.ItemTemplate = new DataTemplate(platformData_dtFunc);
-            DragDrop.SetIsDragSource(platformData, true);
-            DragDrop.SetIsDropTarget(platformData, true);
             Binding binding_platformData_ItemsSource = new Binding("Platforms");
             platformData.SetBinding(ListBox.ItemsSourceProperty, binding_platformData_ItemsSource);
+            Binding binding_platformData_SelectedItem = new Binding("SelectedPlatform");
+            binding_platformData_SelectedItem.Mode = BindingMode.OneWayToSource;
+            platformData.SetBinding(ListBox.SelectedItemProperty, binding_platformData_SelectedItem);
             items.Add(e_5);
             return items;
         }

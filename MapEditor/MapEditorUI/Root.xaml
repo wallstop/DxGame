@@ -27,9 +27,9 @@
         </Grid.InputBindings>
         <!--<Canvas Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity=".7"> -->
         <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity="0.95">
-            <TabControl >
-                <TabItem Header="Block">
-                    <ListBox Name="blockData" ItemsSource="{Binding Blocks}" SelectedItem="{Binding Mode=OneWayToSource, Path=SelectedTile}">
+            <TabControl>
+                <TabItem Header="Block" >
+                    <ListBox Name="blockData" ItemsSource="{Binding Blocks}" SelectedItem="{Binding Mode=OneWayToSource, Path=SelectedBlock}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Image Source="{Binding Tile}" MaxHeight="50" MinHeight="50" MaxWidth="50" MinWidth="50">
@@ -39,7 +39,7 @@
                     </ListBox>
                 </TabItem>
                 <TabItem Header="Platform">
-                    <ListBox Name="platformData" ItemsSource="{Binding Platforms}" ek:DragDrop.IsDragSource="True" ek:DragDrop.IsDropTarget="True">
+                    <ListBox Name="platformData" ItemsSource="{Binding Platforms}" SelectedItem="{Binding Mode=OneWayToSource, Path=SelectedPlatform}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Image Source="{Binding Tile}" />

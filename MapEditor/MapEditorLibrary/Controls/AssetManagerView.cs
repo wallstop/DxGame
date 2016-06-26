@@ -3,47 +3,67 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Forms;
 using DxCore;
-using DxCore.Core.Primitives;
+using DxCore.Core.Map;
+using DxCore.Core.Messaging;
 using EmptyKeys.UserInterface.Input;
 using EmptyKeys.UserInterface.Mvvm;
+using MapEditorLibrary.Core.Messaging;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
-using Mouse = Microsoft.Xna.Framework.Input.Mouse;
 
 namespace MapEditorLibrary.Controls
 {
-    public class AssetManagerView : BindableBase
+    public class AssetManagerView : ViewModelBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        private ICommand loadCommand_;
-        private ICommand deleteCommand_;
-        private ICommand placeTileCommand_;
         private object selectedTile_;
 
-        public ICommand LoadCommand
+        public ICommand LoadCommand { get; }
+        public ICommand DeleteCommand { get; }
+        public ICommand PlaceTileCommand { get; }
+
+        public Tile SelectedTile
         {
-            get { return loadCommand_; }
-            set { SetProperty(ref loadCommand_, value); }
+            get
+            {
+                if(ReferenceEquals(selectedTile_, null))
+                {
+                    return null;
+                }
+                TileModel selectedTile = SelectedTileModel;
+                if(ReferenceEquals(selectedTile, null))
+                {
+                    Logger.Warn("{0} was not a {1} (was {2}, {3})", selectedTile_, typeof(TileModel),
+                        selectedTile_.GetType(), selectedTile_);
+                    return null;
+                }
+                return new Tile(SelectedTileType, selectedTile.Texture.Name);
+            }
         }
 
-        public ICommand DeleteCommand
-        {
-            get { return deleteCommand_; }
-            set { SetProperty(ref deleteCommand_, value); }
-        }
+        public TileModel SelectedTileModel => selectedTile_ as TileModel;
 
-        public ICommand PlaceTileCommand
-        {
-         get { return placeTileCommand_;}
-            set { SetProperty(ref placeTileCommand_, value); }   
-        }
-
-        public object SelectedTile
+        public object SelectedBlock
         {
             get { return selectedTile_; }
-            set { SetProperty(ref selectedTile_, value); }
+            set
+            {
+                SelectedTileType = TileType.Block;
+                SetProperty(ref selectedTile_, value);
+            }
         }
+
+        public object SelectedPlatform
+        {
+            get { return selectedTile_; }
+            set
+            {
+                SelectedTileType = TileType.Platform;
+                SetProperty(ref selectedTile_, value);
+            }
+        }
+
+        public TileType SelectedTileType { get; private set; } = TileType.None;
 
         public ObservableCollection<TileModel> Blocks { get; }
         public ObservableCollection<TileModel> Platforms { get; }
@@ -60,17 +80,7 @@ namespace MapEditorLibrary.Controls
 
         private void OnTilePlacement(object eventArgs)
         {
-            /*
-                TODO:
-                Get mouse coordinates.
-                Translate to DxGame worldspace.
-                Emit TilePlacement message.
-            */
-
-            // TODO: Rip this out, I'd rather rely on UI mouse position
-            DxVector2 mousePosition = Mouse.GetState().Position;
-
-            Console.WriteLine($"Tile placed, or at least it would if that was implemented. That's pretty cool. {mousePosition}");
+            new AddTileToMapRequest().Emit();
         }
 
         private void OnLoad(object eventArgs)
@@ -88,12 +98,35 @@ namespace MapEditorLibrary.Controls
             {
                 case DialogResult.OK:
                 {
+                    // TODO: Check that DialogResult is within Content directory, alert if not
                     string imagePath = loadAssetDialog.FileName;
+                    Uri fullPath = new Uri(imagePath);
+                    Uri contentDirectory =
+                        new Uri(Path.GetDirectoryName(Application.ExecutablePath) + Path.DirectorySeparatorChar +
+                                DxGame.Instance.Content.RootDirectory + Path.DirectorySeparatorChar);
+
+                    if(!contentDirectory.IsBaseOf(fullPath))
+                    {
+                        string message =
+                            $"{imagePath} is an invalid asset. Assets must be within the Content Directory: {DxGame.Instance.Content.RootDirectory}";
+
+                        IMessageBoxService messageBoxService = GetService<IMessageBoxService>();
+                        if(ReferenceEquals(messageBoxService, null))
+                        {
+                            Logger.Error(message);
+                            return;
+                        }
+                        RelayCommand doNothing = new RelayCommand(arbitrary => { });
+                        messageBoxService.Show(message, doNothing, false);
+                        return;
+                    }
                     try
                     {
                         using(Stream fileStream = loadAssetDialog.OpenFile())
                         {
+                            Uri relative = contentDirectory.MakeRelativeUri(fullPath);
                             Texture2D imageAsTexture = Texture2D.FromStream(DxGame.Instance.GraphicsDevice, fileStream);
+                            imageAsTexture.Name = relative.ToString();
                             Blocks.Add(new TileModel(imageAsTexture));
                             Logger.Debug("Loaded {0}", imagePath);
                         }
@@ -107,7 +140,6 @@ namespace MapEditorLibrary.Controls
                 // TODO: Don't care
             }
 
-            // loadAssetDialog.OpenFile()
             Console.WriteLine($"Load called, waow. With: {eventArgs}");
         }
 

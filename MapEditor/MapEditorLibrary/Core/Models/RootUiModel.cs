@@ -1,8 +1,10 @@
 ﻿using DxCore;
 using DxCore.Core;
+using DxCore.Core.Map;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils.Validate;
 using EmptyKeys.UserInterface;
+using EmptyKeys.UserInterface.Controls;
 using EmptyKeys.UserInterface.Generated;
 using MapEditorLibrary.Controls;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,6 +17,9 @@ namespace MapEditorLibrary.Core.Models
         public Root UI { get; }
 
         private AssetManagerView AssetManagerView { get; }
+
+        public Tile SelectedTile => AssetManagerView.SelectedTile;
+        public TileModel SelectedTileModel => AssetManagerView.SelectedTileModel;
 
         public RootUiModel(Root rootUi)
         {

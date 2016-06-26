@@ -4,7 +4,6 @@ using DxCore.Core.Utils;
 using DxCore.Core.Utils.Cache;
 using DxCore.Core.Utils.Cache.Advanced;
 using NUnit.Framework;
-using Assert = NUnit.Framework.Assert;
 
 namespace DXGameTest.Core.Utils.Cache.Advanced
 {
@@ -20,12 +19,14 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
             int key = ThreadLocalRandom.Current.Next();
             string value = "test value please ignore";
             arbitraryCache.Put(key, value);
-            Optional<string> shouldBeCached = arbitraryCache.GetIfPresent(key);
-            Assert.True(shouldBeCached.HasValue);
-            Assert.AreEqual(value, shouldBeCached.Value);
+            string outValue;
+            bool foundValue = arbitraryCache.GetIfPresent(key, out outValue);
+            Assert.True(foundValue);
+            Assert.AreEqual(value, outValue);
             Thread.Sleep((int) (writeExpiry.TotalMilliseconds * 2));
-            Optional<string> cachedValue = arbitraryCache.GetIfPresent(key);
-            Assert.False(cachedValue.HasValue);
+
+            foundValue = arbitraryCache.GetIfPresent(key, out outValue);
+            Assert.False(foundValue);
         }
 
         [Test]
@@ -35,21 +36,24 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
             ICache<int, string> arbitraryCache =
                 CacheBuilder<int, string>.NewBuilder().WithExpireAfterAccess(accessExpiry).Build();
 
+            string outValue;
+            bool foundValue;
+
             int key = ThreadLocalRandom.Current.Next();
             string value = "test value please ignore";
             arbitraryCache.Put(key, value);
             for(int i = 0; i < ThreadLocalRandom.Current.Next(5, 20); ++i)
             {
-                Optional<string> shouldBeCached = arbitraryCache.GetIfPresent(key);
-                Assert.True(shouldBeCached.HasValue);
-                Assert.AreEqual(value, shouldBeCached.Value);
+                foundValue = arbitraryCache.GetIfPresent(key, out outValue);
+                Assert.True(foundValue);
+                Assert.AreEqual(value, outValue);
                 /* Sleep for a little bit */
                 Thread.Sleep((int) (accessExpiry.TotalMilliseconds / 4));
             }
             /* Sleep for a lot */
             Thread.Sleep((int) (accessExpiry.TotalMilliseconds * 2));
-            Optional<string> cachedValue = arbitraryCache.GetIfPresent(key);
-            Assert.False(cachedValue.HasValue);
+            foundValue = arbitraryCache.GetIfPresent(key, out outValue);
+            Assert.False(foundValue);
         }
 
         [Test]
@@ -148,8 +152,9 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
 
             arbitraryCache.Put(key, value);
             Thread.Sleep((int) writeExpiry.TotalMilliseconds * 2);
-            Optional<string> shouldNotExist = arbitraryCache.GetIfPresent(key);
-            Assert.False(shouldNotExist.HasValue);
+            string outValue;
+            bool foundValue = arbitraryCache.GetIfPresent(key, out outValue);
+            Assert.False(foundValue);
             /* Force a removal notification via a "modification" operation */
             arbitraryCache.Put(key, value + "other value");
             Assert.True(removalCalled);
@@ -180,12 +185,14 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
                     .Build();
 
             arbitraryCache.Put(key, value);
-            Optional<string> maybeValue = arbitraryCache.GetIfPresent(key);
-            Assert.True(maybeValue.HasValue);
-            Assert.AreEqual(value, maybeValue.Value);
+            string outValue;
+            bool foundValue = arbitraryCache.GetIfPresent(key, out outValue);
+
+            Assert.True(foundValue);
+            Assert.AreEqual(value, outValue);
             Thread.Sleep((int) accessExpiry.TotalMilliseconds * 2);
-            Optional<string> shouldNotExist = arbitraryCache.GetIfPresent(key);
-            Assert.False(shouldNotExist.HasValue);
+            foundValue = arbitraryCache.GetIfPresent(key, out outValue);
+            Assert.False(foundValue);
             /* Force a removal notification via a "modification" operation */
             arbitraryCache.Put(key, value + "other value");
             Assert.True(removalCalled);

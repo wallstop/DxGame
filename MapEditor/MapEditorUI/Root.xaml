@@ -22,17 +22,19 @@
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
+        <Grid.InputBindings>
+            <MouseBinding MouseAction="LeftClick" Command="{Binding PlaceTileCommand}" />
+        </Grid.InputBindings>
         <!--<Canvas Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity=".7"> -->
         <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity="0.95">
             <TabControl >
                 <TabItem Header="Block">
-                    <ListBox Name="blockData" ItemsSource="{Binding Blocks}" ek:DragDrop.IsDragSource="True" ek:DragDrop.IsDropTarget="True">
-                        <ListBox.ItemTemplate >
-                            <DataTemplate >
-
-                                <Image Source="{Binding Tile}" MaxHeight="50" MinHeight="50" MaxWidth="50" MinWidth="50"/>
+                    <ListBox Name="blockData" ItemsSource="{Binding Blocks}" SelectedItem="{Binding Mode=OneWayToSource, Path=SelectedTile}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding Tile}" MaxHeight="50" MinHeight="50" MaxWidth="50" MinWidth="50">
+                                </Image>
                             </DataTemplate>
-                            
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </TabItem>
@@ -40,9 +42,7 @@
                     <ListBox Name="platformData" ItemsSource="{Binding Platforms}" ek:DragDrop.IsDragSource="True" ek:DragDrop.IsDropTarget="True">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                       
-                                    <Image Source="{Binding Tile}" />
-                             
+                                <Image Source="{Binding Tile}" />
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
@@ -51,8 +51,10 @@
             <StackPanel Orientation="Vertical">
                 <Button Content="Load" Command="{Binding LoadCommand}" />
                 <Button Content="Delete" Command="{Binding DeleteCommand}"/>
+                <ContentControl Content="{Binding SelectedTile}" />
             </StackPanel>
         </StackPanel>
         <!--</Canvas>-->
     </Grid>
 </ek:UIRoot>
+

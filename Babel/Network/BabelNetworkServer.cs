@@ -71,7 +71,7 @@ namespace Babel.Network
 
             MapModel mapModel = DxGame.Instance.Model<MapModel>();
             IPlayerGenerator playerGenerator =
-                new BabelPlayerGenerator(mapModel.RandomSpawnLocation.Center.ToDxVector2());
+                new BabelPlayerGenerator(mapModel.RandomSpawnLocation.Center);
 
             SimpleRelayingCommandComponent networkPlayerCommand = new SimpleRelayingCommandComponent(TickRate);
 

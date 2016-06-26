@@ -52,7 +52,7 @@ namespace DxCore
 
         public Rectangle Screen { get; protected set; }
         public SpriteBatch SpriteBatch { get; protected set; }
-        protected GraphicsDeviceManager Graphics { get; set; }
+        public GraphicsDeviceManager Graphics { get; set; }
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
         public GameElementCollection DxGameElements { get; protected set; }
         // TODO: Thread safety? Move this to some kind of Context static class?
@@ -94,6 +94,7 @@ namespace DxCore
                 float y = Screen.Height / 2.0f - cameraModel.Position.Y;
 
                 // Attempt to bind by map rules
+                // TODO: Shove this shit in the camera mdel
                 MapModel mapModel = Model<MapModel>();
                 if(!ReferenceEquals(mapModel, null))
                 {
@@ -205,7 +206,6 @@ namespace DxCore
             if(!alreadyExists)
             {
                 Models.Add(model);
-                AddAndInitializeComponent(model);
             }
             else
             {
@@ -235,6 +235,7 @@ namespace DxCore
             GameObject createdGameObject;
             if(entityCreated.TryGetCreatedEntity(out createdGameObject))
             {
+                // TODO: Subtle bug. What about components that are attached to the game state already? IGNORE IGNORE TOO ANNOYING RIGHT NOW
                 AddAndInitializeGameObject(createdGameObject);
             }
         }

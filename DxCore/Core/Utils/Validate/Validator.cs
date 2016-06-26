@@ -29,7 +29,7 @@ namespace DxCore.Core.Utils.Validate
 
         public bool IsFalse(bool expression) => !IsTrue(expression);
         public bool IsFalse(bool expression, string message) => !IsTrue(expression, message);
-        public bool IsFalse(bool expression, Func<string> messageProducer) => !IsTrue(expression, messageProducer);
+        public bool IsFalse(bool expression, Func<string> messageProducer) => IsTrue(!expression, messageProducer);
 
         public bool IsInClosedInterval<T>(T value, T min, T max) where T : IComparable<T>
             => IsInClosedInterval(value, min, max, DefaultMessage);

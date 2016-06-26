@@ -1,53 +1,74 @@
 ﻿using System;
+using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using NLog;
 
 namespace DxCore.Core.Models
 {
     public class CameraModel : Model
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-
         private Func<DxVector2> NoOpTarget => () => Position;
 
         private const float MIN_SPEED = 1.5f;
 
         private const float IGNORE_THRESHOLD = 5f;
 
-        public DxVector2 Position { get; private set; }
+        private DxVector2 position_;
+        private DxRectangle bounds_;
+
+        /* Where the camera should be looking at */
+        public DxVector2 Position
+        {
+            get { return position_; }
+            set
+            {
+                position_ = value.ClampTo(Bounds);
+            }
+        }
+
+        // TODO: Bound position 
+        public DxRectangle Bounds {
+            get { return bounds_; }
+            set
+            {
+                DxRectangle screen = DxGame.Instance.Graphics.Bounds();
+                float xOffset = screen.Width / 2;
+                float yOffset = screen.Height / 2;
+                bounds_ = new DxRectangle(value.X + xOffset, value.Y + yOffset, Math.Max(0, value.Width - screen.Width), Math.Max(0, value.Height - screen.Height));
+                /* Snap position to our new bounds */
+                Position = Position;
+            }
+        }
 
         private Func<DxVector2> Target { get; set; }
 
         public CameraModel()
         {
+            Bounds = DxGame.Instance.Screen;
             TrackActivePlayer();
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<UpdateCameraBounds>(HandleUpdateCameraBounds);
+            base.OnAttach();
+        }
+
+        private void HandleUpdateCameraBounds(UpdateCameraBounds cameraBounds)
+        {
+            Bounds = cameraBounds.Bounds;
         }
 
         public void TrackActivePlayer()
         {
-            Target = () =>
-            {
-                PlayerModel playerModel = DxGame.Instance.Model<PlayerModel>();
-                if(ReferenceEquals(playerModel, null))
-                {
-                    return Position;
-                }
-
-                Player activePlayer = playerModel.ActivePlayer;
-                if(ReferenceEquals(activePlayer, null))
-                {
-                    return Position;
-                }
-
-                DxVector2 target = activePlayer.Position.Center;
-                return target;
-            };
+            TrackPlayer(DxGame.Instance.Model<PlayerModel>()?.ActivePlayer);
         }
 
         public void TrackPlayer(Player player)
         {
-            Target = () => player.Position.Center;
+            Target = () => player?.Position.Center ?? Position;
         }
 
         public void MoveTo(DxVector2 target)
@@ -72,6 +93,7 @@ namespace DxCore.Core.Models
 
             DxVector2 displacement = target - Position;
             float magnitude = displacement.Magnitude;
+            // TODO: Scale smoother
             if(magnitude < IGNORE_THRESHOLD)
             {
                 return;

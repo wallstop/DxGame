@@ -27,6 +27,8 @@ namespace DxCore.Core.Utils
 
         [DataMember] private readonly SortedList<IProcessable> processables_;
 
+        // TODO: HashSet of unique objects (simple ref == and hashcode)
+
         [IgnoreDataMember]
         public int Count => processables_.Count;
 

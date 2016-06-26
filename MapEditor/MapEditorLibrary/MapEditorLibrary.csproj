@@ -84,7 +84,9 @@
   <ItemGroup>
     <Compile Include="Controls\AssetManagerView.cs" />
     <Compile Include="Controls\TileModel.cs" />
+    <Compile Include="Core\Components\MapCreatorComponent.cs" />
     <Compile Include="Core\Components\MousePanComponent.cs" />
+    <Compile Include="Core\Messaging\AddTileToMap.cs" />
     <Compile Include="Core\Models\RootUiModel.cs" />
     <Compile Include="Input\MouseBindings.cs" />
     <Compile Include="Core\Components\MapGridComponent.cs" />

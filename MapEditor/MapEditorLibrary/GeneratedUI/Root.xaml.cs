@@ -38,6 +38,8 @@ namespace EmptyKeys.UserInterface.Generated {
         
         private Button e_9;
         
+        private ContentControl e_10;
+        
         public Root() : 
                 base() {
             this.Initialize();
@@ -62,6 +64,12 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_0 = new Grid();
             this.Content = this.e_0;
             this.e_0.Name = "e_0";
+            MouseBinding e_0_IB_0 = new MouseBinding();
+            e_0_IB_0.Gesture = new MouseGesture(MouseAction.LeftClick, ModifierKeys.None);
+            Binding binding_e_0_IB_0_Command = new Binding("PlaceTileCommand");
+            e_0_IB_0.SetBinding(MouseBinding.CommandProperty, binding_e_0_IB_0_Command);
+            e_0.InputBindings.Add(e_0_IB_0);
+            e_0_IB_0.Parent = e_0;
             RowDefinition row_e_0_0 = new RowDefinition();
             this.e_0.RowDefinitions.Add(row_e_0_0);
             RowDefinition row_e_0_1 = new RowDefinition();
@@ -108,6 +116,12 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_9.Content = "Delete";
             Binding binding_e_9_Command = new Binding("DeleteCommand");
             this.e_9.SetBinding(Button.CommandProperty, binding_e_9_Command);
+            // e_10 element
+            this.e_10 = new ContentControl();
+            this.e_7.Children.Add(this.e_10);
+            this.e_10.Name = "e_10";
+            Binding binding_e_10_Content = new Binding("SelectedTile");
+            this.e_10.SetBinding(ContentControl.ContentProperty, binding_e_10_Content);
         }
         
         private static System.Collections.ObjectModel.ObservableCollection<object> Get_e_2_Items() {
@@ -122,10 +136,11 @@ namespace EmptyKeys.UserInterface.Generated {
             blockData.Name = "blockData";
             Func<UIElement, UIElement> blockData_dtFunc = blockData_dtMethod;
             blockData.ItemTemplate = new DataTemplate(blockData_dtFunc);
-            DragDrop.SetIsDragSource(blockData, true);
-            DragDrop.SetIsDropTarget(blockData, true);
             Binding binding_blockData_ItemsSource = new Binding("Blocks");
             blockData.SetBinding(ListBox.ItemsSourceProperty, binding_blockData_ItemsSource);
+            Binding binding_blockData_SelectedItem = new Binding("SelectedTile");
+            binding_blockData_SelectedItem.Mode = BindingMode.OneWayToSource;
+            blockData.SetBinding(ListBox.SelectedItemProperty, binding_blockData_SelectedItem);
             items.Add(e_3);
             // e_5 element
             TabItem e_5 = new TabItem();

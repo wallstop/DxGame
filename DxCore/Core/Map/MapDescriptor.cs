@@ -4,8 +4,6 @@ using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core;
-using DXGame.Core.Utils;
 using NLog;
 
 namespace DxCore.Core.Map
@@ -131,13 +129,13 @@ namespace DxCore.Core.Map
 
             public MapDescriptor Build()
             {
-                Validate.Hard.IsTrue(0 < width_, $"Cannot create a {typeof(MapDescriptor)} with a width of {width_}");
-                Validate.Hard.IsTrue(0 < height_, $"Cannot create a {typeof(MapDescriptor)} with a height of {height_}");
+                Validate.Hard.IsTrue(0 < width_, () => $"Cannot create a {typeof(MapDescriptor)} with a width of {width_}");
+                Validate.Hard.IsTrue(0 < height_, () => $"Cannot create a {typeof(MapDescriptor)} with a height of {height_}");
                 Validate.Hard.IsTrue(0 < tileWidth_,
-                    $"Cannot create a {typeof(MapDescriptor)} with a tile width of {tileWidth_}");
+                    () => $"Cannot create a {typeof(MapDescriptor)} with a tile width of {tileWidth_}");
                 Validate.Hard.IsTrue(0 < tileHeight_,
-                    $"Cannot create a {typeof(MapDescriptor)} with a tile  height of {tileHeight_}");
-                Validate.Hard.IsNotEmpty(tiles_, $"Cannot create a {typeof(MapDescriptor)} without any tiles");
+                    () => $"Cannot create a {typeof(MapDescriptor)} with a tile  height of {tileHeight_}");
+                Validate.Hard.IsNotEmpty(tiles_, () => $"Cannot create a {typeof(MapDescriptor)} without any tiles");
                 return new MapDescriptor(tiles_.ToDictionary(), width_, height_, tileWidth_, tileHeight_);
             }
         }

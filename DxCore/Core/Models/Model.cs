@@ -21,6 +21,8 @@ namespace DxCore.Core.Models
 
         public override void Create()
         {
+            GameObject model = GameObject.From(this);
+            model.Create();
             DxGame.Instance.AttachModel(this);
         }
     }

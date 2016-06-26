@@ -150,6 +150,7 @@
     <Compile Include="Core\Components\Network\AbstractNetworkServer.cs" />
     <Compile Include="Core\Components\Network\NetworkClientConfig.cs" />
     <Compile Include="Core\Input\IMeasuredInputEvent.cs" />
+    <Compile Include="Core\Messaging\UpdateCameraBounds.cs" />
     <Compile Include="Core\Network\Port.cs" />
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
     <Compile Include="Core\Components\Utils\RectangleAreaComparer.cs" />

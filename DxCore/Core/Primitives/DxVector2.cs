@@ -147,6 +147,11 @@ namespace DxCore.Core.Primitives
             return new DxVector2(other);
         }
 
+        public DxVector2 ClampTo(DxRectangle shape)
+        {
+            return new DxVector2(MathHelper.Clamp(X, shape.X, shape.X + shape.Width), MathHelper.Clamp(Y, shape.Y, shape.Y + shape.Height));
+        }
+
         public static Orientation Orientation(DxVector2 point1, DxVector2 point2, DxVector2 point3)
         {
             int orientation =

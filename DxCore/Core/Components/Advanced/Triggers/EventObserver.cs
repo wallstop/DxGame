@@ -31,7 +31,7 @@ namespace DxCore.Core.Components.Advanced.Triggers
 
         public override void Initialize()
         {
-            if(!initialized_)
+            if(!Initialized)
             {
                 DxGame.Instance.Model<EventModel>().AttachEventListener(Listener);
             }

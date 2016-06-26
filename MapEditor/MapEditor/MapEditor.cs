@@ -1,10 +1,10 @@
 ﻿using System;
 using DxCore;
+using DxCore.Core;
 using DxCore.Core.Models;
 using DxCore.Core.Primitives;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
-using MapEditorLibrary.Core;
 using MapEditorLibrary.Core.Components;
 using MapEditorLibrary.Core.Models;
 using Microsoft.Xna.Framework;
@@ -58,9 +58,21 @@ namespace MapEditor
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            // TODO: Clean up init
 
             base.Initialize();
+            GameObject uiRoot = GameObject.From(new RootUiModel(new Root()));
+            uiRoot.Create();
+
+            MapGridComponent mapGrid = new MapGridComponent(new DxUnit(3), 15, 15, 100, 100);
+            GameObject mapGridObject = GameObject.From(mapGrid);
+            mapGridObject.Create();
+
+            GameObject mousePanner = GameObject.From(new MousePanComponent());
+            mousePanner.Create();
+
+            DeveloperModel devModel = new DeveloperModel();
+            devModel.Create();
         }
 
         /// <summary>
@@ -69,19 +81,6 @@ namespace MapEditor
         /// </summary>
         protected override void LoadContent()
         {
-            // TODO: Offload
-            RootUiModel uiRoot = new RootUiModel(new Root());
-            uiRoot.Create();
-
-            MapGridComponent mapGrid = new MapGridComponent(new DxUnit(3), 15, 15, 100, 100);
-            mapGrid.Create();
-
-            MousePanComponent mousePanner = new MousePanComponent();
-            mousePanner.Create();
-
-            DeveloperModel devModel = new DeveloperModel();
-            DxGame.Instance.AttachModel(devModel);
-
             FontManager.Instance.LoadFonts(Content);
             base.LoadContent();
         }

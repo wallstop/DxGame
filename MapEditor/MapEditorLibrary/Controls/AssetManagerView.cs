@@ -3,12 +3,12 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Forms;
 using DxCore;
+using DxCore.Core.Primitives;
 using EmptyKeys.UserInterface.Input;
-using EmptyKeys.UserInterface.Media;
-using EmptyKeys.UserInterface.Media.Imaging;
 using EmptyKeys.UserInterface.Mvvm;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
+using Mouse = Microsoft.Xna.Framework.Input.Mouse;
 
 namespace MapEditorLibrary.Controls
 {
@@ -18,6 +18,8 @@ namespace MapEditorLibrary.Controls
 
         private ICommand loadCommand_;
         private ICommand deleteCommand_;
+        private ICommand placeTileCommand_;
+        private object selectedTile_;
 
         public ICommand LoadCommand
         {
@@ -31,6 +33,18 @@ namespace MapEditorLibrary.Controls
             set { SetProperty(ref deleteCommand_, value); }
         }
 
+        public ICommand PlaceTileCommand
+        {
+         get { return placeTileCommand_;}
+            set { SetProperty(ref placeTileCommand_, value); }   
+        }
+
+        public object SelectedTile
+        {
+            get { return selectedTile_; }
+            set { SetProperty(ref selectedTile_, value); }
+        }
+
         public ObservableCollection<TileModel> Blocks { get; }
         public ObservableCollection<TileModel> Platforms { get; }
 
@@ -41,6 +55,22 @@ namespace MapEditorLibrary.Controls
 
             LoadCommand = new RelayCommand(OnLoad);
             DeleteCommand = new RelayCommand(OnDelete);
+            PlaceTileCommand = new RelayCommand(OnTilePlacement);
+        }
+
+        private void OnTilePlacement(object eventArgs)
+        {
+            /*
+                TODO:
+                Get mouse coordinates.
+                Translate to DxGame worldspace.
+                Emit TilePlacement message.
+            */
+
+            // TODO: Rip this out, I'd rather rely on UI mouse position
+            DxVector2 mousePosition = Mouse.GetState().Position;
+
+            Console.WriteLine($"Tile placed, or at least it would if that was implemented. That's pretty cool. {mousePosition}");
         }
 
         private void OnLoad(object eventArgs)
@@ -58,7 +88,6 @@ namespace MapEditorLibrary.Controls
             {
                 case DialogResult.OK:
                 {
-                    // TODO: Can read stream in and do whatever, this is probably wayyyy easier
                     string imagePath = loadAssetDialog.FileName;
                     try
                     {

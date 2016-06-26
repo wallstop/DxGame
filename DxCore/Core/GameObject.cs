@@ -146,6 +146,11 @@ namespace DxCore.Core
             return new GameObjectBuilder();
         }
 
+        public static GameObject From(Component component)
+        {
+            return Builder().WithComponent(component).Build();
+        }
+
         public class GameObjectBuilder : IBuilder<GameObject>
         {
             private List<Component> components_ = new List<Component>();
@@ -180,9 +185,9 @@ namespace DxCore.Core
 
             public GameObjectBuilder WithComponent(Component component)
             {
-                Validate.Hard.IsNotNullOrDefault(component, this.GetFormattedNullOrDefaultMessage(component));
+                Validate.Hard.IsNotNullOrDefault(component, () => this.GetFormattedNullOrDefaultMessage(component));
                 Validate.Hard.IsFalse(components_.Contains(component),
-                    $"Cannot create a {GetType()} with the same component {component} more than once");
+                    () => $"Cannot create a {GetType()} with the same component {component} more than once");
                 components_.Add(component);
                 return this;
             }

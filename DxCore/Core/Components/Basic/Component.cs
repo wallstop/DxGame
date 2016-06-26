@@ -4,7 +4,6 @@ using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
-using NLog;
 
 namespace DxCore.Core.Components.Basic
 {
@@ -45,20 +44,18 @@ namespace DxCore.Core.Components.Basic
     </summary>            
     */
 
-    public delegate void Updater(DxGameTime gameTime);
-
     [Serializable]
     [DataContract]
     public abstract class Component : IIdentifiable, IComparable<Component>, IProcessable, ICreatable, IRemovable
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        [DataMember] protected bool initialized_;
+        [DataMember]
+        public bool Initialized { get; protected set; }
 
         [DataMember]
         public GameObject Parent { get; set; }
 
         [DataMember]
-        protected List<Action> DeregistrationHandles { get; set; } = new List<Action>(); 
+        protected List<Action> DeregistrationHandles { get; set; } = new List<Action>();
 
         public virtual bool ShouldSerialize => true;
 
@@ -66,7 +63,7 @@ namespace DxCore.Core.Components.Basic
         {
             UpdatePriority = UpdatePriority.NORMAL;
             Id = new UniqueId();
-            initialized_ = false;
+            Initialized = false;
         }
 
         public int CompareTo(Component other)
@@ -74,9 +71,9 @@ namespace DxCore.Core.Components.Basic
             return UpdatePriority.CompareTo(other?.UpdatePriority);
         }
 
-        protected void RegisterMessageHandler<T>(Action<T> handler) where T: Message
+        protected void RegisterMessageHandler<T>(Action<T> handler) where T : Message
         {
-            Action deregistration = Parent.MessageHandler.RegisterMessageHandler<T>(handler);
+            Action deregistration = Parent.MessageHandler.RegisterMessageHandler(handler);
             DeregistrationHandles.Add(deregistration);
         }
 
@@ -143,10 +140,7 @@ namespace DxCore.Core.Components.Basic
 
         public virtual void Initialize()
         {
-            if(!initialized_)
-            {
-                initialized_ = true;
-            }
+            Initialized = true;
         }
 
         public virtual void OnAttach() {}

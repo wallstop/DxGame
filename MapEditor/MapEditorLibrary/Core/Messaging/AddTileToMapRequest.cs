@@ -2,6 +2,6 @@
 
 namespace MapEditorLibrary.Core.Messaging
 {
-    // Simple request
+    // It's simple, really - just add a tile to the map!
     public class AddTileToMapRequest : Message {}
 }

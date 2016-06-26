@@ -8,11 +8,11 @@ namespace DxCore.Core.Components.Advanced.Entities
 {
     [DataContract]
     [Serializable]
-    public class LevelComponent : Component
+    public class EntityLevelComponent : Component
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        public static readonly int BASE_EXPERIENCE_TO_LEVEL = 100;
+        public static readonly int BaseExperienceToLevel = 100;
 
         [DataMember]
         public int Level { get; private set; }
@@ -26,7 +26,7 @@ namespace DxCore.Core.Components.Advanced.Entities
         [IgnoreDataMember]
         public float Progress => (float) CurrentExperience / ExperienceToLevel;
 
-        public LevelComponent()
+        public EntityLevelComponent()
         {
             Level = 0;
             CurrentExperience = 0;
@@ -81,7 +81,7 @@ namespace DxCore.Core.Components.Advanced.Entities
             return
                 (int)
                     Math.Round((Math.Pow(alpha, currentLevel) - Math.Pow(theta, currentLevel)) / sqrtFive *
-                               BASE_EXPERIENCE_TO_LEVEL);
+                               BaseExperienceToLevel);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace DxCore.Core.Components.Advanced.Triggers
         [DataMember] private readonly Func<DxGameTime, int> tickTrigger_;
 
         [DataMember]
-        public TimeSpan Initialized { get; }
+        public TimeSpan TimeInitialized { get; }
 
         public TriggeredActionComponent(Func<TimeSpan, DxGameTime, bool> endTrigger, Func<DxGameTime, int> tickTrigger,
             T source, Action<T> action) : this(endTrigger, tickTrigger, source, action, type => { }) {}
@@ -48,7 +48,7 @@ namespace DxCore.Core.Components.Advanced.Triggers
             source_ = source;
             action_ = action;
             finalAction_ = finalAction;
-            Initialized = DxGame.Instance.CurrentTime.TotalGameTime;
+            TimeInitialized = DxGame.Instance.CurrentTime.TotalGameTime;
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -68,7 +68,7 @@ namespace DxCore.Core.Components.Advanced.Triggers
                 as we may have something like single-frame triggers 
                 that rely on being activated that one time (and one time only) 
             */
-            bool isFinished = endTrigger_.Invoke(Initialized, gameTime);
+            bool isFinished = endTrigger_.Invoke(TimeInitialized, gameTime);
             if(isFinished)
             {
                 finalAction_.Invoke(source_);
@@ -98,7 +98,7 @@ namespace DxCore.Core.Components.Advanced.Triggers
         [DataMember] private readonly Func<DxGameTime, int> tickTrigger_;
 
         [DataMember]
-        public TimeSpan Initialized { get; }
+        public TimeSpan TimeInitialized { get; }
 
         public TriggeredActionComponent(Func<TimeSpan, DxGameTime, bool> endTrigger, Func<DxGameTime, int> tickTrigger,
             Action action) : this(endTrigger, tickTrigger, action, () => { }) {}
@@ -115,7 +115,7 @@ namespace DxCore.Core.Components.Advanced.Triggers
             tickTrigger_ = tickTrigger;
             action_ = action;
             finalAction_ = finalAction;
-            Initialized = DxGame.Instance.CurrentTime.TotalGameTime;
+            TimeInitialized = DxGame.Instance.CurrentTime.TotalGameTime;
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -135,7 +135,7 @@ namespace DxCore.Core.Components.Advanced.Triggers
                 as we may have something like single-frame triggers 
                 that rely on being activated that one time (and one time only) 
             */
-            bool isFinished = endTrigger_.Invoke(Initialized, gameTime);
+            bool isFinished = endTrigger_.Invoke(TimeInitialized, gameTime);
             if(isFinished)
             {
                 finalAction_.Invoke();

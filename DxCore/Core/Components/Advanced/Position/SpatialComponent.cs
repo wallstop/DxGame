@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
-using NLog;
 
 namespace DxCore.Core.Components.Advanced.Position
 {
@@ -15,8 +14,6 @@ namespace DxCore.Core.Components.Advanced.Position
     [DataContract]
     public class SpatialComponent : PositionalComponent
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-
         [DataMember]
         public DxVector2 Dimensions { get; }
 
@@ -28,13 +25,13 @@ namespace DxCore.Core.Components.Advanced.Position
         public virtual DxRectangle Space => new DxRectangle(Position.X, Position.Y, Dimensions.X, Dimensions.Y);
         public virtual float Width => Dimensions.X;
         public virtual float Height => Dimensions.Y;
+
         /**
             <summary>
                 The center position that the SpatialComponent occupies. This is equivalane to 
                 new Vector2(Position.X + Width / 2, Position.Y + Height / 2);
             </summary>
         */
-
         public virtual DxVector2 Center => position_ + Dimensions / 2.0f;
 
         protected SpatialComponent(DxVector2 position, DxVector2 dimensions) : base(position)

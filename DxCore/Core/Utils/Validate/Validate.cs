@@ -41,8 +41,23 @@ namespace DxCore.Core.Utils.Validate
             }
         }
 
+        /** 
+            <summary>
+                Throws unchecked exceptions if validation case fails
+            </summary> 
+        */
         public static Validator Hard => FailValidator.FailInstance;
+        /** 
+            <summary>
+                Throws Debug Assertions if validation case fails
+            </summary> 
+        */
         public static Validator Check => CheckValidator.CheckInstance;
+        /** 
+            <summary>
+                Returns false if validation case fails
+            </summary>
+        */
         public static Validator Assert => AssertValidator.AssertInstance;
     }
 }

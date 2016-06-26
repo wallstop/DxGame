@@ -78,7 +78,7 @@ namespace Babel.Items
 
         [DataMember] private readonly double triggerThreshold_;
 
-        [DataMember] private Optional<TimeSpan> lastTriggered_;
+        [DataMember] private TimeSpan? lastTriggered_;
 
         [DataMember]
         private int StackCount { get; set; } = 1;
@@ -99,7 +99,7 @@ namespace Babel.Items
             triggerDelay_ = triggerDelay;
             triggerThreshold_ = triggerThreshold;
             playerProperties_ = playerProperties;
-            lastTriggered_ = Optional<TimeSpan>.Empty;
+            lastTriggered_ = null;
             playerProperties_.Health.AttachListener(CheckForTrigger);
 
             Active = false;
@@ -135,7 +135,7 @@ namespace Babel.Items
             TimeSpan currentTime = DxGame.Instance.CurrentTime.TotalGameTime;
             if(!lastTriggered_.HasValue || lastTriggered_.Value + triggerDelay_ <= currentTime)
             {
-                lastTriggered_ = Optional<TimeSpan>.Of(currentTime);
+                lastTriggered_ = currentTime;
                 Active = true;
                 Trigger();
             }

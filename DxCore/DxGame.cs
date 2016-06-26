@@ -40,13 +40,29 @@ namespace DxCore
     {
         private static readonly object GameLock = new object();
 
-        protected static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         protected UniqueId GameId { get; }
 
         protected MessageHandler MessageHandler { get; }
 
-        protected static DxGame singleton_;
+        private static DxGame singleton_;
+
+        protected static T ApplyToSingleton<T>(Func<DxGame, T> singletonFunction) 
+        {
+            lock(GameLock)
+            {
+                return singletonFunction.Invoke(singleton_);
+            }
+        }
+
+        protected static void ApplyToSingleton<T>(Action<DxGame> singletonFunction)
+        {
+            lock(GameLock)
+            {
+                singletonFunction.Invoke(singleton_);
+            }
+        }
 
         public Scale Scale { get; private set; } = Scale.Medium;
 
@@ -58,7 +74,7 @@ namespace DxCore
         // TODO: Thread safety? Move this to some kind of Context static class?
         public static DxGame Instance => singleton_;
         public double TargetFps => 60.0;
-        protected static readonly TimeSpan MINIMUM_FRAMERATE = TimeSpan.FromSeconds(1 / 10000.0);
+        protected static readonly TimeSpan MinimumFramerate = TimeSpan.FromSeconds(1 / 10000.0);
         public GameElementCollection NewGameElements { get; } = new GameElementCollection();
         public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
 
@@ -209,7 +225,7 @@ namespace DxCore
             }
             else
             {
-                LOG.Error($"{nameof(AttachModel)} failed. Model {model} already exists in {Models}");
+                Logger.Error($"{nameof(AttachModel)} failed. Model {model} already exists in {Models}");
             }
 
             return !alreadyExists;
@@ -274,7 +290,7 @@ namespace DxCore
         {
             if(ReferenceEquals(gameObject, null))
             {
-                LOG.Warn($"{nameof(RemoveGameObject)} called with null {typeof(GameObject)}");
+                Logger.Warn($"{nameof(RemoveGameObject)} called with null {typeof(GameObject)}");
                 return;
             }
             RemovedGameElements.Add(gameObject);
@@ -377,7 +393,7 @@ namespace DxCore
         {
             TimeSpan wallclock;
             TimeSpan actualElapsed;
-            while((actualElapsed = (wallclock = GameTimer.Elapsed) - lastFrameTick_) < MINIMUM_FRAMERATE)
+            while((actualElapsed = (wallclock = GameTimer.Elapsed) - lastFrameTick_) < MinimumFramerate)
             {
                 // Chill out dawg, let's hang out here
             }
@@ -477,6 +493,16 @@ namespace DxCore
             var networkModel = Model<NetworkModel>();
             networkModel?.ShutDown();
             base.Dispose(disposing);
+        }
+
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            lock(GameLock)
+            {
+                Validate.Hard.IsNotNull(singleton_, () => "Cannot exit a null game!");
+                singleton_ = null;
+            }
+            base.OnExiting(sender, args);
         }
     }
 }

@@ -81,7 +81,9 @@ namespace DxCore.Core.Primitives
         }
 
         /**
-            <summary> Dot product (https://en.wikipedia.org/wiki/Dot_product) </summary>
+            <summary> 
+                Dot product (https://en.wikipedia.org/wiki/Dot_product) 
+            </summary>
         */
 
         public float Dot(DxVector2 other)

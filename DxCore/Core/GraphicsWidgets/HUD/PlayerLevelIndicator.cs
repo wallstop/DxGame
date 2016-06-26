@@ -29,10 +29,10 @@ namespace DxCore.Core.GraphicsWidgets.HUD
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             Player activePlayer = DxGame.Instance.Model<PlayerModel>().ActivePlayer;
-            LevelComponent levelComponent = activePlayer.Level;
+            EntityLevelComponent entityLevelComponent = activePlayer.EntityLevel;
 
-            double percentThroughLevel = levelComponent.Progress;
-            string currentLevelAsText = levelComponent.Level.ToString();
+            double percentThroughLevel = entityLevelComponent.Progress;
+            string currentLevelAsText = entityLevelComponent.Level.ToString();
 
             Vector2 drawLocation = DxGame.Instance.OffsetFromScreen(ScreenOffset);
 

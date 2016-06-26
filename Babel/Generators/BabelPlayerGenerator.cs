@@ -59,7 +59,7 @@ namespace Babel.Generators
             GameObject.GameObjectBuilder playerBuilder = GameObject.Builder();
             FacingComponent facingComponent = new FacingComponent();
             TeamComponent teamComponent = new TeamComponent(Team.PlayerTeam);
-            LevelComponent levelComponent = new LevelComponent();
+            EntityLevelComponent entityLevelComponent = new EntityLevelComponent();
             BasicAttackComponent basicAttackListener = new BasicAttackComponent();
             GevurahBasicAttack gevurahBasicAttack = new GevurahBasicAttack();
             ItemManager itemManager = new ItemManager();
@@ -72,7 +72,7 @@ namespace Babel.Generators
                 playerBuilder.WithComponent(activePlayerComponent);
             }
             playerBuilder.WithComponents(PlayerSpace, physics_, playerProperties_, healthBar_, playerCommander,
-                facingComponent, teamComponent, levelComponent, basicAttackListener, gevurahBasicAttack, itemManager,
+                facingComponent, teamComponent, entityLevelComponent, basicAttackListener, gevurahBasicAttack, itemManager,
                 playerNameComponent);
             GameObject playerObject = playerBuilder.Build();
             Skill shockwaveSkill =

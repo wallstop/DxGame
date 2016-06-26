@@ -29,7 +29,7 @@ namespace DxCore.Core
         public PhysicsComponent Physics => Object.ComponentOfType<PhysicsComponent>();
         public AnimationComponent Animation => Object.ComponentOfType<AnimationComponent>();
         public SkillComponent Abilities => Object.ComponentOfType<SkillComponent>();
-        public LevelComponent Level => Object.ComponentOfType<LevelComponent>();
+        public EntityLevelComponent EntityLevel => Object.ComponentOfType<EntityLevelComponent>();
 
         [DataMember]
         public string Name { get; private set; }

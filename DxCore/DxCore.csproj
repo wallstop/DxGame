@@ -99,7 +99,7 @@
     <Compile Include="Core\Components\Advanced\Damage\DeathEffectComponent.cs" />
     <Compile Include="Core\Components\Advanced\Entities\ExperienceDropperComponent.cs" />
     <Compile Include="Core\Components\Advanced\Entities\ItemDropperComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Entities\LevelComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Entities\EntityLevelComponent.cs" />
     <Compile Include="Core\Components\Advanced\Entities\ManagerComponent.cs" />
     <Compile Include="Core\Components\Advanced\Entities\RandomSpawner.cs" />
     <Compile Include="Core\Components\Advanced\Entities\Spawner.cs" />

@@ -109,11 +109,10 @@ namespace MapEditorLibrary.Controls
                     {
                         string message =
                             $"{imagePath} is an invalid asset. Assets must be within the Content Directory: {DxGame.Instance.Content.RootDirectory}";
-
+                        Logger.Error(message);
                         IMessageBoxService messageBoxService = GetService<IMessageBoxService>();
                         if(ReferenceEquals(messageBoxService, null))
                         {
-                            Logger.Error(message);
                             return;
                         }
                         RelayCommand doNothing = new RelayCommand(arbitrary => { });

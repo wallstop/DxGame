@@ -8,7 +8,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
 {
     public class LocalCache<K, V> : ICache<K, V>
     {
-        private const int DRAIN_THRESHOLD = 0x3F;
+        private const int DrainThreshold = 0x3F;
         private readonly IProducerConsumerCollection<StampedAccessEntry<K>> accessQueue_;
 
         private readonly ConcurrentDictionary<K, StampedAndLockedValue<V>> cache_ =
@@ -342,6 +342,8 @@ namespace DxCore.Core.Utils.Cache.Advanced
 
             K key = stampedEntry.Key;
             V value;
+            // We want as minimal time in critical region as possible
+            // ReSharper disable TooWideLocalVariableScope
             StampedAndLockedValue<V> lockedValue;
             using(new CriticalRegion(lock_, CriticalRegion.LockType.Write))
             {
@@ -385,7 +387,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
 
         private void PostReadCleanup()
         {
-            if((Interlocked.Increment(ref readCount_) & DRAIN_THRESHOLD) == 0)
+            if((Interlocked.Increment(ref readCount_) & DrainThreshold) == 0)
             {
                 CleanUp();
             }

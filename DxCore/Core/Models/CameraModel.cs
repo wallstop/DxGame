@@ -19,15 +19,15 @@ namespace DxCore.Core.Models
 
         public DxVector2 OffsetFromOrigin => Position - DxGame.Instance.Graphics.Bounds().Center;
 
-        /* Where the camera should be looking at */
-
+        /**
+            Where the Camera is looking (Point target, center of screen)
+        */
         public DxVector2 Position
         {
             get { return position_; }
             set { position_ = value.ClampTo(Bounds); }
         }
-
-        // TODO: Bound position 
+        
         public DxRectangle Bounds
         {
             get { return bounds_; }
@@ -65,6 +65,7 @@ namespace DxCore.Core.Models
             TrackPlayer(DxGame.Instance.Model<PlayerModel>()?.ActivePlayer);
         }
 
+        /* TODO: Make this delegate serializable? */
         public void TrackPlayer(Player player)
         {
             Target = () => player?.Position.Center ?? Position;

@@ -30,12 +30,12 @@
         <xs:documentation>Write internal NLog messages to the specified file.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="internalLogEntityLevel" type="NLogEntityLevel">
+    <xs:attribute name="internalLogLevel" type="NLogLevel">
       <xs:annotation>
         <xs:documentation>Log level threshold for internal log messages. Default value is: Info.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="globalThreshold" type="NLogEntityLevel">
+    <xs:attribute name="globalThreshold" type="NLogLevel">
       <xs:annotation>
         <xs:documentation>Global log level threshold for application log messages. Messages below this level won't be logged..</xs:documentation>
       </xs:annotation>
@@ -96,24 +96,24 @@
         <xs:documentation>Name of the logger. May include '*' character which acts like a wildcard. Allowed forms are: *, Name, *Name, Name* and *Name*</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="levels" type="NLogEntityLevelList">
+    <xs:attribute name="levels" type="NLogLevelList">
       <xs:annotation>
         <xs:documentation>Comma separated list of levels that this rule matches.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="minlevel" type="NLogEntityLevel">
+    <xs:attribute name="minlevel" type="NLogLevel">
       <xs:annotation>
         <xs:documentation>Minimum level that this rule matches.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="maxlevel" type="NLogEntityLevel">
+    <xs:attribute name="maxlevel" type="NLogLevel">
       <xs:annotation>
         <xs:documentation>Maximum level that this rule matches.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="level" type="NLogEntityLevel">
+    <xs:attribute name="level" type="NLogLevel">
       <xs:annotation>
-        <xs:documentation>EntityLevel that this rule matches.</xs:documentation>
+        <xs:documentation>Level that this rule matches.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
     <xs:attribute name="writeTo" type="NLogTargetIDList">
@@ -141,7 +141,7 @@
       <xs:element name="whenNotEqual" type="whenNotEqual" />
     </xs:choice>
   </xs:complexType>
-  <xs:simpleType name="NLogEntityLevel">
+  <xs:simpleType name="NLogLevel">
     <xs:restriction base="xs:string">
       <xs:enumeration value="Off" />
       <xs:enumeration value="Trace" />
@@ -161,7 +161,7 @@
       <xs:enumeration value="None" />
     </xs:restriction>
   </xs:simpleType>
-  <xs:simpleType name="NLogEntityLevelList">
+  <xs:simpleType name="NLogLevelList">
     <xs:restriction base="xs:string">
       <xs:pattern value="(|Trace|Debug|Info|Warn|Error|Fatal)(,(Trace|Debug|Info|Warn|Error|Fatal))*" />
     </xs:restriction>
@@ -1209,7 +1209,7 @@
         <xs:choice minOccurs="0" maxOccurs="unbounded">
           <xs:element name="name" minOccurs="0" maxOccurs="1" type="xs:string" />
           <xs:element name="domain" minOccurs="0" maxOccurs="1" type="xs:string" />
-          <xs:element name="impersonationEntityLevel" minOccurs="0" maxOccurs="1" type="NLog.Targets.Wrappers.SecurityImpersonationEntityLevel" />
+          <xs:element name="impersonationLevel" minOccurs="0" maxOccurs="1" type="NLog.Targets.Wrappers.SecurityImpersonationLevel" />
           <xs:element name="logOnProvider" minOccurs="0" maxOccurs="1" type="NLog.Targets.Wrappers.LogOnProviderType" />
           <xs:element name="logOnType" minOccurs="0" maxOccurs="1" type="NLog.Targets.Wrappers.SecurityLogOnType" />
           <xs:element name="password" minOccurs="0" maxOccurs="1" type="xs:string" />
@@ -1226,7 +1226,7 @@
             <xs:documentation>Windows domain name to change context to.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="impersonationEntityLevel" type="NLog.Targets.Wrappers.SecurityImpersonationEntityLevel">
+        <xs:attribute name="impersonationLevel" type="NLog.Targets.Wrappers.SecurityImpersonationLevel">
           <xs:annotation>
             <xs:documentation>Required impersonation level.</xs:documentation>
           </xs:annotation>
@@ -1259,7 +1259,7 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:simpleType name="NLog.Targets.Wrappers.SecurityImpersonationEntityLevel">
+  <xs:simpleType name="NLog.Targets.Wrappers.SecurityImpersonationLevel">
     <xs:restriction base="xs:string">
       <xs:enumeration value="Anonymous" />
       <xs:enumeration value="Identification" />

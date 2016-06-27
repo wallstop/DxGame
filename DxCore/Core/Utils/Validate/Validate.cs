@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using NLog;
 
 namespace DxCore.Core.Utils.Validate
 {
@@ -41,6 +42,18 @@ namespace DxCore.Core.Utils.Validate
             }
         }
 
+        internal sealed class LogValidator : Validator
+        {
+            private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+            public static readonly LogValidator LogInstance = new LogValidator();
+            private LogValidator() {}
+
+            protected override void TestFailure(Func<string> messageProducer)
+            {
+                Logger.Info(messageProducer.Invoke());
+            }
+        }
+
         /** 
             <summary>
                 Throws unchecked exceptions if validation case fails
@@ -52,12 +65,18 @@ namespace DxCore.Core.Utils.Validate
                 Throws Debug Assertions if validation case fails
             </summary> 
         */
-        public static Validator Check => CheckValidator.CheckInstance;
+        public static Validator Assert => AssertValidator.AssertInstance;
         /** 
             <summary>
                 Returns false if validation case fails
             </summary>
         */
-        public static Validator Assert => AssertValidator.AssertInstance;
+        public static Validator Check => CheckValidator.CheckInstance;
+        /** 
+            <summary>
+                Logs the message (Info level) and returns false if validation case fails
+            </summary>
+        */
+        public static Validator Log => LogValidator.LogInstance;
     }
 }

@@ -8,7 +8,7 @@ namespace DxCore.Core.Messaging
 {
     public static class GlobalMessageBus
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private static class SpecializedHandler<T> where T : Message
         {
@@ -127,7 +127,7 @@ namespace DxCore.Core.Messaging
             }
             else if(!ReferenceEquals(existingHandler, messageHandler))
             {
-                LOG.Warn(
+                Logger.Warn(
                     "Ignoring double registration of {0} with different handlers (is this intentional? Likely a bug)",
                     handlerOwnerId);
                 return new SerializableDeregistration<T>(handlerOwnerId).Deregister;
@@ -137,7 +137,7 @@ namespace DxCore.Core.Messaging
             bool newRegistration = handlersForType.Add(messageHandler);
             if(!newRegistration)
             {
-                LOG.Debug("Received double registration of {0} for {1}", typeof(T), handlerOwnerId);
+                Logger.Debug("Received double registration of {0} for {1}", typeof(T), handlerOwnerId);
             }
 
             return new SerializableDeregistration<T>(handlerOwnerId).Deregister;
@@ -155,7 +155,7 @@ namespace DxCore.Core.Messaging
         {
             if(UntypedTargetedSinks.ContainsKey(handlerOwnerId))
             {
-                LOG.Info("Ignoring double targeted global registration of {0}", handlerOwnerId);
+                Logger.Info("Ignoring double targeted global registration of {0}", handlerOwnerId);
                 return new SerializableUntypedTargetedDeregistration(handlerOwnerId).DeregisterUntypedTargeted;
             }
 
@@ -214,7 +214,7 @@ namespace DxCore.Core.Messaging
                 return;
             }
 
-            LOG.Info("Could not find a matching handler for Id: {0}, Message: {1}", target, typedAndTargetedMessage);
+            Logger.Info("Could not find a matching handler for Id: {0}, Message: {1}", target, typedAndTargetedMessage);
         }
     }
 }

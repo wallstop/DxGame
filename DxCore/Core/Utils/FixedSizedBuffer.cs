@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Utils
 {
@@ -21,7 +20,7 @@ namespace DxCore.Core.Utils
         }
 
         [DataMember]
-        public int Limit { get; private set; }
+        public int Limit { get; }
 
         public FixedSizedBuffer(int limit)
         {

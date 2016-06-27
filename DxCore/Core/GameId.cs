@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core
@@ -15,6 +14,7 @@ namespace DxCore.Core
     [Serializable]
     public class GameId : IEquatable<GameId>
     {
+        [DataMember]
         private readonly Guid id_;
 
         public static GameId Empty { get; } = new GameId(Guid.Empty);

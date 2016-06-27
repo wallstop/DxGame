@@ -150,6 +150,7 @@
     <Compile Include="Core\Components\Network\AbstractNetworkServer.cs" />
     <Compile Include="Core\Components\Network\NetworkClientConfig.cs" />
     <Compile Include="Core\Input\IMeasuredInputEvent.cs" />
+    <Compile Include="Core\Map\MapLayout.cs" />
     <Compile Include="Core\Messaging\UpdateCameraBounds.cs" />
     <Compile Include="Core\Network\Port.cs" />
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
@@ -292,10 +293,13 @@
     <Compile Include="Core\Team.cs" />
     <Compile Include="Core\UniqueId.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\CacheBuilder.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\FastCacheKey.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\ICache.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\ILoadingCache.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\LocalCache.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\LocalLoadingCache.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\SingleElementLocalCache.cs" />
+    <Compile Include="Core\Utils\Cache\Advanced\SingleElementLocalLoadingCache.cs" />
     <Compile Include="Core\Utils\Cache\DiscardingQueue.cs" />
     <Compile Include="Core\Utils\Cache\RemovalNotification.cs" />
     <Compile Include="Core\Utils\Cache\Simple\AbstractSimpleCache.cs" />

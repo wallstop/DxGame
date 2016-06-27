@@ -39,7 +39,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
 
         public LocalCache(CacheBuilder<K, V> cacheBuilder)
         {
-            Validate.Validate.Hard.IsNotNull(cacheBuilder, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(cacheBuilder)));
+            Validate.Validate.Hard.IsNotNull(cacheBuilder, () => this.GetFormattedNullOrDefaultMessage(nameof(cacheBuilder)));
             ticker_ = Stopwatch.StartNew();
             /* Our input ticks are of the form "Timespan Ticks". We need to transform them to "Stopwatch" ticks */
             ExpireAfterAccessTicks = TransformTimeSpanTicksToStopwatchTicks(cacheBuilder.ExpireAfterAccessTicks);

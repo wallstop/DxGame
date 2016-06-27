@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Utils
 {
@@ -15,10 +14,10 @@ namespace DxCore.Core.Utils
     {
         private const int HalfwayInt = Int32.MaxValue / 2;
 
-        private static readonly ThreadLocal<ThreadLocalRandom> RANDOM =
+        private static readonly ThreadLocal<ThreadLocalRandom> Random =
             new ThreadLocal<ThreadLocalRandom>(() => new ThreadLocalRandom());
 
-        public static ThreadLocalRandom Current => RANDOM.Value;
+        public static ThreadLocalRandom Current => Random.Value;
 
         private ThreadLocalRandom()
             : base(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0))

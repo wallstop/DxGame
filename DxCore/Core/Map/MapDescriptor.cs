@@ -30,43 +30,43 @@ namespace DxCore.Core.Map
         [IgnoreDataMember]
         public override MapDescriptor Item => this;
 
-        /* In indices */
-
         [DataMember]
-        public int Width { get; }
+        public MapLayout MapLayout { get; }
 
         /* In indices */
-
-        [DataMember]
-        public int Height { get; }
-
-        /* In units */
-
-        [DataMember]
-        public int TileWidth { get; }
-
-        /* In units */
-
-        [DataMember]
-        public int TileHeight { get; }
 
         [IgnoreDataMember]
-        public DxRectangle Bounds => new DxRectangle(0, 0, Width * TileWidth, Height * TileHeight);
+        public int Width => MapLayout.Width;
+
+        /* In indices */
+
+        [IgnoreDataMember]
+        public int Height => MapLayout.Height;
+
+        /* In units */
+
+        [IgnoreDataMember]
+        public int TileWidth => MapLayout.TileWidth;
+
+        /* In units */
+
+        [IgnoreDataMember]
+        public int TileHeight => MapLayout.TileHeight;
+
+        [IgnoreDataMember]
+        public DxRectangle Bounds => MapLayout.Bounds;
 
         /* TODO: Make readonly? */
 
         [DataMember]
         public Dictionary<TilePosition, Tile> Tiles { get; }
 
-        private MapDescriptor(Dictionary<TilePosition, Tile> tiles, int width, int height, int tileWidth, int tileHeight)
+        private MapDescriptor(Dictionary<TilePosition, Tile> tiles, MapLayout mapLayout)
         {
-            Logger.Info("Created a map that's {0} by {1} with {2} tiles of size ({3}, {4})", width, height, tiles.Count,
-                tileWidth, tileHeight);
+            Logger.Info("Created a map that's {0} by {1} with {2} tiles of size ({3}, {4})", mapLayout.Width,
+                mapLayout.Height, tiles.Count, mapLayout.TileWidth, mapLayout.TileHeight);
             Tiles = tiles;
-            Width = width;
-            Height = height;
-            TileWidth = tileWidth;
-            TileHeight = tileHeight;
+            MapLayout = mapLayout;
         }
 
         public static MapDescriptorBuilder Builder()
@@ -76,12 +76,8 @@ namespace DxCore.Core.Map
 
         public class MapDescriptorBuilder : IBuilder<MapDescriptor>
         {
-            private static readonly int INVALID_SIZE = -1;
+            private readonly MapLayout.MapLayoutBuilder mapLayoutBuilder_ = new MapLayout.MapLayoutBuilder();
 
-            private int width_ = INVALID_SIZE;
-            private int height_ = INVALID_SIZE;
-            private int tileWidth_ = INVALID_SIZE;
-            private int tileHeight_ = INVALID_SIZE;
             private readonly Dictionary<TilePosition, Tile> tiles_ = new Dictionary<TilePosition, Tile>();
 
             public MapDescriptorBuilder WithTile(TilePosition tilePosition, Tile tile)
@@ -105,43 +101,39 @@ namespace DxCore.Core.Map
 
             public MapDescriptorBuilder WithWidth(int width)
             {
-                width_ = width;
+                mapLayoutBuilder_.WithWidth(width);
                 return this;
             }
 
             public MapDescriptorBuilder WithHeight(int height)
             {
-                height_ = height;
+                mapLayoutBuilder_.WithHeight(height);
                 return this;
             }
 
             public MapDescriptorBuilder WithTileWidth(int tileWidth)
             {
-                tileWidth_ = tileWidth;
+                mapLayoutBuilder_.WithTileWidth(tileWidth);
                 return this;
             }
 
             public MapDescriptorBuilder WithTileHeight(int tileHeight)
             {
-                tileHeight_ = tileHeight;
+                mapLayoutBuilder_.WithTileHeight(tileHeight);
+                return this;
+            }
+
+            public MapDescriptorBuilder WithMapLayout(MapLayout mapLayout)
+            {
+                mapLayoutBuilder_.WithMapLayout(mapLayout);
                 return this;
             }
 
             public MapDescriptor Build()
             {
-                Validate.Hard.IsTrue(0 < width_,
-                    () => $"Cannot create a {typeof(MapDescriptor)} with a width of {width_}");
-                Validate.Hard.IsTrue(0 < height_,
-                    () => $"Cannot create a {typeof(MapDescriptor)} with a height of {height_}");
-                Validate.Hard.IsTrue(0 < tileWidth_,
-                    () => $"Cannot create a {typeof(MapDescriptor)} with a tile width of {tileWidth_}");
-                Validate.Hard.IsTrue(0 < tileHeight_,
-                    () => $"Cannot create a {typeof(MapDescriptor)} with a tile  height of {tileHeight_}");
-                if(Validate.Check.IsNotEmpty(tiles_))
-                {
-                    Logger.Warn($"Creating {typeof(MapDescriptor)} without any tiles");
-                }
-                return new MapDescriptor(tiles_.ToDictionary(), width_, height_, tileWidth_, tileHeight_);
+                MapLayout mapLayout = mapLayoutBuilder_.Build();
+                Validate.Log.IsNotEmpty(tiles_, () => $"Creating {typeof(MapDescriptor)} without any tiles");
+                return new MapDescriptor(tiles_.ToDictionary(), mapLayout);
             }
         }
     }

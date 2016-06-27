@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Messaging
 {
@@ -14,10 +15,10 @@ namespace DxCore.Core.Messaging
     public class Message
     {
         [DataMember]
-        public TimeSpan TimeStamp { get; private set; }
+        public TimeSpan TimeStamp { get; }
 
         [DataMember]
-        public GameId GameId { get; private set; }
+        public GameId GameId { get;}
 
         public static Message EmptyMessage { get; set; } = new Message(TimeSpan.Zero, GameId.Empty);
 
@@ -44,6 +45,9 @@ namespace DxCore.Core.Messaging
     {
         public static void Emit<T>(this T message) where T : Message
         {
+            Validate.Assert.IsTrue(typeof(T) != typeof(Message),
+                () =>
+                    $"Please use {nameof(Message.EmitUntyped)} if you don't know the type of the message. ({nameof(Emit)} called with a base {typeof(Message)}");
             Message.EmitTyped(message);
         }
     }

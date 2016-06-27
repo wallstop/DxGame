@@ -1,21 +1,20 @@
 ﻿using System;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Utils.Cache.Advanced
 {
     public class LocalLoadingCache<K, V> : LocalCache<K, V>, ILoadingCache<K, V>
     {
-        private readonly Func<V> valueLoader_;
+        private Func<V> ValueLoader { get; }
 
         public LocalLoadingCache(CacheBuilder<K, V> cacheBuilder, Func<V> valueLoader) : base(cacheBuilder)
         {
             Validate.Validate.Hard.IsNotNull(valueLoader, this.GetFormattedNullOrDefaultMessage(nameof(valueLoader)));
-            valueLoader_ = valueLoader;
+            ValueLoader = valueLoader;
         }
 
         public V Get(K key)
         {
-            return Get(key, valueLoader_);
+            return Get(key, ValueLoader);
         }
     }
 }

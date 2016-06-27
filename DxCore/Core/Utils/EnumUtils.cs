@@ -1,5 +1,4 @@
 ﻿using System;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Utils
 {
@@ -10,8 +9,14 @@ namespace DxCore.Core.Utils
     public static class EnumUtils
     {
         /**
-
-            <summary> Rotate's an enum's value to the next one, or the first one if the value is the last. </summary>
+            <summary> 
+                Rotate's an enum's value to the next one, or the first one if the value is the last. 
+            </summary>
+            <code>
+                enum Weekday { Monday, Tuesday, Wednesday, Thursday, Friday };
+                Weekday today = Weekday.Monday;
+                Weekday tomorrow = today.Rotate(); // tomorrow = Tuesday
+            </code>
         */
 
         public static T Rotate<T>(this T currentValue) where T : struct

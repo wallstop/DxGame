@@ -28,6 +28,8 @@ namespace MapEditorLibrary.Core.Components
 
         private MapGridComponent MapGrid { get; }
 
+        private SingleElementLocalLoadingCache<MapDescriptor> MapDescriptorCache { get; }
+
         public MapCreatorComponent(MapGridComponent mapGrid)
         {
             Validate.Hard.IsNotNullOrDefault(mapGrid);
@@ -37,6 +39,8 @@ namespace MapEditorLibrary.Core.Components
             MapBuilder.WithHeight(mapGrid.MapHeight);
             MapBuilder.WithTileWidth(mapGrid.TileUnitWidth);
             MapBuilder.WithTileHeight(mapGrid.TileUnitHeight);
+
+            MapDescriptorCache = new SingleElementLocalLoadingCache<MapDescriptor>(CacheBuilder<FastCacheKey, MapDescriptor>.NewBuilder(),() => MapBuilder.Build());
         }
 
         public override void OnAttach()
@@ -62,11 +66,12 @@ namespace MapEditorLibrary.Core.Components
             TileModel currentTileModel = DxGame.Instance.Model<RootUiModel>().SelectedTileModel;
             tileTextureCache_.Put(currentTile, currentTileModel.Texture);
             MapBuilder.WithTile(tilePosition, currentTile);
+            MapDescriptorCache.Invalidate();
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            MapDescriptor mapDescriptor = MapBuilder.Build();
+            MapDescriptor mapDescriptor = MapDescriptorCache.Get();
             int tileWidth = MapGrid.TileWidth;
             int tileHeight = MapGrid.TileHeight;
 

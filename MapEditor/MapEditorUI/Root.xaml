@@ -26,6 +26,24 @@
             <MouseBinding MouseAction="LeftClick" Command="{Binding PlaceTileCommand}" />
         </Grid.InputBindings>
         <!--<Canvas Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity=".7"> -->
+        <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity="0.95">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <!-- TODO: Move these out to own views -->
+            <TextBlock Text="Map Tile Width" VerticalAlignment="Center" />
+            <Slider Name="mapTileWidth" Minimum="1" Maximum="150" Grid.Column="1" VerticalAlignment="Center" Margin="5" ></Slider>
+        </Grid>
         <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity="0.95">
             <TabControl>
                 <TabItem Header="Block" >

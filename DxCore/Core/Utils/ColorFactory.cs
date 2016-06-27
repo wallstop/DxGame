@@ -1,6 +1,5 @@
 ﻿using System;
 using DxCore.Core.Utils.Cache.Simple;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
 namespace DxCore.Core.Utils

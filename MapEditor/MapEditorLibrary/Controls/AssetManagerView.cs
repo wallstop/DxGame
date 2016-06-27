@@ -22,6 +22,9 @@ namespace MapEditorLibrary.Controls
         public ICommand DeleteCommand { get; }
         public ICommand PlaceTileCommand { get; }
 
+        //public float 
+
+
         public Tile SelectedTile
         {
             get

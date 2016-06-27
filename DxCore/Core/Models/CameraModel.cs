@@ -13,10 +13,10 @@ namespace DxCore.Core.Models
         private Func<DxVector2> NoOpTarget => () => Position;
 
         private const float MinSpeed = 1.5f;
-        private const float IgnoreThreshold = 5f;
+        private const float IgnoreThreshold = 5;
 
-        private const float MinZoom = 0.3f;
-        private const float MaxZoom = 500f;
+        private const float MinZoom = 1 / 3.0f;
+        private const float MaxZoom = 3;
 
         private DxVector2 position_;
         private DxRectangle bounds_;
@@ -75,7 +75,7 @@ namespace DxCore.Core.Models
         private void HandleZoomRequest(ZoomRequest zoomRequest)
         {
             /* Maybe we weren't the authors - we want to handle that anyways */
-            ClampAndSetZoomAmount(zoomRequest.ZoomLevel);
+            ZoomAmount = zoomRequest.ZoomLevel;
         }
 
         private void ClampAndSetZoomAmount(float value)
@@ -94,14 +94,14 @@ namespace DxCore.Core.Models
 
         public void TrackActivePlayer()
         {
-            TrackPlayer(DxGame.Instance.Model<PlayerModel>()?.ActivePlayer);
+            TrackPlayer(() => DxGame.Instance.Model<PlayerModel>()?.ActivePlayer);
         }
 
         /* TODO: Make this delegate serializable? */
 
-        public void TrackPlayer(Player player)
+        public void TrackPlayer(Func<Player> playerProducer)
         {
-            Target = () => player?.Position.Center ?? Position;
+            Target = () => playerProducer()?.Position.Center ?? Position;
         }
 
         public void MoveTo(DxVector2 target)
@@ -155,6 +155,7 @@ namespace DxCore.Core.Models
             // TODO: Change this ugly color
             DxGame.Instance.GraphicsDevice.Clear(Color.DarkGray);
 
+            // TODO: Stop calling ourselves referentially and shit
             DxRectangle screen = DxGame.Instance.ScreenRegion;
             Matrix cameraShift = Matrix.CreateTranslation(screen.X, screen.Y, 0);
             Matrix scaled = Matrix.CreateScale(ZoomAmount);

@@ -10,6 +10,9 @@ namespace DxCore.Core
     {
         internal static readonly Encoding Encoding = Encoding.Default;
 
+        private static DataContractJsonSerializer JsonSerializer => new DataContractJsonSerializer(typeof(T),
+            new DataContractJsonSerializerSettings { UseSimpleDictionaryFormat = true });
+
         // TODO: Move all of these to thread-local storage
 
         public static byte[] BinarySerialize(T input)
@@ -36,7 +39,7 @@ namespace DxCore.Core
         {
             using(MemoryStream memoryStream = new MemoryStream())
             {
-                DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T));
+                DataContractJsonSerializer serializer = JsonSerializer;
                 serializer.WriteObject(memoryStream, input);
                 return memoryStream.ToArray();
             }
@@ -47,8 +50,7 @@ namespace DxCore.Core
             using(MemoryStream memoryStream = new MemoryStream(data))
             {
                 /* TODO: Use Global instance? */
-                DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(T),
-                    new DataContractJsonSerializerSettings {UseSimpleDictionaryFormat = true});
+                DataContractJsonSerializer deserializer = JsonSerializer;
                 memoryStream.Position = 0;
                 return (T) deserializer.ReadObject(memoryStream);
             }
@@ -81,5 +83,7 @@ namespace DxCore.Core
             string jsonAsText = Serializer<T>.Encoding.GetString(json);
             return jsonAsText;
         }
+
+        public static T Parse<T>(string toParse) => Serializer<T>.JsonDeserialize(toParse);
     }
 }

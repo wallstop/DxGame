@@ -27,6 +27,7 @@ namespace MapEditorLibrary.Controls
         Deletin
     }
 
+    // TDOO: Break up into modules or some shit
     public class AssetManagerView : ViewModelBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -36,8 +37,10 @@ namespace MapEditorLibrary.Controls
         private object selectedTile_;
         private float scale_ = 1.0f;
 
-        public ICommand LoadCommand { get; }
-        public ICommand DeleteCommand { get; }
+        public ICommand LoadTileCommand { get; }
+        public ICommand DeleteTileCommand { get; }
+        public ICommand LoadMapCommand { get; }
+        public ICommand SaveMapCommand { get; }
 
         public Tile SelectedTile
         {
@@ -97,11 +100,13 @@ namespace MapEditorLibrary.Controls
 
         private TilePloppinMode TilePloppinMode { get; set; }
 
-        private float Scale {
+        private float Scale
+        {
             get { return scale_; }
             set
             {
-                scale_ = MathHelper.Clamp(value, 0.3f, 500f);
+                /* TODO: Rip from CameraModel */
+                scale_ = MathHelper.Clamp(value, 1 / 3f, 3f);
             }
         }
 
@@ -110,8 +115,10 @@ namespace MapEditorLibrary.Controls
             Blocks = new ObservableCollection<TileModel>();
             Platforms = new ObservableCollection<TileModel>();
 
-            LoadCommand = new RelayCommand(OnLoad);
-            DeleteCommand = new RelayCommand(OnDelete);
+            LoadTileCommand = new RelayCommand(HandleTileLoad);
+            DeleteTileCommand = new RelayCommand(HandleTileDelete);
+            LoadMapCommand = new RelayCommand(HandleMapLoad);
+            SaveMapCommand = new RelayCommand(HandleMapSave);
         }
 
         private void OnMouseDown(object source, MouseButtonEventArgs mouseEventArgs)
@@ -186,7 +193,7 @@ namespace MapEditorLibrary.Controls
             }
         }
 
-        private void OnLoad(object eventArgs)
+        private void HandleTileLoad(object eventArgs)
         {
             OpenFileDialog loadAssetDialog = new OpenFileDialog
             {
@@ -242,13 +249,53 @@ namespace MapEditorLibrary.Controls
                 }
                 // TODO: Don't care
             }
-
-            Console.WriteLine($"Load called, waow. With: {eventArgs}");
         }
 
-        private void OnDelete(object eventArgs)
+        private void HandleTileDelete(object eventArgs)
         {
-            Console.WriteLine($"Delete called, nice! With: {eventArgs}");
+            Console.WriteLine($"{nameof(HandleTileDelete)} called, nice! With: {eventArgs}");
+        }
+
+        private void HandleMapLoad(object eventArgs)
+        {
+            OpenFileDialog loadMapDialog = new OpenFileDialog
+            {
+                CheckFileExists = true,
+                CheckPathExists = true,
+                RestoreDirectory = true,
+                Filter = "MapDescriptor files(*.mdtr)|*.mdtr;",
+                Multiselect = false
+            };
+
+            switch(loadMapDialog.ShowDialog())
+            {
+                case DialogResult.OK:
+                {
+                    string mapFilePath = loadMapDialog.FileName;
+                    new LoadMapRequest(mapFilePath).Emit();
+                    break;
+                }
+            }
+        }
+
+        private void HandleMapSave(object eventArgs)
+        {
+            SaveFileDialog saveMapDialog = new SaveFileDialog
+            {
+                CheckPathExists = true,
+                RestoreDirectory = true,
+                Filter = "MapDescriptor files(*.mdtr)|*.mdtr;"
+            };
+
+            switch(saveMapDialog.ShowDialog())
+            {
+                case DialogResult.OK:
+                {
+                    string mapFilePath = saveMapDialog.FileName;
+                    new SaveMapRequest(mapFilePath).Emit();
+                    break;
+                }
+            }
         }
     }
 }

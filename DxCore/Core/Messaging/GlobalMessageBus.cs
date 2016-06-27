@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils.Validate;
 using NLog;
@@ -184,7 +185,7 @@ namespace DxCore.Core.Messaging
 
         private static void UntargetedBroadcast<T>(T typedMessage) where T : Message
         {
-            foreach(MessageHandler handler in Handler<T>())
+            foreach(MessageHandler handler in Handler<T>().ToArray())
             {
                 handler.HandleTypedMessage(typedMessage);
             }
@@ -193,7 +194,7 @@ namespace DxCore.Core.Messaging
 
         private static void BroadcastGlobal<T>(T typedMessage) where T : Message
         {
-            foreach(MessageHandler handler in GlobalSinks)
+            foreach(MessageHandler handler in GlobalSinks.ToArray())
             {
                 handler.HandleUntypedMessage(typedMessage);
             }

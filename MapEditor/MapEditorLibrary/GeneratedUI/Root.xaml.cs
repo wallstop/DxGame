@@ -38,13 +38,15 @@ namespace EmptyKeys.UserInterface.Generated {
         
         private TabControl e_4;
         
-        private StackPanel e_9;
+        private Grid e_9;
         
         private Button e_10;
         
         private Button e_11;
         
-        private ContentControl e_12;
+        private Button e_12;
+        
+        private Button e_13;
         
         public Root() : 
                 base() {
@@ -136,6 +138,7 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_3.Margin = new Thickness(5F, 5F, 5F, 5F);
             this.e_3.HorizontalAlignment = HorizontalAlignment.Left;
             this.e_3.Opacity = 0.95F;
+            this.e_3.Background = new SolidColorBrush(new ColorW(0, 0, 0, 255));
             this.e_3.Orientation = Orientation.Horizontal;
             Grid.SetColumn(this.e_3, 0);
             Grid.SetRow(this.e_3, 1);
@@ -143,32 +146,57 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_4 = new TabControl();
             this.e_3.Children.Add(this.e_4);
             this.e_4.Name = "e_4";
+            this.e_4.Margin = new Thickness(2F, 2F, 2F, 2F);
             this.e_4.ItemsSource = Get_e_4_Items();
             // e_9 element
-            this.e_9 = new StackPanel();
+            this.e_9 = new Grid();
             this.e_3.Children.Add(this.e_9);
             this.e_9.Name = "e_9";
-            this.e_9.Orientation = Orientation.Vertical;
+            this.e_9.Margin = new Thickness(2F, 2F, 2F, 2F);
+            RowDefinition row_e_9_0 = new RowDefinition();
+            this.e_9.RowDefinitions.Add(row_e_9_0);
+            RowDefinition row_e_9_1 = new RowDefinition();
+            this.e_9.RowDefinitions.Add(row_e_9_1);
+            RowDefinition row_e_9_2 = new RowDefinition();
+            this.e_9.RowDefinitions.Add(row_e_9_2);
+            RowDefinition row_e_9_3 = new RowDefinition();
+            this.e_9.RowDefinitions.Add(row_e_9_3);
             // e_10 element
             this.e_10 = new Button();
             this.e_9.Children.Add(this.e_10);
             this.e_10.Name = "e_10";
-            this.e_10.Content = "Load";
-            Binding binding_e_10_Command = new Binding("LoadCommand");
+            this.e_10.Margin = new Thickness(2F, 2F, 2F, 2F);
+            this.e_10.Content = "Load Tile";
+            Grid.SetRow(this.e_10, 0);
+            Binding binding_e_10_Command = new Binding("LoadTileCommand");
             this.e_10.SetBinding(Button.CommandProperty, binding_e_10_Command);
             // e_11 element
             this.e_11 = new Button();
             this.e_9.Children.Add(this.e_11);
             this.e_11.Name = "e_11";
-            this.e_11.Content = "Delete";
-            Binding binding_e_11_Command = new Binding("DeleteCommand");
+            this.e_11.Margin = new Thickness(2F, 2F, 2F, 2F);
+            this.e_11.Content = "Delete Tile";
+            Grid.SetRow(this.e_11, 1);
+            Binding binding_e_11_Command = new Binding("DeleteTileCommand");
             this.e_11.SetBinding(Button.CommandProperty, binding_e_11_Command);
             // e_12 element
-            this.e_12 = new ContentControl();
+            this.e_12 = new Button();
             this.e_9.Children.Add(this.e_12);
             this.e_12.Name = "e_12";
-            Binding binding_e_12_Content = new Binding("SelectedTile");
-            this.e_12.SetBinding(ContentControl.ContentProperty, binding_e_12_Content);
+            this.e_12.Margin = new Thickness(2F, 2F, 2F, 2F);
+            this.e_12.Content = "Load Map";
+            Grid.SetRow(this.e_12, 2);
+            Binding binding_e_12_Command = new Binding("LoadMapCommand");
+            this.e_12.SetBinding(Button.CommandProperty, binding_e_12_Command);
+            // e_13 element
+            this.e_13 = new Button();
+            this.e_9.Children.Add(this.e_13);
+            this.e_13.Name = "e_13";
+            this.e_13.Margin = new Thickness(2F, 2F, 2F, 2F);
+            this.e_13.Content = "Save Map";
+            Grid.SetRow(this.e_13, 3);
+            Binding binding_e_13_Command = new Binding("SaveMapCommand");
+            this.e_13.SetBinding(Button.CommandProperty, binding_e_13_Command);
         }
         
         private static System.Collections.ObjectModel.ObservableCollection<object> Get_e_4_Items() {
@@ -176,6 +204,7 @@ namespace EmptyKeys.UserInterface.Generated {
             // e_5 element
             TabItem e_5 = new TabItem();
             e_5.Name = "e_5";
+            e_5.Margin = new Thickness(2F, 2F, 2F, 2F);
             e_5.Header = "Block";
             // blockData element
             ListBox blockData = new ListBox();
@@ -192,6 +221,7 @@ namespace EmptyKeys.UserInterface.Generated {
             // e_7 element
             TabItem e_7 = new TabItem();
             e_7.Name = "e_7";
+            e_7.Margin = new Thickness(2F, 2F, 2F, 2F);
             e_7.Header = "Platform";
             // platformData element
             ListBox platformData = new ListBox();

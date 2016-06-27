@@ -32,10 +32,10 @@ namespace DxCore.Core.Map
                     });
 
         [DataMember]
-        public TileType Type { get; }
+        public TileType Type { get; private set; }
 
         [DataMember]
-        public string Asset { get; }
+        public string Asset { get; private set; }
 
         [IgnoreDataMember]
         public IEnumerable<CollidableDirection> CollidableDirections => TILE_COLLISION_DIRECTIONS[Type];

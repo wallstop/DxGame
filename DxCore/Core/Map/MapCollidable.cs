@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Map
 {
@@ -13,13 +10,13 @@ namespace DxCore.Core.Map
     public class MapCollidable : IIdentifiable
     {
         [DataMember]
-        public UniqueId Id { get; }
+        public UniqueId Id { get; private set; }
 
         [DataMember]
-        public Tile Tile { get; }
+        public Tile Tile { get; private set; }
 
         [DataMember]
-        public DxRectangle Space { get; }
+        public DxRectangle Space { get; private set; }
 
         public MapCollidable(Tile tile, DxRectangle space)
         {

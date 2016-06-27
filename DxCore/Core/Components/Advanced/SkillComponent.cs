@@ -32,8 +32,8 @@ namespace DxCore.Core.Components.Advanced
 
         public SkillComponent(List<Skill> skills)
         {
-            Validate.Hard.IsNotNull(skills, this.GetFormattedNullOrDefaultMessage(skills));
-            Validate.Hard.NoNullElements(skills, this.GetFormattedNullOrDefaultMessage(typeof(Skill)));
+            Validate.Hard.IsNotNull(skills, () => this.GetFormattedNullOrDefaultMessage(skills));
+            Validate.Hard.NoNullElements(skills, () => this.GetFormattedNullOrDefaultMessage(typeof(Skill)));
             Skills =
                 new ReadOnlyDictionary<Commandment, Skill>(skills.ToDictionary(skill => skill.Ability, skill => skill));
             commandMessages_ = new List<CommandMessage>();

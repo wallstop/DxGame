@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DxCore;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Map;
+using DxCore.Core.Messaging;
 using DxCore.Core.Models;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils.Cache.Advanced;
@@ -49,19 +50,63 @@ namespace MapEditorLibrary.Core.Components
         {
             RegisterMessageHandler<AddTileToMapRequest>(HandleAddTileToMapRequest);
             RegisterMessageHandler<RemoveTileFromMapRequest>(HandleRemoveTileFromMapRequest);
+            RegisterMessageHandler<SaveMapRequest>(HandleSaveMapRequest);
+            RegisterMessageHandler<LoadMapRequest>(HandleLoadMapRequest);
             base.OnAttach();
+        }
+
+        private void HandleSaveMapRequest(SaveMapRequest saveMapRequest)
+        {
+            try
+            {
+                MapDescriptor mapDescriptor = MapDescriptorCache.Get();
+                mapDescriptor.Save(saveMapRequest.FilePath);
+            }
+            catch(Exception e)
+            {
+                string errorMessage = $"Failed to save map to {saveMapRequest.FilePath}";
+                Logger.Error(e, errorMessage);
+                new ErrorNotification(errorMessage).Emit();
+            }
+        }
+
+        private void HandleLoadMapRequest(LoadMapRequest loadMapRequest)
+        {
+            MapDescriptor loadedMap;
+            try
+            {
+                loadedMap = MapDescriptor.StaticLoad(loadMapRequest.FilePath);
+            }
+            catch(Exception e)
+            {
+                string errorMessage = $"Failed to load map from {loadMapRequest.FilePath}";
+                Logger.Error(e, errorMessage);
+                new ErrorNotification(errorMessage).Emit();
+                return;
+            }
+            MapDescriptorCache.Invalidate();
+            MapBuilder.WithMapDescriptor(loadedMap);
+            new MapChangedNotification(MapDescriptorCache.Get()).Emit();
         }
 
         private void HandleRemoveTileFromMapRequest(RemoveTileFromMapRequest request)
         {
-            TilePosition tilePosition = CurrentTilePosition;
-            MapBuilder.WithoutTile(tilePosition);
+            TilePosition? tilePosition = CurrentTilePosition;
+            if(!tilePosition.HasValue)
+            {
+                return;
+            }
+            MapBuilder.WithoutTile(tilePosition.Value);
             MapDescriptorCache.Invalidate();
         }
 
         private void HandleAddTileToMapRequest(AddTileToMapRequest request)
         {
-            TilePosition tilePosition = CurrentTilePosition;
+            TilePosition? tilePosition = CurrentTilePosition;
+            if(!tilePosition.HasValue)
+            {
+                return;
+            }
             Tile currentTile = DxGame.Instance.Model<RootUiModel>().SelectedTile;
             if(ReferenceEquals(currentTile, null))
             {
@@ -71,11 +116,11 @@ namespace MapEditorLibrary.Core.Components
 
             TileModel currentTileModel = DxGame.Instance.Model<RootUiModel>().SelectedTileModel;
             tileTextureCache_.Put(currentTile, currentTileModel.Texture);
-            MapBuilder.WithTile(tilePosition, currentTile);
+            MapBuilder.WithTile(tilePosition.Value, currentTile);
             MapDescriptorCache.Invalidate();
         }
 
-        private TilePosition CurrentTilePosition
+        private TilePosition? CurrentTilePosition
         {
             get
             {
@@ -83,8 +128,12 @@ namespace MapEditorLibrary.Core.Components
                 CameraModel cameraModel = DxGame.Instance.Model<CameraModel>();
                 DxVector2 worldSpacePosition = cameraModel.Invert(mousePosition);
 
-                TilePosition tilePosition = MapGrid.PositionForPoint(worldSpacePosition);
-                return tilePosition;
+                TilePosition tilePosition;
+                if(MapGrid.PositionForPoint(worldSpacePosition, out tilePosition))
+                {
+                    return tilePosition;
+                }
+                return null;
             }
         }
 
@@ -102,7 +151,7 @@ namespace MapEditorLibrary.Core.Components
                     tileHeight);
 
                 Texture2D tileTexture = tileTextureCache_.Get(tile,
-                    () => { throw new InvalidOperationException($"{tile} should have had a texture"); });
+                    () => DxGame.Instance.Content.Load<Texture2D>(tile.Asset));
 
                 spriteBatch.Draw(tileTexture, space, Color.White);
             }

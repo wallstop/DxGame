@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
+using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Cache.Simple;
 using DxCore.Core.Utils.Distance;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework.Graphics;
-using NLog;
 
 namespace DxCore.Core.Map
 {
@@ -19,19 +17,30 @@ namespace DxCore.Core.Map
     [DataContract]
     public class Map : DrawableComponent
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        [DataMember]
+        private MapDescriptor mapDescriptor_;
+
+        [IgnoreDataMember]
+        public MapDescriptor MapDescriptor
+        {
+            get { return mapDescriptor_; }
+            set
+            {
+                mapDescriptor_ = value;
+                new UpdateCameraBounds(mapDescriptor_.Bounds).Emit();
+            }
+        }
 
         [DataMember]
-        public MapDescriptor MapDescriptor { get; set; }
+        private Dictionary<TilePosition, MapCollidable> MapCollidables { get; set; }
 
         [DataMember]
-        private Dictionary<TilePosition, MapCollidable> MapCollidables { get; }
+        public ISpatialTree<MapCollidable> Collidables { get; private set; }
 
         [DataMember]
-        public ISpatialTree<MapCollidable> Collidables { get; }
+        public DxVector2 PlayerSpawn { get; private set; }
 
-        [DataMember]
-        public DxVector2 PlayerSpawn { get; }
+        private static float Scale => DxGame.Instance.Unit.Value;
 
         [IgnoreDataMember] [NonSerialized] private readonly ISimpleCache<Tile, Texture2D> tileTextureCache_ =
             new UnboundedLoadingSimpleCache<Tile, Texture2D>(tile => DxGame.Instance.Content.Load<Texture2D>(tile.Asset));
@@ -68,8 +77,9 @@ namespace DxCore.Core.Map
                 TilePosition position = tilePair.Key;
                 Tile tile = tilePair.Value;
                 mapCollidables[position] = new MapCollidable(tile,
-                    new DxRectangle(position.X * mapDescriptor.TileWidth, position.Y * mapDescriptor.TileHeight,
-                        mapDescriptor.TileWidth, mapDescriptor.TileHeight));
+                    new DxRectangle(position.X * mapDescriptor.TileWidth * Scale,
+                        position.Y * mapDescriptor.TileHeight * Scale, mapDescriptor.TileWidth * Scale,
+                        mapDescriptor.TileHeight * Scale));
             }
             return mapCollidables;
         }
@@ -97,19 +107,16 @@ namespace DxCore.Core.Map
             base.LoadContent();
         }
 
-        public override void Initialize()
-        {
-            base.Initialize();
-        }
-
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             DxRectangle range = DxGame.Instance.ScreenRegion;
+            range.X *= -1;
+            range.Y *= -1;
 
             List<MapCollidable> mapCollidablesOnScreen = Collidables.InRange(range);
             foreach(MapCollidable mapCollidable in mapCollidablesOnScreen)
             {
-                spriteBatch.Draw(tileTextureCache_.Get(mapCollidable.Tile), null, mapCollidable.Space.ToRectangle());
+                spriteBatch.Draw(tileTextureCache_.Get(mapCollidable.Tile), null, mapCollidable.Space);
             }
 
             ///* 

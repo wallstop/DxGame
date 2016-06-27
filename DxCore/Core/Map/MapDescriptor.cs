@@ -28,7 +28,7 @@ namespace DxCore.Core.Map
         public override MapDescriptor Item => this;
 
         [DataMember]
-        public MapLayout MapLayout { get; }
+        public MapLayout MapLayout { get; private set; }
 
         /* In indices */
 
@@ -51,12 +51,11 @@ namespace DxCore.Core.Map
         public int TileHeight => MapLayout.TileHeight;
 
         [IgnoreDataMember]
-        public DxRectangle Bounds => MapLayout.Bounds;
-
-        /* TODO: Make readonly? */
+        // TODO: Figure out units, pls. This is pretty urgent.
+        public DxRectangle Bounds => MapLayout.Bounds * DxGame.Instance.Unit.Value;
 
         [DataMember]
-        public Dictionary<TilePosition, Tile> Tiles { get; }
+        public Dictionary<TilePosition, Tile> Tiles { get; private set; }
 
         private MapDescriptor(Dictionary<TilePosition, Tile> tiles, MapLayout mapLayout)
         {
@@ -123,6 +122,18 @@ namespace DxCore.Core.Map
             public MapDescriptorBuilder WithMapLayout(MapLayout mapLayout)
             {
                 mapLayoutBuilder_.WithMapLayout(mapLayout);
+                return this;
+            }
+
+            public MapDescriptorBuilder WithMapDescriptor(MapDescriptor existingMap)
+            {
+                Validate.Hard.IsNotNull(existingMap);
+                tiles_.Clear();
+                foreach(KeyValuePair<TilePosition, Tile> tileAndPosition in existingMap.Tiles)
+                {
+                    tiles_.Add(tileAndPosition.Key, tileAndPosition.Value);
+                }
+                mapLayoutBuilder_.WithMapLayout(existingMap.MapLayout);
                 return this;
             }
 

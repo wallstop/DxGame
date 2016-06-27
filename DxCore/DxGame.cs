@@ -80,6 +80,8 @@ namespace DxCore
 
         public GameId GameGuid { get; protected set; }
 
+        public DxUnit Unit { get; protected set; }
+
         public DxGameTime CurrentTime { get; protected set; } = new DxGameTime();
 
         public UpdateMode UpdateMode { get; set; } = UpdateMode.Active;
@@ -175,6 +177,7 @@ namespace DxCore
             lastFrameTick_ = TimeSpan.Zero;
             compensatedGameTime_ = TimeSpan.Zero;
             GameTimer = Stopwatch.StartNew();
+            Unit = new DxUnit(3);
         }
 
         /**

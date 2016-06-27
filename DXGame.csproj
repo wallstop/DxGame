@@ -160,10 +160,7 @@
     <Content Include="Content\Items\PandorasBox.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Map\NewArtv1-Foreground.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Map\NewArtv1.png">
+    <Content Include="Content\Map\Tiles\SimpleTile.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\MousePointer.png">
@@ -353,7 +350,7 @@
     <Content Include="Content\Player\Walk_Right.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Content\Map\NewArtv1.mdtr">
+    <None Include="Content\Map\NewBadMap.mdtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Player\Archer\ArrowRainLaunchLeft.adtr">

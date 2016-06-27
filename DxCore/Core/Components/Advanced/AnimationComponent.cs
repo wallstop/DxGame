@@ -110,10 +110,9 @@ namespace DxCore.Core.Components.Advanced
 
             public AnimationComponentBuilder WithStateAndAsset(State.State state, AnimationDescriptor descriptor)
             {
-                Validate.Hard.IsNotNullOrDefault(state, this.GetFormattedNullOrDefaultMessage(nameof(descriptor)));
-                Validate.Hard.IsFalse(animationsForStates_.ContainsKey(state),
-                    this.GetFormattedAlreadyContainsMessage(state, animationsForStates_.Keys));
-                var animation = new Animation.Animation(descriptor);
+                Validate.Hard.IsNotNullOrDefault(state, () => this.GetFormattedNullOrDefaultMessage(nameof(descriptor)));
+                Validate.Hard.IsFalse(animationsForStates_.ContainsKey(state), () => this.GetFormattedAlreadyContainsMessage(state, animationsForStates_.Keys));
+                Animation.Animation animation = new Animation.Animation(descriptor);
                 animationsForStates_.Add(state, animation);
                 return this;
             }

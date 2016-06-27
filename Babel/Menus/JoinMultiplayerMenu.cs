@@ -137,7 +137,7 @@ namespace Babel.Menus
 
             Remove();
             DxGame.Instance.UpdateMode = UpdateMode.Cooperative;
-            DxGame.Instance.AttachModel(new GameModel());
+            new GameModel().Create();
         }
     }
 }

@@ -106,10 +106,9 @@ namespace Babel.Menus
             var networkModel = DxGame.Instance.Model<NetworkModel>();
             networkModel.AttachServer(server);
             server.EstablishConnection();
-
-            var game = DxGame.Instance;
+            
             Remove();
-            game.AttachModel(new GameModel());
+            new GameModel().Create();
         }
     }
 }

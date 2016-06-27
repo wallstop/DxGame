@@ -27,8 +27,8 @@ namespace DxCore.Core.Utils.Validate
             return expression;
         }
 
-        public bool IsFalse(bool expression) => !IsTrue(expression);
-        public bool IsFalse(bool expression, string message) => !IsTrue(expression, message);
+        public bool IsFalse(bool expression) => IsFalse(expression);
+        public bool IsFalse(bool expression, string message) => IsFalse(expression, message);
         public bool IsFalse(bool expression, Func<string> messageProducer) => IsTrue(!expression, messageProducer);
 
         public bool IsInClosedInterval<T>(T value, T min, T max) where T : IComparable<T>
@@ -124,7 +124,8 @@ namespace DxCore.Core.Utils.Validate
 
         public bool NoNullElements<T>(IEnumerable<T> enumeration, Func<string> messageProducer)
         {
-            bool noNullElements = enumeration.Any(element => ReferenceEquals(element, null));
+            bool nullElements = enumeration.Any(element => ReferenceEquals(element, null));
+            bool noNullElements = !nullElements;
             FailIfFalse(noNullElements, messageProducer);
             return noNullElements;
         }

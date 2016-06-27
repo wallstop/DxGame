@@ -37,27 +37,20 @@ namespace Babel.Models
 
         public override void Initialize()
         {
-           
-            EventModel eventModel = new EventModel();
-            DxGame.Instance.AttachModel(eventModel);
+
+            new EventModel().Create();
 
             ILevelProgressionStrategy levelProgression = new SimpleRotatingLevelProgression();
             levelProgression.Init();
 
             mapModel_ = new MapModel(levelProgression);
-            DxGame.Instance.AttachModel(mapModel_);
-            DeveloperModel developerModel = new DeveloperModel();
-            DxGame.Instance.AttachModel(developerModel);
-            CollisionModel collisionModel = new CollisionModel();
-            DxGame.Instance.AttachModel(collisionModel);
-            EnvironmentModel environmentModel = new EnvironmentModel();
-            DxGame.Instance.AttachModel(environmentModel);
-            PathfindingModel pathfindingModel = new PathfindingModel();
-            DxGame.Instance.AttachModel(pathfindingModel);
-            ExperienceModel experienceModel = new ExperienceModel();
-            DxGame.Instance.AttachModel(experienceModel);
-            PlayerModel playerModel = new PlayerModel();
-            DxGame.Instance.AttachModel(playerModel);
+            mapModel_.Create();
+            new DeveloperModel().Create();
+            new CollisionModel().Create();
+            new EnvironmentModel().Create();
+            new PathfindingModel().Create();
+            new ExperienceModel().Create();
+            new PlayerModel().Create();
 
             if(DxGame.Instance.UpdateMode == UpdateMode.Active)
             {

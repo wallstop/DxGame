@@ -42,8 +42,11 @@
             <Slider Name="mapTileWidth" Minimum="1" Maximum="150" Grid.Column="1" VerticalAlignment="Center" Margin="5" ></Slider>
         </Grid>
         <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity="0.95">
-            <TabControl>
-                <TabItem Header="Block" >
+            <StackPanel.Background>
+                <SolidColorBrush Color="Black" />
+            </StackPanel.Background>
+            <TabControl Margin="2,2,2,2">
+                <TabItem Header="Block" Margin="2,2,2,2">
                     <ListBox Name="blockData" ItemsSource="{Binding Blocks}" SelectedItem="{Binding Mode=OneWayToSource, Path=SelectedBlock}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
@@ -53,7 +56,7 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </TabItem>
-                <TabItem Header="Platform">
+                <TabItem Header="Platform" Margin="2,2,2,2">
                     <ListBox Name="platformData" ItemsSource="{Binding Platforms}" SelectedItem="{Binding Mode=OneWayToSource, Path=SelectedPlatform}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
@@ -63,11 +66,18 @@
                     </ListBox>
                 </TabItem>
             </TabControl>
-            <StackPanel Orientation="Vertical">
-                <Button Content="Load" Command="{Binding LoadCommand}" />
-                <Button Content="Delete" Command="{Binding DeleteCommand}"/>
-                <ContentControl Content="{Binding SelectedTile}" />
-            </StackPanel>
+            <Grid Margin="2,2,2,2">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Button Content="Load Tile" Command="{Binding LoadTileCommand}" Grid.Row="0" Margin="2,2,2,2"/>
+                <Button Content="Delete Tile" Command="{Binding DeleteTileCommand}" Grid.Row="1" Margin="2,2,2,2"/>
+                <Button Content="Load Map" Command="{Binding LoadMapCommand}" Grid.Row="2" Margin="2,2,2,2"/>
+                <Button Content="Save Map" Command="{Binding SaveMapCommand}" Grid.Row="3" Margin="2,2,2,2"/>
+            </Grid>
         </StackPanel>
         <!--</Canvas>-->
     </Grid>

@@ -39,7 +39,7 @@ namespace Babel.Menus
 
         private void SinglePlayerAction()
         {
-            DxGame.Instance.AttachModel(new GameModel());
+            new GameModel().Create();
             Remove();
         }
 

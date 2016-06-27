@@ -63,5 +63,9 @@ namespace DxCore.Core.Map
             string jsonValue = this.ToJson();
             return jsonValue;
         }
+
+        /* We need a public static Parse method if we want these to be dictionary keys & JSON serialized */
+        public static TilePosition Parse(string toParse)
+            => SerializerExtensions.Parse<TilePosition>(toParse);
     }
 }

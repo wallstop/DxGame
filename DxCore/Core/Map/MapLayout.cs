@@ -13,22 +13,22 @@ namespace DxCore.Core.Map
         /* In Tiles */
 
         [DataMember]
-        public int Width { get; }
+        public int Width { get; private set; }
 
         /* In Tiles */
 
         [DataMember]
-        public int Height { get; }
+        public int Height { get; private set; }
 
         /* In Units */
 
         [DataMember]
-        public int TileWidth { get; }
+        public int TileWidth { get; private set; }
 
         /* In Units */
 
         [DataMember]
-        public int TileHeight { get; }
+        public int TileHeight { get; private set; }
 
         [IgnoreDataMember]
         public DxRectangle Bounds => new DxRectangle(0, 0, Width * TileWidth, Height * TileHeight);

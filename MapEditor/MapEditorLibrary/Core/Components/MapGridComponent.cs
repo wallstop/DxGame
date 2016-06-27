@@ -44,16 +44,25 @@ namespace MapEditorLibrary.Core.Components
             new UpdateCameraBounds(Bounds).Emit();
         }
 
-        public TilePosition PositionForPoint(DxVector2 point)
+        public bool PositionForPoint(DxVector2 point, out TilePosition tilePosition)
         {
             // Probably works?
-            Validate.Hard.IsInClosedInterval(point.X, 0, MapWidth * TileWidth);
-            Validate.Hard.IsInClosedInterval(point.Y, 0, MapHeight * TileHeight);
+            if(!Validate.Check.IsInClosedInterval(point.X, 0, MapWidth * TileWidth))
+            {
+                tilePosition = default(TilePosition);
+                return false;
+            }
+            if(!Validate.Check.IsInClosedInterval(point.Y, 0, MapHeight * TileHeight))
+            {
+                tilePosition = default(TilePosition);
+                return false;
+            }
 
             int x = (int)Math.Round(point.X) / TileWidth;
             int y = (int)Math.Round(point.Y) / TileHeight;
 
-            return new TilePosition(x, y);
+            tilePosition =  new TilePosition(x, y);
+            return true;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)

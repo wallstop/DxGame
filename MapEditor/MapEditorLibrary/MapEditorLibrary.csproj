@@ -87,7 +87,11 @@
     <Compile Include="Core\Components\MapCreatorComponent.cs" />
     <Compile Include="Core\Components\MousePanComponent.cs" />
     <Compile Include="Core\Messaging\AddTileToMapRequest.cs" />
+    <Compile Include="Core\Messaging\ErrorNotification.cs" />
+    <Compile Include="Core\Messaging\LoadMapRequest.cs" />
+    <Compile Include="Core\Messaging\MapChangedNotification.cs" />
     <Compile Include="Core\Messaging\RemoveTileFromMapRequest.cs" />
+    <Compile Include="Core\Messaging\SaveMapRequest.cs" />
     <Compile Include="Core\Models\RootUiModel.cs" />
     <Compile Include="Input\MouseBindings.cs" />
     <Compile Include="Core\Components\MapGridComponent.cs" />

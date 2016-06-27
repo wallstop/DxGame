@@ -8,7 +8,7 @@ namespace DxCore.Core
 {
     public static class Serializer<T>
     {
-        private static readonly Encoding ENCODING = Encoding.Default;
+        internal static readonly Encoding Encoding = Encoding.Default;
 
         // TODO: Move all of these to thread-local storage
 
@@ -61,16 +61,25 @@ namespace DxCore.Core
 
         public static T ReadFromJsonFile(string path)
         {
-            var settingsAsText = File.ReadAllText(path, ENCODING);
+            var settingsAsText = File.ReadAllText(path, Encoding);
             var settingsAsJsonByteArray = settingsAsText.GetBytes();
             return JsonDeserialize(settingsAsJsonByteArray);
         }
 
         public static void WriteToJsonFile(T input, string path)
         {
-            var json = JsonSerialize(input);
-            var jsonAsText = ENCODING.GetString(json);
+            string jsonAsText = input.ToJson();
             File.WriteAllText(path, jsonAsText);
+        }
+    }
+
+    public static class SerializerExtensions
+    {
+        public static string ToJson<T>(this T input)
+        {
+            byte[] json = Serializer<T>.JsonSerialize(input);
+            string jsonAsText = Serializer<T>.Encoding.GetString(json);
+            return jsonAsText;
         }
     }
 }

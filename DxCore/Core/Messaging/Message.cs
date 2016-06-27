@@ -15,12 +15,12 @@ namespace DxCore.Core.Messaging
     public class Message
     {
         [DataMember]
-        public TimeSpan TimeStamp { get; }
+        public TimeSpan TimeStamp { get; private set; }
 
         [DataMember]
-        public GameId GameId { get;}
+        public GameId GameId { get; private set; }
 
-        public static Message EmptyMessage { get; set; } = new Message(TimeSpan.Zero, GameId.Empty);
+        public static Message EmptyMessage { get; } = new Message(TimeSpan.Zero, GameId.Empty);
 
         protected Message() : this(DxGame.Instance.CurrentTime.TotalGameTime, DxGame.Instance.GameGuid) {}
 

@@ -9,10 +9,10 @@ namespace DxCore.Core.Components.Basic
     [DataContract]
     public sealed class SpriteBatchEnder : DrawableComponent
     {
-        private static readonly Lazy<SpriteBatchEnder> SINGLETON =
+        private static readonly Lazy<SpriteBatchEnder> Singleton =
             new Lazy<SpriteBatchEnder>(() => new SpriteBatchEnder());
 
-        public static SpriteBatchEnder Instance => SINGLETON.Value;
+        public static SpriteBatchEnder Instance => Singleton.Value;
 
         private SpriteBatchEnder()
         {

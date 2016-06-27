@@ -304,14 +304,10 @@ namespace DxCore
         protected override void Initialize()
         {
             SpriteBatch = new SpriteBatch(GraphicsDevice);
-            AddAndInitializeComponent(SpriteBatchInitializer.Instance);
-            AddAndInitializeComponent(SpriteBatchEnder.Instance);
-
-            InputModel inputModel = new InputModel();
-            inputModel.Create();
-
-            CameraModel cameraModel = new CameraModel();
-            cameraModel.Create();
+            GameObject.From(SpriteBatchEnder.Instance).Create();
+            
+            new InputModel().Create();
+            new CameraModel().Create();
 
             base.Initialize();
         }

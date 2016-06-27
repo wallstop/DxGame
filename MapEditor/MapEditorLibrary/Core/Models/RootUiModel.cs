@@ -1,10 +1,11 @@
-﻿using DxCore;
+﻿using System;
+using System.Collections.Generic;
+using DxCore;
 using DxCore.Core;
 using DxCore.Core.Map;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils.Validate;
 using EmptyKeys.UserInterface;
-using EmptyKeys.UserInterface.Controls;
 using EmptyKeys.UserInterface.Generated;
 using MapEditorLibrary.Controls;
 using Microsoft.Xna.Framework.Graphics;
@@ -28,6 +29,10 @@ namespace MapEditorLibrary.Core.Models
             UI = rootUi;
             AssetManagerView = new AssetManagerView();
             UI.DataContext = AssetManagerView;
+            foreach(KeyValuePair<RoutedEvent, Delegate> eventAndHandler in AssetManagerView.Handlers)
+            {
+                UI.AddHandler(eventAndHandler.Key, eventAndHandler.Value);
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)

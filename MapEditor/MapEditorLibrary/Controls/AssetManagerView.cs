@@ -1,29 +1,43 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using DxCore;
 using DxCore.Core.Map;
 using DxCore.Core.Messaging;
+using DxCore.Core.Messaging.Camera;
+using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Input;
 using EmptyKeys.UserInterface.Mvvm;
 using MapEditorLibrary.Core.Messaging;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
+using MouseEventArgs = EmptyKeys.UserInterface.Input.MouseEventArgs;
+using MouseEventHandler = EmptyKeys.UserInterface.Input.MouseEventHandler;
 
 namespace MapEditorLibrary.Controls
 {
+    internal enum TilePloppinMode
+    {
+        None,
+        Ploppin,
+        Deletin
+    }
+
     public class AssetManagerView : ViewModelBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        private const float BaseScrollScale = 1200f;
+
         private object selectedTile_;
+        private float scale_ = 1.0f;
 
         public ICommand LoadCommand { get; }
         public ICommand DeleteCommand { get; }
-        public ICommand PlaceTileCommand { get; }
-
-        //public float 
-
 
         public Tile SelectedTile
         {
@@ -71,6 +85,26 @@ namespace MapEditorLibrary.Controls
         public ObservableCollection<TileModel> Blocks { get; }
         public ObservableCollection<TileModel> Platforms { get; }
 
+        public Dictionary<RoutedEvent, Delegate> Handlers
+            =>
+                new Dictionary<RoutedEvent, Delegate>
+                {
+                    [Mouse.MouseDownEvent] = new MouseButtonEventHandler(OnMouseDown),
+                    [Mouse.MouseMoveEvent] = new MouseEventHandler(OnMouseMove),
+                    [Mouse.MouseUpEvent] = new MouseButtonEventHandler(OnMouseUp),
+                    [Mouse.MouseWheelEvent] = new MouseWheelEventHandler(OnMouseScroll)
+                };
+
+        private TilePloppinMode TilePloppinMode { get; set; }
+
+        private float Scale {
+            get { return scale_; }
+            set
+            {
+                scale_ = MathHelper.Clamp(value, 0.3f, 500f);
+            }
+        }
+
         public AssetManagerView()
         {
             Blocks = new ObservableCollection<TileModel>();
@@ -78,12 +112,78 @@ namespace MapEditorLibrary.Controls
 
             LoadCommand = new RelayCommand(OnLoad);
             DeleteCommand = new RelayCommand(OnDelete);
-            PlaceTileCommand = new RelayCommand(OnTilePlacement);
         }
 
-        private void OnTilePlacement(object eventArgs)
+        private void OnMouseDown(object source, MouseButtonEventArgs mouseEventArgs)
         {
-            new AddTileToMapRequest().Emit();
+            switch(mouseEventArgs.ChangedButton)
+            {
+                case MouseButton.Left:
+                {
+                    TilePloppinMode = TilePloppinMode.Ploppin;
+                    break;
+                }
+                case MouseButton.Right:
+                {
+                    TilePloppinMode = TilePloppinMode.Deletin;
+                    break;
+                }
+                default:
+                {
+                    /* 
+                        Don't change ploppin' mode - this could be the case of something like a middle mouse after a left click 
+                        (while left is still depressed). In this case, we want to ignore the extraneous event, and carry on our merry way 
+                    */
+                    Logger.Info("Ignoring additional mouse event for button: {0}", mouseEventArgs.ChangedButton);
+                    break;
+                }
+            }
+            HandleTilePloppin();
+        }
+
+        private void OnMouseScroll(object source, MouseWheelEventArgs mouseEventArgs)
+        {
+            float delta = mouseEventArgs.Delta;
+            delta /= BaseScrollScale;
+            Scale += delta;
+            // TODO: Punt to camera model?
+            new ZoomRequest(Scale).Emit();
+        }
+
+        private void OnMouseMove(object source, MouseEventArgs mouseEventArgs)
+        {
+            HandleTilePloppin();
+        }
+
+        private void OnMouseUp(object source, MouseButtonEventArgs mouseEventArgs)
+        {
+            TilePloppinMode = TilePloppinMode.None;
+        }
+
+        private void HandleTilePloppin()
+        {
+            switch(TilePloppinMode)
+            {
+                case TilePloppinMode.None:
+                {
+                    // Ain't nothing to do, move along
+                    return;
+                }
+                case TilePloppinMode.Deletin:
+                {
+                    new RemoveTileFromMapRequest().Emit();
+                    return;
+                }
+                case TilePloppinMode.Ploppin:
+                {
+                    new AddTileToMapRequest().Emit();
+                    return;
+                }
+                default:
+                {
+                    throw new InvalidEnumArgumentException($"Unknown {typeof(TilePloppinMode)}: {TilePloppinMode}");
+                }
+            }
         }
 
         private void OnLoad(object eventArgs)
@@ -110,6 +210,7 @@ namespace MapEditorLibrary.Controls
 
                     if(!contentDirectory.IsBaseOf(fullPath))
                     {
+                        // TODO: Make this *any* content directory, not just our own. Our own is kinda annoying.
                         string message =
                             $"{imagePath} is an invalid asset. Assets must be within the Content Directory: {DxGame.Instance.Content.RootDirectory}";
                         Logger.Error(message);

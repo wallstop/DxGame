@@ -136,7 +136,6 @@
     <Compile Include="Core\Components\Basic\DrawableComponent.cs" />
     <Compile Include="Core\Components\Basic\NetworkComponent.cs" />
     <Compile Include="Core\Components\Basic\SpriteBatchEnder.cs" />
-    <Compile Include="Core\Components\Basic\SpriteBatchInitializer.cs" />
     <Compile Include="Core\Components\Developer\BoundingBoxWidget.cs" />
     <Compile Include="Core\Components\Developer\CollisionTreeWidget.cs" />
     <Compile Include="Core\Components\Developer\DeveloperSwitch.cs" />
@@ -151,6 +150,7 @@
     <Compile Include="Core\Components\Network\NetworkClientConfig.cs" />
     <Compile Include="Core\Input\IMeasuredInputEvent.cs" />
     <Compile Include="Core\Map\MapLayout.cs" />
+    <Compile Include="Core\Messaging\Camera\ZoomRequest.cs" />
     <Compile Include="Core\Messaging\UpdateCameraBounds.cs" />
     <Compile Include="Core\Network\Port.cs" />
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />

@@ -22,13 +22,13 @@ namespace DxCore.Core.Map
     [DataContract]
     public struct TilePosition
     {
-        public static readonly int INVALID_INDEX = -1;
+        public static readonly int InvalidIndex = -1;
 
         [DataMember]
-        public int X { get; }
+        public int X { get; private set; }
 
         [DataMember]
-        public int Y { get; }
+        public int Y { get; private set; }
 
         public TilePosition(int x, int y)
         {
@@ -60,7 +60,8 @@ namespace DxCore.Core.Map
 
         public override string ToString()
         {
-            return this.ToJson();
+            string jsonValue = this.ToJson();
+            return jsonValue;
         }
     }
 }

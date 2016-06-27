@@ -40,22 +40,28 @@ namespace MapEditorLibrary.Core.Components
             MapBuilder.WithTileWidth(mapGrid.TileUnitWidth);
             MapBuilder.WithTileHeight(mapGrid.TileUnitHeight);
 
-            MapDescriptorCache = new SingleElementLocalLoadingCache<MapDescriptor>(CacheBuilder<FastCacheKey, MapDescriptor>.NewBuilder(),() => MapBuilder.Build());
+            MapDescriptorCache =
+                new SingleElementLocalLoadingCache<MapDescriptor>(
+                    CacheBuilder<FastCacheKey, MapDescriptor>.NewBuilder(), () => MapBuilder.Build());
         }
 
         public override void OnAttach()
         {
             RegisterMessageHandler<AddTileToMapRequest>(HandleAddTileToMapRequest);
+            RegisterMessageHandler<RemoveTileFromMapRequest>(HandleRemoveTileFromMapRequest);
             base.OnAttach();
+        }
+
+        private void HandleRemoveTileFromMapRequest(RemoveTileFromMapRequest request)
+        {
+            TilePosition tilePosition = CurrentTilePosition;
+            MapBuilder.WithoutTile(tilePosition);
+            MapDescriptorCache.Invalidate();
         }
 
         private void HandleAddTileToMapRequest(AddTileToMapRequest request)
         {
-            DxVector2 mousePosition = Mouse.GetState().Position;
-            DxVector2 offset = DxGame.Instance.Model<CameraModel>().OffsetFromOrigin;
-            mousePosition += offset;
-
-            TilePosition tilePosition = MapGrid.PositionForPoint(mousePosition);
+            TilePosition tilePosition = CurrentTilePosition;
             Tile currentTile = DxGame.Instance.Model<RootUiModel>().SelectedTile;
             if(ReferenceEquals(currentTile, null))
             {
@@ -67,6 +73,19 @@ namespace MapEditorLibrary.Core.Components
             tileTextureCache_.Put(currentTile, currentTileModel.Texture);
             MapBuilder.WithTile(tilePosition, currentTile);
             MapDescriptorCache.Invalidate();
+        }
+
+        private TilePosition CurrentTilePosition
+        {
+            get
+            {
+                DxVector2 mousePosition = Mouse.GetState().Position;
+                CameraModel cameraModel = DxGame.Instance.Model<CameraModel>();
+                DxVector2 worldSpacePosition = cameraModel.Invert(mousePosition);
+
+                TilePosition tilePosition = MapGrid.PositionForPoint(worldSpacePosition);
+                return tilePosition;
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)

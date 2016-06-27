@@ -19,11 +19,6 @@ namespace DxCore.Core.Utils
             return new string(characters);
         }
 
-        public static string ToJson<T>(this T instance)
-        {
-            return Serializer<T>.JsonSerialize(instance).GetString();
-        }
-
         public static string GetFormattedNullOrDefaultMessage<T>(Type type, T argument)
         {
             return GetFormattedNullOrDefaultMessage(type, $"{typeof(T)}");

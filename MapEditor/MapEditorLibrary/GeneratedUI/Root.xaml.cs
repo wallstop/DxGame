@@ -70,12 +70,6 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_0 = new Grid();
             this.Content = this.e_0;
             this.e_0.Name = "e_0";
-            MouseBinding e_0_IB_0 = new MouseBinding();
-            e_0_IB_0.Gesture = new MouseGesture(MouseAction.LeftClick, ModifierKeys.None);
-            Binding binding_e_0_IB_0_Command = new Binding("PlaceTileCommand");
-            e_0_IB_0.SetBinding(MouseBinding.CommandProperty, binding_e_0_IB_0_Command);
-            e_0.InputBindings.Add(e_0_IB_0);
-            e_0_IB_0.Parent = e_0;
             RowDefinition row_e_0_0 = new RowDefinition();
             this.e_0.RowDefinitions.Add(row_e_0_0);
             RowDefinition row_e_0_1 = new RowDefinition();

@@ -2,7 +2,6 @@
 using DxCore;
 using DxCore.Core;
 using DxCore.Core.Models;
-using DxCore.Core.Primitives;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
 using MapEditorLibrary.Core.Components;
@@ -12,9 +11,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MapEditor
 {
-    /// <summary>
-    /// This is the main type for your game.
-    /// </summary>
     public class MapEditor : DxGame
     {
         private int NativeScreenWidth { get; set; }
@@ -50,12 +46,6 @@ namespace MapEditor
 
         protected override void SetUp() {}
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize()
         {
             // TODO: Clean up init
@@ -79,20 +69,12 @@ namespace MapEditor
             devModel.Create();
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent()
         {
-            FontManager.Instance.LoadFonts(Content);
             base.LoadContent();
+            FontManager.Instance.LoadFonts(Content);
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here

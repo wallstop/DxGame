@@ -32,17 +32,33 @@ namespace EmptyKeys.UserInterface.Generated {
         
         private TextBlock e_2;
         
-        private Slider mapTileWidth;
+        private Slider e_3;
         
-        private StackPanel e_3;
+        private TextBlock e_4;
         
-        private TabControl e_4;
+        private TextBlock e_5;
         
-        private Grid e_21;
+        private Slider e_6;
         
-        private Button e_22;
+        private TextBlock e_7;
         
-        private Button e_23;
+        private TextBlock e_8;
+        
+        private Slider e_9;
+        
+        private TextBlock e_10;
+        
+        private StackPanel e_11;
+        
+        private TabControl e_12;
+        
+        private Grid e_29;
+        
+        private Button e_30;
+        
+        private Button e_31;
+        
+        private Button e_32;
         
         public Root() : 
                 base() {
@@ -88,161 +104,212 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_0.Children.Add(this.e_1);
             this.e_1.Name = "e_1";
             this.e_1.Margin = new Thickness(5F, 5F, 5F, 5F);
-            this.e_1.HorizontalAlignment = HorizontalAlignment.Left;
-            this.e_1.Opacity = 0.95F;
+            this.e_1.HorizontalAlignment = HorizontalAlignment.Center;
+            this.e_1.VerticalAlignment = VerticalAlignment.Center;
+            this.e_1.Opacity = 0.9F;
+            this.e_1.Background = new SolidColorBrush(new ColorW(0, 0, 0, 255));
             RowDefinition row_e_1_0 = new RowDefinition();
-            row_e_1_0.Height = new GridLength(1F, GridUnitType.Auto);
             this.e_1.RowDefinitions.Add(row_e_1_0);
             RowDefinition row_e_1_1 = new RowDefinition();
-            row_e_1_1.Height = new GridLength(1F, GridUnitType.Auto);
             this.e_1.RowDefinitions.Add(row_e_1_1);
             RowDefinition row_e_1_2 = new RowDefinition();
-            row_e_1_2.Height = new GridLength(1F, GridUnitType.Auto);
             this.e_1.RowDefinitions.Add(row_e_1_2);
-            RowDefinition row_e_1_3 = new RowDefinition();
-            row_e_1_3.Height = new GridLength(1F, GridUnitType.Auto);
-            this.e_1.RowDefinitions.Add(row_e_1_3);
-            RowDefinition row_e_1_4 = new RowDefinition();
-            row_e_1_4.Height = new GridLength(1F, GridUnitType.Auto);
-            this.e_1.RowDefinitions.Add(row_e_1_4);
             ColumnDefinition col_e_1_0 = new ColumnDefinition();
+            col_e_1_0.Width = new GridLength(2F, GridUnitType.Star);
             this.e_1.ColumnDefinitions.Add(col_e_1_0);
             ColumnDefinition col_e_1_1 = new ColumnDefinition();
+            col_e_1_1.Width = new GridLength(3F, GridUnitType.Star);
             this.e_1.ColumnDefinitions.Add(col_e_1_1);
             ColumnDefinition col_e_1_2 = new ColumnDefinition();
+            col_e_1_2.Width = new GridLength(1F, GridUnitType.Star);
             this.e_1.ColumnDefinitions.Add(col_e_1_2);
-            ColumnDefinition col_e_1_3 = new ColumnDefinition();
-            this.e_1.ColumnDefinitions.Add(col_e_1_3);
-            Grid.SetColumn(this.e_1, 1);
+            Grid.SetColumn(this.e_1, 0);
             Grid.SetRow(this.e_1, 0);
             // e_2 element
             this.e_2 = new TextBlock();
             this.e_1.Children.Add(this.e_2);
             this.e_2.Name = "e_2";
+            this.e_2.HorizontalAlignment = HorizontalAlignment.Right;
             this.e_2.VerticalAlignment = VerticalAlignment.Center;
-            this.e_2.Text = "Map Tile Width";
-            // mapTileWidth element
-            this.mapTileWidth = new Slider();
-            this.e_1.Children.Add(this.mapTileWidth);
-            this.mapTileWidth.Name = "mapTileWidth";
-            this.mapTileWidth.Margin = new Thickness(5F, 5F, 5F, 5F);
-            this.mapTileWidth.VerticalAlignment = VerticalAlignment.Center;
-            this.mapTileWidth.Minimum = 1F;
-            this.mapTileWidth.Maximum = 150F;
-            Grid.SetColumn(this.mapTileWidth, 1);
+            this.e_2.Text = "Map Tile Size";
+            Grid.SetColumn(this.e_2, 0);
+            Grid.SetRow(this.e_2, 0);
             // e_3 element
-            this.e_3 = new StackPanel();
-            this.e_0.Children.Add(this.e_3);
+            this.e_3 = new Slider();
+            this.e_1.Children.Add(this.e_3);
             this.e_3.Name = "e_3";
+            this.e_3.Width = 180F;
             this.e_3.Margin = new Thickness(5F, 5F, 5F, 5F);
-            this.e_3.HorizontalAlignment = HorizontalAlignment.Left;
-            this.e_3.Opacity = 0.95F;
-            this.e_3.Background = new SolidColorBrush(new ColorW(0, 0, 0, 255));
-            this.e_3.Orientation = Orientation.Horizontal;
-            Grid.SetColumn(this.e_3, 0);
-            Grid.SetRow(this.e_3, 1);
+            this.e_3.HorizontalAlignment = HorizontalAlignment.Center;
+            this.e_3.VerticalAlignment = VerticalAlignment.Center;
+            this.e_3.Minimum = 20F;
+            this.e_3.Maximum = 100F;
+            this.e_3.IsSnapToTickEnabled = true;
+            this.e_3.TickFrequency = 5F;
+            Grid.SetColumn(this.e_3, 1);
+            Grid.SetRow(this.e_3, 0);
+            Binding binding_e_3_Value = new Binding("TileSize");
+            this.e_3.SetBinding(Slider.ValueProperty, binding_e_3_Value);
             // e_4 element
-            this.e_4 = new TabControl();
-            this.e_3.Children.Add(this.e_4);
+            this.e_4 = new TextBlock();
+            this.e_1.Children.Add(this.e_4);
             this.e_4.Name = "e_4";
-            this.e_4.Margin = new Thickness(2F, 2F, 2F, 2F);
-            this.e_4.ItemsSource = Get_e_4_Items();
-            // e_21 element
-            this.e_21 = new Grid();
-            this.e_3.Children.Add(this.e_21);
-            this.e_21.Name = "e_21";
-            this.e_21.Margin = new Thickness(2F, 2F, 2F, 2F);
-            RowDefinition row_e_21_0 = new RowDefinition();
-            row_e_21_0.Height = new GridLength(1F, GridUnitType.Star);
-            this.e_21.RowDefinitions.Add(row_e_21_0);
-            RowDefinition row_e_21_1 = new RowDefinition();
-            row_e_21_1.Height = new GridLength(1F, GridUnitType.Star);
-            this.e_21.RowDefinitions.Add(row_e_21_1);
-            RowDefinition row_e_21_2 = new RowDefinition();
-            row_e_21_2.Height = new GridLength(2F, GridUnitType.Star);
-            this.e_21.RowDefinitions.Add(row_e_21_2);
-            RowDefinition row_e_21_3 = new RowDefinition();
-            row_e_21_3.Height = new GridLength(2F, GridUnitType.Star);
-            this.e_21.RowDefinitions.Add(row_e_21_3);
-            // e_22 element
-            this.e_22 = new Button();
-            this.e_21.Children.Add(this.e_22);
-            this.e_22.Name = "e_22";
-            this.e_22.Margin = new Thickness(2F, 2F, 2F, 2F);
-            this.e_22.Content = "Load Map";
-            Grid.SetRow(this.e_22, 0);
-            Binding binding_e_22_Command = new Binding("LoadMapCommand");
-            this.e_22.SetBinding(Button.CommandProperty, binding_e_22_Command);
-            // e_23 element
-            this.e_23 = new Button();
-            this.e_21.Children.Add(this.e_23);
-            this.e_23.Name = "e_23";
-            this.e_23.Margin = new Thickness(2F, 2F, 2F, 2F);
-            this.e_23.Content = "Save Map";
-            Grid.SetRow(this.e_23, 1);
-            Binding binding_e_23_Command = new Binding("SaveMapCommand");
-            this.e_23.SetBinding(Button.CommandProperty, binding_e_23_Command);
+            this.e_4.Margin = new Thickness(5F, 5F, 5F, 5F);
+            this.e_4.HorizontalAlignment = HorizontalAlignment.Left;
+            this.e_4.VerticalAlignment = VerticalAlignment.Center;
+            Grid.SetColumn(this.e_4, 2);
+            Grid.SetRow(this.e_4, 0);
+            Binding binding_e_4_Text = new Binding("TileSize");
+            this.e_4.SetBinding(TextBlock.TextProperty, binding_e_4_Text);
+            // e_5 element
+            this.e_5 = new TextBlock();
+            this.e_1.Children.Add(this.e_5);
+            this.e_5.Name = "e_5";
+            this.e_5.HorizontalAlignment = HorizontalAlignment.Right;
+            this.e_5.VerticalAlignment = VerticalAlignment.Center;
+            this.e_5.Text = "Map Width";
+            Grid.SetColumn(this.e_5, 0);
+            Grid.SetRow(this.e_5, 1);
+            // e_6 element
+            this.e_6 = new Slider();
+            this.e_1.Children.Add(this.e_6);
+            this.e_6.Name = "e_6";
+            this.e_6.Width = 180F;
+            this.e_6.Margin = new Thickness(5F, 5F, 5F, 5F);
+            this.e_6.HorizontalAlignment = HorizontalAlignment.Center;
+            this.e_6.VerticalAlignment = VerticalAlignment.Center;
+            this.e_6.Minimum = 10F;
+            this.e_6.Maximum = 150F;
+            this.e_6.IsSnapToTickEnabled = true;
+            this.e_6.TickFrequency = 5F;
+            Grid.SetColumn(this.e_6, 1);
+            Grid.SetRow(this.e_6, 1);
+            Binding binding_e_6_Value = new Binding("MapWidth");
+            this.e_6.SetBinding(Slider.ValueProperty, binding_e_6_Value);
+            // e_7 element
+            this.e_7 = new TextBlock();
+            this.e_1.Children.Add(this.e_7);
+            this.e_7.Name = "e_7";
+            this.e_7.Margin = new Thickness(5F, 5F, 5F, 5F);
+            this.e_7.HorizontalAlignment = HorizontalAlignment.Left;
+            this.e_7.VerticalAlignment = VerticalAlignment.Center;
+            Grid.SetColumn(this.e_7, 2);
+            Grid.SetRow(this.e_7, 1);
+            Binding binding_e_7_Text = new Binding("MapWidth");
+            this.e_7.SetBinding(TextBlock.TextProperty, binding_e_7_Text);
+            // e_8 element
+            this.e_8 = new TextBlock();
+            this.e_1.Children.Add(this.e_8);
+            this.e_8.Name = "e_8";
+            this.e_8.HorizontalAlignment = HorizontalAlignment.Right;
+            this.e_8.VerticalAlignment = VerticalAlignment.Center;
+            this.e_8.Text = "Map Height";
+            Grid.SetColumn(this.e_8, 0);
+            Grid.SetRow(this.e_8, 2);
+            // e_9 element
+            this.e_9 = new Slider();
+            this.e_1.Children.Add(this.e_9);
+            this.e_9.Name = "e_9";
+            this.e_9.Width = 180F;
+            this.e_9.Margin = new Thickness(5F, 5F, 5F, 5F);
+            this.e_9.HorizontalAlignment = HorizontalAlignment.Center;
+            this.e_9.VerticalAlignment = VerticalAlignment.Center;
+            this.e_9.Minimum = 10F;
+            this.e_9.Maximum = 150F;
+            this.e_9.IsSnapToTickEnabled = true;
+            this.e_9.TickFrequency = 5F;
+            Grid.SetColumn(this.e_9, 1);
+            Grid.SetRow(this.e_9, 2);
+            Binding binding_e_9_Value = new Binding("MapHeight");
+            this.e_9.SetBinding(Slider.ValueProperty, binding_e_9_Value);
+            // e_10 element
+            this.e_10 = new TextBlock();
+            this.e_1.Children.Add(this.e_10);
+            this.e_10.Name = "e_10";
+            this.e_10.Margin = new Thickness(5F, 5F, 5F, 5F);
+            this.e_10.HorizontalAlignment = HorizontalAlignment.Left;
+            this.e_10.VerticalAlignment = VerticalAlignment.Center;
+            Grid.SetColumn(this.e_10, 2);
+            Grid.SetRow(this.e_10, 2);
+            Binding binding_e_10_Text = new Binding("MapHeight");
+            this.e_10.SetBinding(TextBlock.TextProperty, binding_e_10_Text);
+            // e_11 element
+            this.e_11 = new StackPanel();
+            this.e_0.Children.Add(this.e_11);
+            this.e_11.Name = "e_11";
+            this.e_11.Margin = new Thickness(5F, 5F, 5F, 5F);
+            this.e_11.HorizontalAlignment = HorizontalAlignment.Stretch;
+            this.e_11.VerticalAlignment = VerticalAlignment.Center;
+            this.e_11.Opacity = 0.9F;
+            this.e_11.Background = new SolidColorBrush(new ColorW(0, 0, 0, 255));
+            this.e_11.Orientation = Orientation.Horizontal;
+            Grid.SetColumn(this.e_11, 0);
+            Grid.SetRow(this.e_11, 1);
+            // e_12 element
+            this.e_12 = new TabControl();
+            this.e_11.Children.Add(this.e_12);
+            this.e_12.Name = "e_12";
+            this.e_12.Margin = new Thickness(2F, 2F, 2F, 2F);
+            this.e_12.ItemsSource = Get_e_12_Items();
+            // e_29 element
+            this.e_29 = new Grid();
+            this.e_11.Children.Add(this.e_29);
+            this.e_29.Name = "e_29";
+            this.e_29.Margin = new Thickness(2F, 2F, 2F, 2F);
+            RowDefinition row_e_29_0 = new RowDefinition();
+            row_e_29_0.Height = new GridLength(1F, GridUnitType.Star);
+            this.e_29.RowDefinitions.Add(row_e_29_0);
+            RowDefinition row_e_29_1 = new RowDefinition();
+            row_e_29_1.Height = new GridLength(1F, GridUnitType.Star);
+            this.e_29.RowDefinitions.Add(row_e_29_1);
+            RowDefinition row_e_29_2 = new RowDefinition();
+            row_e_29_2.Height = new GridLength(1F, GridUnitType.Star);
+            this.e_29.RowDefinitions.Add(row_e_29_2);
+            RowDefinition row_e_29_3 = new RowDefinition();
+            row_e_29_3.Height = new GridLength(1F, GridUnitType.Star);
+            this.e_29.RowDefinitions.Add(row_e_29_3);
+            RowDefinition row_e_29_4 = new RowDefinition();
+            row_e_29_4.Height = new GridLength(1F, GridUnitType.Star);
+            this.e_29.RowDefinitions.Add(row_e_29_4);
+            RowDefinition row_e_29_5 = new RowDefinition();
+            row_e_29_5.Height = new GridLength(1F, GridUnitType.Star);
+            this.e_29.RowDefinitions.Add(row_e_29_5);
+            // e_30 element
+            this.e_30 = new Button();
+            this.e_29.Children.Add(this.e_30);
+            this.e_30.Name = "e_30";
+            this.e_30.Margin = new Thickness(2F, 2F, 2F, 2F);
+            this.e_30.Content = "Load Map";
+            Grid.SetRow(this.e_30, 0);
+            Binding binding_e_30_Command = new Binding("LoadMapCommand");
+            this.e_30.SetBinding(Button.CommandProperty, binding_e_30_Command);
+            // e_31 element
+            this.e_31 = new Button();
+            this.e_29.Children.Add(this.e_31);
+            this.e_31.Name = "e_31";
+            this.e_31.Margin = new Thickness(2F, 2F, 2F, 2F);
+            this.e_31.Content = "Save Map";
+            Grid.SetRow(this.e_31, 1);
+            Binding binding_e_31_Command = new Binding("SaveMapCommand");
+            this.e_31.SetBinding(Button.CommandProperty, binding_e_31_Command);
+            // e_32 element
+            this.e_32 = new Button();
+            this.e_29.Children.Add(this.e_32);
+            this.e_32.Name = "e_32";
+            this.e_32.Margin = new Thickness(2F, 2F, 2F, 2F);
+            this.e_32.Content = "Reset";
+            Grid.SetRow(this.e_32, 2);
+            Binding binding_e_32_Command = new Binding("ResetCommand");
+            this.e_32.SetBinding(Button.CommandProperty, binding_e_32_Command);
         }
         
-        private static System.Collections.ObjectModel.ObservableCollection<object> Get_e_4_Items() {
+        private static System.Collections.ObjectModel.ObservableCollection<object> Get_e_12_Items() {
             System.Collections.ObjectModel.ObservableCollection<object> items = new System.Collections.ObjectModel.ObservableCollection<object>();
-            // e_5 element
-            TabItem e_5 = new TabItem();
-            e_5.Name = "e_5";
-            e_5.Margin = new Thickness(2F, 2F, 2F, 2F);
-            e_5.Header = "Block";
-            // e_6 element
-            Grid e_6 = new Grid();
-            e_5.Content = e_6;
-            e_6.Name = "e_6";
-            RowDefinition row_e_6_0 = new RowDefinition();
-            row_e_6_0.Height = new GridLength(1F, GridUnitType.Star);
-            e_6.RowDefinitions.Add(row_e_6_0);
-            RowDefinition row_e_6_1 = new RowDefinition();
-            row_e_6_1.Height = new GridLength(5F, GridUnitType.Star);
-            e_6.RowDefinitions.Add(row_e_6_1);
-            // e_7 element
-            Grid e_7 = new Grid();
-            e_6.Children.Add(e_7);
-            e_7.Name = "e_7";
-            ColumnDefinition col_e_7_0 = new ColumnDefinition();
-            e_7.ColumnDefinitions.Add(col_e_7_0);
-            ColumnDefinition col_e_7_1 = new ColumnDefinition();
-            e_7.ColumnDefinitions.Add(col_e_7_1);
-            // e_8 element
-            Button e_8 = new Button();
-            e_7.Children.Add(e_8);
-            e_8.Name = "e_8";
-            e_8.Margin = new Thickness(5F, 5F, 5F, 5F);
-            e_8.Content = "Load";
-            Grid.SetRow(e_8, 0);
-            Binding binding_e_8_Command = new Binding("LoadBlockCommand");
-            e_8.SetBinding(Button.CommandProperty, binding_e_8_Command);
-            // e_9 element
-            ScrollViewer e_9 = new ScrollViewer();
-            e_6.Children.Add(e_9);
-            e_9.Name = "e_9";
-            Grid.SetRow(e_9, 1);
-            // e_10 element
-            ListBox e_10 = new ListBox();
-            e_9.Content = e_10;
-            e_10.Name = "e_10";
-            Func<UIElement, UIElement> e_10_iptFunc = e_10_iptMethod;
-            ControlTemplate e_10_ipt = new ControlTemplate(e_10_iptFunc);
-            e_10.ItemsPanel = e_10_ipt;
-            Func<UIElement, UIElement> e_10_dtFunc = e_10_dtMethod;
-            e_10.ItemTemplate = new DataTemplate(e_10_dtFunc);
-            Binding binding_e_10_ItemsSource = new Binding("Blocks");
-            e_10.SetBinding(ListBox.ItemsSourceProperty, binding_e_10_ItemsSource);
-            Binding binding_e_10_SelectedItem = new Binding("SelectedBlock");
-            binding_e_10_SelectedItem.Mode = BindingMode.OneWayToSource;
-            e_10.SetBinding(ListBox.SelectedItemProperty, binding_e_10_SelectedItem);
-            items.Add(e_5);
             // e_13 element
             TabItem e_13 = new TabItem();
             e_13.Name = "e_13";
             e_13.Margin = new Thickness(2F, 2F, 2F, 2F);
-            e_13.Header = "Platform";
+            e_13.Header = "Block";
             // e_14 element
             Grid e_14 = new Grid();
             e_13.Content = e_14;
@@ -268,7 +335,7 @@ namespace EmptyKeys.UserInterface.Generated {
             e_16.Margin = new Thickness(5F, 5F, 5F, 5F);
             e_16.Content = "Load";
             Grid.SetRow(e_16, 0);
-            Binding binding_e_16_Command = new Binding("LoadPlatformCommand");
+            Binding binding_e_16_Command = new Binding("LoadBlockCommand");
             e_16.SetBinding(Button.CommandProperty, binding_e_16_Command);
             // e_17 element
             ScrollViewer e_17 = new ScrollViewer();
@@ -284,39 +351,65 @@ namespace EmptyKeys.UserInterface.Generated {
             e_18.ItemsPanel = e_18_ipt;
             Func<UIElement, UIElement> e_18_dtFunc = e_18_dtMethod;
             e_18.ItemTemplate = new DataTemplate(e_18_dtFunc);
-            Binding binding_e_18_ItemsSource = new Binding("Platforms");
+            Binding binding_e_18_ItemsSource = new Binding("Blocks");
             e_18.SetBinding(ListBox.ItemsSourceProperty, binding_e_18_ItemsSource);
-            Binding binding_e_18_SelectedItem = new Binding("SelectedPlatform");
+            Binding binding_e_18_SelectedItem = new Binding("SelectedBlock");
             binding_e_18_SelectedItem.Mode = BindingMode.OneWayToSource;
             e_18.SetBinding(ListBox.SelectedItemProperty, binding_e_18_SelectedItem);
             items.Add(e_13);
+            // e_21 element
+            TabItem e_21 = new TabItem();
+            e_21.Name = "e_21";
+            e_21.Margin = new Thickness(2F, 2F, 2F, 2F);
+            e_21.Header = "Platform";
+            // e_22 element
+            Grid e_22 = new Grid();
+            e_21.Content = e_22;
+            e_22.Name = "e_22";
+            RowDefinition row_e_22_0 = new RowDefinition();
+            row_e_22_0.Height = new GridLength(1F, GridUnitType.Star);
+            e_22.RowDefinitions.Add(row_e_22_0);
+            RowDefinition row_e_22_1 = new RowDefinition();
+            row_e_22_1.Height = new GridLength(5F, GridUnitType.Star);
+            e_22.RowDefinitions.Add(row_e_22_1);
+            // e_23 element
+            Grid e_23 = new Grid();
+            e_22.Children.Add(e_23);
+            e_23.Name = "e_23";
+            ColumnDefinition col_e_23_0 = new ColumnDefinition();
+            e_23.ColumnDefinitions.Add(col_e_23_0);
+            ColumnDefinition col_e_23_1 = new ColumnDefinition();
+            e_23.ColumnDefinitions.Add(col_e_23_1);
+            // e_24 element
+            Button e_24 = new Button();
+            e_23.Children.Add(e_24);
+            e_24.Name = "e_24";
+            e_24.Margin = new Thickness(5F, 5F, 5F, 5F);
+            e_24.Content = "Load";
+            Grid.SetRow(e_24, 0);
+            Binding binding_e_24_Command = new Binding("LoadPlatformCommand");
+            e_24.SetBinding(Button.CommandProperty, binding_e_24_Command);
+            // e_25 element
+            ScrollViewer e_25 = new ScrollViewer();
+            e_22.Children.Add(e_25);
+            e_25.Name = "e_25";
+            Grid.SetRow(e_25, 1);
+            // e_26 element
+            ListBox e_26 = new ListBox();
+            e_25.Content = e_26;
+            e_26.Name = "e_26";
+            Func<UIElement, UIElement> e_26_iptFunc = e_26_iptMethod;
+            ControlTemplate e_26_ipt = new ControlTemplate(e_26_iptFunc);
+            e_26.ItemsPanel = e_26_ipt;
+            Func<UIElement, UIElement> e_26_dtFunc = e_26_dtMethod;
+            e_26.ItemTemplate = new DataTemplate(e_26_dtFunc);
+            Binding binding_e_26_ItemsSource = new Binding("Platforms");
+            e_26.SetBinding(ListBox.ItemsSourceProperty, binding_e_26_ItemsSource);
+            Binding binding_e_26_SelectedItem = new Binding("SelectedPlatform");
+            binding_e_26_SelectedItem.Mode = BindingMode.OneWayToSource;
+            e_26.SetBinding(ListBox.SelectedItemProperty, binding_e_26_SelectedItem);
+            items.Add(e_21);
             return items;
-        }
-        
-        private static UIElement e_10_iptMethod(UIElement parent) {
-            // e_11 element
-            WrapPanel e_11 = new WrapPanel();
-            e_11.Parent = parent;
-            e_11.Name = "e_11";
-            e_11.Height = float.NaN;
-            e_11.MaxWidth = 180F;
-            e_11.IsItemsHost = true;
-            return e_11;
-        }
-        
-        private static UIElement e_10_dtMethod(UIElement parent) {
-            // e_12 element
-            Image e_12 = new Image();
-            e_12.Parent = parent;
-            e_12.Name = "e_12";
-            e_12.MaxHeight = 50F;
-            e_12.MinHeight = 50F;
-            e_12.MaxWidth = 50F;
-            e_12.MinWidth = 50F;
-            e_12.Margin = new Thickness(5F, 5F, 5F, 5F);
-            Binding binding_e_12_Source = new Binding("Tile");
-            e_12.SetBinding(Image.SourceProperty, binding_e_12_Source);
-            return e_12;
         }
         
         private static UIElement e_18_iptMethod(UIElement parent) {
@@ -343,6 +436,32 @@ namespace EmptyKeys.UserInterface.Generated {
             Binding binding_e_20_Source = new Binding("Tile");
             e_20.SetBinding(Image.SourceProperty, binding_e_20_Source);
             return e_20;
+        }
+        
+        private static UIElement e_26_iptMethod(UIElement parent) {
+            // e_27 element
+            WrapPanel e_27 = new WrapPanel();
+            e_27.Parent = parent;
+            e_27.Name = "e_27";
+            e_27.Height = float.NaN;
+            e_27.MaxWidth = 180F;
+            e_27.IsItemsHost = true;
+            return e_27;
+        }
+        
+        private static UIElement e_26_dtMethod(UIElement parent) {
+            // e_28 element
+            Image e_28 = new Image();
+            e_28.Parent = parent;
+            e_28.Name = "e_28";
+            e_28.MaxHeight = 50F;
+            e_28.MinHeight = 50F;
+            e_28.MaxWidth = 50F;
+            e_28.MinWidth = 50F;
+            e_28.Margin = new Thickness(5F, 5F, 5F, 5F);
+            Binding binding_e_28_Source = new Binding("Tile");
+            e_28.SetBinding(Image.SourceProperty, binding_e_28_Source);
+            return e_28;
         }
     }
 }

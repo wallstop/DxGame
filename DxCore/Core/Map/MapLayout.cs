@@ -73,6 +73,13 @@ namespace DxCore.Core.Map
                 return this;
             }
 
+            public MapLayoutBuilder WithTileSize(int tileSize)
+            {
+                WithTileWidth(tileSize);
+                WithTileHeight(tileSize);
+                return this;
+            }
+
             public MapLayoutBuilder WithTileHeight(int tileHeight)
             {
                 tileHeight_ = tileHeight;

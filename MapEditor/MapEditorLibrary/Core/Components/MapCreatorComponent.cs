@@ -49,7 +49,27 @@ namespace MapEditorLibrary.Core.Components
             RegisterMessageHandler<RemoveTileFromMapRequest>(HandleRemoveTileFromMapRequest);
             RegisterMessageHandler<SaveMapRequest>(HandleSaveMapRequest);
             RegisterMessageHandler<LoadMapRequest>(HandleLoadMapRequest);
+            RegisterMessageHandler<MapLayoutChanged>(HandleMapLayoutChanged);
             base.OnAttach();
+        }
+
+        private void HandleMapLayoutChanged(MapLayoutChanged mapLayoutChanged)
+        {
+            MapLayout newMapLayout = mapLayoutChanged.NewLayout;
+            /* Cull tiles */
+            foreach(TilePosition tilePosition in MapBuilder.Tiles.Keys)
+            {
+                
+                if(tilePosition.X >= newMapLayout.Width)
+                {
+                    MapBuilder.WithoutTile(tilePosition);
+                } else if(tilePosition.Y >= newMapLayout.Height)
+                {
+                    MapBuilder.WithoutTile(tilePosition);
+                }
+            }
+            MapBuilder.WithMapLayout(newMapLayout);
+            MapDescriptorCache.Invalidate();
         }
 
         private void HandleSaveMapRequest(SaveMapRequest saveMapRequest)

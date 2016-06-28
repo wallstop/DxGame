@@ -90,6 +90,7 @@
     <Compile Include="Core\Messaging\ErrorNotification.cs" />
     <Compile Include="Core\Messaging\LoadMapRequest.cs" />
     <Compile Include="Core\Messaging\MapChangedNotification.cs" />
+    <Compile Include="Core\Messaging\MapLayoutChanged.cs" />
     <Compile Include="Core\Messaging\RemoveTileFromMapRequest.cs" />
     <Compile Include="Core\Messaging\SaveMapRequest.cs" />
     <Compile Include="Core\Models\RootUiModel.cs" />

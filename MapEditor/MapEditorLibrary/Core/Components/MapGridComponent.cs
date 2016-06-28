@@ -5,6 +5,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
+using MapEditorLibrary.Core.Messaging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,7 +13,7 @@ namespace MapEditorLibrary.Core.Components
 {
     public class MapGridComponent : DrawableComponent
     {
-        public MapLayout MapLayout { get; }
+        public MapLayout MapLayout { get; private set; }
 
         public Color Color { get; set; } = Color.White;
 
@@ -44,6 +45,17 @@ namespace MapEditorLibrary.Core.Components
 
             tilePosition = new TilePosition(x, y);
             return true;
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<MapLayoutChanged>(HandleMapLayoutChanged);
+            base.OnAttach();
+        }
+
+        private void HandleMapLayoutChanged(MapLayoutChanged mapLayoutChanged)
+        {
+            MapLayout = mapLayoutChanged.NewLayout;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)

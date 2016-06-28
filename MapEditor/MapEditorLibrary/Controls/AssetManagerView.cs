@@ -27,10 +27,13 @@ namespace MapEditorLibrary.Controls
         Deletin
     }
 
-    // TDOO: Break up into modules or some shit
+    // TODO: Break up into modules or some shit
     public class AssetManagerView : ViewModelBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        private static readonly MapLayout DefaultMapLayout =
+            MapLayout.Builder().WithTileHeight(50).WithTileWidth(50).WithHeight(100).WithWidth(100).Build();
 
         private const float BaseScrollScale = 1200f;
 
@@ -42,6 +45,41 @@ namespace MapEditorLibrary.Controls
         public ICommand DeleteTileCommand { get; }
         public ICommand LoadMapCommand { get; }
         public ICommand SaveMapCommand { get; }
+        public ICommand ResetCommand { get; }
+
+        private int tileSize_;
+        private int mapWidth_;
+        private int mapHeight_;
+
+        public int TileSize
+        {
+            get { return tileSize_; }
+            set
+            {
+                SetProperty(ref tileSize_, value);
+                NofityMapLayoutChanged();
+            }
+        }
+
+        public int MapWidth
+        {
+            get { return mapWidth_; }
+            set
+            {
+                SetProperty(ref mapWidth_, value);
+                NofityMapLayoutChanged();
+            }
+        }
+
+        public int MapHeight
+        {
+            get { return mapHeight_; }
+            set
+            {
+                SetProperty(ref mapHeight_, value);
+                NofityMapLayoutChanged();
+            }
+        }
 
         public Tile SelectedTile
         {
@@ -93,10 +131,10 @@ namespace MapEditorLibrary.Controls
             =>
                 new Dictionary<RoutedEvent, Delegate>
                 {
-                    [Mouse.MouseDownEvent] = new MouseButtonEventHandler(OnMouseDown),
-                    [Mouse.MouseMoveEvent] = new MouseEventHandler(OnMouseMove),
-                    [Mouse.MouseUpEvent] = new MouseButtonEventHandler(OnMouseUp),
-                    [Mouse.MouseWheelEvent] = new MouseWheelEventHandler(OnMouseScroll)
+                    [Mouse.MouseDownEvent] = new MouseButtonEventHandler(HandleMouseDown),
+                    [Mouse.MouseMoveEvent] = new MouseEventHandler(HandleMouseMove),
+                    [Mouse.MouseUpEvent] = new MouseButtonEventHandler(HandleMouseUp),
+                    [Mouse.MouseWheelEvent] = new MouseWheelEventHandler(HandleMouseScroll)
                 };
 
         private TilePloppinMode TilePloppinMode { get; set; }
@@ -121,9 +159,31 @@ namespace MapEditorLibrary.Controls
             DeleteTileCommand = new RelayCommand(HandleTileDelete);
             LoadMapCommand = new RelayCommand(HandleMapLoad);
             SaveMapCommand = new RelayCommand(HandleMapSave);
+            ResetCommand = new RelayCommand(HandleReset);
+            
+            tileSize_ = DefaultMapLayout.TileWidth;
+            mapWidth_ = DefaultMapLayout.Width;
+            mapHeight_ = DefaultMapLayout.Height;
+            HandleReset(null);
         }
 
-        private void OnMouseDown(object source, MouseButtonEventArgs mouseEventArgs)
+        private void HandleReset(object whoCares)
+        {
+            Blocks.Clear();
+            Platforms.Clear();
+            TileSize = DefaultMapLayout.TileWidth;
+            MapWidth = DefaultMapLayout.Width;
+            MapHeight = DefaultMapLayout.Height;
+        }
+
+        private void NofityMapLayoutChanged()
+        {
+            MapLayout newLayout =
+                MapLayout.Builder().WithTileSize(TileSize).WithWidth(MapWidth).WithHeight(MapHeight).Build();
+            new MapLayoutChanged(newLayout).Emit();
+        }
+
+        private void HandleMouseDown(object source, MouseButtonEventArgs mouseEventArgs)
         {
             switch(mouseEventArgs.ChangedButton)
             {
@@ -150,7 +210,7 @@ namespace MapEditorLibrary.Controls
             HandleTilePloppin();
         }
 
-        private void OnMouseScroll(object source, MouseWheelEventArgs mouseEventArgs)
+        private void HandleMouseScroll(object source, MouseWheelEventArgs mouseEventArgs)
         {
             float delta = mouseEventArgs.Delta;
             delta /= BaseScrollScale;
@@ -159,12 +219,12 @@ namespace MapEditorLibrary.Controls
             new ZoomRequest(Scale).Emit();
         }
 
-        private void OnMouseMove(object source, MouseEventArgs mouseEventArgs)
+        private void HandleMouseMove(object source, MouseEventArgs mouseEventArgs)
         {
             HandleTilePloppin();
         }
 
-        private void OnMouseUp(object source, MouseButtonEventArgs mouseEventArgs)
+        private void HandleMouseUp(object source, MouseButtonEventArgs mouseEventArgs)
         {
             TilePloppinMode = TilePloppinMode.None;
         }
@@ -195,12 +255,12 @@ namespace MapEditorLibrary.Controls
             }
         }
 
-        private void HandleBlockLoad(object eventArgs)
+        private void HandleBlockLoad(object whoCares)
         {
             HandleTileLoad(Blocks);
         }
 
-        private void HandlePlatformLoad(object EventArgs)
+        private void HandlePlatformLoad(object whoCares)
         {
             HandleTileLoad(Platforms);
         }
@@ -249,7 +309,7 @@ namespace MapEditorLibrary.Controls
                             Uri relative = contentDirectory.MakeRelativeUri(fullPath);
                             Texture2D imageAsTexture = Texture2D.FromStream(DxGame.Instance.GraphicsDevice, fileStream);
                             imageAsTexture.Name = relative.ToString();
-                                tileModels.Add(new TileModel(imageAsTexture));
+                            tileModels.Add(new TileModel(imageAsTexture));
                             Logger.Debug("Loaded {0}", imagePath);
                         }
                     }
@@ -263,12 +323,12 @@ namespace MapEditorLibrary.Controls
             }
         }
 
-        private void HandleTileDelete(object eventArgs)
+        private void HandleTileDelete(object whoCares)
         {
-            Console.WriteLine($"{nameof(HandleTileDelete)} called, nice! With: {eventArgs}");
+            Console.WriteLine($"{nameof(HandleTileDelete)} called with some sweet args: {whoCares}. That's super rad.");
         }
 
-        private void HandleMapLoad(object eventArgs)
+        private void HandleMapLoad(object whoCares)
         {
             OpenFileDialog loadMapDialog = new OpenFileDialog
             {
@@ -290,7 +350,7 @@ namespace MapEditorLibrary.Controls
             }
         }
 
-        private void HandleMapSave(object eventArgs)
+        private void HandleMapSave(object whoCares)
         {
             SaveFileDialog saveMapDialog = new SaveFileDialog
             {

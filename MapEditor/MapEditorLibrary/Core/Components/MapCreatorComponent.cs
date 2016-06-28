@@ -50,7 +50,14 @@ namespace MapEditorLibrary.Core.Components
             RegisterMessageHandler<SaveMapRequest>(HandleSaveMapRequest);
             RegisterMessageHandler<LoadMapRequest>(HandleLoadMapRequest);
             RegisterMessageHandler<MapLayoutChanged>(HandleMapLayoutChanged);
+            RegisterMessageHandler<ResetMapRequest>(HandleResetMapRequest);
             base.OnAttach();
+        }
+
+        private void HandleResetMapRequest(ResetMapRequest request)
+        {
+            MapBuilder.WithoutTiles();
+            MapDescriptorCache.Invalidate();
         }
 
         private void HandleMapLayoutChanged(MapLayoutChanged mapLayoutChanged)
@@ -59,11 +66,11 @@ namespace MapEditorLibrary.Core.Components
             /* Cull tiles */
             foreach(TilePosition tilePosition in MapBuilder.Tiles.Keys)
             {
-                
                 if(tilePosition.X >= newMapLayout.Width)
                 {
                     MapBuilder.WithoutTile(tilePosition);
-                } else if(tilePosition.Y >= newMapLayout.Height)
+                }
+                else if(tilePosition.Y >= newMapLayout.Height)
                 {
                     MapBuilder.WithoutTile(tilePosition);
                 }

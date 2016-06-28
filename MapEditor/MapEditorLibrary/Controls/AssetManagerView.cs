@@ -160,7 +160,7 @@ namespace MapEditorLibrary.Controls
             LoadMapCommand = new RelayCommand(HandleMapLoad);
             SaveMapCommand = new RelayCommand(HandleMapSave);
             ResetCommand = new RelayCommand(HandleReset);
-            
+
             tileSize_ = DefaultMapLayout.TileWidth;
             mapWidth_ = DefaultMapLayout.Width;
             mapHeight_ = DefaultMapLayout.Height;
@@ -174,6 +174,7 @@ namespace MapEditorLibrary.Controls
             TileSize = DefaultMapLayout.TileWidth;
             MapWidth = DefaultMapLayout.Width;
             MapHeight = DefaultMapLayout.Height;
+            new ResetMapRequest().Emit();
         }
 
         private void NofityMapLayoutChanged()
@@ -280,18 +281,17 @@ namespace MapEditorLibrary.Controls
             {
                 case DialogResult.OK:
                 {
-                    // TODO: Check that DialogResult is within Content directory, alert if not
                     string imagePath = loadAssetDialog.FileName;
-                    Uri fullPath = new Uri(imagePath);
-                    Uri contentDirectory =
-                        new Uri(Path.GetDirectoryName(Application.ExecutablePath) + Path.DirectorySeparatorChar +
-                                DxGame.Instance.Content.RootDirectory + Path.DirectorySeparatorChar);
-
-                    if(!contentDirectory.IsBaseOf(fullPath))
+                    /* 
+                        This is pretty shitty. Unfortunately, we aren't globally content-directory aware. So, this is a pretty quick & dirty mid-term fix.
+                        Note: this doesn't work if we have some higher-level directory with the same name as our Content directory. Truly unfortunate. 
+                        TODO: We could do something like manually, explicitly, exposing the option to select Content directories. That way we could get 
+                        some strong gaurantees via the Uri class.
+                    */
+                    string contentRoot = DxGame.Instance.Content.RootDirectory;
+                    if(!imagePath.Contains(contentRoot))
                     {
-                        // TODO: Make this *any* content directory, not just our own. Our own is kinda annoying.
-                        string message =
-                            $"{imagePath} is an invalid asset. Assets must be within the Content Directory: {DxGame.Instance.Content.RootDirectory}";
+                        string message = $"{imagePath} is an invalid asset. Assets must be within the Content Directory";
                         Logger.Error(message);
                         IMessageBoxService messageBoxService = GetService<IMessageBoxService>();
                         if(ReferenceEquals(messageBoxService, null))
@@ -302,13 +302,17 @@ namespace MapEditorLibrary.Controls
                         messageBoxService.Show(message, doNothing, false);
                         return;
                     }
+
                     try
                     {
+                            /* +1 for line separator */
+                        string relativePath =
+                            imagePath.Substring(imagePath.IndexOf(contentRoot, StringComparison.Ordinal) +
+                                                contentRoot.Length + 1);
                         using(Stream fileStream = loadAssetDialog.OpenFile())
                         {
-                            Uri relative = contentDirectory.MakeRelativeUri(fullPath);
                             Texture2D imageAsTexture = Texture2D.FromStream(DxGame.Instance.GraphicsDevice, fileStream);
-                            imageAsTexture.Name = relative.ToString();
+                            imageAsTexture.Name = relativePath;
                             tileModels.Add(new TileModel(imageAsTexture));
                             Logger.Debug("Loaded {0}", imagePath);
                         }

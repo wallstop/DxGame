@@ -92,6 +92,7 @@
     <Compile Include="Core\Messaging\MapChangedNotification.cs" />
     <Compile Include="Core\Messaging\MapLayoutChanged.cs" />
     <Compile Include="Core\Messaging\RemoveTileFromMapRequest.cs" />
+    <Compile Include="Core\Messaging\ResetMapRequest.cs" />
     <Compile Include="Core\Messaging\SaveMapRequest.cs" />
     <Compile Include="Core\Models\RootUiModel.cs" />
     <Compile Include="Input\MouseBindings.cs" />

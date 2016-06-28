@@ -76,6 +76,12 @@ namespace DxCore.Core.Map
 
             public Dictionary<TilePosition, Tile> Tiles => tiles_.ToDictionary();
 
+            public MapDescriptorBuilder WithoutTiles()
+            {
+                tiles_.Clear();
+                return this;
+            }
+
             public MapDescriptorBuilder WithoutTile(TilePosition tilePosition)
             {
                 Validate.Hard.IsNotNull(tilePosition);

@@ -37,7 +37,8 @@ namespace MapEditorLibrary.Controls
         private object selectedTile_;
         private float scale_ = 1.0f;
 
-        public ICommand LoadTileCommand { get; }
+        public ICommand LoadPlatformCommand { get; }
+        public ICommand LoadBlockCommand { get; }
         public ICommand DeleteTileCommand { get; }
         public ICommand LoadMapCommand { get; }
         public ICommand SaveMapCommand { get; }
@@ -115,7 +116,8 @@ namespace MapEditorLibrary.Controls
             Blocks = new ObservableCollection<TileModel>();
             Platforms = new ObservableCollection<TileModel>();
 
-            LoadTileCommand = new RelayCommand(HandleTileLoad);
+            LoadBlockCommand = new RelayCommand(HandleBlockLoad);
+            LoadPlatformCommand = new RelayCommand(HandlePlatformLoad);
             DeleteTileCommand = new RelayCommand(HandleTileDelete);
             LoadMapCommand = new RelayCommand(HandleMapLoad);
             SaveMapCommand = new RelayCommand(HandleMapSave);
@@ -193,7 +195,17 @@ namespace MapEditorLibrary.Controls
             }
         }
 
-        private void HandleTileLoad(object eventArgs)
+        private void HandleBlockLoad(object eventArgs)
+        {
+            HandleTileLoad(Blocks);
+        }
+
+        private void HandlePlatformLoad(object EventArgs)
+        {
+            HandleTileLoad(Platforms);
+        }
+
+        private void HandleTileLoad(Collection<TileModel> tileModels)
         {
             OpenFileDialog loadAssetDialog = new OpenFileDialog
             {
@@ -237,7 +249,7 @@ namespace MapEditorLibrary.Controls
                             Uri relative = contentDirectory.MakeRelativeUri(fullPath);
                             Texture2D imageAsTexture = Texture2D.FromStream(DxGame.Instance.GraphicsDevice, fileStream);
                             imageAsTexture.Name = relative.ToString();
-                            Blocks.Add(new TileModel(imageAsTexture));
+                                tileModels.Add(new TileModel(imageAsTexture));
                             Logger.Debug("Loaded {0}", imagePath);
                         }
                     }

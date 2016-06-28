@@ -181,6 +181,7 @@ namespace Babel.Level
                 GameObject.Builder().WithComponents(transitionSpatial, mapTransition).Build();
 
             LevelEndTrigger levelEndTrigger = new LevelEndTrigger(mapTransitionObject);
+            DxGame.Instance.Model<EventModel>().AttachEventListener(new EventListener(levelEndTrigger.LevelEndListener));
             SpawnTrigger spawnTrigger = levelEndTrigger.CheckForLevelEndRequest;
 
             levelEndSpawner.WithSpawnTrigger(spawnTrigger);
@@ -293,14 +294,31 @@ namespace Babel.Level
     [Serializable]
     internal sealed class LevelEndTrigger
     {
+        [DataMember]
         private readonly GameObject mapTransitionObject_;
+        [DataMember]
         private bool alreadyTriggered_;
+
+        [DataMember] private bool levelEndTriggered_;
+
+        public void LevelEndListener(Event gameEvent)
+        {
+            Message message = gameEvent.Message;
+            LevelEndRequest levelEndRequest = message as LevelEndRequest;
+            if(ReferenceEquals(levelEndRequest, null))
+            {
+                return;
+            }
+            levelEndTriggered_ = true;
+        }
 
         public LevelEndTrigger(GameObject mapTransitionObject)
         {
             Validate.Hard.IsNotNullOrDefault(mapTransitionObject,
                 this.GetFormattedNullOrDefaultMessage("MapTransitionObject"));
             mapTransitionObject_ = mapTransitionObject;
+            alreadyTriggered_ = false;
+            levelEndTriggered_ = false;
         }
 
         public Tuple<bool, GameObject> CheckForLevelEndRequest(DxGameTime gameTime)
@@ -309,16 +327,7 @@ namespace Babel.Level
             {
                 return Tuple.Create<bool, GameObject>(false, null);
             }
-            EventModel eventModel = DxGame.Instance.Model<EventModel>();
-            if(ReferenceEquals(eventModel, null))
-            {
-                return Tuple.Create<bool, GameObject>(false, null);
-            }
-            EventRequest levelEndRequestRequest = EventRequest.Builder().WithType<LevelEndRequest>().Build();
-            List<Event> levelEndEvents = eventModel.EventsFor(levelEndRequestRequest, gameTime);
-            List<LevelEndRequest> levelEndRequests =
-                levelEndEvents.Select(endEvent => endEvent.Message as LevelEndRequest).ToList();
-            if(levelEndRequests.Any())
+            if(levelEndTriggered_)
             {
                 alreadyTriggered_ = true;
                 return Tuple.Create(true, mapTransitionObject_);

@@ -57,7 +57,7 @@ namespace DxCore.Core.Models
             DrawPriority = DrawPriority.InitSpritebatch;
             // TODO:  Grab from sprite batch init?
             zoomAmount_ = 1.0f;
-            TrackActivePlayer();
+            FollowActivePlayer();
         }
 
         public override void OnAttach()
@@ -92,16 +92,16 @@ namespace DxCore.Core.Models
             }
         }
 
-        public void TrackActivePlayer()
+        public void FollowActivePlayer()
         {
-            TrackPlayer(() => DxGame.Instance.Model<PlayerModel>()?.ActivePlayer);
+            Follow(() => DxGame.Instance.Model<PlayerModel>()?.ActivePlayer?.Position.Center ?? Position);
         }
 
         /* TODO: Make this delegate serializable? */
 
-        public void TrackPlayer(Func<Player> playerProducer)
+        public void Follow(Func<DxVector2> pointToTrack)
         {
-            Target = () => playerProducer()?.Position.Center ?? Position;
+            Target = pointToTrack;
         }
 
         public void MoveTo(DxVector2 target)
@@ -156,6 +156,7 @@ namespace DxCore.Core.Models
             DxGame.Instance.GraphicsDevice.Clear(Color.DarkGray);
 
             // TODO: Stop calling ourselves referentially and shit
+            // TODO: Clean up
             DxRectangle screen = DxGame.Instance.ScreenRegion;
             Matrix cameraShift = Matrix.CreateTranslation(screen.X, screen.Y, 0);
             Matrix scaled = Matrix.CreateScale(ZoomAmount);

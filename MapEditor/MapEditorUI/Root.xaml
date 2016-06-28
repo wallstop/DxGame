@@ -13,9 +13,9 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -23,63 +23,101 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <!--<Canvas Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity=".7"> -->
-        <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity="0.95">
+        <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="5" Opacity="0.95">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <!-- TODO: Move these out to own views -->
             <TextBlock Text="Map Tile Width" VerticalAlignment="Center" />
-            <Slider Name="mapTileWidth" Minimum="1" Maximum="150" Grid.Column="1" VerticalAlignment="Center" Margin="5" ></Slider>
+            <Slider Name="mapTileWidth" Minimum="1" Maximum="150" Grid.Column="1" VerticalAlignment="Center" Margin="5" />
         </Grid>
-        <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5,5,5,5" Opacity="0.95">
+        <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="5" Opacity="0.95">
             <StackPanel.Background>
                 <SolidColorBrush Color="Black" />
             </StackPanel.Background>
             <TabControl Margin="2,2,2,2">
-                <TabItem Header="Block" Margin="2,2,2,2">
-                    <ListBox Name="blockData" ItemsSource="{Binding Blocks}" SelectedItem="{Binding Mode=OneWayToSource, Path=SelectedBlock}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Image Source="{Binding Tile}" MaxHeight="50" MinHeight="50" MaxWidth="50" MinWidth="50">
-                                </Image>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                <TabItem Header="Block" Margin="2">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="5*" />
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Row="0" Content="Load" Margin="5" Command="{Binding LoadBlockCommand}"/>
+                        </Grid>
+
+                        <ScrollViewer Grid.Row="1">
+                            <ListBox ItemsSource="{Binding Blocks}" SelectedItem="{Binding Mode=OneWayToSource, Path=SelectedBlock}">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel MaxWidth="180" Height="Auto"/>
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding Tile}" MaxHeight="50" MinHeight="50" MaxWidth="50" MinWidth="50" Margin="5" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </ScrollViewer>
+                    </Grid>
                 </TabItem>
-                <TabItem Header="Platform" Margin="2,2,2,2">
-                    <ListBox Name="platformData" ItemsSource="{Binding Platforms}" SelectedItem="{Binding Mode=OneWayToSource, Path=SelectedPlatform}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Image Source="{Binding Tile}" />
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                <TabItem Header="Platform" Margin="2">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="5*" />
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Row="0" Content="Load" Margin="5" Command="{Binding LoadPlatformCommand}"/>
+                        </Grid>
+                        <ScrollViewer Grid.Row="1">
+                            <ListBox ItemsSource="{Binding Platforms}" SelectedItem="{Binding Mode=OneWayToSource, Path=SelectedPlatform}">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel MaxWidth="180" Height="Auto"/>
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding Tile}" MaxHeight="50" MinHeight="50" MaxWidth="50" MinWidth="50" Margin="5"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </ScrollViewer>
+                    </Grid>
                 </TabItem>
             </TabControl>
-            <Grid Margin="2,2,2,2">
+            <Grid Margin="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="2*"/>
                 </Grid.RowDefinitions>
-                <Button Content="Load Tile" Command="{Binding LoadTileCommand}" Grid.Row="0" Margin="2,2,2,2"/>
-                <Button Content="Delete Tile" Command="{Binding DeleteTileCommand}" Grid.Row="1" Margin="2,2,2,2"/>
-                <Button Content="Load Map" Command="{Binding LoadMapCommand}" Grid.Row="2" Margin="2,2,2,2"/>
-                <Button Content="Save Map" Command="{Binding SaveMapCommand}" Grid.Row="3" Margin="2,2,2,2"/>
+                <Button Content="Load Map" Command="{Binding LoadMapCommand}" Grid.Row="0" Margin="2"/>
+                <Button Content="Save Map" Command="{Binding SaveMapCommand}" Grid.Row="1" Margin="2"/>
             </Grid>
         </StackPanel>
         <!--</Canvas>-->
     </Grid>
 </ek:UIRoot>
-
+    

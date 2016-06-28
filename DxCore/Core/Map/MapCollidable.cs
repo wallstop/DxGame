@@ -22,6 +22,7 @@ namespace DxCore.Core.Map
         {
             Validate.Hard.IsNotNullOrDefault(tile);
             Validate.Hard.IsNotNullOrDefault(space);
+            Id = new UniqueId();
             Tile = tile;
             Space = space;
         }

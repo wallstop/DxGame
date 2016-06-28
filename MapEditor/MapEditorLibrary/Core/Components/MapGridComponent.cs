@@ -3,7 +3,6 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Map;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
@@ -13,69 +12,51 @@ namespace MapEditorLibrary.Core.Components
 {
     public class MapGridComponent : DrawableComponent
     {
-        public int TileUnitWidth { get; }
-        public int TileUnitHeight { get; }
-        public int MapWidth { get; }
-        public int MapHeight { get; }
+        public MapLayout MapLayout { get; }
 
         public Color Color { get; set; } = Color.White;
 
-        public DxUnit Unit { get; }
+        public DxRectangle Bounds => MapLayout.Bounds;
 
-        public int TileWidth => (int) Math.Round(TileUnitWidth * Unit.Value);
-        public int TileHeight => (int) Math.Round(TileUnitHeight * Unit.Value);
-
-        public DxRectangle Bounds => new DxRectangle(0, 0, TileWidth * MapWidth, TileHeight * MapHeight);
-
-        public MapGridComponent(DxUnit unit, int tileUnitWidth, int tileUnitHeight, int mapWidth, int mapHeight)
+        public MapGridComponent(int tileWidth, int tileHeight, int mapWidth, int mapHeight)
         {
-            Validate.Hard.IsNotNullOrDefault(unit, () => this.GetFormattedNullOrDefaultMessage(unit));
-            Unit = unit;
-            Validate.Hard.IsPositive(tileUnitWidth, () => $"Cannot create a {GetType()} with {tileUnitWidth} unit width");
-            TileUnitWidth = tileUnitWidth;
-            Validate.Hard.IsPositive(tileUnitHeight,
-                () => $"Cannot create a {GetType()} with {tileUnitHeight} unit height");
-            TileUnitHeight = tileUnitHeight;
-            Validate.Hard.IsPositive(mapWidth, () => $"Cannot create a {GetType()} with {mapWidth} map width");
-            MapWidth = mapWidth;
-            Validate.Hard.IsPositive(mapHeight, () => $"Cannot create a {GetType()} with {mapHeight} map height");
-            MapHeight = mapHeight;
+            MapLayout =
+                MapLayout.Builder()
+                    .WithWidth(mapWidth)
+                    .WithHeight(mapHeight)
+                    .WithTileWidth(tileWidth)
+                    .WithTileHeight(tileHeight)
+                    .Build();
 
             new UpdateCameraBounds(Bounds).Emit();
         }
 
         public bool PositionForPoint(DxVector2 point, out TilePosition tilePosition)
         {
-            // Probably works?
-            if(!Validate.Check.IsInClosedInterval(point.X, 0, MapWidth * TileWidth))
-            {
-                tilePosition = default(TilePosition);
-                return false;
-            }
-            if(!Validate.Check.IsInClosedInterval(point.Y, 0, MapHeight * TileHeight))
+            if(!Validate.Check.IsTrue(Bounds.Contains(point)))
             {
                 tilePosition = default(TilePosition);
                 return false;
             }
 
-            int x = (int)Math.Round(point.X) / TileWidth;
-            int y = (int)Math.Round(point.Y) / TileHeight;
+            int x = (int) Math.Round(point.X) / MapLayout.TileWidth;
+            int y = (int) Math.Round(point.Y) / MapLayout.TileHeight;
 
-            tilePosition =  new TilePosition(x, y);
+            tilePosition = new TilePosition(x, y);
             return true;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            for(int i = 0; i <= MapWidth; ++i)
+            for(int i = 0; i <= MapLayout.Width; ++i)
             {
-                spriteBatch.DrawLine(new DxVector2(TileWidth * i, 0),
-                    new DxVector2(TileWidth * i, MapHeight * TileHeight), Color, 1, 0.9f);
+                spriteBatch.DrawLine(new DxVector2(MapLayout.TileWidth * i, 0),
+                    new DxVector2(MapLayout.TileWidth * i, MapLayout.Height * MapLayout.TileHeight), Color, 1, 0.9f);
             }
-            for(int j = 0; j <= MapHeight; ++j)
+            for(int j = 0; j <= MapLayout.Height; ++j)
             {
-                spriteBatch.DrawLine(new DxVector2(0, j * TileHeight),
-                    new DxVector2(MapWidth * TileWidth, j * TileHeight), Color, 1, 0.9f);
+                spriteBatch.DrawLine(new DxVector2(0, j * MapLayout.TileHeight),
+                    new DxVector2(MapLayout.Width * MapLayout.TileWidth, j * MapLayout.TileHeight), Color, 1, 0.9f);
             }
         }
     }

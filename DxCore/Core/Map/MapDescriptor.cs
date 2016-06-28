@@ -52,7 +52,7 @@ namespace DxCore.Core.Map
 
         [IgnoreDataMember]
         // TODO: Figure out units, pls. This is pretty urgent.
-        public DxRectangle Bounds => MapLayout.Bounds * DxGame.Instance.Unit.Value;
+        public DxRectangle Bounds => MapLayout.Bounds;
 
         [DataMember]
         public Dictionary<TilePosition, Tile> Tiles { get; private set; }

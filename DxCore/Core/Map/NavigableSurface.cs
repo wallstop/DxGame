@@ -41,7 +41,7 @@ namespace DxCore.Core.Map
             new ThreadLocal<Dictionary<UniqueId, NavigableSurface>>(() => new Dictionary<UniqueId, NavigableSurface>());
 
         [DataMember]
-        public ISpatialTree<Node> NodeQuery { get; }
+        public ISpatialTree<Node> NodeQuery { get; private set; }
 
         private NavigableSurface(MapModel mapModel)
         {
@@ -150,9 +150,9 @@ namespace DxCore.Core.Map
             public static Node EmptyNode = new Node(new DxVector2(int.MinValue, int.MinValue), null);
 
             [DataMember]
-            public DxVector2 Position { get; }
+            public DxVector2 Position { get; private set; }
             [DataMember] 
-            public MapCollidable MapTile { get; }
+            public MapCollidable MapTile { get; private set; }
 
             [IgnoreDataMember]
             [NonSerialized]

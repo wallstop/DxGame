@@ -40,8 +40,6 @@ namespace DxCore.Core.Map
         [DataMember]
         public DxVector2 PlayerSpawn { get; private set; }
 
-        private static float Scale => DxGame.Instance.Unit.Value;
-
         [IgnoreDataMember] [NonSerialized] private readonly ISimpleCache<Tile, Texture2D> tileTextureCache_ =
             new UnboundedLoadingSimpleCache<Tile, Texture2D>(tile => DxGame.Instance.Content.Load<Texture2D>(tile.Asset));
 
@@ -77,9 +75,9 @@ namespace DxCore.Core.Map
                 TilePosition position = tilePair.Key;
                 Tile tile = tilePair.Value;
                 mapCollidables[position] = new MapCollidable(tile,
-                    new DxRectangle(position.X * mapDescriptor.TileWidth * Scale,
-                        position.Y * mapDescriptor.TileHeight * Scale, mapDescriptor.TileWidth * Scale,
-                        mapDescriptor.TileHeight * Scale));
+                    new DxRectangle(position.X * mapDescriptor.TileWidth,
+                        position.Y * mapDescriptor.TileHeight, mapDescriptor.TileWidth,
+                        mapDescriptor.TileHeight));
             }
             return mapCollidables;
         }

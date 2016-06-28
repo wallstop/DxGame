@@ -272,7 +272,6 @@
     <Compile Include="Core\Primitives\DxLine.cs" />
     <Compile Include="Core\Primitives\DxRadian.cs" />
     <Compile Include="Core\Primitives\DxRectangle.cs" />
-    <Compile Include="Core\Primitives\DxUnit.cs" />
     <Compile Include="Core\Primitives\DxVector2.cs" />
     <Compile Include="Core\Primitives\IShape.cs" />
     <Compile Include="Core\Properties\EntityProperties.cs" />

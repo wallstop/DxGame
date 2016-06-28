@@ -64,7 +64,7 @@ namespace MapEditor
             RootUiModel rootUiModel = new RootUiModel(new Root());
             rootUiModel.Create();
 
-            MapGridComponent mapGrid = new MapGridComponent(new DxUnit(3), 15, 15, 100, 100);
+            MapGridComponent mapGrid = new MapGridComponent(45, 45, 100, 100);
             GameObject mapGridObject = GameObject.From(mapGrid);
             mapGridObject.Create();
 

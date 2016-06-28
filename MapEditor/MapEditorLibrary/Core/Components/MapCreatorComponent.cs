@@ -36,10 +36,7 @@ namespace MapEditorLibrary.Core.Components
             Validate.Hard.IsNotNullOrDefault(mapGrid);
             MapGrid = mapGrid;
             MapBuilder = new MapDescriptor.MapDescriptorBuilder();
-            MapBuilder.WithWidth(mapGrid.MapWidth);
-            MapBuilder.WithHeight(mapGrid.MapHeight);
-            MapBuilder.WithTileWidth(mapGrid.TileUnitWidth);
-            MapBuilder.WithTileHeight(mapGrid.TileUnitHeight);
+            MapBuilder.WithMapLayout(mapGrid.MapLayout);
 
             MapDescriptorCache =
                 new SingleElementLocalLoadingCache<MapDescriptor>(
@@ -140,8 +137,8 @@ namespace MapEditorLibrary.Core.Components
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             MapDescriptor mapDescriptor = MapDescriptorCache.Get();
-            int tileWidth = MapGrid.TileWidth;
-            int tileHeight = MapGrid.TileHeight;
+            int tileWidth = MapGrid.MapLayout.TileWidth;
+            int tileHeight = MapGrid.MapLayout.TileHeight;
 
             foreach(KeyValuePair<TilePosition, Tile> tilePositionAndTile in mapDescriptor.Tiles)
             {

@@ -7,8 +7,6 @@ using DxCore.Core.Models;
 using DxCore.Core.Pathfinding;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Components.Advanced.Command
 {

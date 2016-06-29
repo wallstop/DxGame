@@ -4,7 +4,6 @@ using System.Runtime.Serialization;
 using DxCore.Core.Network;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Messaging.Network
 {
@@ -17,8 +16,7 @@ namespace DxCore.Core.Messaging.Network
 
         public ClientCommands(List<Commandment> clientCommandments)
         {
-            Validate.Hard.IsNotNull(clientCommandments,
-                StringUtils.GetFormattedNullOrDefaultMessage(this, clientCommandments));
+            Validate.Hard.IsNotNull(clientCommandments, () => this.GetFormattedNullOrDefaultMessage(clientCommandments));
             ClientCommandments = clientCommandments;
         }
     }

@@ -227,8 +227,8 @@ namespace Babel.Level
 
         private DxVector2 currentAcceleration_;
 
-        public Tuple<bool, DxVector2> DissipationFunction(DxVector2 externalVelocity, DxVector2 currentAcceleration,
-            DxGameTime gameTime)
+        public bool DissipationFunction(DxVector2 externalVelocity, DxVector2 currentAcceleration,
+            DxGameTime gameTime, out DxVector2 newAcceleration)
         {
             if(gameTime.TotalGameTime >= lastChanged_ + DIRECTION_CHANGE_DELAY)
             {
@@ -279,7 +279,8 @@ namespace Babel.Level
                     accelerationResult.Y = 0;
                 }
             }
-            return Tuple.Create(false, accelerationResult);
+            newAcceleration = accelerationResult;
+            return false;
         }
     }
 

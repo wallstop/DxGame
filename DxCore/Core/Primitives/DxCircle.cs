@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
 namespace DxCore.Core.Primitives
@@ -15,6 +14,9 @@ namespace DxCore.Core.Primitives
 
         [DataMember]
         public float Radius { get; }
+
+        [IgnoreDataMember]
+        public DxRectangle Bounds => new DxRectangle(Center.X - Radius, Center.Y - Radius, Radius * 2, Radius * 2);
 
         public DxCircle(DxVector2 center, float radius)
         {
@@ -34,14 +36,14 @@ namespace DxCore.Core.Primitives
 
         public bool Intersects(DxRectangle rectangle)
         {
-            var closestX = MathHelper.Clamp(Center.X, rectangle.Left, rectangle.Right);
+            float closestX = MathHelper.Clamp(Center.X, rectangle.Left, rectangle.Right);
             /* 
                 We need to invert Top & Bottom here - in XNA land, negative values are 
                 "less than" positive values, but here, we're talking about strict numerical relationships 
             */
-            var closestY = MathHelper.Clamp(Center.Y, rectangle.Top, rectangle.Bottom);
+            float closestY = MathHelper.Clamp(Center.Y, rectangle.Top, rectangle.Bottom);
 
-            var closestPoint = new DxVector2(closestX, closestY);
+            DxVector2 closestPoint = new DxVector2(closestX, closestY);
             return Contains(closestPoint);
         }
 

@@ -3,9 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Events
 {

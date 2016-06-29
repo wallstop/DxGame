@@ -4,7 +4,6 @@ using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -26,8 +25,7 @@ namespace DxCore.Core.Components.Developer
 
         public CollisionTreeWidget(CollisionTreeProducer<T> collisionTreeProducer)
         {
-            Validate.Hard.IsNotNullOrDefault(collisionTreeProducer,
-                this.GetFormattedNullOrDefaultMessage(nameof(collisionTreeProducer)));
+            Validate.Hard.IsNotNullOrDefault(collisionTreeProducer, () => this.GetFormattedNullOrDefaultMessage(nameof(collisionTreeProducer)));
             producer_ = collisionTreeProducer;
         }
 

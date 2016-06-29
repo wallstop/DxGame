@@ -57,6 +57,7 @@ namespace DxCore.Core.Models
             DrawPriority = DrawPriority.InitSpritebatch;
             // TODO:  Grab from sprite batch init?
             zoomAmount_ = 1.0f;
+            bounds_ = new DxRectangle(0, 0, DxGame.Instance.Graphics.PreferredBackBufferWidth, DxGame.Instance.Graphics.PreferredBackBufferHeight);
             FollowActivePlayer();
         }
 

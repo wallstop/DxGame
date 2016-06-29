@@ -2,7 +2,6 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Events
 {

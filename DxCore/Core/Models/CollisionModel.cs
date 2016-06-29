@@ -34,7 +34,7 @@ namespace DxCore.Core.Models
                     affectedPhysicsComponents.Add(physicsComponent);
                 }
             }
-            foreach(var physicsComponent in affectedPhysicsComponents)
+            foreach(PhysicsComponent physicsComponent in affectedPhysicsComponents)
             {
                 message.Interaction(message.Source, physicsComponent);
             }

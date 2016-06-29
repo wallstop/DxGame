@@ -10,11 +10,8 @@ using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Messaging;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.State
 {
@@ -57,7 +54,8 @@ namespace DxCore.Core.State
                 $"Cannot make a {typeof(StateMachine)} for a null {typeof(EntityPropertiesComponent)}");
             /* Need physics to apply the forces to */
             var physics = entity.ComponentOfType<PhysicsComponent>();
-            Validate.Hard.IsNotNull(physics, $"Cannot make a {typeof(StateMachine)} for a null {typeof(PhysicsComponent)}");
+            Validate.Hard.IsNotNull(physics,
+                $"Cannot make a {typeof(StateMachine)} for a null {typeof(PhysicsComponent)}");
             /* Need position to tie into animation */
             var position = entity.ComponentOfType<PositionalComponent>();
             Validate.Hard.IsNotNull(position,
@@ -75,8 +73,7 @@ namespace DxCore.Core.State
                     .WithEntrance(actionResolver.OnIdleEnterAction)
                     .Build();
 
-            State movementState =
-                State.Builder().WithName("Moving").WithAction(actionResolver.MovementAction).Build();
+            State movementState = State.Builder().WithName("Moving").WithAction(actionResolver.MovementAction).Build();
             State jumpState =
                 State.Builder()
                     .WithName("Jumping")
@@ -262,7 +259,7 @@ namespace DxCore.Core.State
 
             private static void AttachForce(GameObject entity, Force force)
             {
-                entity.ComponentOfType<PhysicsComponent>().AttachForce(force);
+                new AttachForce(entity.Id, force).Emit();
             }
         }
     }

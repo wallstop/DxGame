@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DXGame.Core.Utils
+namespace DxCore.Core.Utils
 {
     public static class SpriteBatchUtils
     {
@@ -35,9 +34,14 @@ namespace DXGame.Core.Utils
 
         public static void DrawCircle(this SpriteBatch spriteBatch, Rectangle destination, Color color, float transparencyWeight = 1.0f)
         {
-            var filledCircle = TextureFactory.FilledCircleForColor(color);
-            var transparency = ColorFactory.Transparency(transparencyWeight);
+            Texture2D filledCircle = TextureFactory.FilledCircleForColor(color);
+            Color transparency = ColorFactory.Transparency(transparencyWeight);
             spriteBatch.Draw(filledCircle, destinationRectangle: destination, color: transparency);
+        }
+
+        public static void DrawCircle(this SpriteBatch spriteBatch, DxCircle circle, Color color, float transparencyWeight = 1.0f)
+        {
+            DrawCircle(spriteBatch, circle.Bounds, color, transparencyWeight);
         }
 
         public static void DrawLine(this SpriteBatch spriteBatch, DxVector2 start, DxVector2 end, Color color, float thickness,

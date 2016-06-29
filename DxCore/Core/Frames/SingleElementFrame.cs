@@ -4,8 +4,6 @@ using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Frames
 {
@@ -40,7 +38,7 @@ namespace DxCore.Core.Frames
 
             public override Frame Build()
             {
-                Validate.Hard.IsNotNull(gameObject_, StringUtils.GetFormattedNullOrDefaultMessage(this, gameObject_));
+                Validate.Hard.IsNotNull(gameObject_, () => this.GetFormattedNullOrDefaultMessage(gameObject_));
                 return new SingleElementFrame(null, new Dictionary<UniqueId, GameObject> {{gameObject_.Id, gameObject_}});
             }
         }

@@ -9,7 +9,6 @@ using DxCore.Core.Primitives;
 using DxCore.Core.Skills;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Components.Advanced
 {

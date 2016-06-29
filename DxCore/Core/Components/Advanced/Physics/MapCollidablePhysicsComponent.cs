@@ -10,8 +10,6 @@ using DxCore.Core.Models;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
-using DXGame.Core;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Components.Advanced.Physics
 {

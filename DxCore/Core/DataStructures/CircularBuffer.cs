@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.DataStructures
 {
@@ -58,7 +57,7 @@ namespace DxCore.Core.DataStructures
 
         public CircularBuffer(int capacity)
         {
-            Validate.Hard.IsTrue(0 < capacity, this.GetFormattedNullOrDefaultMessage(nameof(capacity)));
+            Validate.Hard.IsTrue(0 < capacity, () => this.GetFormattedNullOrDefaultMessage(nameof(capacity)));
             Capacity = capacity;
             position_ = 0;
             buffer_ = new T[capacity];

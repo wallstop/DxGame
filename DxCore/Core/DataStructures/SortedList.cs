@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.DataStructures
 {
@@ -24,7 +23,7 @@ namespace DxCore.Core.DataStructures
 
         public SortedList(IComparer<T> comparer)
         {
-            Validate.Hard.IsNotNull(comparer, this.GetFormattedNullOrDefaultMessage(nameof(comparer)));
+            Validate.Hard.IsNotNull(comparer, () => this.GetFormattedNullOrDefaultMessage(nameof(comparer)));
             list_ = new List<T>();
             comparer_ = comparer;
         }

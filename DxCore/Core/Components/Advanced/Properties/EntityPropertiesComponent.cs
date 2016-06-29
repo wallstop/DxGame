@@ -11,7 +11,6 @@ using DxCore.Core.Primitives;
 using DxCore.Core.Properties;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Components.Advanced.Properties
 {
@@ -172,16 +171,15 @@ namespace DxCore.Core.Components.Advanced.Properties
 
         protected virtual DissipationFunction JumpDissipation()
         {
-            DissipationFunction dissipation = (externalVelocity, acceleration, gameTime) =>
-            {
-                /* If our jumping force is applying a (down into the ground) acceleration, we're done! */
-                var done = externalVelocity.Y >= 0;
-                if(done)
+            DissipationFunction dissipation =
+                (DxVector2 externalVelocity, DxVector2 acceleration, DxGameTime gameTime, out DxVector2 newAcceleration)
+                    =>
                 {
-                    return Tuple.Create(true, new DxVector2());
-                }
-                return Tuple.Create(false, acceleration);
-            };
+                    /* If our jumping force is applying a (down into the ground) acceleration, we're done! */
+                    bool done = externalVelocity.Y >= 0;
+                    newAcceleration = acceleration;
+                    return done;
+                };
             return dissipation;
         }
     }
@@ -206,8 +204,8 @@ namespace DxCore.Core.Components.Advanced.Properties
 
         /* Honestly I do not remember wtf any of this is, seems pretty complicated & cool */
 
-        private Tuple<bool, DxVector2> DissipationFunction(DxVector2 externalVelocity, DxVector2 currentAcceleration,
-            DxGameTime gameTime)
+        private bool DissipationFunction(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime,
+            out DxVector2 newAcceleration)
         {
             var xDirectionSign = Math.Sign(Direction.X);
             var xIsNegative = xDirectionSign == -1;
@@ -234,7 +232,8 @@ namespace DxCore.Core.Components.Advanced.Properties
             var hasDissipated = dissipated_;
             // Dissipate after one frame always (we need continual move left requests to actually move)
             dissipated_ = true;
-            return Tuple.Create(hasDissipated, accelerationVector);
+            newAcceleration = accelerationVector;
+            return dissipated_;
         }
     }
 }

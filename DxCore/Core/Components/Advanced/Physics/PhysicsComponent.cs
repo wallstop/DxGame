@@ -55,12 +55,13 @@ namespace DxCore.Core.Components.Advanced.Physics
         public override void OnAttach()
         {
             RegisterMessageHandler<CollisionMessage>(HandleCollisionMessage);
+            RegisterMessageHandler<AttachForce>(HandleAttachForce);
             base.OnAttach();
         }
 
-        public virtual void AttachForce(Force force)
+        protected virtual void AttachForce(Force force)
         {
-            Validate.Hard.IsNotNull(force, this.GetFormattedNullOrDefaultMessage(force));
+            Validate.Hard.IsNotNull(force, () => this.GetFormattedNullOrDefaultMessage(force));
             forces_.Add(force);
             Velocity += force.InitialVelocity;
         }
@@ -73,8 +74,8 @@ namespace DxCore.Core.Components.Advanced.Physics
         public static Tuple<DxVector2, DxVector2> ForceComputation(DxGameTime gameTime, DxVector2 position,
             DxVector2 velocity, List<Force> forces)
         {
-            var scaleAmount = gameTime.ScaleFactor;
-            var acceleration = new DxVector2();
+            double scaleAmount = gameTime.ScaleFactor;
+            DxVector2 acceleration = new DxVector2();
             foreach(var force in forces)
             {
                 force.Update(velocity, acceleration, gameTime);
@@ -91,18 +92,18 @@ namespace DxCore.Core.Components.Advanced.Physics
         protected override void Update(DxGameTime gameTime)
         {
             var physicsOutput = ForceComputation(gameTime, Position, Velocity, forces_);
-            Position = physicsOutput.Item1;
             Velocity = physicsOutput.Item2;
+            Position = physicsOutput.Item1;
             forces_.RemoveAll(force => force.Dissipated);
         }
 
-        protected void HandleCollisionMessage(CollisionMessage message)
+        protected void HandleAttachForce(AttachForce forceAttachment)
         {
-            if(!Equals(message.Target, Parent.Id))
-            {
-                return;
-            }
+            AttachForce(forceAttachment.Force);
+        }
 
+        protected virtual void HandleCollisionMessage(CollisionMessage message)
+        {
             var collisionDirections = message.CollisionDirections;
             var velocity = Velocity;
             // Collide on against y axis (vertical)? Cease movement and acceleration in that direction

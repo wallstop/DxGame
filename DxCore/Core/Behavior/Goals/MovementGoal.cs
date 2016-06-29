@@ -6,7 +6,6 @@ using DxCore.Core.Models;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Behavior.Goals
 {

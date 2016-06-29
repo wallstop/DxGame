@@ -139,7 +139,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         private static bool CheckForMoveDown(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if(inputEvents.Any(keyEvent => keyEvent.Source == DxGame.Instance.Controls.Down && keyEvent.HeldDown))
+            if(inputEvents.Any(keyEvent => keyEvent.Source == DxGame.Instance.Controls.Down))
             {
                 commandment = Commandment.MoveDown;
                 return true;

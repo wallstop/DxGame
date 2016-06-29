@@ -88,8 +88,7 @@ namespace Babel.Skills.Gevurah
             }
 
             Force rollForce = new Force(initialVelocity, DxVector2.EmptyVector, Force.InstantDisipation, "Archer Roll");
-            PhysicsComponent physics = parent.ComponentOfType<PhysicsComponent>();
-            physics.AttachForce(rollForce);
+            new AttachForce(parent.Id, rollForce).Emit();
 
             DxVector2 bearTrapDimensions = new DxVector2(50, 20);
             PositionalComponent entityPosition = parent.ComponentOfType<PositionalComponent>();
@@ -157,7 +156,8 @@ namespace Babel.Skills.Gevurah
 
                 /* Apply force... */
                 var force = new Force(targetVelocityVector, targetVelocityVector, ShockwaveDissipation, "Shockwave");
-                destination.AttachForce(force);
+                new AttachForce(destination.Parent.Id, force).Emit();
+
 
                 /* ...and then damage (if we can) */
                 DamageMessage damageDealt = new DamageMessage
@@ -169,20 +169,18 @@ namespace Babel.Skills.Gevurah
                 damageDealt.Emit();
 
                 /* ... and attach a life sucker (just to be evil) */
-                if(!ReferenceEquals(destination.Parent, null))
-                {
-                    LifeSuckerComponent lifeSucker = new LifeSuckerComponent();
-                    destination.Parent.AttachComponent(lifeSucker);
-                    EntityCreatedMessage entityCreated = new EntityCreatedMessage(lifeSucker);
-                    entityCreated.Emit();
-                }
+                LifeSuckerComponent lifeSucker = new LifeSuckerComponent();
+                destination.Parent.AttachComponent(lifeSucker);
+                EntityCreatedMessage entityCreated = new EntityCreatedMessage(lifeSucker);
+                entityCreated.Emit();
             }
 
-            private Tuple<bool, DxVector2> ShockwaveDissipation(DxVector2 externalVelocity,
-                DxVector2 currentAcceleration, DxGameTime gameTime)
+            private bool ShockwaveDissipation(DxVector2 externalVelocity,
+                DxVector2 currentAcceleration, DxGameTime gameTime, out DxVector2 newAcceleration)
             {
                 TimeSpan totalElapsed = gameTime.TotalGameTime - InitialTime;
-                return Tuple.Create(DURATION < totalElapsed, initialAcceleration_ * 0.01);
+                newAcceleration = initialAcceleration_ * 0.01;
+                return DURATION < totalElapsed;
             }
         }
     }

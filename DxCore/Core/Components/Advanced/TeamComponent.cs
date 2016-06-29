@@ -3,8 +3,6 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Components.Advanced
 {
@@ -17,7 +15,7 @@ namespace DxCore.Core.Components.Advanced
 
         public TeamComponent(Team team)
         {
-            Validate.Hard.IsNotNull(team, this.GetFormattedNullOrDefaultMessage(team));
+            Validate.Hard.IsNotNull(team, () => this.GetFormattedNullOrDefaultMessage(team));
             Team = team;
         }
     }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
-using DXGame.Core;
 
 namespace DxCore.Core.GraphicsWidgets.HUD
 {

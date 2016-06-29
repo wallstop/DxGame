@@ -12,16 +12,13 @@ namespace DxCore.Core.Physics
 
     public static class WorldForces
     {
-        public static readonly DxVector2 GRAVITY_ACCELERATION = new DxVector2(0, 0.63f);
-        private static readonly float DRAG_COEFFICIENT = 0.05f;
-        private static readonly float SLOWDOWN_COEFFICIENT = 0.1f;
-
-        private static readonly Tuple<bool, DxVector2> GRAVITY_DISSIPATION_RESULT = Tuple.Create(false,
-            GRAVITY_ACCELERATION);
+        public static readonly DxVector2 GravityAcceleration = new DxVector2(0, 0.63f);
+        private static readonly float DragCoefficient = 0.05f;
+        private static readonly float SlowdownCoefficient = 0.1f;
 
         /* Applies a constant downwards force (down is -y, in terms of graphic space) to an object */
 
-        public static readonly Force Gravity = new Force(new DxVector2(), GRAVITY_ACCELERATION, GravityDissipation,
+        public static readonly Force Gravity = new Force(new DxVector2(), GravityAcceleration, GravityDissipation,
             "Gravity");
 
         /* 
@@ -41,9 +38,10 @@ namespace DxCore.Core.Physics
             HorizontalVelocityDissipation, "Deceleration");
         */
 
-        public static Tuple<bool, DxVector2> GravityDissipation(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime)
+        public static bool GravityDissipation(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime, out DxVector2 newAcceleration)
         {
-            return GRAVITY_DISSIPATION_RESULT;
+            newAcceleration = GravityAcceleration;
+            return false;
         }
 
         /**
@@ -55,15 +53,16 @@ namespace DxCore.Core.Physics
             </summary>
         */
 
-        public static Tuple<bool, DxVector2> AirResistanceDissipation(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime)
+        public static bool AirResistanceDissipation(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime, out DxVector2 newAcceleration)
         {
-            var modifiedVelocity = externalVelocity;
+            DxVector2 modifiedVelocity = externalVelocity;
             /* Point our acceleration in the opposite direction */
             modifiedVelocity.X = -modifiedVelocity.X;
             modifiedVelocity.Y = -modifiedVelocity.Y;
             /* And scale it way down */
-            modifiedVelocity *= DRAG_COEFFICIENT;
-            return Tuple.Create(false, modifiedVelocity);
+            modifiedVelocity *= DragCoefficient;
+            newAcceleration = modifiedVelocity;
+            return false;
         }
 
         /**
@@ -78,7 +77,7 @@ namespace DxCore.Core.Physics
         public static Tuple<bool, DxVector2> HorizontalVelocityDissipation(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime)
         {
             return Tuple.Create(Math.Abs(externalVelocity.X) > 0,
-                new DxVector2 {X = -externalVelocity.X * SLOWDOWN_COEFFICIENT});
+                new DxVector2 {X = -externalVelocity.X * SlowdownCoefficient});
         }
     }
 }

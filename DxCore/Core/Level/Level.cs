@@ -11,7 +11,6 @@ using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Level
 {
@@ -77,8 +76,7 @@ namespace DxCore.Core.Level
         private void AddEntityToManagementPool(Event gameEvent)
         {
             EntitySpawnedMessage spawnMessage = gameEvent.Message as EntitySpawnedMessage;
-            Validate.Hard.IsNotNullOrDefault(spawnMessage,
-                $"Expected the Event to contain an {typeof(EntitySpawnedMessage)}, but it was not. How did this pass {nameof(DetermineLevelSpawnEvent)}?");
+            Validate.Hard.IsNotNullOrDefault(spawnMessage, () => $"Expected the Event to contain an {typeof(EntitySpawnedMessage)}, but it was not. How did this pass {nameof(DetermineLevelSpawnEvent)}?");
             Component spawnedComponent;
             if(spawnMessage.TryGetSpawnedEntity(out spawnedComponent))
             {

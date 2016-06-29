@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 
@@ -58,10 +59,24 @@ namespace DxCore.Core.Components.Advanced.Position
             return new BoundedSpatialComponentBuilder();
         }
 
-        public class BoundedSpatialComponentBuilder : SpatialComponentBuilder
+        public class BoundedSpatialComponentBuilder : IBuilder<BoundedSpatialComponent>
         {
-            protected DxVector2 xBounds_;
-            protected DxVector2 yBounds_;
+            private DxVector2 position_;
+            private DxVector2 dimensions_;
+            private DxVector2 xBounds_;
+            private DxVector2 yBounds_;
+
+            public BoundedSpatialComponentBuilder WithDimensions(DxVector2 dimensions)
+            {
+                dimensions_ = dimensions;
+                return this;
+            }
+
+            public BoundedSpatialComponentBuilder WithPosition(DxVector2 position)
+            {
+                position_ = position;
+                return this;
+            }
 
             public BoundedSpatialComponentBuilder WithBounds(DxRectangle bounds)
             {
@@ -82,7 +97,7 @@ namespace DxCore.Core.Components.Advanced.Position
                 return this;
             }
 
-            public override PositionalComponent Build()
+            public BoundedSpatialComponent Build()
             {
                 Validate.Hard.IsTrue(xBounds_.Magnitude > 0);
                 Validate.Hard.IsTrue(yBounds_.Magnitude > 0);

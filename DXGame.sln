@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DXGame", "DXGame.csproj", "{9B58D322-95D0-4F4C-A742-DD643C7024FC}"
 EndProject
@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapEditorLibrary", "MapEdit
 	ProjectSection(ProjectDependencies) = postProject
 		{F6BE0738-25E8-45DA-B20D-739532A6EE24} = {F6BE0738-25E8-45DA-B20D-739532A6EE24}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pong", "Example\Pong\Pong.csproj", "{D84CDC32-7F8A-48CE-A3DF-347BF5DA7C40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -109,6 +111,14 @@ Global
 		{4FF26EDC-930E-401B-BB5D-0B3C50B93169}.Release|x64.Build.0 = Release|Any CPU
 		{4FF26EDC-930E-401B-BB5D-0B3C50B93169}.Release|x86.ActiveCfg = Release|Any CPU
 		{4FF26EDC-930E-401B-BB5D-0B3C50B93169}.Release|x86.Build.0 = Release|Any CPU
+		{D84CDC32-7F8A-48CE-A3DF-347BF5DA7C40}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{D84CDC32-7F8A-48CE-A3DF-347BF5DA7C40}.Debug|x64.ActiveCfg = Debug|x86
+		{D84CDC32-7F8A-48CE-A3DF-347BF5DA7C40}.Debug|x86.ActiveCfg = Debug|x86
+		{D84CDC32-7F8A-48CE-A3DF-347BF5DA7C40}.Debug|x86.Build.0 = Debug|x86
+		{D84CDC32-7F8A-48CE-A3DF-347BF5DA7C40}.Release|Any CPU.ActiveCfg = Release|x86
+		{D84CDC32-7F8A-48CE-A3DF-347BF5DA7C40}.Release|x64.ActiveCfg = Release|x86
+		{D84CDC32-7F8A-48CE-A3DF-347BF5DA7C40}.Release|x86.ActiveCfg = Release|x86
+		{D84CDC32-7F8A-48CE-A3DF-347BF5DA7C40}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

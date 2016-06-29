@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
 
 namespace DxCore.Core.Components.Advanced.Position
 {
@@ -44,17 +45,23 @@ namespace DxCore.Core.Components.Advanced.Position
             return new SpatialComponentBuilder();
         }
 
-        public class SpatialComponentBuilder : PositionalComponentBuilder
+        public class SpatialComponentBuilder : IBuilder<SpatialComponent>
         {
-            protected DxVector2 dimensions_;
+            private DxVector2 dimensions_;
+            private DxVector2 position_;
+
+            public SpatialComponentBuilder WithPosition(DxVector2 position)
+            {
+                position_ = position;
+                return this;
+            }
 
             public SpatialComponentBuilder WithDimensions(DxVector2 dimensions)
             {
                 dimensions_ = dimensions;
                 return this;
             }
-
-            public override PositionalComponent Build()
+            public SpatialComponent Build()
             {
                 return new SpatialComponent(position_, dimensions_);
             }

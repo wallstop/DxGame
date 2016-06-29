@@ -94,6 +94,7 @@
     <Compile Include="Core\Components\Advanced\Command\AbstractCommandComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PathfindingInputComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PlayerInputListener.cs" />
+    <Compile Include="Core\Components\Advanced\Command\RandomCommander.cs" />
     <Compile Include="Core\Components\Advanced\Command\SimpleRelayingCommandComponent.cs" />
     <Compile Include="Core\Components\Advanced\Damage\DamageComponent.cs" />
     <Compile Include="Core\Components\Advanced\Damage\DeathEffectComponent.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Core\Components\Network\NetworkClientConfig.cs" />
     <Compile Include="Core\Input\IMeasuredInputEvent.cs" />
     <Compile Include="Core\Map\MapLayout.cs" />
+    <Compile Include="Core\Messaging\AttachForce.cs" />
     <Compile Include="Core\Messaging\Camera\ZoomRequest.cs" />
     <Compile Include="Core\Messaging\UpdateCameraBounds.cs" />
     <Compile Include="Core\Network\Port.cs" />

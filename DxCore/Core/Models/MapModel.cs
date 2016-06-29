@@ -3,8 +3,6 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
 

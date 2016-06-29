@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
-using DXGame.Core;
 
 namespace DxCore.Core.Components.Advanced.Physics
 {
@@ -20,7 +19,7 @@ namespace DxCore.Core.Components.Advanced.Physics
         public UnforcablePhysicsComponent(DxVector2 velocity, DxVector2 acceleration, SpatialComponent position,
             UpdatePriority updatePriority) : base(velocity, acceleration, position, updatePriority) {}
 
-        public override void AttachForce(Force force)
+        protected override void AttachForce(Force force)
         {
             // Do nothing
         }

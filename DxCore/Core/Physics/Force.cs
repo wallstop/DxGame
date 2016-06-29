@@ -3,18 +3,17 @@ using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Physics
 {
     /**
         <summary>
             Returns a tuple [isDissipated, newAcceleration] given the current acceleration value & the gameTime
+            TODO: Invert this. This should return (isValid, newAccelerationIfSo), not what it currently is :(. Bad API
         </summary>
     */
 
-    public delegate Tuple<bool, DxVector2> DissipationFunction(
-        DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime);
+    public delegate bool DissipationFunction(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime, out DxVector2 newAcceleration);
 
     /**
         <summary>
@@ -53,8 +52,7 @@ namespace DxCore.Core.Physics
         public Force(DxVector2 initialVelocity, DxVector2 acceleration, DissipationFunction dissipationFunction,
             string name, bool dissipated = false)
         {
-            Validate.Hard.IsNotNull(dissipationFunction,
-                StringUtils.GetFormattedNullOrDefaultMessage(this, dissipationFunction));
+            Validate.Hard.IsNotNull(dissipationFunction, () => this.GetFormattedNullOrDefaultMessage(dissipationFunction));
             Dissipation = dissipationFunction;
             Dissipated = dissipated;
             InitialVelocity = initialVelocity;
@@ -62,19 +60,25 @@ namespace DxCore.Core.Physics
             Name = name;
         }
 
-        public static Tuple<bool, DxVector2> InstantDisipation(DxVector2 velocity, DxVector2 acceleration,
-            DxGameTime gameTime)
+        public static DissipationFunction OneFrameDissipation(DxVector2 nextFrameAcceleration)
         {
-            return Tuple.Create(true, DxVector2.EmptyVector);
+            return new SerializableDissipation(nextFrameAcceleration).Dissipation;
+        }
+
+        public static bool InstantDisipation(DxVector2 velocity, DxVector2 acceleration,
+            DxGameTime gameTime, out DxVector2 newAcceleration)
+        {
+            newAcceleration = DxVector2.EmptyVector;
+            return true;
         }
 
         public void Update(DxVector2 velocity, DxVector2 acceleration, DxGameTime gameTime)
         {
             if (!Dissipated)
             {
-                var dissipation = Dissipation.Invoke(velocity, Acceleration, gameTime);
-                Dissipated = dissipation.Item1;
-                Acceleration = dissipation.Item2;
+                DxVector2 newAcceleration;
+                Dissipated = Dissipation.Invoke(velocity, acceleration, gameTime, out newAcceleration);
+                Acceleration = newAcceleration;
             }
         }
 
@@ -92,6 +96,36 @@ namespace DxCore.Core.Physics
         public override int GetHashCode()
         {
             return Objects.HashCode(Name, Dissipation, InitialVelocity);
+        }
+
+        [Serializable]
+        [DataContract]
+        internal sealed class SerializableDissipation
+        {
+            [DataMember]
+            private bool Dissipated { get; set; }
+
+            [DataMember]
+            private DxVector2 NextFrameAcceleration { get; set; }
+
+            public SerializableDissipation(DxVector2 nextFrameAcceleration)
+            {
+                NextFrameAcceleration = nextFrameAcceleration;
+                Dissipated = false;
+            }
+
+            public bool Dissipation(DxVector2 externalVelocity, DxVector2 currentAcceleration,
+                DxGameTime gameTime, out DxVector2 newAcceleration)
+            {
+                if(Dissipated)
+                {
+                    newAcceleration = DxVector2.EmptyVector;
+                    return true;
+                }
+                newAcceleration = NextFrameAcceleration;
+                Dissipated = true;
+                return false;
+            }
         }
     }
 }

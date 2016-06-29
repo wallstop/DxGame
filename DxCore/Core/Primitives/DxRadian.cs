@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Primitives
 {
@@ -68,6 +67,16 @@ namespace DxCore.Core.Primitives
         public static DxRadian operator *(DxRadian radian, float scalar)
         {
             return new DxRadian(radian.Value * scalar);
+        }
+
+        public static implicit operator DxRadian(DxVector2 vector)
+        {
+            return new DxRadian(vector);
+        }
+
+        public static implicit operator DxRadian(DxLine line)
+        {
+            return new DxRadian(line.Vector);
         }
 
         public override int GetHashCode()

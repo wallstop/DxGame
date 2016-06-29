@@ -8,7 +8,6 @@ using DxCore.Core;
 using DxCore.Core.Generators;
 using DxCore.Core.Level;
 using DxCore.Core.Models;
-using NLog;
 
 namespace Babel.Models
 {
@@ -23,8 +22,6 @@ namespace Babel.Models
     [Obsolete("Pls find a better way of injecting behavior into the game")]
     public class GameModel : Model
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        
         [DataMember]
         public float GameSpeed { get; set; }
 
@@ -46,7 +43,6 @@ namespace Babel.Models
             mapModel_ = new MapModel(levelProgression);
             mapModel_.Create();
             new DeveloperModel().Create();
-            new CollisionModel().Create();
             new EnvironmentModel().Create();
             new PathfindingModel().Create();
             new ExperienceModel().Create();

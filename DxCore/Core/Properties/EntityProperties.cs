@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DXGame.Core;
 
 namespace DxCore.Core.Properties
 {

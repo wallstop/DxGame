@@ -1,0 +1,406 @@
+{
+	"MapLayout" : {
+		"Height" : 20,
+		"TileHeight" : 75,
+		"TileWidth" : 75,
+		"Width" : 35
+	},
+	"Tiles" : {
+		"{\"X\":0,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":1,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":2,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":3,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":4,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":5,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":6,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":7,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":8,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":9,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":10,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":11,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":12,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":13,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":14,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":15,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":16,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":17,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":18,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":19,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":20,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":21,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":22,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":23,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":24,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":25,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":26,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":27,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":28,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":29,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":30,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":31,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":32,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":33,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":34,\"Y\":19}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":20,\"Y\":17}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":21,\"Y\":17}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":22,\"Y\":17}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":24,\"Y\":15}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":25,\"Y\":15}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":26,\"Y\":15}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":27,\"Y\":15}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":28,\"Y\":13}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":29,\"Y\":13}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":30,\"Y\":13}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":30,\"Y\":11}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":31,\"Y\":11}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":32,\"Y\":11}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":33,\"Y\":11}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":26,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":27,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":28,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":22,\"Y\":6}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":23,\"Y\":6}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":24,\"Y\":6}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":20,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":19,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":18,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":17,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":16,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":15,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":14,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":13,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":12,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":11,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":10,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":9,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":8,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":7,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":6,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":5,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":4,\"Y\":4}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":1,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":2,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":3,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":4,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":5,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":6,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":7,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":8,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":9,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":10,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":11,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":12,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":13,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":14,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":15,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":16,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":17,\"Y\":8}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":17,\"Y\":12}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":18,\"Y\":10}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":19,\"Y\":10}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":20,\"Y\":10}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":21,\"Y\":10}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":21,\"Y\":9}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":17,\"Y\":11}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":16,\"Y\":11}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":17,\"Y\":13}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		},
+		"{\"X\":17,\"Y\":14}" : {
+			"Asset" : "Map\\Tiles\\SimpleTile.png",
+			"Type" : 1
+		}
+	}
+}

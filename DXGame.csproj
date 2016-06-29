@@ -350,9 +350,9 @@
     <Content Include="Content\Player\Walk_Right.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Content\Map\NewBadMap.mdtr">
+    <Content Include="Content\Map\Sample.mdtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
     <None Include="Content\Player\Archer\ArrowRainLaunchLeft.adtr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

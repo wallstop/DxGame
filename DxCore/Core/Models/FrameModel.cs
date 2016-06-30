@@ -4,7 +4,6 @@ using System.Linq;
 using DxCore.Core.Frames;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Models
 {

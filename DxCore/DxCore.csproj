@@ -154,6 +154,8 @@
     <Compile Include="Core\Messaging\AttachForce.cs" />
     <Compile Include="Core\Messaging\Camera\ZoomRequest.cs" />
     <Compile Include="Core\Messaging\UpdateCameraBounds.cs" />
+    <Compile Include="Core\Messaging\AudioMessage.cs" />
+    <Compile Include="Core\Models\AudioModel.cs" />
     <Compile Include="Core\Network\Port.cs" />
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
     <Compile Include="Core\Components\Utils\RectangleAreaComparer.cs" />

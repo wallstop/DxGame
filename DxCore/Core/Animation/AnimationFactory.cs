@@ -61,7 +61,7 @@ namespace DxCore.Core.Animation
                 GenerateStaticStandardAnimationTypes(category);
                 animationDescriptor = SearchCache(category, animation);
             }
-            Validate.Hard.IsNotNullOrDefault(animationDescriptor, $"Could not find a {typeof(AnimationDescriptor)} for {category}, {animation}");
+            Validate.Hard.IsNotNullOrDefault(animationDescriptor, () => $"Could not find a {typeof(AnimationDescriptor)} for {category}, {animation}");
             return animationDescriptor;
         }
 
@@ -99,18 +99,21 @@ namespace DxCore.Core.Animation
             List<string> matchingAssetFiles = assetFiles.Where(assetFile => Objects.Equals(animationFile, Path.GetFileNameWithoutExtension(assetFile))).ToList();
             if(matchingAssetFiles.Count() != 1)
             {
-                LOG.Info($"Found {matchingAssetFiles.Count()} asset files that matched {animationFile} ({matchingAssetFiles}) - cannot generate StandardAnimationTypes");
-                return false;
+                LOG.Info(
+                    $"Found {matchingAssetFiles.Count()} asset files that matched {animationFile} ({matchingAssetFiles}), pretending that {animationFile} is what you meant");
+                    matchingAssetFiles = new List<string> { animationFile };
             }
             string pathToAssetFile = matchingAssetFiles.First();
             pathToAssetFile = StripContentDirectory(pathToAssetFile);
             foreach(StandardAnimationType animationType in Enum.GetValues(typeof(StandardAnimationType)))
             {
-                AnimationDescriptor fakeDescriptor = new AnimationDescriptor();
-                fakeDescriptor.Asset = pathToAssetFile;
-                fakeDescriptor.FrameCount = 1;
-                fakeDescriptor.FramesPerSecond = 60;
-                fakeDescriptor.Scale = 1.0;
+                AnimationDescriptor fakeDescriptor = new AnimationDescriptor
+                {
+                    Asset = pathToAssetFile,
+                    FrameCount = 1,
+                    FramesPerSecond = 60,
+                    Scale = 1.0
+                };
                 string mangledFakePath = ManipulatePathToIncludeAnimationType(pathToAssetFile, animationType);
                 Instance.animationSimpleCache_.PutIfAbsent(mangledFakePath, fakeDescriptor);
             }

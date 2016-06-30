@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D84CDC32-7F8A-48CE-A3DF-347BF5DA7C40}</ProjectGuid>
+    <ProjectGuid>{4CF187F9-68BD-4C5C-AB85-28BA031DD149}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Pong</RootNamespace>
-    <AssemblyName>Pong</AssemblyName>
+    <RootNamespace>DxGame</RootNamespace>
+    <AssemblyName>DxGame</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>Windows</MonoGamePlatform>
     <MonoGameContentBuilderExe>
@@ -22,7 +22,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Windows\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -42,20 +42,12 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Core\Components\CollisionBouncablePhyicsComponent.cs" />
-    <Compile Include="Core\Components\DrawableCircle.cs" />
-    <Compile Include="Core\Components\PaddleCommandProcessor.cs" />
-    <Compile Include="Core\Components\PhysicsCollisionComponent.cs" />
-    <Compile Include="Core\Generators\BallFactory.cs" />
-    <Compile Include="Core\Generators\PaddleFactory.cs" />
-    <Compile Include="Pong.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MonoGame.Framework.WindowsDX.3.5.1.1679\lib\net40\MonoGame.Framework.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>$(MSBuildProgramFiles32)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -64,19 +56,21 @@
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="Content\Content.mgcb" />
+    <MonoGameContentReference Include="Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DxCore\DxCore.csproj">
+    <ProjectReference Include="..\Babel\Babel.csproj">
+      <Project>{670a47c4-18df-4a35-a6e2-48c1af010c0b}</Project>
+      <Name>Babel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DxCore\DxCore.csproj">
       <Project>{be7e2670-e97a-456e-9279-25dcb3541d5d}</Project>
       <Name>DxCore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

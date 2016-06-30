@@ -110,6 +110,7 @@ namespace Babel.Generators
 
         public GameObject GeneratePlayer()
         {
+            new AudioMessage("Audio/Music/MusicToDelight", AudioType.Music).Emit();
             return GeneratePlayer(new PlayerInputListener(), true);
         }
 

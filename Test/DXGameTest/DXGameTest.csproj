@@ -166,10 +166,6 @@
       <Project>{be7e2670-e97a-456e-9279-25dcb3541d5d}</Project>
       <Name>DxCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\DXGame.csproj">
-      <Project>{9b58d322-95d0-4f4c-a742-dd643c7024fc}</Project>
-      <Name>DXGame</Name>
-    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

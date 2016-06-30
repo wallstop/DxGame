@@ -233,7 +233,7 @@ namespace DxCore.Core.Components.Advanced.Properties
             // Dissipate after one frame always (we need continual move left requests to actually move)
             dissipated_ = true;
             newAcceleration = accelerationVector;
-            return dissipated_;
+            return hasDissipated;
         }
     }
 }

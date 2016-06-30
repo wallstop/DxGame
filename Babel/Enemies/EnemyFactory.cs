@@ -40,7 +40,7 @@ namespace Babel.Enemies
 
         public static GameObject SmallBox()
         {
-            string entityName = "SmallBox";
+            string entityName = "Sprites/SmallBox/SmallBox";
             var teamComponent = new TeamComponent(Team.EnemyTeam);
             // Build spatial component from bounds
             var enemySpatial = new MapBoundedSpatialComponent(DxVector2.EmptyVector, new DxVector2(50, 50));

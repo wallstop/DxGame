@@ -309,6 +309,7 @@ namespace DxCore
             new InputModel().Create();
             new CameraModel().Create();
             new CollisionModel().Create();
+            new AudioModel().Create();
 
             base.Initialize();
         }

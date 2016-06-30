@@ -10,7 +10,7 @@ namespace DxCore.Core.Components.Advanced.Position
     public class MapBoundedSpatialComponent : BoundedSpatialComponent
     {
         [IgnoreDataMember]
-        public override DxRectangle Bounds => DxGame.Instance.Model<CameraModel>().Bounds;
+        public override DxRectangle Bounds => DxGame.Instance.Model<MapModel>()?.MapBounds ?? DxGame.Instance.Model<CameraModel>().Bounds;
 
         public MapBoundedSpatialComponent(DxVector2 position, DxVector2 dimensions) : base(position, dimensions) {}
     }

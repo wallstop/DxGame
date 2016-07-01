@@ -38,6 +38,7 @@ namespace Pong.Core.Generators
                     .WithPosition(position)
                     .WithBounds(new DxVector2(50, 175))
                     .WithCollisionType(PhysicsType.Kinematic)
+                    .WithoutFriction()
                     .WithoutGravity()
                     .Build();
             SimpleSpriteComponent paddleDrawable =

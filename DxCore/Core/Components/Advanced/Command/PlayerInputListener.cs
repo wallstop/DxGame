@@ -95,7 +95,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         public static List<Commandment> DetermineCommandmentsFor(List<KeyboardEvent> keyboardEvents)
         {
-            return ActionChecks.Select(actionCheck =>
+            List<Commandment> activeCommandments = ActionChecks.Select(actionCheck =>
             {
                 Commandment commandment = Commandment.None;
                 if(actionCheck.Invoke(keyboardEvents, ref commandment))
@@ -105,6 +105,15 @@ namespace DxCore.Core.Components.Advanced.Command
                 }
                 return null;
             }).Where(commandment => commandment.HasValue).Select(commandment => commandment.Value).ToList();
+
+            if(!activeCommandments.Any())
+            {
+                return new List<Commandment> {Commandment.None};
+            }
+            else
+            {
+                return activeCommandments;
+            }
         }
 
         private static bool CheckForMoveLeft(List<KeyboardEvent> inputEvents, ref Commandment commandment)

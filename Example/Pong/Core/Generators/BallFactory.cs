@@ -22,6 +22,8 @@ namespace Pong.Core.Generators
                     .WithPosition(position - radialVector)
                     .WithBounds(radialVector * 2)
                     .WithCollisionType(PhysicsType.Dynamic)
+                    .WithRestitution(2000)
+                    .WithoutFriction()
                     .WithoutGravity()
                     .Build();
             DrawableCircle ballDrawable = new DrawableCircle(physics, Color.Black, radius);

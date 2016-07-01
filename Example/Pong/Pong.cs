@@ -50,7 +50,7 @@ namespace Pong
                     Graphics.PreferredBackBufferHeight / 2.0));
             ball.Create();
 
-            Impulse pushTowardsPlayer = new Impulse(new DxVector2(-100000, 100));
+            Force pushTowardsPlayer = new Force(new DxVector2(-100000, 100));
 
             new PhysicsAttachment(pushTowardsPlayer, ball.Id).Emit();
         }

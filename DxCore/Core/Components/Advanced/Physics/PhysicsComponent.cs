@@ -69,10 +69,11 @@ namespace DxCore.Core.Components.Advanced.Physics
         public DxRectangle Space => Bounds + Position;
 
         [IgnoreDataMember]
-        public DxVector2 Center => Space.Center;
+        public DxVector2 Center => Body.LocalCenter;
 
         private PhysicsComponent(DxVector2 origin, DxVector2 bounds, PhysicsType physicsType,
-            CollisionGroup collidesWith, CollisionGroup collisionGroup, float density, bool gravityOn, float restitution, float friction)
+            CollisionGroup collidesWith, CollisionGroup collisionGroup, float density, bool gravityOn, float restitution,
+            float friction)
         {
             origin_ = origin;
             bounds_ = bounds;
@@ -214,7 +215,7 @@ namespace DxCore.Core.Components.Advanced.Physics
             private DxVector2? bounds_;
             private PhysicsType? physicsType_;
             private bool gravity_ = true;
-            private float restitution_ = 0f;
+            private float restitution_;
             private float friction_ = 1f;
             private CollisionGroup collisionGroup_ = CollisionGroup.All;
             private CollisionGroup collidesWith_ = CollisionGroup.All;
@@ -239,7 +240,7 @@ namespace DxCore.Core.Components.Advanced.Physics
             public PhysicsComponentBuilder WithRestitution(float restitution = 1f)
             {
                 restitution_ = restitution;
-                return null;
+                return this;
             }
 
             public PhysicsComponentBuilder WithoutFriction()

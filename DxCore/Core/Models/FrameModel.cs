@@ -24,8 +24,6 @@ namespace DxCore.Core.Models
             return this;
         }
 
-        public override bool ShouldSerialize => false;
-
         public void AttachFrame(Frame frame)
         {
             Validate.Hard.IsTrue(!Frames.Contains(frame),

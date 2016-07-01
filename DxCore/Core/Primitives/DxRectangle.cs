@@ -10,7 +10,7 @@ namespace DxCore.Core.Primitives
     [DataContract]
     public struct DxRectangle : IEquatable<DxRectangle>, IEquatable<Rectangle>, IShape
     {
-        private const float TOLERANCE = 0.000001f;
+        private const float Tolerance = 0.000001f;
         [DataMember] public float Height;
         [DataMember] public float Width;
         [DataMember] public float X;
@@ -24,7 +24,7 @@ namespace DxCore.Core.Primitives
 
         public DxVector2 Dimensions => new DxVector2(Width, Height);
 
-        public DxVector2 Center => new DxVector2((X + Width) / 2,(Y + Height) / 2);
+        public DxVector2 Center => new DxVector2(X + (Width / 2), Y + (Height / 2));
         /* 
             Cartesian quadrants of this rectangle:
             https://en.wikipedia.org/wiki/Quadrant_%28plane_geometry%29
@@ -129,9 +129,9 @@ namespace DxCore.Core.Primitives
 
         public static bool operator ==(DxRectangle lhs, DxRectangle rhs)
         {
-            return lhs.X.FuzzyCompare(rhs.X, TOLERANCE) == 0 && lhs.Y.FuzzyCompare(rhs.Y, TOLERANCE) == 0 &&
-                   lhs.Width.FuzzyCompare(rhs.Width, TOLERANCE) == 0 &&
-                   lhs.Height.FuzzyCompare(rhs.Height, TOLERANCE) == 0;
+            return lhs.X.FuzzyCompare(rhs.X, Tolerance) == 0 && lhs.Y.FuzzyCompare(rhs.Y, Tolerance) == 0 &&
+                   lhs.Width.FuzzyCompare(rhs.Width, Tolerance) == 0 &&
+                   lhs.Height.FuzzyCompare(rhs.Height, Tolerance) == 0;
         }
 
         public static bool operator !=(DxRectangle lhs, DxRectangle rhs)

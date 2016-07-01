@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced;
-using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Components.Advanced.Physics;
+using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils.Distance;
+using DxCore.Core.Utils;
+using FarseerPhysics.Collision;
+using FarseerPhysics.Dynamics;
 
 namespace DxCore.Core.Models
 {
@@ -14,35 +14,24 @@ namespace DxCore.Core.Models
     [DataContract]
     public class EnvironmentModel : Model
     {
-        public ISpatialTree<IEnvironmentComponent> Collidables { get; private set; }
-
-        public override bool ShouldSerialize => false;
-
         public override void OnAttach()
         {
             RegisterMessageHandler<EnvironmentInteractionMessage>(HandleEnvironmentInteractionMessage);
             base.OnAttach();
         }
 
-        protected override void Update(DxGameTime gameTime)
-        {
-            List<IEnvironmentComponent> enrivonmentComponents =
-                DxGame.Instance.DxGameElements.OfType<IEnvironmentComponent>().ToList();
-            MapModel mapModel = DxGame.Instance.Model<MapModel>();
-            Collidables = new QuadTree<IEnvironmentComponent>(environmentComponent => environmentComponent.Position,
-                mapModel.MapBounds, enrivonmentComponents);
-        }
+        protected override void Update(DxGameTime gameTime) {}
 
         private void HandleEnvironmentInteractionMessage(EnvironmentInteractionMessage message)
         {
-            DxRectangle sourceSpace = message.Source.ComponentOfType<SpatialComponent>().Space;
-            foreach(IEnvironmentComponent environmentComponent in Collidables.InRange(sourceSpace))
+            AABB bounds = message.Source.ComponentOfType<PhysicsComponent>().Space.Aabb();
+            foreach(Fixture fixture in DxGame.Instance.Model<CollisionModel>().World.QueryAABB(ref bounds))
             {
                 // TODO: Refactor / come up with better solution
                 EnvironmentInteractionMessage targetedMessage = new EnvironmentInteractionMessage
                 {
                     Source = message.Source,
-                    Target = environmentComponent.Parent?.Id
+                    Target = ((Component) fixture.UserData).Parent?.Id
                 };
 
                 targetedMessage.Emit();

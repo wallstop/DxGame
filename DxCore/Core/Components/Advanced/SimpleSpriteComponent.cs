@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
@@ -16,7 +16,7 @@ namespace DxCore.Core.Components.Advanced
     {
         [DataMember] protected string assetName_;
         [DataMember] protected DxRectangle boundingBox_;
-        [DataMember] protected PositionalComponent position_;
+        [DataMember] protected PhysicsComponent position_;
         [NonSerialized] [IgnoreDataMember] protected Texture2D texture_;
 
         [IgnoreDataMember]
@@ -33,7 +33,7 @@ namespace DxCore.Core.Components.Advanced
             set { assetName_ = value; }
         }
 
-        private SimpleSpriteComponent(string asset, PositionalComponent position, DxRectangle boundingBox)
+        private SimpleSpriteComponent(string asset, PhysicsComponent position, DxRectangle boundingBox)
         {
             Validate.Hard.IsNotNullOrDefault(asset, this.GetFormattedNullOrDefaultMessage(nameof(asset)));
             assetName_ = asset;
@@ -69,7 +69,7 @@ namespace DxCore.Core.Components.Advanced
         {
             private string asset_;
             private DxRectangle boundingBox_;
-            private PositionalComponent position_;
+            private PhysicsComponent position_;
 
             public SimpleSpriteComponent Build()
             {
@@ -82,7 +82,7 @@ namespace DxCore.Core.Components.Advanced
                 return this;
             }
 
-            public SimpleSpriteComponentBuilder WithPosition(PositionalComponent position)
+            public SimpleSpriteComponentBuilder WithPosition(PhysicsComponent position)
             {
                 position_ = position;
                 return this;

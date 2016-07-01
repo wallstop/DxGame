@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
@@ -52,7 +52,7 @@ namespace DxCore.Core.Components.Advanced.Damage
                 return;
             }
 
-            SpatialComponent spatial = deathMessage.Entity?.ComponentOfType<SpatialComponent>();
+            PhysicsComponent spatial = deathMessage.Entity?.ComponentOfType<PhysicsComponent>();
             /* 
                 If there is a spatial, trigger the death effect. 
                 If there isn't one, we can't reliably determine the space that the entity died at, so don't trigger it. 

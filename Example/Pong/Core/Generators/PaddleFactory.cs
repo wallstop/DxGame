@@ -3,8 +3,8 @@ using DxCore.Core;
 using DxCore.Core.Components.Advanced;
 using DxCore.Core.Components.Advanced.Command;
 using DxCore.Core.Components.Advanced.Physics;
-using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Messaging;
+using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using Pong.Core.Components;
 
@@ -32,20 +32,23 @@ namespace Pong.Core.Generators
 
         private static GameObject Paddle(DxVector2 position, string assetPath)
         {
-            SpatialComponent paddleSpatial = new MapBoundedSpatialComponent(position, new DxVector2(50, 175));
-            PhysicsCollisionComponent paddleCollision = new PhysicsCollisionComponent(paddleSpatial);
             PaddleCommandProcessor paddleCommandProcessor = new PaddleCommandProcessor();
             PhysicsComponent paddlePhysics =
-                PhysicsComponent.Builder().WithSpatialComponent(paddleSpatial).WithAirResistance().Build();
+                PhysicsComponent.Builder()
+                    .WithPosition(position)
+                    .WithBounds(new DxVector2(50, 175))
+                    .WithCollisionType(PhysicsType.Kinematic)
+                    .WithoutGravity()
+                    .Build();
             SimpleSpriteComponent paddleDrawable =
                 SimpleSpriteComponent.Builder()
                     .WithAsset(assetPath)
-                    .WithPosition(paddleSpatial)
-                    .WithBoundingBox(paddleSpatial.Space)
+                    .WithPosition(paddlePhysics)
+                    .WithBoundingBox(paddlePhysics.Space)
                     .Build();
 
             GameObject paddle = GameObject.Builder()
-                .WithComponents(paddleDrawable, paddleCollision, paddleSpatial, paddlePhysics, paddleCommandProcessor)
+                .WithComponents(paddleDrawable, paddlePhysics, paddleCommandProcessor)
                 .Build();
 
             return paddle;

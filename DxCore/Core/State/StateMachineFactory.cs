@@ -5,9 +5,9 @@ using System.Runtime.Serialization;
 using DxCore.Core.Animation;
 using DxCore.Core.Components.Advanced;
 using DxCore.Core.Components.Advanced.Physics;
-using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Messaging;
+using DxCore.Core.Messaging.Physics;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils.Distance;
@@ -47,19 +47,19 @@ namespace DxCore.Core.State
 
         public static void BuildAndAttachBasicMovementStateMachineAndAnimations(GameObject entity, string entityName)
         {
-            Validate.Hard.IsNotNull(entity, $"Cannot make a {typeof(StateMachine)} for a null {typeof(GameObject)}");
+            Validate.Hard.IsNotNull(entity, () => $"Cannot make a {typeof(StateMachine)} for a null {typeof(GameObject)}");
             /* Need properties for movement forces */
             var entityProperties = entity.ComponentOfType<EntityPropertiesComponent>();
-            Validate.Hard.IsNotNull(entityProperties,
+            Validate.Hard.IsNotNull(entityProperties, () => 
                 $"Cannot make a {typeof(StateMachine)} for a null {typeof(EntityPropertiesComponent)}");
             /* Need physics to apply the forces to */
             var physics = entity.ComponentOfType<PhysicsComponent>();
-            Validate.Hard.IsNotNull(physics,
+            Validate.Hard.IsNotNull(physics, () => 
                 $"Cannot make a {typeof(StateMachine)} for a null {typeof(PhysicsComponent)}");
             /* Need position to tie into animation */
-            var position = entity.ComponentOfType<PositionalComponent>();
-            Validate.Hard.IsNotNull(position,
-                $"Cannot make a {typeof(StateMachine)} for a null {typeof(PositionalComponent)}");
+            var position = entity.ComponentOfType<PhysicsComponent>();
+            Validate.Hard.IsNotNull(position, () => 
+                $"Cannot make a {typeof(StateMachine)} for a null {typeof(PhysicsComponent)}");
 
             StateMachine.StateMachineBuilder stateMachineBuilder = StateMachine.Builder();
             AnimationComponent.AnimationComponentBuilder animationBuilder =
@@ -206,9 +206,7 @@ namespace DxCore.Core.State
 
             public void OnIdleEnterAction(DxGameTime gameTime)
             {
-                /* Cease X actions, we're done! */
-                Entity.ComponentOfType<PhysicsComponent>().Velocity = new DxVector2(0,
-                    Entity.ComponentOfType<PhysicsComponent>().Velocity.Y);
+                new PhysicsAttachment(Nullification.Horizontal, Entity.Id).Emit();
             }
 
             public void IdleAction(List<Message> messages, DxGameTime gameTIme)
@@ -226,18 +224,14 @@ namespace DxCore.Core.State
                     {
                         case Commandment.MoveRight:
                         {
-                            Force force =
-                                Entity.ComponentOfType<EntityPropertiesComponent>()
-                                    .MovementForceFor(Commandment.MoveRight);
-                            AttachForce(Entity, force);
+                            Entity.ComponentOfType<EntityPropertiesComponent>()
+                                .EmitMovementForceFor(Commandment.MoveRight);
                             return;
                         }
                         case Commandment.MoveLeft:
                         {
-                            Force force =
-                                Entity.ComponentOfType<EntityPropertiesComponent>()
-                                    .MovementForceFor(Commandment.MoveLeft);
-                            AttachForce(Entity, force);
+                            Entity.ComponentOfType<EntityPropertiesComponent>()
+                                .EmitMovementForceFor(Commandment.MoveLeft);
                             return;
                         }
                         default:
@@ -248,18 +242,7 @@ namespace DxCore.Core.State
 
             public void OnJumpEnterAction(DxGameTime gameTime)
             {
-                Force force = Entity.ComponentOfType<EntityPropertiesComponent>().MovementForceFor(Commandment.MoveUp);
-                AttachForce(Entity, force);
-            }
-
-            public void JumpAction(DxGameTime gameTime)
-            {
-                /* We jump until we are no longer jumping */
-            }
-
-            private static void AttachForce(GameObject entity, Force force)
-            {
-                new AttachForce(entity.Id, force).Emit();
+                Entity.ComponentOfType<EntityPropertiesComponent>().EmitMovementForceFor(Commandment.MoveUp);
             }
         }
     }

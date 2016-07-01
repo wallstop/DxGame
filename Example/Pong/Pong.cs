@@ -1,6 +1,7 @@
 ﻿using DxCore;
 using DxCore.Core;
 using DxCore.Core.Messaging;
+using DxCore.Core.Messaging.Physics;
 using DxCore.Core.Models;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
@@ -49,7 +50,9 @@ namespace Pong
                     Graphics.PreferredBackBufferHeight / 2.0));
             ball.Create();
 
-            new AttachForce(ball.Id, new Force(new DxVector2(-10, 0), DxVector2.EmptyVector, Force.InstantDisipation, "StartBallMoving")).Emit();
+            Impulse pushTowardsPlayer = new Impulse(new DxVector2(-100000, 100));
+
+            new PhysicsAttachment(pushTowardsPlayer, ball.Id).Emit();
         }
     }
 }

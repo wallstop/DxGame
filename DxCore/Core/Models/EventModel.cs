@@ -30,8 +30,6 @@ namespace DxCore.Core.Models
         [DataMember] private readonly List<WeakReference<EventListener>> listeners_ =
             new List<WeakReference<EventListener>>();
 
-        public override bool ShouldSerialize => false;
-
         public override void OnAttach()
         {
             RegisterGlobalAcceptAll(HandleMessage);

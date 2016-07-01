@@ -26,8 +26,6 @@ namespace DxCore.Core.Models
 
         public DeveloperMode DeveloperMode => devSwitch_.DeveloperMode;
 
-        public override bool ShouldSerialize => false;
-
         public DeveloperModel()
         {
             DrawPriority = DrawPriority.HudLayer;

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
@@ -14,7 +14,7 @@ namespace DxCore.Core.GraphicsWidgets
     [Serializable]
     public class TextComponent : DrawableComponent
     {
-        [DataMember] private readonly PositionalComponent position_;
+        [DataMember] private readonly PhysicsComponent position_;
 
         [NonSerialized] [IgnoreDataMember] private SpriteFont spriteFont_;
 
@@ -29,7 +29,7 @@ namespace DxCore.Core.GraphicsWidgets
         [DataMember]
         public DxColor DxColor { get; set; }
 
-        public TextComponent(PositionalComponent position, SpriteFont spriteFont, string spriteFontName)
+        public TextComponent(PhysicsComponent position, SpriteFont spriteFont, string spriteFontName)
         {
             Validate.Hard.IsNotNullOrDefault(position, () => this.GetFormattedNullOrDefaultMessage(position));
             position_ = position;

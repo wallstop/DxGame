@@ -21,7 +21,6 @@ namespace DxCore.Core.Components.Developer
     public class CollisionTreeWidget<T> : DrawableComponent
     {
         private readonly CollisionTreeProducer<T> producer_;
-        public override bool ShouldSerialize => false;
 
         public CollisionTreeWidget(CollisionTreeProducer<T> collisionTreeProducer)
         {

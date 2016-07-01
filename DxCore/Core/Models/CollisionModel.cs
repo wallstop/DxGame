@@ -1,42 +1,69 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils.Distance;
+using DxCore.Core.Utils;
+using FarseerPhysics.Collision;
+using FarseerPhysics.Dynamics;
+using Microsoft.Xna.Framework;
 
 namespace DxCore.Core.Models
 {
     public class CollisionModel : Model
     {
-        public ISpatialTree<PhysicsComponent> Collidables { get; private set; }
+        private const float StepRate = 1 / 60.0f;
+        private static readonly TimeSpan TargetFps = TimeSpan.FromSeconds(StepRate);
+
+        private TimeSpan LastTicked { get; set; }
+
+        public World World { get; }
+
+        public CollisionModel()
+        {
+            World = new World(new Vector2(0, 9.82f));
+            LastTicked = TimeSpan.Zero;
+        }
 
         public override void OnAttach()
         {
             RegisterMessageHandler<PhysicsMessage>(HandlePhysicsMessage);
         }
 
-        public override bool ShouldSerialize => false;
-
         protected override void Update(DxGameTime gameTime)
         {
-            List<PhysicsComponent> physics = DxGame.Instance.DxGameElements.OfType<PhysicsComponent>().ToList();
-            Collidables = new RTree<PhysicsComponent>(physicsComponent => physicsComponent.Space, physics);
+            RateLimitedUpdate(gameTime);
+        }
+
+        private void RateLimitedUpdate(DxGameTime gameTime)
+        {
+            if(LastTicked + TargetFps < gameTime.TotalGameTime)
+            {
+                LastTicked = gameTime.TotalGameTime;
+                World.Step(StepRate);
+            }
+        }
+
+        private void FullThrottleUpdate(DxGameTime gameTime)
+        {
+            World.Step((float) gameTime.ElapsedGameTime.TotalSeconds);
         }
 
         private void HandlePhysicsMessage(PhysicsMessage message)
         {
-            var affectedPhysicsComponents = new HashSet<PhysicsComponent>();
-            foreach(var area in message.AffectedAreas)
+            HashSet<Fixture> affectedFixtures = new HashSet<Fixture>();
+
+            foreach(DxRectangle area in message.AffectedAreas)
             {
-                foreach(var physicsComponent in Collidables.InRange(area))
+                AABB affectedArea = area.Aabb();
+                foreach(Fixture fixture in World.QueryAABB(ref affectedArea))
                 {
-                    affectedPhysicsComponents.Add(physicsComponent);
+                    affectedFixtures.Add(fixture);
                 }
             }
-            foreach(PhysicsComponent physicsComponent in affectedPhysicsComponents)
+            foreach(Fixture fixture in affectedFixtures)
             {
-                message.Interaction(message.Source, physicsComponent);
+                message.Interaction(message.Source, (PhysicsComponent) fixture.UserData);
             }
         }
     }

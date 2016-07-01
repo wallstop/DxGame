@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
@@ -18,7 +18,7 @@ namespace DxCore.Core.Components.Developer
     {
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            foreach(var spatial in DxGame.Instance.DxGameElements.OfType<SpatialComponent>())
+            foreach(var spatial in DxGame.Instance.DxGameElements.OfType<PhysicsComponent>())
             {
                 spriteBatch.DrawBorder(spatial.Space, 1, Color.Red);
             }

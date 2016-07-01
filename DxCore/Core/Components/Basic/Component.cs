@@ -57,8 +57,6 @@ namespace DxCore.Core.Components.Basic
         [DataMember]
         protected List<Action> DeregistrationHandles { get; set; } = new List<Action>();
 
-        public virtual bool ShouldSerialize => true;
-
         protected Component()
         {
             UpdatePriority = UpdatePriority.NORMAL;

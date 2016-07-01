@@ -131,8 +131,6 @@ namespace DxCore.Core.Components.Basic
             return this;
         }
 
-        public override bool ShouldSerialize => false;
-
         protected static T ConvertMessageType<T>(NetworkMessage message) where T : class
         {
             return GenericUtils.CheckedCast<T>(message,

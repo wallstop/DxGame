@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced;
-using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 
@@ -14,31 +9,11 @@ namespace DxCore.Core.Map
     [DataContract]
     public class Tile
     {
-        public static readonly ReadOnlyDictionary<TileType, ReadOnlyCollection<CollidableDirection>>
-            TILE_COLLISION_DIRECTIONS =
-                new ReadOnlyDictionary<TileType, ReadOnlyCollection<CollidableDirection>>(
-                    new Dictionary<TileType, ReadOnlyCollection<CollidableDirection>>
-                    {
-                        {
-                            TileType.Block,
-                            new ReadOnlyCollection<CollidableDirection>(
-                                Enum.GetValues(typeof(CollidableDirection)).ToEnumerable<CollidableDirection>().ToList())
-                        },
-                        {
-                            TileType.Platform,
-                            new ReadOnlyCollection<CollidableDirection>(
-                                new List<CollidableDirection>(new[] {CollidableDirection.Up}))
-                        }
-                    });
-
         [DataMember]
         public TileType Type { get; private set; }
 
         [DataMember]
         public string Asset { get; private set; }
-
-        [IgnoreDataMember]
-        public IEnumerable<CollidableDirection> CollidableDirections => TILE_COLLISION_DIRECTIONS[Type];
 
         /* Only necessary for JSON Serialization */
 
@@ -61,14 +36,6 @@ namespace DxCore.Core.Map
             Validate.Hard.IsNotNullOrDefault(asset, this.GetFormattedNullOrDefaultMessage(nameof(asset)));
             Type = type;
             Asset = asset;
-        }
-
-        public bool CollidesWith(DxVector2 velocity)
-        {
-            return (velocity.X > 0 && CollidableDirections.Contains(CollidableDirection.Left)) ||
-                   (velocity.X < 0 && CollidableDirections.Contains(CollidableDirection.Right)) ||
-                   (velocity.Y < 0 && CollidableDirections.Contains(CollidableDirection.Down)) ||
-                   (velocity.Y > 0 && CollidableDirections.Contains(CollidableDirection.Up));
         }
 
         public override bool Equals(object other)

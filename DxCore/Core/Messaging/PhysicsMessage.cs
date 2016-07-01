@@ -14,7 +14,7 @@ namespace DxCore.Core.Messaging
         public GameObject Source { get; set; }
 
         [DataMember]
-        public List<IShape> AffectedAreas { get; set; } = new List<IShape>();
+        public List<DxRectangle> AffectedAreas { get; set; } = new List<DxRectangle>();
 
         [DataMember]
         public Interaction Interaction { get; set; }

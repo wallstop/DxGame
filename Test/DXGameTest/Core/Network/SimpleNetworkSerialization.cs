@@ -63,7 +63,7 @@ namespace DXGameTest.Core.Network
                         innerGameObject => gameObject.Id.Equals(innerGameObject.Id)));
             }
 
-            var spatial = serializable.Components.OfType<SpatialComponent>().First();
+            PhysicsComponent spatial = serializable.Components.OfType<PhysicsComponent>().First();
             Assert.NotNull(spatial);
 
             var oldPosition = spatial.Position;

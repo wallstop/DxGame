@@ -33,7 +33,6 @@ namespace DxCore.Core.Models
         }
 
         public Map.Map Map => Level.Map;
-        public override bool ShouldSerialize => false;
 
         private ILevelProgressionStrategy LevelProgressionStrategy { get; }
 

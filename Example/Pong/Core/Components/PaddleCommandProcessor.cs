@@ -1,5 +1,6 @@
 ﻿using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
+using DxCore.Core.Messaging.Physics;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 
@@ -10,15 +11,15 @@ namespace Pong.Core.Components
             Explicitly handles Up/Down commands by applying relevant forces
         </summary>
     */
+
     public class PaddleCommandProcessor : Component
     {
-        private static readonly DxVector2 Up = new DxVector2(0, -1);
-        private static readonly DxVector2 Down = new DxVector2(0, 1);
+        private static readonly DxVector2 Up = new DxVector2(0, -150);
+        private static readonly DxVector2 Down = new DxVector2(0, 150);
 
-        private Force MoveUpForce => new Force(DxVector2.EmptyVector, Up, Force.OneFrameDissipation(Up), "PaddleUp");
+        private Impulse MoveUpImpulse { get; } = new Impulse(Up);
 
-        private Force MoveDownForce
-            => new Force(DxVector2.EmptyVector, Down, Force.OneFrameDissipation(Down), "PaddleDown");
+        private Impulse MoveDownImpulse { get; } = new Impulse(Down);
 
         public override void OnAttach()
         {
@@ -32,12 +33,17 @@ namespace Pong.Core.Components
             {
                 case Commandment.MoveUp:
                 {
-                    new AttachForce(Parent.Id, MoveUpForce).Emit();
+                    new PhysicsAttachment(MoveUpImpulse, Parent.Id).Emit();
                     break;
                 }
                 case Commandment.MoveDown:
                 {
-                    new AttachForce(Parent.Id, MoveDownForce).Emit();
+                    new PhysicsAttachment(MoveDownImpulse, Parent.Id).Emit();
+                    break;
+                }
+                case Commandment.None:
+                {
+                    new PhysicsAttachment(Nullification.Horizontal, Parent.Id).Emit();
                     break;
                 }
             }

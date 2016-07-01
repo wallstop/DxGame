@@ -25,7 +25,6 @@ namespace DxCore.Core.GraphicsWidgets.HUD
         private readonly Stopwatch stopWatch_;
         private TimeSpan lastUpdated_ = TimeSpan.FromSeconds(0);
         public int FramesPerSecond { get; private set; }
-        public override bool ShouldSerialize => false;
 
         public FpsTracker()
         {

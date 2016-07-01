@@ -6,14 +6,14 @@ namespace DxCore.Core.Physics
 {
     [Serializable]
     [DataContract]
-    public sealed class Force
+    public sealed class Impulse
     {
         [DataMember]
         public DxVector2 Value { get; private set; }
 
-        public Force(DxVector2 force)
+        public Impulse(DxVector2 value)
         {
-            Value = force;
+            Value = value;
         }
     }
 }

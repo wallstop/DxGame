@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
@@ -22,12 +22,12 @@ namespace DxCore.Core.Components.Advanced.Map
         private TimeSpan LastParticleEmission { get; set; }
 
         [DataMember]
-        private PositionalComponent PositionalComponent { get; }
+        private PhysicsComponent PositionalComponent { get; }
 
         [DataMember]
         public bool Active { get; private set; }
 
-        public MapTransition(PositionalComponent position)
+        public MapTransition(PhysicsComponent position)
         {
             Validate.Hard.IsNotNull(position);
             PositionalComponent = position;

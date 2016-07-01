@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Input;
 using DxCore.Core.Models;
+using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
@@ -20,7 +21,7 @@ namespace DxCore.Core.GraphicsWidgets
         private int cursorPosition_;
         private ImmutableHashSet<Keys> validKeys_ = ImmutableHashSet<Keys>.Empty;
         public string Text { get; protected set; }
-        public SpatialComponent SpatialComponent { get; }
+        public PhysicsComponent SpatialComponent { get; }
 
         public IEnumerable<Keys> ValidKeys
         {
@@ -46,7 +47,6 @@ namespace DxCore.Core.GraphicsWidgets
             }
         }
 
-        public override bool ShouldSerialize => false;
         protected BlinkingCursor BlinkingCursor { get; }
         protected SpriteFont SpriteFont { get; }
         protected Texture2D Background { get; }
@@ -64,11 +64,17 @@ namespace DxCore.Core.GraphicsWidgets
         }
 
         private TextBox(BlinkingCursor blinkingCursor, List<Keys> validKeys, Texture2D background, Color textColor,
-            SpatialComponent spatial, SpriteFont spriteFont, int maxLength)
+            DxRectangle space, SpriteFont spriteFont, int maxLength)
         {
             Text = "";
             CursorPosition = 0;
-            SpatialComponent = spatial;
+            SpatialComponent =
+                PhysicsComponent.Builder()
+                    .WithPosition(space.Position)
+                    .WithBounds(space.Dimensions)
+                    .WithoutCollision()
+                    .WithCollisionType(PhysicsType.Static)
+                    .Build();
             SpriteFont = spriteFont;
             MaxLength = maxLength;
             ValidKeys = validKeys;
@@ -106,7 +112,8 @@ namespace DxCore.Core.GraphicsWidgets
                     inputModel.InputHandler.FinishedKeyboardEvents.Where(key => ValidKeys.Contains(key.Source));
                 HandleKeyboardEvents(finishedKeys);
                 IEnumerable<KeyboardEvent> longPressedKeys =
-                    inputModel.InputHandler.CurrentKeyboardEvents.Where(key => key.HeldDown && ValidKeys.Contains(key.Source));
+                    inputModel.InputHandler.CurrentKeyboardEvents.Where(
+                        key => key.HeldDown && ValidKeys.Contains(key.Source));
                 HandleKeyboardEvents(longPressedKeys);
             }
 
@@ -190,23 +197,24 @@ namespace DxCore.Core.GraphicsWidgets
             private Texture2D backgroundTexture_ = TextureFactory.TextureForColor(Color.White);
             private Color cursorColor_ = Color.Black;
             private int maxLength_;
-            private SpatialComponent spatial_;
+            private DxRectangle? space_;
             private SpriteFont spriteFont_;
             private Color textColor_ = Color.Black;
             private List<Keys> validKeys_ = new List<Keys>(KeyboardEvent.KeyCharacters.Keys);
 
             public TextBox Build()
             {
-                Validate.Hard.IsNotNullOrDefault(spriteFont_, this.GetFormattedNullOrDefaultMessage(spriteFont_));
-                Validate.Hard.IsTrue(maxLength_ > 0, $"Cannot create a {typeof(TextBox)} with a MaxLength of {maxLength_}");
-                Validate.Hard.IsNotNullOrDefault(spatial_, this.GetFormattedNullOrDefaultMessage(spatial_));
+                Validate.Hard.IsNotNullOrDefault(spriteFont_, () => this.GetFormattedNullOrDefaultMessage(spriteFont_));
+                Validate.Hard.IsPositive(maxLength_,
+                    () => $"Cannot create a {typeof(TextBox)} with a MaxLength of {maxLength_}");
+                Validate.Hard.IsNotNullOrDefault(space_, () => this.GetFormattedNullOrDefaultMessage(space_));
 
                 const string testString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
                 var stringMeasurement = spriteFont_.MeasureString(testString);
                 var textWidth = stringMeasurement.X / testString.Length;
                 var blinkingCursor = BlinkingCursor.Builder().WithWidth(textWidth).WithColor(cursorColor_).Build();
 
-                return new TextBox(blinkingCursor, validKeys_, backgroundTexture_, textColor_, spatial_, spriteFont_,
+                return new TextBox(blinkingCursor, validKeys_, backgroundTexture_, textColor_, space_.Value, spriteFont_,
                     maxLength_);
             }
 
@@ -240,9 +248,9 @@ namespace DxCore.Core.GraphicsWidgets
                 return this;
             }
 
-            public TextBoxBuilder WithSpatialComponent(SpatialComponent spatial)
+            public TextBoxBuilder WithSpatialComponent(DxRectangle space)
             {
-                spatial_ = spatial;
+                space_ = space;
                 return this;
             }
 

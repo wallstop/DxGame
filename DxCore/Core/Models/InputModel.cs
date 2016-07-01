@@ -7,8 +7,6 @@ namespace DxCore.Core.Models
     {
         public InputHandler InputHandler { get; private set; }
 
-        public override bool ShouldSerialize => false;
-
         public override void Initialize()
         {
             InputHandler = new InputHandler();

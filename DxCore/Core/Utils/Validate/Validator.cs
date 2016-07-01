@@ -164,5 +164,15 @@ namespace DxCore.Core.Utils.Validate
             FailIfFalse(isPositive, messageProducer);
             return isPositive;
         }
+
+        public bool IsNotNegative(double value) => IsNotNegative(value, DefaultMessage);
+        public bool IsNotNegative(double value, string message) => IsNotNegative(value, () => message);
+
+        public bool IsNotNegative(double value, Func<string> messageProducer)
+        {
+            bool isNotNegative = 0 <= value;
+            FailIfFalse(isNotNegative, messageProducer);
+            return isNotNegative;
+        } 
     }
 }

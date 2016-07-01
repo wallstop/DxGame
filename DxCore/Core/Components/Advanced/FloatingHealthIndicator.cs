@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
@@ -36,14 +36,14 @@ namespace DxCore.Core.Components.Advanced
         [DataMember] protected EntityPropertiesComponent entityProperties_;
         [DataMember] protected DxVector2 floatDistance_;
 
-        [DataMember] protected PositionalComponent position_;
+        [DataMember] protected PhysicsComponent position_;
 
         public virtual int Health => entityProperties_.EntityProperties.Health.CurrentValue;
         public virtual int MaxHealth => entityProperties_.EntityProperties.MaxHealth.CurrentValue;
         public virtual double PercentHealthRemaining => (double) Health / MaxHealth;
 
         protected FloatingHealthIndicator(DxVector2 floatDistance, Color foregroundColor, Color backgroundColor,
-            EntityPropertiesComponent properties, PositionalComponent position)
+            EntityPropertiesComponent properties, PhysicsComponent position)
         {
             ValidateFloatDistance(floatDistance);
             Validate.Hard.IsNotNullOrDefault(properties, this.GetFormattedNullOrDefaultMessage(properties));
@@ -74,7 +74,7 @@ namespace DxCore.Core.Components.Advanced
             private Color foregroundColor_ = Color.IndianRed;
             private Color backgroundColor_ = Color.DarkSlateGray;
             private EntityPropertiesComponent entityProperties_;
-            private PositionalComponent position_;
+            private PhysicsComponent position_;
 
             public FloatingHealthIndicatorBuilder WithEntityProperties(EntityPropertiesComponent properties)
             {
@@ -94,7 +94,7 @@ namespace DxCore.Core.Components.Advanced
                 return this;
             }
 
-            public FloatingHealthIndicatorBuilder WithPosition(PositionalComponent position)
+            public FloatingHealthIndicatorBuilder WithPosition(PhysicsComponent position)
             {
                 position_ = position;
                 return this;
@@ -120,9 +120,9 @@ namespace DxCore.Core.Components.Advanced
 
         private static void ValidateFloatDistance(DxVector2 floatDistance)
         {
-            Validate.Hard.IsNotNull(floatDistance,
+            Validate.Hard.IsNotNull(floatDistance, () => 
                 $"Cannot intialize {typeof(FloatingHealthIndicator)} with a null floatDistance");
-            Validate.Hard.IsTrue(floatDistance.Y <= 0,
+            Validate.Hard.IsTrue(floatDistance.Y <= 0, () => 
                 $"Cannot use {floatDistance} as a valid FloatDistance for {typeof(FloatingHealthIndicator)} ");
         }
 

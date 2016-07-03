@@ -66,6 +66,15 @@ namespace DxCore.Core.Components.Developer
             var developerModel = DxGame.Instance.Model<DeveloperModel>();
             if(developerModel?.DeveloperMode == DeveloperMode.FullOn)
             {
+
+            }
+        }
+
+        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
+        {
+            var developerModel = DxGame.Instance.Model<DeveloperModel>();
+            if(developerModel?.DeveloperMode == DeveloperMode.FullOn)
+            {
                 GameTimes.AddLast(gameTime);
                 var removeBefore = gameTime.TotalGameTime - STRETCH_TO_KEEP;
 
@@ -81,14 +90,6 @@ namespace DxCore.Core.Components.Developer
                         break;
                     }
                 }
-            }
-        }
-
-        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
-        {
-            var developerModel = DxGame.Instance.Model<DeveloperModel>();
-            if(developerModel?.DeveloperMode == DeveloperMode.FullOn)
-            {
                 var screenRegion = DxGame.Instance.ScreenRegion;
                 /* Draw direction to the screen buffer - there currently is no translation matrix for direct GPU primitives */
                 var drawLocation = new Vector2(screenRegion.Width / 2.0f, 0);

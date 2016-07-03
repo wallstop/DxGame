@@ -38,7 +38,7 @@ namespace DxCore.Core.Models
 
         private void HandleMessage(Message message)
         {
-            DxGameTime currentGameTime = DxGame.Instance.CurrentTime;
+            DxGameTime currentGameTime = DxGame.Instance.CurrentUpdateTime;
             Event gameEvent = new Event(message, currentGameTime);
             events_.Add(gameEvent);
             NotifyListeners(gameEvent);

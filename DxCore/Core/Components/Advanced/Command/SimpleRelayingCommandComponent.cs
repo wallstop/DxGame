@@ -24,13 +24,13 @@ namespace DxCore.Core.Components.Advanced.Command
 
         protected override void Update(DxGameTime gameTime)
         {
-            EmitCommandments();
+            EmitCommandments(gameTime);
             base.Update(gameTime);
         }
 
-        private void EmitCommandments()
+        private void EmitCommandments(DxGameTime gameTime)
         {
-            if(lastUpdated_ + CommandmentExpiry < DxGame.Instance.CurrentTime.TotalGameTime)
+            if(lastUpdated_ + CommandmentExpiry < gameTime.TotalGameTime)
             {
                 currentCommandments_.Clear();
                 return;
@@ -44,9 +44,10 @@ namespace DxCore.Core.Components.Advanced.Command
 
         public void RelayCommands(List<Commandment> commandments)
         {
-            lastUpdated_ = DxGame.Instance.CurrentTime.TotalGameTime;
+            DxGameTime gameTime = DxGame.Instance.CurrentUpdateTime;
+            lastUpdated_ = gameTime.TotalGameTime;
             currentCommandments_ = commandments;
-            EmitCommandments();
+            EmitCommandments(gameTime);
         }
     }
 }

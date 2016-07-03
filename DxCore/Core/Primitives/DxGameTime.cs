@@ -43,6 +43,14 @@ namespace DxCore.Core.Primitives
 
         public DxGameTime() : this(TimeSpan.Zero, TimeSpan.Zero) {}
 
+        public DxGameTime(DxGameTime copy)
+        {
+            Validate.Hard.IsNotNullOrDefault(copy);
+            TotalGameTime = copy.TotalGameTime;
+            ElapsedGameTime = copy.ElapsedGameTime;
+            IsRunningSlowly = copy.IsRunningSlowly;
+        }
+
         public DxGameTime(GameTime gameTime)
             : this(gameTime.TotalGameTime, gameTime.ElapsedGameTime, gameTime.IsRunningSlowly) {}
 

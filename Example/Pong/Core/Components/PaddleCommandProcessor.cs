@@ -16,12 +16,12 @@ namespace Pong.Core.Components
 
     public class PaddleCommandProcessor : Component
     {
-        private static readonly DxVector2 Up = new DxVector2(0, -5);
-        private static readonly DxVector2 Down = new DxVector2(0, 5);
+        private static readonly DxVector2 Up = new DxVector2(0, -1);
+        private static readonly DxVector2 Down = new DxVector2(0, 1);
 
-        private Impulse MoveUpImpulse => new Impulse(Up * DxGame.Instance.CurrentTime.ScaleFactor);
+        private Impulse MoveUpImpulse => new Impulse(Up * DxGame.Instance.CurrentUpdateTime.ScaleFactor);
 
-        private Impulse MoveDownImpulse => new Impulse(Down * DxGame.Instance.CurrentTime.ScaleFactor);
+        private Impulse MoveDownImpulse => new Impulse(Down * DxGame.Instance.CurrentUpdateTime.ScaleFactor);
 
         public override void OnAttach()
         {

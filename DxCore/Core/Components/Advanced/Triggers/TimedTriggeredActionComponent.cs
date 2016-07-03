@@ -56,7 +56,7 @@ namespace DxCore.Core.Components.Advanced.Triggers
             Validate.Hard.IsNotNullOrDefault(tickRate, this.GetFormattedNullOrDefaultMessage(nameof(tickRate)));
             Rate = tickRate;
             /* TODO: Find a better way of passing in "last ticked". Maybe we want to immediately tick? */
-            lastTicked_ = DxGame.Instance.CurrentTime.TotalGameTime;
+            lastTicked_ = DxGame.Instance.CurrentUpdateTime.TotalGameTime;
         }
 
         public int DetermineNumTicks(DxGameTime gameTime)

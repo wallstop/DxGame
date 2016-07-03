@@ -12,6 +12,11 @@ namespace DxCore.Core.Models
             InputHandler = new InputHandler();
         }
 
+        public void HighSpeedUpdate(DxGameTime gameTime)
+        {
+            // TODO
+        }
+
         protected override void Update(DxGameTime gameTime)
         {
             InputHandler.Process(gameTime);

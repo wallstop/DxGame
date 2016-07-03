@@ -197,8 +197,6 @@ namespace DxCore.Core.Components.Advanced.Physics
             PolygonShape bounds =
                 new PolygonShape(Bounds.Vertices().Select(vertex => vertex * WorldModel.DxToFarseerScale).ToVertices(), Density);
 
-            Logger.Info("Creating dynamic shape at {0}", bounds.Vertices);
-
             Body = new Body(gameWorld, origin_.Vector2 * WorldModel.DxToFarseerScale)
             {
                 BodyType = ResolveCollisionType(PhysicsType),

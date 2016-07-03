@@ -97,7 +97,7 @@ namespace DxCore.Core.Models
 
         protected override void Update(DxGameTime gameTime)
         {
-            RateLimitedUpdate(gameTime);
+            FullThrottleUpdate(gameTime);
         }
 
         private void RateLimitedUpdate(DxGameTime gameTime)
@@ -171,7 +171,7 @@ namespace DxCore.Core.Models
 
                     These lines need to be position non-relative
                 */
-                singleBound.LeftBorder, singleBound.RightBorder, singleBound.TopBorder, singleBound.TopBorder
+                singleBound.LeftBorder, singleBound.LeftBorder, singleBound.TopBorder, singleBound.TopBorder
             };
 
             for(int i = 0; i < numBounds; ++i)

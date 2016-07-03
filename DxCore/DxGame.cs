@@ -73,14 +73,17 @@ namespace DxCore
         public GameElementCollection DxGameElements { get; protected set; }
         // TODO: Thread safety? Move this to some kind of Context static class?
         public static DxGame Instance => singleton_;
-        public double TargetFps => 60.0;
-        protected static readonly TimeSpan MinimumFramerate = TimeSpan.FromSeconds(1 / 120.0);
+        public virtual double PhysicsUpdateFrequency => 1 / 60.0;
+        public virtual double TargetFps => 60.0;
+        protected static readonly TimeSpan MinimumFramerate = TimeSpan.FromSeconds(1 / 10000.0);
         public GameElementCollection NewGameElements { get; } = new GameElementCollection();
         public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
 
         public GameId GameGuid { get; protected set; }
 
-        public DxGameTime CurrentTime { get; protected set; } = new DxGameTime();
+        public DxGameTime CurrentUpdateTime { get; protected set; } = new DxGameTime();
+
+        public DxGameTime CurrentDrawTime { get; protected set; } = new DxGameTime();
 
         public UpdateMode UpdateMode { get; set; } = UpdateMode.Active;
 
@@ -89,6 +92,8 @@ namespace DxCore
 
         protected TimeSpan lastFrameTick_;
         protected TimeSpan compensatedGameTime_;
+
+        protected TimeSpan lastUpdated_;
 
         protected double timeSkewMilliseconds_;
 
@@ -363,7 +368,8 @@ namespace DxCore
         protected override void Update(GameTime gameTime)
         {
             DxGameTime dxGameTime = DetermineGameTime(gameTime);
-            CurrentTime = dxGameTime;
+            CurrentDrawTime = dxGameTime;
+            CurrentUpdateTime = dxGameTime;
 
             // Querying Gamepad.GetState(...) requires xinput1_3.dll (The xbox 360 controller driver). Interesting fact...
             if(Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -400,6 +406,7 @@ namespace DxCore
             TimeSpan currentTime = compensatedGameTime_ + elapsed;
             if(TargetElapsedTime.TotalMilliseconds < Math.Abs(timeSkewMilliseconds_))
             {
+                // What is going on here
                 if(0 < timeSkewMilliseconds_)
                 {
                     TimeSpan timeSkew = TimeSpan.FromMilliseconds(timeSkewMilliseconds_);
@@ -461,9 +468,18 @@ namespace DxCore
             // Should probably thread this... but wait until we have perf testing :)
             networkModel?.ReceiveData(gameTime);
             /* We may end up modifying these as we iterate over them, so take an immutable copy */
-            foreach(var processable in DxGameElements.Processables)
+            TimeSpan physicsTarget = TimeSpan.FromSeconds(PhysicsUpdateFrequency);
+            if((lastUpdated_ + physicsTarget) < gameTime.TotalGameTime)
             {
-                processable.Process(gameTime);
+                DxGameTime fakedGameTime = new DxGameTime(gameTime.TotalGameTime, gameTime.TotalGameTime - lastUpdated_,
+                    gameTime.IsRunningSlowly);
+                /* Rewrite */
+                CurrentUpdateTime = fakedGameTime;
+                foreach(var processable in DxGameElements.Processables)
+                {
+                    processable.Process(fakedGameTime);
+                }
+                lastUpdated_ = gameTime.TotalGameTime;
             }
             networkModel?.SendData(gameTime);
             UpdateElements();

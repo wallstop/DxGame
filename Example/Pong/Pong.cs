@@ -45,13 +45,13 @@ namespace Pong
 
             DeveloperModel devModel = new DeveloperModel();
             devModel.Create();
-            GameObject playerPaddle = PaddleFactory.PlayerPaddle(new DxVector2(0, 360));
+            GameObject playerPaddle = PaddleFactory.PlayerPaddle(new DxVector2(5, 10));
             playerPaddle.Create();
 
             PhysicsComponent paddlePhysics = playerPaddle.ComponentOfType<PhysicsComponent>();
 
 
-            GameObject enemyPaddle = PaddleFactory.EnemyPaddle(new DxVector2(1230, 10));
+            GameObject enemyPaddle = PaddleFactory.EnemyPaddle(new DxVector2(1220, 10));
             enemyPaddle.Create();
 
             PhysicsComponent enemyPaddlePhysics = enemyPaddle.ComponentOfType<PhysicsComponent>();

@@ -83,41 +83,38 @@ namespace Pong.Core.Generators
 
             public void PostPaddleLeftInitialize(Body paddleBody, Fixture paddleFixture, PhysicsComponent paddlePhysics)
             {
-                //Func<WorldEdge> edgeProducer;
-                //switch(Edge)
-                //{
-                //    case Edge.Left:
-                //    {
-                //        edgeProducer = () => DxGame.Instance.Model<WorldModel>().Left;
-                //        break;
-                //    }
-                //    case Edge.Right:
-                //    {
-                //        edgeProducer = () => DxGame.Instance.Model<WorldModel>().Right;
-                //        break;
-                //    }
-                //    default:
-                //    {
-                //        Console.WriteLine($"Failed to find a suitable bind target for {typeof(Edge)}: {Edge}");
-                //        return;
-                //    }
-                //}
+                WorldModel worldModel = DxGame.Instance.Model<WorldModel>();
+                World world = worldModel.World;
 
-                //WorldEdge edge = edgeProducer.Invoke();
+                Func<WorldEdge> edgeProducer;
+                Vector2 offset;
+                switch(Edge)
+                {
+                    case Edge.Left:
+                    {
+                        edgeProducer = () => worldModel.Left;
+                        offset = new Vector2(5 * WorldModel.DxToFarseerScale, 0);
+                        break;
+                    }
+                    case Edge.Right:
+                    {
+                        edgeProducer = () => worldModel.Right;
+                        offset = new Vector2((-5 - paddlePhysics.Bounds.Width) * WorldModel.DxToFarseerScale, 0);
+                        break;
+                    }
+                    default:
+                    {
+                        Console.WriteLine($"Failed to find a suitable bind target for {typeof(Edge)}: {Edge}");
+                        return;
+                    }
+                }
 
-                //PrismaticJoint connectedToWallJoint =
-                //    JointFactory.CreatePrismaticJoint(DxGame.Instance.Model<WorldModel>().World, paddleBody, edge.Body,
-                //        new Vector2(5 * WorldModel.DxToFarseerScale, 0), new Vector2(0, 1));
+                WorldEdge edge = edgeProducer.Invoke();
 
-                //connectedToWallJoint.CollideConnected = false;
-                //connectedToWallJoint.MotorEnabled = true;
-                //connectedToWallJoint.MaxMotorForce = 2;
-                //connectedToWallJoint.UpperLimit = (DxGame.Instance.Model<WorldModel>().Bounds.Height - Bounds.Y) *
-                //                                  WorldModel.DxToFarseerScale;
-
-                Console.WriteLine("TEST");
-                /* DxGame.Instance.Model<WorldModel>().World, paddleBody, edge.Body); */
-                //connectedToWallJoint.LocalAnchorA = new Vector2(5, 0);
+                PrismaticJoint connectedToWallJoint = JointFactory.CreatePrismaticJoint(world, edge.Body, paddleBody,
+                    offset, new Vector2(0, 1));
+                connectedToWallJoint.LocalAnchorA = offset;
+                connectedToWallJoint.LocalAnchorB = Vector2.Zero;
             }
         }
     }

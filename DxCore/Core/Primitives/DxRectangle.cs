@@ -17,6 +17,12 @@ namespace DxCore.Core.Primitives
         [DataMember] public float Y;
         public float Area => Width * Height;
         public static DxRectangle EmptyRectangle => new DxRectangle();
+
+        public DxVector2 TopLeft => new DxVector2(Left, Top);
+        public DxVector2 TopRight => new DxVector2(Right, Top);
+        public DxVector2 BottomLeft => new DxVector2(Left, Bottom);
+        public DxVector2 BottomRight => new DxVector2(Right, Bottom);
+
         public float Left => X;
         public float Right => X + Width;
         public float Top => Y;

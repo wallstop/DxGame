@@ -107,8 +107,7 @@ namespace Pong.Core.Generators
 
                 //PrismaticJoint connectedToWallJoint =
                 //    JointFactory.CreatePrismaticJoint(DxGame.Instance.Model<WorldModel>().World, paddleBody, edge.Body,
-                //        new Vector2(5 * WorldModel.DxToFarseerScale, 0),
-                //        new Vector2(0, 1 * WorldModel.DxToFarseerScale));
+                //        new Vector2(5 * WorldModel.DxToFarseerScale, 0), new Vector2(0, 1));
 
                 //connectedToWallJoint.CollideConnected = false;
                 //connectedToWallJoint.MotorEnabled = true;
@@ -116,8 +115,7 @@ namespace Pong.Core.Generators
                 //connectedToWallJoint.UpperLimit = (DxGame.Instance.Model<WorldModel>().Bounds.Height - Bounds.Y) *
                 //                                  WorldModel.DxToFarseerScale;
 
-                Console.WriteLine("INIT");
-
+                Console.WriteLine("TEST");
                 /* DxGame.Instance.Model<WorldModel>().World, paddleBody, edge.Body); */
                 //connectedToWallJoint.LocalAnchorA = new Vector2(5, 0);
             }

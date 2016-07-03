@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Messaging;
-using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
@@ -154,42 +153,52 @@ namespace DxCore.Core.Models
 
         private static WorldEdge[] GenerateWorldBounds(World world, DxRectangle singleBound)
         {
+            // TODO: Clean up
             const int numBounds = 4;
             WorldEdge[] worldBounds = new WorldEdge[numBounds];
+
+            Vector2[] bodyPositions =
+            {
+                singleBound.TopLeft.Vector2 * DxToFarseerScale,
+                singleBound.TopRight.Vector2 * DxToFarseerScale, singleBound.TopLeft.Vector2 * DxToFarseerScale,
+                singleBound.BottomLeft.Vector2 * DxToFarseerScale
+            };
             DxLine[] borders =
             {
-                singleBound.LeftBorder, singleBound.RightBorder, singleBound.TopBorder,
-                singleBound.BottomBorder
-            };
+                /* 
+                    We double up left & top, because bottom & right are simply translations of these lines. 
+                    The body creation below will take care of this translation for us :^)
 
-            Body worldBody = BodyFactory.CreateBody(world, Vector2.Zero);
+                    These lines need to be position non-relative
+                */
+                singleBound.LeftBorder, singleBound.RightBorder, singleBound.TopBorder, singleBound.TopBorder
+            };
 
             for(int i = 0; i < numBounds; ++i)
             {
                 DxLine edgeAsLine = borders[i];
-                Vector2 edgePosition = (edgeAsLine.Start * DxToFarseerScale).Vector2;
-                Fixture fixture = FixtureFactory.AttachEdge(edgePosition, (edgeAsLine.End * DxToFarseerScale).Vector2,
+                Vector2 edgePosition = edgeAsLine.Start.Vector2 * DxToFarseerScale;
+                Body worldBody = BodyFactory.CreateBody(world, bodyPositions[i]);
+                Fixture fixture = FixtureFactory.AttachEdge(edgePosition, edgeAsLine.End.Vector2 * DxToFarseerScale,
                     worldBody);
                 fixture.CollidesWith = Category.All;
 
                 EdgeShape edgeShape = (EdgeShape) fixture.Shape;
-                Logger.Info("Created world edge at Farseer Coordinates {0}, {1}, {2}, {3}", edgeShape.Vertex0,
-                    edgeShape.Vertex1, edgeShape.Vertex2, edgeShape.Vertex3);
+                Logger.Info("Created world edge at Farseer Coordinates {0}, {1}", edgeShape.Vertex1, edgeShape.Vertex2);
 
+                /* 
+                    Assign after fixture creation, so all fixtures receive this sweet, sweet info.
+                    Fixtures don't inherit automatically.
+                */
+                worldBody.IgnoreGravity = true;
+                worldBody.CollidesWith = Category.All;
+                worldBody.BodyType = BodyType.Static;
+                worldBody.Friction = 0;
+                worldBody.Restitution = 0;
+                worldBody.FixedRotation = true;
                 WorldEdge edge = new WorldEdge(worldBody, fixture, edgeAsLine);
                 worldBounds[i] = edge;
             }
-
-            /* 
-                Assign after fixture creation, so all fixtures receive this sweet, sweet info.
-                Fixtures don't inherit automatically.
-            */
-            worldBody.IgnoreGravity = true;
-            worldBody.CollidesWith = Category.All; ;
-            worldBody.BodyType = BodyType.Static;
-            worldBody.Friction = 0;
-            worldBody.Restitution = 0;
-            worldBody.FixedRotation = true;
 
             return worldBounds;
         }

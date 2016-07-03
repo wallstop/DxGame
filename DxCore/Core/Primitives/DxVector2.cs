@@ -24,7 +24,7 @@ namespace DxCore.Core.Primitives
         public float Magnitude => (float) Math.Sqrt(MagnitudeSquared);
         public DxRadian Radian => new DxRadian(this);
         public DxDegree Degree => new DxDegree(this);
-        public Vector2 Vector2 => new Vector2((int) Math.Round(X), (int) Math.Round(Y));
+        public Vector2 Vector2 => new Vector2(X, Y);
         public DxVector2 Inverse => new DxVector2(-X, -Y);
 
         public static DxVector2 EmptyVector { get; } = new DxVector2();

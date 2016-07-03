@@ -16,6 +16,9 @@ namespace DxCore.Core.Components.Advanced.Physics
     {
         [DataMember]
         public DxVector2 Position { get; set; }
+
+        public float Height { get; }
+        public float Width { get; }
         public DxRectangle Bounds { get; }
         public DxRectangle Space { get; }
         public DxVector2 Center { get; }

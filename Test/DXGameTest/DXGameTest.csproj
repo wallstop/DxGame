@@ -124,7 +124,6 @@
     <Compile Include="Core\DataStructures\CircularBufferTest.cs" />
     <Compile Include="Core\Network\ComplexNetworkSerialization.cs" />
     <Compile Include="Core\Network\NetworkMessageMarshalling.cs" />
-    <Compile Include="Core\Network\SimpleNetworkSerialization.cs" />
     <Compile Include="Core\Primitives\DxCircleTest.cs" />
     <Compile Include="Core\Primitives\DxRadianTest.cs" />
     <Compile Include="Core\Primitives\DxVector2Test.cs" />

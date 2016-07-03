@@ -99,7 +99,7 @@ namespace Pong.Core.Generators
                     case Edge.Right:
                     {
                         edgeProducer = () => worldModel.Right;
-                        offset = new Vector2((-5 - paddlePhysics.Bounds.Width) * WorldModel.DxToFarseerScale, 0);
+                        offset = new Vector2((-5 - paddlePhysics.Width) * WorldModel.DxToFarseerScale, 0);
                         break;
                     }
                     default:

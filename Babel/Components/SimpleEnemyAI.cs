@@ -3,7 +3,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DxCore;
 using DxCore.Core.Components.Advanced.Command;
-using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Messaging;
 using DxCore.Core.Models;
 using DxCore.Core.Primitives;
@@ -24,7 +24,8 @@ namespace Babel.Components
 
         private static readonly double PERSONAL_SPACE = 50;
 
-        [DataMember] private readonly SpatialComponent spatialComponent_;
+        [DataMember]
+        private PhysicsComponent Physics { get; set; }
 
         private TimeSpan timeSinceLastMovementRequest_ = TimeSpan.Zero;
 
@@ -32,9 +33,9 @@ namespace Babel.Components
         ///     Initialize a simple AI that follows the player.
         /// </summary>
         /// <param name="spatialComponent">  This AI's object's spatial component.</param>
-        private SimpleEnemyAI(SpatialComponent spatialComponent)
+        private SimpleEnemyAI(PhysicsComponent physics)
         {
-            spatialComponent_ = spatialComponent;
+            Physics = physics;
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -44,7 +45,7 @@ namespace Babel.Components
             PlayerModel playerModel = DxGame.Instance.Model<PlayerModel>();
             DxCore.Core.Player player = playerModel.Players.First();
 
-            var closeEnough = Math.Abs(player.Position.Position.X - spatialComponent_.Position.X) < PERSONAL_SPACE && Math.Abs(player.Position.Position.Y - spatialComponent_.Position.Y) < PERSONAL_SPACE;
+            var closeEnough = Math.Abs(player.Position.Position.X - Physics.Position.X) < PERSONAL_SPACE && Math.Abs(player.Position.Position.Y - Physics.Position.Y) < PERSONAL_SPACE;
             if (closeEnough)
             {
                 return;

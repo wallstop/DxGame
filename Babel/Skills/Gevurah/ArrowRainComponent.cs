@@ -41,9 +41,6 @@ namespace Babel.Skills.Gevurah
         private AnimationComponent Animation { get; }
 
         [DataMember]
-        private SpatialComponent Spatial { get; }
-
-        [DataMember]
         private PhysicsComponent Physics { get; }
 
         [DataMember]

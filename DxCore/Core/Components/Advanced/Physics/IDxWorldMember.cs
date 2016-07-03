@@ -8,7 +8,9 @@ namespace DxCore.Core.Components.Advanced.Physics
     {
         DxVector2 Position { get; }
 
-        DxRectangle Bounds { get; }
+        float Height { get; }
+
+        float Width { get; }
 
         DxRectangle Space { get; }
 

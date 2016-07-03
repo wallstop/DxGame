@@ -61,7 +61,10 @@ namespace DxCore.Core.Components.Advanced.Physics
         public PhysicsType PhysicsType { get; private set; }
 
         [IgnoreDataMember]
-        public DxRectangle Bounds => new DxRectangle(0, 0, bounds_.X, bounds_.Y);
+        public float Height => bounds_.Y;
+
+        [IgnoreDataMember]
+        public float Width => bounds_.X;
 
         [IgnoreDataMember]
         public DxVector2 Position
@@ -81,7 +84,7 @@ namespace DxCore.Core.Components.Advanced.Physics
         }
 
         [IgnoreDataMember]
-        public DxRectangle Space => Bounds + Position;
+        public DxRectangle Space => new DxRectangle(Position.X, Position.Y, Width, Height);
 
         [IgnoreDataMember]
         public DxVector2 Center => Space.Center;
@@ -195,7 +198,7 @@ namespace DxCore.Core.Components.Advanced.Physics
             World gameWorld = DxGame.Instance.Model<WorldModel>().World;
 
             PolygonShape bounds =
-                new PolygonShape(Bounds.Vertices().Select(vertex => vertex * WorldModel.DxToFarseerScale).ToVertices(), Density);
+                new PolygonShape(new DxRectangle(0, 0, Width, Height).Vertices().Select(vertex => vertex * WorldModel.DxToFarseerScale).ToVertices(), Density);
 
             Body = new Body(gameWorld, origin_.Vector2 * WorldModel.DxToFarseerScale)
             {

@@ -22,7 +22,7 @@ namespace Pong.Core.Generators
                     .WithPosition(position - radialVector)
                     .WithBounds(radialVector * 2)
                     .WithCollisionType(PhysicsType.Dynamic)
-                    .WithRestitution(2000)
+                    .WithRestitution(1.3f)
                     .WithoutFriction()
                     .WithoutGravity()
                     .Build();

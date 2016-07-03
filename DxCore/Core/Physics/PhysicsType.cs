@@ -3,6 +3,7 @@
     public enum PhysicsType
     {
         None,
+        Sensor,
         Dynamic,
         Kinematic,
         Static

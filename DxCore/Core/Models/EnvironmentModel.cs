@@ -25,7 +25,7 @@ namespace DxCore.Core.Models
         private void HandleEnvironmentInteractionMessage(EnvironmentInteractionMessage message)
         {
             AABB bounds = message.Source.ComponentOfType<PhysicsComponent>().Space.Aabb();
-            foreach(Fixture fixture in DxGame.Instance.Model<CollisionModel>().World.QueryAABB(ref bounds))
+            foreach(Fixture fixture in DxGame.Instance.Model<WorldModel>().World.QueryAABB(ref bounds))
             {
                 // TODO: Refactor / come up with better solution
                 EnvironmentInteractionMessage targetedMessage = new EnvironmentInteractionMessage

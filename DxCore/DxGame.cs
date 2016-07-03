@@ -74,7 +74,7 @@ namespace DxCore
         // TODO: Thread safety? Move this to some kind of Context static class?
         public static DxGame Instance => singleton_;
         public double TargetFps => 60.0;
-        protected static readonly TimeSpan MinimumFramerate = TimeSpan.FromSeconds(1 / 10000.0);
+        protected static readonly TimeSpan MinimumFramerate = TimeSpan.FromSeconds(1 / 120.0);
         public GameElementCollection NewGameElements { get; } = new GameElementCollection();
         public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
 
@@ -308,7 +308,7 @@ namespace DxCore
             
             new InputModel().Create();
             new CameraModel().Create();
-            new CollisionModel().Create();
+            new WorldModel().Create();
             new AudioModel().Create();
 
             base.Initialize();

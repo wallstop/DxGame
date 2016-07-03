@@ -60,8 +60,7 @@ namespace DxCore.Core.Utils
                 This has the effect of thick-ifying the provided rectangle's edges. 
             </summary>
         */
-
-        private static IEnumerable<Rectangle> GenerateBorderRectangles(Rectangle rectangle, int borderThickness)
+        public static IEnumerable<Rectangle> GenerateBorderRectangles(this Rectangle rectangle, int borderThickness)
         {
             int numRectangles = 4;
             Rectangle[] generatedBorderRectangles = new Rectangle[numRectangles];

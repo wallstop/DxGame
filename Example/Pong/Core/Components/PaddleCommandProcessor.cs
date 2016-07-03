@@ -1,8 +1,10 @@
-﻿using DxCore.Core.Components.Basic;
+﻿using DxCore;
+using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Physics;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
+using DxCore.Core.Components.Advanced;
 
 namespace Pong.Core.Components
 {
@@ -14,12 +16,12 @@ namespace Pong.Core.Components
 
     public class PaddleCommandProcessor : Component
     {
-        private static readonly DxVector2 Up = new DxVector2(0, -150);
-        private static readonly DxVector2 Down = new DxVector2(0, 150);
+        private static readonly DxVector2 Up = new DxVector2(0, -5);
+        private static readonly DxVector2 Down = new DxVector2(0, 5);
 
-        private Impulse MoveUpImpulse { get; } = new Impulse(Up);
+        private Impulse MoveUpImpulse => new Impulse(Up * DxGame.Instance.CurrentTime.ScaleFactor);
 
-        private Impulse MoveDownImpulse { get; } = new Impulse(Down);
+        private Impulse MoveDownImpulse => new Impulse(Down * DxGame.Instance.CurrentTime.ScaleFactor);
 
         public override void OnAttach()
         {
@@ -39,11 +41,6 @@ namespace Pong.Core.Components
                 case Commandment.MoveDown:
                 {
                     new PhysicsAttachment(MoveDownImpulse, Parent.Id).Emit();
-                    break;
-                }
-                case Commandment.None:
-                {
-                    new PhysicsAttachment(Nullification.Horizontal, Parent.Id).Emit();
                     break;
                 }
             }

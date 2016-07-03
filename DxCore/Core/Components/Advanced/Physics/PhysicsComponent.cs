@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging.Physics;
 using DxCore.Core.Models;
@@ -7,16 +8,21 @@ using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
+using FarseerPhysics;
 using FarseerPhysics.Collision.Shapes;
 using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
+using Microsoft.Xna.Framework;
 using NLog;
 using Component = DxCore.Core.Components.Basic.Component;
 
 namespace DxCore.Core.Components.Advanced.Physics
 {
+    public delegate void PhysicsInitialization(Body body, Fixture fixture, PhysicsComponent self);
+
     [Serializable]
     [DataContract]
-    public class PhysicsComponent : Component
+    public sealed class PhysicsComponent : Component, IDxWorldMember
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -28,9 +34,9 @@ namespace DxCore.Core.Components.Advanced.Physics
 
         [DataMember] private readonly float friction_;
         [DataMember] private readonly float restitution_;
+        [DataMember] private readonly bool directPositionAccess_;
 
-        [DataMember]
-        public PhysicsType PhysicsType { get; private set; }
+        [DataMember] private PhysicsInitialization initialization_;
 
         [DataMember]
         public float Density { get; private set; }
@@ -40,7 +46,7 @@ namespace DxCore.Core.Components.Advanced.Physics
         */
 
         [IgnoreDataMember]
-        public Body Body { get; private set; }
+        private Body Body { get; set; }
 
         [DataMember]
         public CollisionGroup CollisionGroup { get; private set; }
@@ -51,17 +57,26 @@ namespace DxCore.Core.Components.Advanced.Physics
         [IgnoreDataMember]
         public Fixture Fixture { get; private set; }
 
+        [DataMember]
+        public PhysicsType PhysicsType { get; private set; }
+
         [IgnoreDataMember]
         public DxRectangle Bounds => new DxRectangle(0, 0, bounds_.X, bounds_.Y);
 
         [IgnoreDataMember]
         public DxVector2 Position
         {
-            get { return Body?.Position ?? DxVector2.EmptyVector; }
+            get { return Body?.Position * WorldModel.FarseerToDxScale ?? DxVector2.EmptyVector; }
             set
             {
-                // TODO: Remove set?
-                Body.Position = value.Vector2;
+                if(directPositionAccess_)
+                {
+                    Body.Position = value.Vector2 * WorldModel.DxToFarseerScale;
+                }
+                else
+                {
+                    Logger.Debug("Ignoring direct position set of {0}", value);
+                }
             }
         }
 
@@ -69,17 +84,19 @@ namespace DxCore.Core.Components.Advanced.Physics
         public DxRectangle Space => Bounds + Position;
 
         [IgnoreDataMember]
-        public DxVector2 Center => Body.LocalCenter;
+        public DxVector2 Center => Space.Center;
 
-        private PhysicsComponent(DxVector2 origin, DxVector2 bounds, PhysicsType physicsType,
-            CollisionGroup collidesWith, CollisionGroup collisionGroup, float density, bool gravityOn, float restitution,
-            float friction)
+        private PhysicsComponent(DxVector2 origin, DxVector2 bounds, CollisionGroup collidesWith,
+            CollisionGroup collisionGroup, PhysicsType physicsType, float density, bool gravityOn, float restitution, float friction,
+            bool directPositionAccess, PhysicsInitialization initialization)
         {
             origin_ = origin;
             bounds_ = bounds;
             gravity_ = gravityOn;
             restitution_ = restitution;
             friction_ = friction;
+            directPositionAccess_ = directPositionAccess;
+            initialization_ = initialization;
             PhysicsType = physicsType;
             CollidesWith = collidesWith;
             CollisionGroup = collisionGroup;
@@ -122,21 +139,35 @@ namespace DxCore.Core.Components.Advanced.Physics
 
         private void HandleForceAttachment(Force force)
         {
-            Logger.Debug("Handling force: {0}", force);
             Body.ApplyForce(force.Value.Vector2, Body.WorldCenter);
         }
 
         private void HandleImpulseAttachment(Core.Physics.Impulse impulse)
         {
-            Logger.Debug("Handling impulse: {0}", impulse);
-            Body.LinearVelocity = impulse.Value.Vector2;
-            //Body.ApplyLinearImpulse(impulse.Value.Vector2, Body.WorldCenter);
+            switch(Body.BodyType)
+            {
+                /* Depending on body type, ApplyLinearImpulse may be a simple no-op */
+                case BodyType.Dynamic:
+                {
+                    Body.ApplyLinearImpulse(impulse.Value.Vector2, Body.WorldCenter);
+                    break;
+                }
+                    case BodyType.Kinematic:
+                {
+                    Body.LinearVelocity += impulse.Value.Vector2;
+                    break;
+                }
+                default:
+                {
+                    Logger.Debug("Ignoring impulse {0} for {1}", impulse, Id);
+                    break;
+                }
+            }
         }
 
         private void HandleNullificationAttachment(Nullification nullification)
         {
-            Logger.Debug("Handling nullification: {0}", nullification);
-            DxVector2 negationVelocity = DxVector2.EmptyVector;
+            DxVector2 negationVelocity = Body.LinearVelocity;
             switch(nullification.Axis)
             {
                 case Axis.X:
@@ -161,10 +192,19 @@ namespace DxCore.Core.Components.Advanced.Physics
 
         public override void Initialize()
         {
-            World gameWorld = DxGame.Instance.Model<CollisionModel>().World;
+            World gameWorld = DxGame.Instance.Model<WorldModel>().World;
 
-            PolygonShape bounds = new PolygonShape(Bounds.Vertices(), Density);
-            Body = new Body(gameWorld, origin_.Vector2) {BodyType = ResolveCollisionType(PhysicsType)};
+            PolygonShape bounds =
+                new PolygonShape(Bounds.Vertices().Select(vertex => vertex * WorldModel.DxToFarseerScale).ToVertices(), Density);
+
+            Logger.Info("Creating dynamic shape at {0}", bounds.Vertices);
+
+            Body = new Body(gameWorld, origin_.Vector2 * WorldModel.DxToFarseerScale)
+            {
+                BodyType = ResolveCollisionType(PhysicsType),
+                FixedRotation = true
+            };
+
             if(!gravity_)
             {
                 Body.IgnoreGravity = true;
@@ -172,9 +212,15 @@ namespace DxCore.Core.Components.Advanced.Physics
 
             Fixture = Body.CreateFixture(bounds, this);
             Fixture.CollidesWith = CollisionGroup.CollisionCategory;
+
             Body.Restitution = restitution_;
             Body.Friction = friction_;
             base.Initialize();
+
+            if(!ReferenceEquals(initialization_, null))
+            {
+                initialization_.Invoke(Body, Fixture, this);
+            }
         }
 
         private static BodyType ResolveCollisionType(PhysicsType physicsType)
@@ -182,22 +228,22 @@ namespace DxCore.Core.Components.Advanced.Physics
             switch(physicsType)
             {
                 case PhysicsType.Dynamic:
-                {
-                    return BodyType.Dynamic;
-                }
+                    {
+                        return BodyType.Dynamic;
+                    }
                 case PhysicsType.Static:
-                {
-                    return BodyType.Static;
-                }
+                    {
+                        return BodyType.Static;
+                    }
                 case PhysicsType.Kinematic:
-                {
-                    return BodyType.Kinematic;
-                }
+                    {
+                        return BodyType.Kinematic;
+                    }
                 default:
-                {
-                    throw new InvalidEnumArgumentException(
-                        $"Unknown {typeof(BodyType)} for {typeof(PhysicsType)} {physicsType}");
-                }
+                    {
+                        throw new InvalidEnumArgumentException(
+                            $"Unknown {typeof(BodyType)} for {typeof(PhysicsType)} {physicsType}");
+                    }
             }
         }
 
@@ -213,12 +259,20 @@ namespace DxCore.Core.Components.Advanced.Physics
             private float density_ = Density;
             private DxVector2? position_;
             private DxVector2? bounds_;
-            private PhysicsType? physicsType_;
             private bool gravity_ = true;
+            private bool directPositionAccess_;
             private float restitution_;
+            private PhysicsType physicsType_ = PhysicsType.Dynamic;
             private float friction_ = 1f;
             private CollisionGroup collisionGroup_ = CollisionGroup.All;
             private CollisionGroup collidesWith_ = CollisionGroup.All;
+            private PhysicsInitialization initialization_;
+
+            public PhysicsComponentBuilder WithPhysicsInitialization(PhysicsInitialization postInit)
+            {
+                initialization_ = postInit;
+                return this;
+            }
 
             public PhysicsComponentBuilder WithCollidesWith(CollisionGroup collidesWith)
             {
@@ -237,9 +291,9 @@ namespace DxCore.Core.Components.Advanced.Physics
                 return WithRestitution(0);
             }
 
-            public PhysicsComponentBuilder WithRestitution(float restitution = 1f)
+            public PhysicsComponentBuilder WithRestitution(double restitution = 1)
             {
-                restitution_ = restitution;
+                restitution_ = (float) restitution;
                 return this;
             }
 
@@ -248,15 +302,15 @@ namespace DxCore.Core.Components.Advanced.Physics
                 return WithFriction(0);
             }
 
-            public PhysicsComponentBuilder WithFriction(float friction = 1f)
+            public PhysicsComponentBuilder WithFriction(double friction = 1)
             {
-                friction_ = friction;
+                friction_ = (float) friction;
                 return this;
             }
 
-            public PhysicsComponentBuilder WithDensity(float density)
+            public PhysicsComponentBuilder WithDensity(double density)
             {
-                density_ = density;
+                density_ = (float) density;
                 return this;
             }
 
@@ -268,12 +322,6 @@ namespace DxCore.Core.Components.Advanced.Physics
             public PhysicsComponentBuilder WithGravity(bool gravityOn = true)
             {
                 gravity_ = gravityOn;
-                return this;
-            }
-
-            public PhysicsComponentBuilder WithCollisionType(PhysicsType physicsType)
-            {
-                physicsType_ = physicsType;
                 return this;
             }
 
@@ -289,6 +337,12 @@ namespace DxCore.Core.Components.Advanced.Physics
                 return this;
             }
 
+            public PhysicsComponentBuilder WithCollisionType(PhysicsType physicsType)
+            {
+                physicsType_ = physicsType;
+                return this;
+            }
+
             public PhysicsComponentBuilder WithoutCollision()
             {
                 WithCollisionGroup(CollisionGroup.None);
@@ -296,21 +350,30 @@ namespace DxCore.Core.Components.Advanced.Physics
                 return this;
             }
 
+            public PhysicsComponentBuilder WithDirectionPositionAccess(bool directPositionAcces = true)
+            {
+                directPositionAccess_ = directPositionAcces;
+                return this;
+            }
+
+            public PhysicsComponentBuilder WithoutDirectionPositionAccess()
+            {
+                return WithDirectionPositionAccess(false);
+            }
+
             public PhysicsComponent Build()
             {
                 Validate.Hard.IsNotNullOrDefault(position_);
                 Validate.Hard.IsNotNullOrDefault(bounds_);
-                Validate.Hard.IsNotNullOrDefault(physicsType_);
                 Validate.Hard.IsNotNegative(density_);
                 Validate.Hard.IsNotNullOrDefault(collisionGroup_);
                 Validate.Hard.IsNotNullOrDefault(collidesWith_);
 
                 DxVector2 position = position_.Value;
                 DxVector2 bounds = bounds_.Value;
-                PhysicsType physicsType = physicsType_.Value;
 
-                return new PhysicsComponent(position, bounds, physicsType, collidesWith_, collisionGroup_, density_,
-                    gravity_, restitution_, friction_);
+                return new PhysicsComponent(position, bounds, collidesWith_, collisionGroup_, physicsType_, density_, gravity_,
+                    restitution_, friction_, directPositionAccess_, initialization_);
             }
         }
     }

@@ -46,6 +46,7 @@
     <Compile Include="Core\Components\PaddleCommandProcessor.cs" />
     <Compile Include="Core\Generators\BallFactory.cs" />
     <Compile Include="Core\Generators\PaddleFactory.cs" />
+    <Compile Include="Core\PaddleSensor.cs" />
     <Compile Include="Pong.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -76,6 +77,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

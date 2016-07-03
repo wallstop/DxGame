@@ -111,7 +111,10 @@
     <Compile Include="Core\Components\Advanced\Map\MapTransition.cs" />
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
+    <Compile Include="Core\Components\Advanced\Physics\IDxWorldMember.cs" />
+    <Compile Include="Core\Components\Advanced\Physics\KinematicPhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\Physics\PhysicsComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Physics\StaticPhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\Physics\WorldCollidable.cs" />
     <Compile Include="Core\Components\Advanced\Player\ActivePlayerComponent.cs" />
     <Compile Include="Core\Components\Advanced\Player\PlayerNameComponent.cs" />
@@ -145,6 +148,7 @@
     <Compile Include="Core\Messaging\Physics\PhysicsAttachment.cs" />
     <Compile Include="Core\Messaging\UpdateCameraBounds.cs" />
     <Compile Include="Core\Messaging\AudioMessage.cs" />
+    <Compile Include="Core\Messaging\UpdateWorldBounds.cs" />
     <Compile Include="Core\Models\AudioModel.cs" />
     <Compile Include="Core\Network\Port.cs" />
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
@@ -229,7 +233,7 @@
     <Compile Include="Core\Messaging\PhysicsMessage.cs" />
     <Compile Include="Core\Models\BehaviorModel.cs" />
     <Compile Include="Core\Models\CameraModel.cs" />
-    <Compile Include="Core\Models\CollisionModel.cs" />
+    <Compile Include="Core\Models\WorldModel.cs" />
     <Compile Include="Core\Models\DeveloperModel.cs" />
     <Compile Include="Core\Models\EnvironmentModel.cs" />
     <Compile Include="Core\Models\EventModel.cs" />

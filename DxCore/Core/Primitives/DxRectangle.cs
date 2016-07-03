@@ -22,9 +22,11 @@ namespace DxCore.Core.Primitives
         public float Top => Y;
         public float Bottom => Y + Height;
 
+        public Rectangle Rectangle => ToRectangle();
+
         public DxVector2 Dimensions => new DxVector2(Width, Height);
 
-        public DxVector2 Center => new DxVector2(X + (Width / 2), Y + (Height / 2));
+        public DxVector2 Center => new DxVector2(X + Width / 2, Y + Height / 2);
         /* 
             Cartesian quadrants of this rectangle:
             https://en.wikipedia.org/wiki/Quadrant_%28plane_geometry%29
@@ -179,6 +181,15 @@ namespace DxCore.Core.Primitives
         public bool Contains(float x, float y)
         {
             return X <= x && x < X + Width && Y <= y && y < Y + Height;
+        }
+
+        public bool Contains(DxRectangle rectangle)
+        {
+            if(X <= rectangle.X && rectangle.X + rectangle.Width <= X + Width && Y <= rectangle.Y)
+            {
+                return rectangle.Y + rectangle.Height <= Y + Height;
+            }
+            return false;
         }
 
         public bool Contains(DxVector2 point)

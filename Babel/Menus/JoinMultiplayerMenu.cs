@@ -26,28 +26,22 @@ namespace Babel.Menus
         {
             SpriteFont = DxGame.Instance.Content.Load<SpriteFont>("Fonts/ComicSans");
 
-            var portBoxSpatial =
-                (SpatialComponent)
-                    SpatialComponent.Builder()
-                        .WithDimensions(new DxVector2
-                        {
-                            X = 200.0f,
-                            Y = SpriteFont.LineSpacing + 2 /* wiggle room for cursor */ // TODO: Fix this
-                        }).WithPosition(new DxVector2(400, 300)).Build();
+            SpatialComponent portBoxSpatial =
+                SpatialComponent.UiBasedBuilder()
+                    .WithUiOffset(new DxVector2(400, 400))
+                    .WithDimensions(200, SpriteFont.LineSpacing + 2)
+                    .Build();
 
-            var addressBoxSpatial =
-                (SpatialComponent)
-                    SpatialComponent.Builder()
-                        .WithDimensions(new DxVector2
-                        {
-                            X = 200.0f,
-                            Y = SpriteFont.LineSpacing + 2 /* wiggle room for cursor */ // TODO: Fix this
-                        }).WithPosition(new DxVector2(400, 400)).Build();
+            SpatialComponent addressBoxSpatial =
+                SpatialComponent.UiBasedBuilder()
+                    .WithUiOffset(400, 400)
+                    .WithDimensions(200, SpriteFont.LineSpacing + 2)
+                    .Build();
 
             // Ports have a range of 0 - 65536 (2 ^ 16 - 1) -> max length of 5
             PortBox =
                 TextBox.Builder()
-                    .WithSpatialComponent(portBoxSpatial)
+                    .WithSpatial(portBoxSpatial)
                     .WithBackgroundColor(Color.White)
                     .WithTextColor(Color.Black)
                     .WithMaxLength(5)
@@ -69,7 +63,7 @@ namespace Babel.Menus
 
             AddressBox =
                 TextBox.Builder()
-                    .WithSpatialComponent(addressBoxSpatial)
+                    .WithSpatial(addressBoxSpatial)
                     .WithBackgroundColor(Color.White)
                     .WithTextColor(Color.Black)
                     .WithMaxLength(100)

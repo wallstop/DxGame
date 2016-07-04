@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced.Physics;
+using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
@@ -14,7 +14,7 @@ namespace DxCore.Core.GraphicsWidgets
     [Serializable]
     public class TextComponent : DrawableComponent
     {
-        [DataMember] private readonly PhysicsComponent position_;
+        [DataMember] private readonly IPositional position_;
 
         [NonSerialized] [IgnoreDataMember] private SpriteFont spriteFont_;
 
@@ -29,13 +29,14 @@ namespace DxCore.Core.GraphicsWidgets
         [DataMember]
         public DxColor DxColor { get; set; }
 
-        public TextComponent(PhysicsComponent position, SpriteFont spriteFont, string spriteFontName)
+        public TextComponent(IPositional position, SpriteFont spriteFont, string spriteFontName)
         {
             Validate.Hard.IsNotNullOrDefault(position, () => this.GetFormattedNullOrDefaultMessage(position));
             position_ = position;
             Validate.Hard.IsNotNullOrDefault(spriteFont, () => this.GetFormattedNullOrDefaultMessage(spriteFont));
             spriteFont_ = spriteFont;
-            Validate.Hard.IsNotNullOrDefault(spriteFontName, () => this.GetFormattedNullOrDefaultMessage(nameof(spriteFontName)));
+            Validate.Hard.IsNotNullOrDefault(spriteFontName,
+                () => this.GetFormattedNullOrDefaultMessage(nameof(spriteFontName)));
             spriteFontName_ = spriteFontName;
             Text = "";
             DxColor = new DxColor(Color.White);
@@ -43,7 +44,7 @@ namespace DxCore.Core.GraphicsWidgets
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            spriteBatch.DrawString(spriteFont_, Text, position_.Position.Vector2, DxColor.Color);
+            spriteBatch.DrawString(spriteFont_, Text, position_.WorldCoordinates.Vector2, DxColor.Color);
         }
 
         public override void LoadContent()

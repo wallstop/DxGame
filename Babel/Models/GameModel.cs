@@ -42,7 +42,6 @@ namespace Babel.Models
 
             mapModel_ = new MapModel(levelProgression);
             mapModel_.Create();
-            new DeveloperModel().Create();
             new EnvironmentModel().Create();
             new PathfindingModel().Create();
             new ExperienceModel().Create();

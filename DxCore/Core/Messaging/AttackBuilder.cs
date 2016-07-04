@@ -13,7 +13,7 @@ namespace DxCore.Core.Messaging
     [Serializable]
     public class AttackBuilder : Message, IBuilder<List<PhysicsMessage>>, ITargetedMessage
     {
-        public delegate PhysicsMessage PhysicsMessageGenerator(GameObject source, ICollection<IShape> sourceAttackAreas);
+        public delegate PhysicsMessage PhysicsMessageGenerator(GameObject source, ICollection<DxRectangle> sourceAttackAreas);
 
         [DataMember] private readonly List<PhysicsMessageGenerator> attackMessageGenerators_ =
             new List<PhysicsMessageGenerator>();
@@ -21,14 +21,14 @@ namespace DxCore.Core.Messaging
         [DataMember] private readonly GameObject source_;
 
         [DataMember]
-        public ReadOnlyCollection<IShape> AttackAreas { get; set; }
+        public ReadOnlyCollection<DxRectangle> AttackAreas { get; set; }
 
-        public AttackBuilder(GameObject source, List<IShape> attackAreas)
+        public AttackBuilder(GameObject source, List<DxRectangle> attackAreas)
         {
             Validate.Hard.IsNotNullOrDefault(source, this.GetFormattedNullOrDefaultMessage(nameof(source)));
             source_ = source;
             Validate.Hard.IsNotNullOrDefault(attackAreas, this.GetFormattedNullOrDefaultMessage(nameof(attackAreas)));
-            AttackAreas = new ReadOnlyCollection<IShape>(attackAreas);
+            AttackAreas = new ReadOnlyCollection<DxRectangle>(attackAreas);
             Target = source.Id;
         }
 

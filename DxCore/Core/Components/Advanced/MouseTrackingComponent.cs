@@ -1,44 +1,36 @@
-﻿using System;
-using DxCore.Core.Components.Advanced.Physics;
+﻿using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
-using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using Microsoft.Xna.Framework.Input;
 
 namespace DxCore.Core.Components.Advanced
 {
-    public class MouseTrackingComponent : Component
+    public class MouseTrackingComponent : Component, ISpatial
     {
-        private static readonly Lazy<MouseTrackingComponent> LazyInstance =
-            new Lazy<MouseTrackingComponent>(() => new MouseTrackingComponent());
-
-        public static MouseTrackingComponent Instance => LazyInstance.Value;
-
-        private PhysicsComponent MousePhysics { get; }
+        private ISpatial MouseSpatial { get; }
 
         public bool Clicked { get; private set; }
 
         private bool ClickInProgress { get; set; }
 
-        private MouseTrackingComponent()
+        public DxVector2 WorldCoordinates => MouseSpatial.WorldCoordinates;
+        public DxRectangle Space => MouseSpatial.Space;
+
+        public MouseTrackingComponent()
         {
             Clicked = false;
             ClickInProgress = false;
 
-            MousePhysics =
-                PhysicsComponent.Builder()
-                    .WithBounds(new DxVector2(50, 50))
-                    .WithPosition(DxVector2.EmptyVector)
-                    .WithCollidesWith(CollisionGroup.None)
-                    .WithoutCollision()
+            MouseSpatial =
+                SpatialComponent.UiTrackingBasedBuilder()
+                    .WithUiOffsetProvider(() => Mouse.GetState().Position)
+                    .WithDimensions(50, 50)
                     .Build();
         }
 
         protected override void Update(DxGameTime gameTime)
         {
-            base.Update(gameTime);
             MouseState mouseState = Mouse.GetState();
-            MousePhysics.Position = mouseState.Position;
             if(ClickInProgress)
             {
                 // Only check left button for now. We can enhance this later.

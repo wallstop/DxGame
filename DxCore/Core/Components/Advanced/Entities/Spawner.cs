@@ -53,6 +53,7 @@ namespace DxCore.Core.Components.Advanced.Entities
                 PhysicsComponent position = spawnedObject.ComponentOfType<PhysicsComponent>();
                 if(!ReferenceEquals(position, null))
                 {
+                    // TODO: Fix direct position access
                     position.Position = RandomPositionInSpawnArea();
                 }
 

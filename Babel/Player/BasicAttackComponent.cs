@@ -47,13 +47,13 @@ namespace Babel.Player
                 return;
             }
 
-            if(lastAttacked_ + AttackCooldown > DxGame.Instance.CurrentTime.TotalGameTime)
+            if(lastAttacked_ + AttackCooldown > DxGame.Instance.CurrentUpdateTime.TotalGameTime)
             {
                 // Attack still on cooldown
                 return;
             }
 
-            lastAttacked_ = DxGame.Instance.CurrentTime.TotalGameTime;
+            lastAttacked_ = DxGame.Instance.CurrentUpdateTime.TotalGameTime;
 
             AttackRequest attackRequest = new AttackRequest {Target = Parent.Id};
             attackRequest.Emit();

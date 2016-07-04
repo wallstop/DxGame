@@ -140,9 +140,9 @@ namespace DxCore.Core.Models
             Position += adjustment;
         }
 
-        public DxVector2 Transformed(DxVector2 nonScaledUiPoint)
+        public DxVector2 Transformed(DxVector2 worldCoordinate)
         {
-            return Vector2.Transform(nonScaledUiPoint.Vector2, Transform);
+            return Vector2.Transform(worldCoordinate.Vector2, Transform);
         }
 
         public DxVector2 Invert(DxVector2 nonScaledUiPoint)

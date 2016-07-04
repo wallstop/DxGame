@@ -41,7 +41,7 @@ namespace Babel.Items
             attackBuilder.WithPhysicsMessageGenerator(Burninator);
         }
 
-        private PhysicsMessage Burninator(GameObject source, ICollection<IShape> sourceAttackAreas)
+        private PhysicsMessage Burninator(GameObject source, ICollection<DxRectangle> sourceAttackAreas)
         {
             PhysicsMessage possibleBurnInteraction = new PhysicsMessage
             {

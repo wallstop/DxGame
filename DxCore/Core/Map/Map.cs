@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
@@ -88,6 +89,10 @@ namespace DxCore.Core.Map
             MapDescriptor = descriptor;
 
             MapCollidables = DetermineCollidables(descriptor);
+            foreach(PhysicsComponent mapTilePhysics in MapCollidables.Values.Select(collidable => collidable.Physics))
+            {
+                mapTilePhysics.Create();
+            }
             Collidables = new RTree<MapCollidable>(mapCollidable => mapCollidable.Space, MapCollidables.Values.ToList());
             DrawPriority = DrawPriority.Map;
 

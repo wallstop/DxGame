@@ -8,22 +8,15 @@ using Babel.Enemies;
 using DxCore;
 using DxCore.Core;
 using DxCore.Core.Components.Advanced.Entities;
-using DxCore.Core.Components.Advanced.Map;
-using DxCore.Core.Components.Advanced.Physics;
-using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Events;
-using DxCore.Core.GraphicsWidgets;
 using DxCore.Core.Level;
 using DxCore.Core.Map;
 using DxCore.Core.Messaging;
 using DxCore.Core.Models;
-using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Babel.Level
 {
@@ -87,24 +80,7 @@ namespace Babel.Level
 
         private DxCore.Core.Level.Level GenerateLastLevel()
         {
-            SpriteFont comicSans = DxGame.Instance.Content.Load<SpriteFont>("Fonts/ComicSans");
-            /* Force to be spatial so we can abuse PhysicsComponents */
-            SpatialComponent space = new MapBoundedSpatialComponent(DxVector2.EmptyVector, new DxVector2(200, 20));
-            TextComponent winningText = new TextComponent(space, comicSans, "Fonts/ComicSans")
-            {
-                Text = "WOW YOU WON GOOD JOB",
-                DxColor = new DxColor(Color.Pink)
-            };
-
-            RandomTextMover randomTextMover = new RandomTextMover();
-
-            Force textMovingForce = new Force(DxVector2.EmptyVector, DxVector2.EmptyVector,
-                randomTextMover.DissipationFunction, "Random Text Mover");
-
-            PhysicsComponent textPhysics =
-                MapCollidablePhysicsComponent.Builder().WithSpatialComponent(space).WithForce(textMovingForce).Build();
-
-            GameObject bouncingStupidText = GameObject.Builder().WithComponents(space, winningText, textPhysics).Build();
+            GameObject bouncingStupidText = GameObject.Builder().Build();
 
             DxRectangle mapSize = new DxRectangle(0, 0, 1280, 720);
 
@@ -174,11 +150,7 @@ namespace Babel.Level
                 map.Collidables.InRange(new DxRectangle(mapTransitionLocation.X, mapTransitionLocation.Y, 5, 5)).Any());
             levelEndSpawner.WithSpawnArea(new DxRectangle(mapTransitionLocation.X, mapTransitionLocation.Y, 1, 1));
 
-            PositionalComponent transitionSpatial =
-                PositionalComponent.Builder().WithPosition(mapTransitionLocation).Build();
-            MapTransition mapTransition = new MapTransition(transitionSpatial);
-            GameObject mapTransitionObject =
-                GameObject.Builder().WithComponents(transitionSpatial, mapTransition).Build();
+            GameObject mapTransitionObject = GameObject.Builder().Build();
 
             LevelEndTrigger levelEndTrigger = new LevelEndTrigger(mapTransitionObject);
             DxGame.Instance.Model<EventModel>().AttachEventListener(new EventListener(levelEndTrigger.LevelEndListener));
@@ -216,74 +188,6 @@ namespace Babel.Level
         }
     }
 
-    [DataContract]
-    [Serializable]
-    internal sealed class RandomTextMover
-    {
-        private static readonly TimeSpan DIRECTION_CHANGE_DELAY = TimeSpan.FromSeconds(1);
-        private static readonly float FORCE = 2.0f;
-
-        private TimeSpan lastChanged_;
-
-        private DxVector2 currentAcceleration_;
-
-        public bool DissipationFunction(DxVector2 externalVelocity, DxVector2 currentAcceleration,
-            DxGameTime gameTime, out DxVector2 newAcceleration)
-        {
-            if(gameTime.TotalGameTime >= lastChanged_ + DIRECTION_CHANGE_DELAY)
-            {
-                lastChanged_ = gameTime.TotalGameTime;
-                DxRadian targetDirection;
-                do
-                {
-                    targetDirection = new DxRadian(ThreadLocalRandom.Current.NextDouble(0, 2 * Math.PI));
-                } while(targetDirection.Value - currentAcceleration_.Radian.Value < Math.PI / 2);
-                currentAcceleration_ = targetDirection.UnitVector * FORCE;
-            }
-            bool targetXPositive = currentAcceleration_.X > 0;
-            bool targetYPositive = currentAcceleration_.Y > 0;
-
-            /* 
-                What we want is the velocity to pretty much be whatever our currentAcceleration_ value is.
-                While I'm sure there's all kinds of math to do this properly, I'm not going to look it up.
-                Instead, I'm going to just "call it good" if we're "on track" towards our target x values and 
-                y values.
-            */
-            DxVector2 accelerationResult = currentAcceleration_;
-
-            if(targetXPositive)
-            {
-                if(externalVelocity.X > accelerationResult.X)
-                {
-                    accelerationResult.X = 0;
-                }
-            }
-            else // x is negative
-            {
-                if(externalVelocity.X < accelerationResult.X)
-                {
-                    accelerationResult.X = 0;
-                }
-            }
-            if(targetYPositive)
-            {
-                if(externalVelocity.Y > accelerationResult.Y)
-                {
-                    accelerationResult.Y = 0;
-                }
-            }
-            else // y is negative
-            {
-                if(externalVelocity.Y < accelerationResult.Y)
-                {
-                    accelerationResult.Y = 0;
-                }
-            }
-            newAcceleration = accelerationResult;
-            return false;
-        }
-    }
-
     /**
         <summary>
             Simple data-wrapper class for constructed MapTransitionObjects. 
@@ -295,10 +199,8 @@ namespace Babel.Level
     [Serializable]
     internal sealed class LevelEndTrigger
     {
-        [DataMember]
-        private readonly GameObject mapTransitionObject_;
-        [DataMember]
-        private bool alreadyTriggered_;
+        [DataMember] private readonly GameObject mapTransitionObject_;
+        [DataMember] private bool alreadyTriggered_;
 
         [DataMember] private bool levelEndTriggered_;
 

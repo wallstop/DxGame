@@ -32,8 +32,13 @@ namespace Babel.Menus
                     .WithSpace(new DxRectangle(400, 600, 100, 100));
 
             MenuItems.Add(singlePlayer);
+            singlePlayer.Create();
+
             MenuItems.Add(hostMultiplayer);
+            hostMultiplayer.Create();
             MenuItems.Add(joinMultiplayer);
+            joinMultiplayer.Create();
+
             base.Initialize();
         }
 

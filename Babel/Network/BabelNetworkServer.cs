@@ -41,7 +41,7 @@ namespace Babel.Network
                 ConvertMessageType<ClientTimeSynchronizationRequest>(message);
 
             ServerTimeUpdate timeUpdate = new ServerTimeUpdate(timeSynchronizationRequest.ClientSideGameTime,
-                DxGame.Instance.CurrentTime);
+                DxGame.Instance.CurrentUpdateTime);
             NetOutgoingMessage outgoingTimeUpdate = timeUpdate.ToNetOutgoingMessage(ServerConnection);
             ServerConnection.SendMessage(outgoingTimeUpdate, connection, NetDeliveryMethod.Unreliable);
         }

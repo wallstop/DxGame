@@ -8,7 +8,7 @@ namespace DxCore.Core.Primitives
 {
     [Serializable]
     [DataContract]
-    public struct DxRectangle : IEquatable<DxRectangle>, IEquatable<Rectangle>, IShape
+    public struct DxRectangle : IEquatable<DxRectangle>, IEquatable<Rectangle>
     {
         private const float Tolerance = 0.000001f;
         [DataMember] public float Height;

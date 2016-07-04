@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DxCore.Core;
+using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 
 namespace Babel.Items
@@ -69,8 +71,15 @@ namespace Babel.Items
 
         public static GameObject GenerateVisible(DxVector2 position, Type itemComponentType)
         {
-            SpatialComponent spatialAspect = VisibleItemComponent.GenerateSpatial(position);
-            VisibleItemComponent visibleItemAspect = new VisibleItemComponent(spatialAspect, itemComponentType);
+            DxVector2 itemBounds = new DxVector2(25, 25);
+            PhysicsComponent itemFallPhysics =
+                PhysicsComponent.Builder()
+                    .WithPosition(position)
+                    .WithBounds(new DxVector2(25, 25))
+                    .WithRestitution(0.5f)
+                    .WithCollisionGroup(CollisionGroup.Map)
+                    .Build();
+            VisibleItemComponent visibleItemAspect = new VisibleItemComponent(itemFallPhysics, itemComponentType);
             return VisibleItemComponent.Generate(visibleItemAspect);
         }
 

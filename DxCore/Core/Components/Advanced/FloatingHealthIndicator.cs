@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced.Physics;
+using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
@@ -8,7 +8,6 @@ using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using NLog;
 
 namespace DxCore.Core.Components.Advanced
 {
@@ -19,8 +18,6 @@ namespace DxCore.Core.Components.Advanced
     [DataContract]
     public class FloatingHealthIndicator : DrawableComponent
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-
         private const int HEALTH_BAR_PIXEL_HEIGHT = 5;
         private const int HEALTH_BAR_PIXEL_WIDTH = 75;
 
@@ -36,14 +33,14 @@ namespace DxCore.Core.Components.Advanced
         [DataMember] protected EntityPropertiesComponent entityProperties_;
         [DataMember] protected DxVector2 floatDistance_;
 
-        [DataMember] protected PhysicsComponent position_;
+        [DataMember] protected IPositional position_;
 
         public virtual int Health => entityProperties_.EntityProperties.Health.CurrentValue;
         public virtual int MaxHealth => entityProperties_.EntityProperties.MaxHealth.CurrentValue;
         public virtual double PercentHealthRemaining => (double) Health / MaxHealth;
 
         protected FloatingHealthIndicator(DxVector2 floatDistance, Color foregroundColor, Color backgroundColor,
-            EntityPropertiesComponent properties, PhysicsComponent position)
+            EntityPropertiesComponent properties, IPositional position)
         {
             ValidateFloatDistance(floatDistance);
             Validate.Hard.IsNotNullOrDefault(properties, this.GetFormattedNullOrDefaultMessage(properties));
@@ -74,7 +71,7 @@ namespace DxCore.Core.Components.Advanced
             private Color foregroundColor_ = Color.IndianRed;
             private Color backgroundColor_ = Color.DarkSlateGray;
             private EntityPropertiesComponent entityProperties_;
-            private PhysicsComponent position_;
+            private IPositional position_;
 
             public FloatingHealthIndicatorBuilder WithEntityProperties(EntityPropertiesComponent properties)
             {
@@ -94,7 +91,7 @@ namespace DxCore.Core.Components.Advanced
                 return this;
             }
 
-            public FloatingHealthIndicatorBuilder WithPosition(PhysicsComponent position)
+            public FloatingHealthIndicatorBuilder WithPosition(IPositional position)
             {
                 position_ = position;
                 return this;
@@ -120,10 +117,10 @@ namespace DxCore.Core.Components.Advanced
 
         private static void ValidateFloatDistance(DxVector2 floatDistance)
         {
-            Validate.Hard.IsNotNull(floatDistance, () => 
-                $"Cannot intialize {typeof(FloatingHealthIndicator)} with a null floatDistance");
-            Validate.Hard.IsTrue(floatDistance.Y <= 0, () => 
-                $"Cannot use {floatDistance} as a valid FloatDistance for {typeof(FloatingHealthIndicator)} ");
+            Validate.Hard.IsNotNull(floatDistance,
+                () => $"Cannot intialize {typeof(FloatingHealthIndicator)} with a null floatDistance");
+            Validate.Hard.IsTrue(floatDistance.Y <= 0,
+                () => $"Cannot use {floatDistance} as a valid FloatDistance for {typeof(FloatingHealthIndicator)} ");
         }
 
         public override void LoadContent()
@@ -140,7 +137,7 @@ namespace DxCore.Core.Components.Advanced
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            Vector2 origin = DetermineHealthBarOrigin(position_.Position, floatDistance_);
+            Vector2 origin = DetermineHealthBarOrigin(position_.WorldCoordinates, floatDistance_);
             int foregroundWidth = (int) Math.Ceiling(PercentHealthRemaining * HEALTH_BAR_PIXEL_WIDTH);
             spriteBatch.Draw(foregroundTexture_,
                 new Rectangle((int) origin.X, (int) origin.Y, foregroundWidth, HEALTH_BAR_PIXEL_HEIGHT),

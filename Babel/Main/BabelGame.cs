@@ -23,7 +23,10 @@ namespace Babel.Main
 
             NetworkModel netModel = new NetworkModel();
             netModel.Create();
-            
+
+
+            new DeveloperModel().Create();
+
             base.Initialize();
         }
     }

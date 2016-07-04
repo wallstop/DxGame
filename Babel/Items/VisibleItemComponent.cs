@@ -4,7 +4,6 @@ using System.Runtime.Serialization;
 using DxCore.Core;
 using DxCore.Core.Components.Advanced;
 using DxCore.Core.Components.Advanced.Physics;
-using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
@@ -26,25 +25,25 @@ namespace Babel.Items
     [Serializable]
     public sealed class VisibleItemComponent : Component, IEnvironmentComponent
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         [DataMember]
-        private SpatialComponent Spatial { get; set; }
+        private PhysicsComponent Physics { get; set; }
 
         [DataMember]
         private bool Activated { get; set; }
 
         [DataMember]
-        private Type ItemComponentType { get; }
+        private Type ItemComponentType { get; set; }
 
-        public VisibleItemComponent(SpatialComponent spatial, Type itemComponentType)
+        public VisibleItemComponent(PhysicsComponent physics, Type itemComponentType)
         {
-            Validate.Hard.IsNotNullOrDefault(spatial, this.GetFormattedNullOrDefaultMessage(spatial));
+            Validate.Hard.IsNotNullOrDefault(physics, () => this.GetFormattedNullOrDefaultMessage(physics));
             Validate.Hard.IsNotNullOrDefault(itemComponentType,
-                this.GetFormattedNullOrDefaultMessage(nameof(itemComponentType)));
+                () => this.GetFormattedNullOrDefaultMessage(nameof(itemComponentType)));
             Validate.Hard.IsTrue(typeof(ItemComponent).IsAssignableFrom(itemComponentType),
-                $"Expected {itemComponentType} to be an instance of {typeof(ItemComponent)}");
-            Spatial = spatial;
+                () => $"Expected {itemComponentType} to be an instance of {typeof(ItemComponent)}");
+            Physics = physics;
             Activated = false;
             ItemComponentType = itemComponentType;
         }
@@ -59,37 +58,23 @@ namespace Babel.Items
             directly colliding with the player - not really what we want. What we're really looking for 
             is actual spatial intersection / collision, not point (Ie, pls refactor me pls pls)
         */
-        public DxVector2 Position => Spatial.Center;
+        public DxVector2 Position => Physics.Center;
 
         public static GameObject Generate(VisibleItemComponent visibleItemComponent)
         {
             Validate.Hard.IsNotNullOrDefault(visibleItemComponent,
-                $"Cannot generate a {typeof(GameObject)} from a null {typeof(VisibleItemComponent)}");
+                () => $"Cannot generate a {typeof(GameObject)} from a null {typeof(VisibleItemComponent)}");
             SimpleSpriteComponent spriteAspect =
                 SimpleSpriteComponent.Builder()
                     .WithAsset("Items/" + visibleItemComponent.ItemComponentType.Name)
-                    .WithPosition(visibleItemComponent.Spatial)
-                    .WithBoundingBox(visibleItemComponent.Spatial.Space)
-                    .Build();
-            PhysicsComponent gravityAspect =
-                MapCollidablePhysicsComponent.Builder()
-                    .WithWorldForces()
-                    .WithSpatialComponent(visibleItemComponent.Spatial)
+                    .WithSpatial(visibleItemComponent.Physics)
                     .Build();
 
             GameObject pandorasBox =
                 GameObject.Builder()
-                    .WithComponents(visibleItemComponent.Spatial, spriteAspect, gravityAspect, visibleItemComponent)
+                    .WithComponents(visibleItemComponent.Physics, spriteAspect, visibleItemComponent)
                     .Build();
             return pandorasBox;
-        }
-
-        public static SpatialComponent GenerateSpatial(DxVector2 position)
-        {
-            /* TODO: Non-hardcode these */
-            DxVector2 itemSize = new DxVector2(25, 25);
-            MapBoundedSpatialComponent spatialAspect = new MapBoundedSpatialComponent(position, itemSize);
-            return spatialAspect;
         }
 
         private void HandleEnvironmentInteraction(EnvironmentInteractionMessage environmentInteraction)
@@ -120,7 +105,7 @@ namespace Babel.Items
 
             if(Activated)
             {
-                LOG.Info($"{GetType()} had a double activate call, ignoring");
+                Logger.Info($"{GetType()} had a double activate call, ignoring");
                 Remove();
                 return false;
             }

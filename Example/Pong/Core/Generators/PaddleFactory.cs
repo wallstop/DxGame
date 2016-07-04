@@ -62,7 +62,7 @@ namespace Pong.Core.Generators
                     .Build();
 
             SimpleSpriteComponent paddleDrawable =
-                SimpleSpriteComponent.Builder().WithAsset(assetPath).WithPosition(paddlePhysics).Build();
+                SimpleSpriteComponent.Builder().WithAsset(assetPath).WithSpatial(paddlePhysics).Build();
 
             GameObject paddle =
                 GameObject.Builder().WithComponents(paddleDrawable, paddlePhysics, paddleCommandProcessor).Build();

@@ -2,17 +2,15 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
+using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Messaging.Physics;
 using DxCore.Core.Models;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using FarseerPhysics;
 using FarseerPhysics.Collision.Shapes;
 using FarseerPhysics.Dynamics;
-using FarseerPhysics.Factories;
-using Microsoft.Xna.Framework;
 using NLog;
 using Component = DxCore.Core.Components.Basic.Component;
 
@@ -22,11 +20,11 @@ namespace DxCore.Core.Components.Advanced.Physics
 
     [Serializable]
     [DataContract]
-    public sealed class PhysicsComponent : Component, IDxWorldMember
+    public sealed class PhysicsComponent : Component, ISpatial
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        [DataMember] private readonly DxVector2 origin_;
+        [DataMember] private DxVector2 origin_;
 
         [DataMember] private readonly DxVector2 bounds_;
 
@@ -74,7 +72,15 @@ namespace DxCore.Core.Components.Advanced.Physics
             {
                 if(directPositionAccess_)
                 {
-                    Body.Position = value.Vector2 * WorldModel.DxToFarseerScale;
+                    // TODO: Fix the shit out of this
+                    if(ReferenceEquals(Body, null))
+                    {
+                        origin_ = value;
+                    }
+                    else
+                    {
+                        Body.Position = value.Vector2 * WorldModel.DxToFarseerScale;
+                    }
                 }
                 else
                 {
@@ -84,14 +90,17 @@ namespace DxCore.Core.Components.Advanced.Physics
         }
 
         [IgnoreDataMember]
+        public DxVector2 WorldCoordinates => Position;
+
+        [IgnoreDataMember]
         public DxRectangle Space => new DxRectangle(Position.X, Position.Y, Width, Height);
 
         [IgnoreDataMember]
         public DxVector2 Center => Space.Center;
 
         private PhysicsComponent(DxVector2 origin, DxVector2 bounds, CollisionGroup collidesWith,
-            CollisionGroup collisionGroup, PhysicsType physicsType, float density, bool gravityOn, float restitution, float friction,
-            bool directPositionAccess, PhysicsInitialization initialization)
+            CollisionGroup collisionGroup, PhysicsType physicsType, float density, bool gravityOn, float restitution,
+            float friction, bool directPositionAccess, PhysicsInitialization initialization)
         {
             origin_ = origin;
             bounds_ = bounds;
@@ -155,7 +164,7 @@ namespace DxCore.Core.Components.Advanced.Physics
                     Body.ApplyLinearImpulse(impulse.Value.Vector2, Body.WorldCenter);
                     break;
                 }
-                    case BodyType.Kinematic:
+                case BodyType.Kinematic:
                 {
                     Body.LinearVelocity += impulse.Value.Vector2;
                     break;
@@ -198,7 +207,10 @@ namespace DxCore.Core.Components.Advanced.Physics
             World gameWorld = DxGame.Instance.Model<WorldModel>().World;
 
             PolygonShape bounds =
-                new PolygonShape(new DxRectangle(0, 0, Width, Height).Vertices().Select(vertex => vertex * WorldModel.DxToFarseerScale).ToVertices(), Density);
+                new PolygonShape(
+                    new DxRectangle(0, 0, Width, Height).Vertices()
+                        .Select(vertex => vertex * WorldModel.DxToFarseerScale)
+                        .ToVertices(), Density);
 
             Body = new Body(gameWorld, origin_.Vector2 * WorldModel.DxToFarseerScale)
             {
@@ -229,22 +241,22 @@ namespace DxCore.Core.Components.Advanced.Physics
             switch(physicsType)
             {
                 case PhysicsType.Dynamic:
-                    {
-                        return BodyType.Dynamic;
-                    }
+                {
+                    return BodyType.Dynamic;
+                }
                 case PhysicsType.Static:
-                    {
-                        return BodyType.Static;
-                    }
+                {
+                    return BodyType.Static;
+                }
                 case PhysicsType.Kinematic:
-                    {
-                        return BodyType.Kinematic;
-                    }
+                {
+                    return BodyType.Kinematic;
+                }
                 default:
-                    {
-                        throw new InvalidEnumArgumentException(
-                            $"Unknown {typeof(BodyType)} for {typeof(PhysicsType)} {physicsType}");
-                    }
+                {
+                    throw new InvalidEnumArgumentException(
+                        $"Unknown {typeof(BodyType)} for {typeof(PhysicsType)} {physicsType}");
+                }
             }
         }
 
@@ -351,15 +363,15 @@ namespace DxCore.Core.Components.Advanced.Physics
                 return this;
             }
 
-            public PhysicsComponentBuilder WithDirectionPositionAccess(bool directPositionAcces = true)
+            public PhysicsComponentBuilder WithDirectPositionAccess(bool directPositionAcces = true)
             {
                 directPositionAccess_ = directPositionAcces;
                 return this;
             }
 
-            public PhysicsComponentBuilder WithoutDirectionPositionAccess()
+            public PhysicsComponentBuilder WithoutDirectPositionAccess()
             {
-                return WithDirectionPositionAccess(false);
+                return WithDirectPositionAccess(false);
             }
 
             public PhysicsComponent Build()
@@ -373,8 +385,8 @@ namespace DxCore.Core.Components.Advanced.Physics
                 DxVector2 position = position_.Value;
                 DxVector2 bounds = bounds_.Value;
 
-                return new PhysicsComponent(position, bounds, collidesWith_, collisionGroup_, physicsType_, density_, gravity_,
-                    restitution_, friction_, directPositionAccess_, initialization_);
+                return new PhysicsComponent(position, bounds, collidesWith_, collisionGroup_, physicsType_, density_,
+                    gravity_, restitution_, friction_, directPositionAccess_, initialization_);
             }
         }
     }

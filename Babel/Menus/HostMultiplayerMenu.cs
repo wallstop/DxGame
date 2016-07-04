@@ -26,19 +26,16 @@ namespace Babel.Menus
         {
             var spriteFont = DxGame.Instance.Content.Load<SpriteFont>("Fonts/ComicSans");
 
-            var portBoxSpatial =
-                (SpatialComponent)
-                    SpatialComponent.Builder()
-                        .WithDimensions(new DxVector2
-                        {
-                            X = 200.0f,
-                            Y = spriteFont.LineSpacing + 2 /* wiggle room for cursor */ // TODO: Fix this
-                        }).WithPosition(new DxVector2(600, 500)).Build();
-
+            SpatialComponent portBoxSpatial =
+                SpatialComponent.UiBasedBuilder()
+                    .WithUiOffset(600, 500)
+                    .WithDimensions(200, spriteFont.LineSpacing + 2)
+                    .Build();
+            
             // Ports have a range of 0 - 65536 (2 ^ 16 - 1) -> max length of 5
             PortBox =
                 TextBox.Builder()
-                    .WithSpatialComponent(portBoxSpatial)
+                    .WithSpatial(portBoxSpatial)
                     .WithBackgroundColor(Color.White)
                     .WithTextColor(Color.Black)
                     .WithMaxLength(5)
@@ -51,10 +48,10 @@ namespace Babel.Menus
                     .WithText("Port:")
                     .WithSpace(new DxRectangle
                     {
-                        X = portBoxSpatial.Space.X - /* Pixel Width of "Port:" */ spriteFont.MeasureString("Port:").X,
-                        Y = portBoxSpatial.Space.Y,
-                        Width = portBoxSpatial.Width,
-                        Height = portBoxSpatial.Height
+                        X = portBoxSpatial.WorldCoordinates.X - /* Pixel Width of "Port:" */ spriteFont.MeasureString("Port:").X,
+                        Y = portBoxSpatial.WorldCoordinates.Y,
+                        Width = portBoxSpatial.Space.Width,
+                        Height = portBoxSpatial.Space.Height
                     });
 
             EntityCreatedMessage portBoxCreated = new EntityCreatedMessage(PortBox);

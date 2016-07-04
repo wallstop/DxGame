@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced.Physics;
+using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
@@ -12,11 +12,14 @@ namespace DxCore.Core.Components.Advanced
 {
     [Serializable]
     [DataContract]
-    public class SimpleSpriteComponent : DrawableComponent
+    public class SimpleSpriteComponent : DrawableComponent, ISpatial
     {
         [DataMember] protected string assetName_;
-        [DataMember] protected PhysicsComponent position_;
+        [DataMember] protected ISpatial spatial_;
         [NonSerialized] [IgnoreDataMember] protected Texture2D texture_;
+
+        public DxVector2 WorldCoordinates => spatial_.WorldCoordinates;
+        public DxRectangle Space => spatial_.Space;
 
         [IgnoreDataMember]
         public string AssetName
@@ -25,22 +28,21 @@ namespace DxCore.Core.Components.Advanced
             set { assetName_ = value; }
         }
 
-        private SimpleSpriteComponent(string asset, PhysicsComponent position)
+        private SimpleSpriteComponent(string asset, ISpatial spatial)
         {
-            Validate.Hard.IsNotNullOrDefault(asset, this.GetFormattedNullOrDefaultMessage(nameof(asset)));
             assetName_ = asset;
-            Validate.Hard.IsNotNullOrDefault(position, this.GetFormattedNullOrDefaultMessage(position));
-            position_ = position;
+            spatial_ = spatial;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            spriteBatch.Draw(texture_, position_.Space.Rectangle, Color.White);
+            spriteBatch.Draw(texture_, spatial_.Space.Rectangle, Color.White);
         }
 
         public override void Initialize()
         {
-            Validate.Hard.IsNotNull(DxGame.Instance.Content, this.GetFormattedNullOrDefaultMessage(DxGame.Instance.Content));
+            Validate.Hard.IsNotNull(DxGame.Instance.Content,
+                this.GetFormattedNullOrDefaultMessage(DxGame.Instance.Content));
             texture_ = DxGame.Instance.Content.Load<Texture2D>(assetName_);
         }
 
@@ -52,11 +54,13 @@ namespace DxCore.Core.Components.Advanced
         public class SimpleSpriteComponentBuilder : IBuilder<SimpleSpriteComponent>
         {
             private string asset_;
-            private PhysicsComponent position_;
+            private ISpatial spatial_;
 
             public SimpleSpriteComponent Build()
             {
-                return new SimpleSpriteComponent(asset_, position_);
+                Validate.Hard.IsNotNullOrDefault(asset_);
+                Validate.Hard.IsNotNullOrDefault(spatial_);
+                return new SimpleSpriteComponent(asset_, spatial_);
             }
 
             public SimpleSpriteComponentBuilder WithAsset(string asset)
@@ -65,9 +69,9 @@ namespace DxCore.Core.Components.Advanced
                 return this;
             }
 
-            public SimpleSpriteComponentBuilder WithPosition(PhysicsComponent position)
+            public SimpleSpriteComponentBuilder WithSpatial(ISpatial spatial)
             {
-                position_ = position;
+                spatial_ = spatial;
                 return this;
             }
         }

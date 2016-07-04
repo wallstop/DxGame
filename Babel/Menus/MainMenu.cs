@@ -6,25 +6,26 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Babel.Menus
 {
-    public class MainMenu : Babel.Menus.Menu
+    public class MainMenu : Menu
     {
         public override void Initialize()
         {
             // TODO: Remove dependence on hardcoded font values
             var spriteFont = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Gungsuh");
-            Babel.Menus.MenuItem play =
-                new Babel.Menus.MenuItem().WithText("Play")
+            MenuItem play =
+                new MenuItem().WithText("Play")
                     .WithAction(PlayAction)
                     .WithSpriteFont(spriteFont)
                     .WithSpace(new DxRectangle(400, 400, 100, 100));
             MenuItems.Add(play);
+            play.Create();
 
             base.Initialize();
         }
 
         private void PlayAction()
         {
-            EntityCreatedMessage playMenuCreated = new EntityCreatedMessage(new Babel.Menus.PlayMenu());
+            EntityCreatedMessage playMenuCreated = new EntityCreatedMessage(new PlayMenu());
             playMenuCreated.Emit();
             Remove();
         }

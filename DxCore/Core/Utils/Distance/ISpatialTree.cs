@@ -14,7 +14,7 @@ namespace DxCore.Core.Utils.Distance
         List<T> Elements { get; }
         List<DxRectangle> Nodes { get; }
         List<DxRectangle> Divisions { get; }
-        List<T> InRange(IShape range);
+        List<T> InRange(DxRectangle range);
         // TODO: Make Optional
         bool Closest(DxVector2 position, out T result);
     }

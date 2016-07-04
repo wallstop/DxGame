@@ -18,7 +18,7 @@ namespace Babel.Menus
         {
             MouseTrackingComponent mousePosition = new MouseTrackingComponent();
             SimpleSpriteComponent mouseSprite =
-                SimpleSpriteComponent.Builder().WithAsset("MousePointer").WithPosition(mousePosition).Build();
+                SimpleSpriteComponent.Builder().WithAsset("MousePointer").WithSpatial(mousePosition).Build();
             mousePointer_ = GameObject.Builder().WithComponents(mousePosition, mouseSprite).Build();
 
             mousePointer_.Create();
@@ -34,26 +34,23 @@ namespace Babel.Menus
 
         protected override void Update(DxGameTime gameTime)
         {
-            var mousePosition = mousePointer_.ComponentOfType<MouseTrackingComponent>();
-            var mouseSprite = mousePointer_.ComponentOfType<SimpleSpriteComponent>();
+            MouseTrackingComponent mousePosition = mousePointer_.ComponentOfType<MouseTrackingComponent>();
+            SimpleSpriteComponent mouseSprite = mousePointer_.ComponentOfType<SimpleSpriteComponent>();
             if(mousePosition.Clicked)
             {
-                Point center = mouseSprite.BoundingBox.Center;
-                // We need to translate the center of the sprite's bounding box to where the mouse currently is.
-                DxVector2 mouseXY = mousePosition.Position;
-                center.X += (int) mouseXY.X;
-                center.Y += (int) mouseXY.Y;
-
+                DxVector2 center = mouseSprite.Space.Center;
                 MenuItem clickedMenuItem = MenuItems.FirstOrDefault(menuItem => menuItem.Space.Contains(center));
                 clickedMenuItem?.OnAction();
             }
-
-            base.Update(gameTime);
         }
 
         public override void Remove()
         {
             mousePointer_.Remove();
+            foreach(MenuItem menuItem in MenuItems.ToList())
+            {
+                menuItem.Remove();
+            }
             base.Remove();
         }
     }

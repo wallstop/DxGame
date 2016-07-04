@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Utils.Distance
 {
@@ -15,12 +14,16 @@ namespace DxCore.Core.Utils.Distance
     {
         [DataMember]
         public KDTreeNode<T> Left { get; }
+
         [DataMember]
         public KDTreeNode<T> Right { get; }
+
         [DataMember]
         public DxRectangle Boundary { get; }
+
         [DataMember]
         public List<T> Points { get; }
+
         [DataMember]
         public bool Terminal { get; }
 
@@ -29,7 +32,7 @@ namespace DxCore.Core.Utils.Distance
         {
             Boundary = boundary;
             Terminal = pointsInSpace.Count() <= bucketSize;
-            if (Terminal)
+            if(Terminal)
             {
                 Points = pointsInSpace;
                 return;
@@ -39,9 +42,9 @@ namespace DxCore.Core.Utils.Distance
 
             Axis<T> pointFunction;
             DxRectangle[] newBoundary;
-            if (isXAxis)
+            if(isXAxis)
             {
-                pointFunction = (point => coordinate(point).X);
+                pointFunction = point => coordinate(point).X;
                 var halfWidth = boundary.Width / 2;
                 newBoundary = new[]
                 {
@@ -51,7 +54,7 @@ namespace DxCore.Core.Utils.Distance
             }
             else
             {
-                pointFunction = (point => coordinate(point).Y);
+                pointFunction = point => coordinate(point).Y;
                 var halfHeight = boundary.Height / 2;
                 newBoundary = new[]
                 {
@@ -73,16 +76,14 @@ namespace DxCore.Core.Utils.Distance
     public class KDTree<T> : ISpatialTree<T>
     {
         private static readonly int DEFAULT_BUCKET_SIZE = 12;
-        [DataMember]
-        private readonly DxRectangle boundary_;
-        [DataMember]
-        private readonly Coordinate<T> coordinate_;
-        [DataMember]
-        private readonly KDTreeNode<T> head_;
+        [DataMember] private readonly DxRectangle boundary_;
+        [DataMember] private readonly Coordinate<T> coordinate_;
+        [DataMember] private readonly KDTreeNode<T> head_;
 
         public List<T> Elements
         {
-            get {
+            get
+            {
                 Queue<KDTreeNode<T>> nodesToVisit = new Queue<KDTreeNode<T>>();
                 nodesToVisit.Enqueue(head_);
                 var elements = new List<T>();
@@ -90,7 +91,7 @@ namespace DxCore.Core.Utils.Distance
                 do
                 {
                     var currentNode = nodesToVisit.Dequeue();
-                    if (currentNode.Terminal)
+                    if(currentNode.Terminal)
                     {
                         elements.AddRange(currentNode.Points);
                         continue;
@@ -98,13 +99,12 @@ namespace DxCore.Core.Utils.Distance
 
                     nodesToVisit.Enqueue(currentNode.Left);
                     nodesToVisit.Enqueue(currentNode.Right);
-
-                } while (nodesToVisit.Any());
+                } while(nodesToVisit.Any());
                 return elements;
             }
         }
 
-        public List<DxRectangle> Nodes => Divisions; 
+        public List<DxRectangle> Nodes => Divisions;
 
         public List<DxRectangle> Divisions
         {
@@ -118,28 +118,27 @@ namespace DxCore.Core.Utils.Distance
                 {
                     KDTreeNode<T> currentNode = nodesToVisit.Dequeue();
                     quadrants.Add(currentNode.Boundary);
-                    if (currentNode.Terminal)
+                    if(currentNode.Terminal)
                     {
                         continue;
                     }
 
                     nodesToVisit.Enqueue(currentNode.Left);
                     nodesToVisit.Enqueue(currentNode.Right);
-                } while (nodesToVisit.Any());
+                } while(nodesToVisit.Any());
 
                 return quadrants;
             }
         }
 
         public KDTree(Coordinate<T> coordinate, DxRectangle boundary, List<T> points)
-            : this(coordinate, boundary, points, DEFAULT_BUCKET_SIZE)
-        {
-        }
+            : this(coordinate, boundary, points, DEFAULT_BUCKET_SIZE) {}
 
         public KDTree(Coordinate<T> coordinate, DxRectangle boundary, List<T> points, int bucketSize)
         {
-            Validate.Validate.Hard.IsTrue(bucketSize > 0, $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
-            Validate.Validate.Hard.IsNotNull(coordinate, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(coordinate)));
+            Validate.Validate.Hard.IsPositive(bucketSize,
+                () => $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
+            Validate.Validate.Hard.IsNotNull(coordinate, () => this.GetFormattedNullOrDefaultMessage(nameof(coordinate)));
             coordinate_ = coordinate;
             boundary_ = boundary;
             head_ = new KDTreeNode<T>(boundary, coordinate_, points, bucketSize, true);
@@ -150,9 +149,9 @@ namespace DxCore.Core.Utils.Distance
             return InRange(new DxRectangle(point.X - radius, point.Y - radius, radius, radius));
         }
 
-        public List<T> InRange(IShape range)
+        public List<T> InRange(DxRectangle range)
         {
-            if (!range.Intersects(boundary_))
+            if(!range.Intersects(boundary_))
             {
                 return Enumerable.Empty<T>().ToList();
             }
@@ -164,12 +163,12 @@ namespace DxCore.Core.Utils.Distance
             do
             {
                 KDTreeNode<T> currentNode = nodesToVisit.Dequeue();
-                if (!range.Intersects(currentNode.Boundary))
+                if(!range.Intersects(currentNode.Boundary))
                 {
                     continue;
                 }
 
-                if (currentNode.Terminal)
+                if(currentNode.Terminal)
                 {
                     elementsInRange.AddRange(currentNode.Points.Where(element => range.Contains(coordinate_(element))));
                 }
@@ -178,7 +177,7 @@ namespace DxCore.Core.Utils.Distance
                     nodesToVisit.Enqueue(currentNode.Left);
                     nodesToVisit.Enqueue(currentNode.Right);
                 }
-            } while (nodesToVisit.Any());
+            } while(nodesToVisit.Any());
             return elementsInRange;
         }
 

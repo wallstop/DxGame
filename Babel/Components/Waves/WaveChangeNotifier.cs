@@ -34,13 +34,22 @@ namespace Babel.Components.Waves
         private TextComponent WaveText { get; set; }
 
         [DataMember]
-        private PositionalComponent Position { get; }
+        private SpatialComponent Position { get; set; }
 
-        private bool Active => DxGame.Instance.CurrentTime.TotalGameTime < lastWaveNotification_ + DISPLAY_TIME;
+        [DataMember]
+        private DxVector2 Offset { get; set; }
+
+        private bool Active => DxGame.Instance.CurrentUpdateTime.TotalGameTime < lastWaveNotification_ + DISPLAY_TIME;
 
         public WaveChangeNotifier()
         {
-            Position = PositionalComponent.Builder().Build();
+            Position =
+                SpatialComponent.UiTrackingBasedBuilder().WithUiOffsetProvider(GetOffset).WithoutDimensions().Build();
+        }
+
+        private DxVector2 GetOffset()
+        {
+            return Offset;
         }
 
         public override void OnAttach()
@@ -66,8 +75,7 @@ namespace Babel.Components.Waves
             Rectangle baseScreenSize = DxGame.Instance.Screen;
             Point center = baseScreenSize.Center;
             DxVector2 drawTarget = new DxVector2(center.X - textSize.X / 2, center.Y - textSize.Y / 2);
-            Vector2 offset = DxGame.Instance.OffsetFromScreen(drawTarget);
-            Position.Position = new DxVector2(offset);
+            Offset = drawTarget;
         }
 
         public override void LoadContent()

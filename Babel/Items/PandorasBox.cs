@@ -132,7 +132,7 @@ namespace Babel.Items
                 return;
             }
 
-            TimeSpan currentTime = DxGame.Instance.CurrentTime.TotalGameTime;
+            TimeSpan currentTime = DxGame.Instance.CurrentUpdateTime.TotalGameTime;
             if(!lastTriggered_.HasValue || lastTriggered_.Value + triggerDelay_ <= currentTime)
             {
                 lastTriggered_ = currentTime;

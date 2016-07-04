@@ -60,7 +60,7 @@ namespace DxCore
         {
             lock(GameLock)
             {
-                singletonFunction.Invoke(singleton_);
+                singletonFunction?.Invoke(singleton_);
             }
         }
 
@@ -75,7 +75,7 @@ namespace DxCore
         public static DxGame Instance => singleton_;
         public virtual double PhysicsUpdateFrequency => 1 / 60.0;
         public virtual double TargetFps => 60.0;
-        protected static readonly TimeSpan MinimumFramerate = TimeSpan.FromSeconds(1 / 10000.0);
+        protected static readonly TimeSpan MinimumFramerate = TimeSpan.FromMilliseconds(1 / 10.0);
         public GameElementCollection NewGameElements { get; } = new GameElementCollection();
         public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
 
@@ -369,7 +369,6 @@ namespace DxCore
         {
             DxGameTime dxGameTime = DetermineGameTime(gameTime);
             CurrentDrawTime = dxGameTime;
-            CurrentUpdateTime = dxGameTime;
 
             // Querying Gamepad.GetState(...) requires xinput1_3.dll (The xbox 360 controller driver). Interesting fact...
             if(Keyboard.GetState().IsKeyDown(Keys.Escape))

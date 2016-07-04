@@ -108,11 +108,6 @@
     <Compile Include="Player\BasicAttackComponent.cs" />
     <Compile Include="Player\PlayerFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Skills\Gevurah\ArrowRainComponent.cs" />
-    <Compile Include="Skills\Gevurah\BearTrap.cs" />
-    <Compile Include="Skills\Gevurah\ChargeShotComponent.cs" />
-    <Compile Include="Skills\Gevurah\Gevurah.cs" />
-    <Compile Include="Skills\Gevurah\GevurahBasicAttack.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NLog.xsd">
@@ -131,6 +126,7 @@
     <Folder Include="Components\PropertyModifiers\" />
     <Folder Include="Components\Widgets\" />
     <Folder Include="Physics\" />
+    <Folder Include="Skills\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -111,13 +111,12 @@
     <Compile Include="Core\Components\Advanced\Map\MapTransition.cs" />
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
-    <Compile Include="Core\Components\Advanced\Physics\IDxWorldMember.cs" />
-    <Compile Include="Core\Components\Advanced\Physics\KinematicPhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\Physics\PhysicsComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Physics\StaticPhysicsComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Physics\WorldCollidable.cs" />
     <Compile Include="Core\Components\Advanced\Player\ActivePlayerComponent.cs" />
     <Compile Include="Core\Components\Advanced\Player\PlayerNameComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Position\IPositional.cs" />
+    <Compile Include="Core\Components\Advanced\Position\ISpatial.cs" />
+    <Compile Include="Core\Components\Advanced\Position\SpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\Properties\EntityPropertiesComponent.cs" />
     <Compile Include="Core\Components\Advanced\ShadowComponent.cs" />
     <Compile Include="Core\Components\Advanced\SimpleSpriteComponent.cs" />
@@ -266,7 +265,6 @@
     <Compile Include="Core\Primitives\DxRadian.cs" />
     <Compile Include="Core\Primitives\DxRectangle.cs" />
     <Compile Include="Core\Primitives\DxVector2.cs" />
-    <Compile Include="Core\Primitives\IShape.cs" />
     <Compile Include="Core\Properties\EntityProperties.cs" />
     <Compile Include="Core\Properties\Property.cs" />
     <Compile Include="Core\Properties\PropertyMutator.cs" />

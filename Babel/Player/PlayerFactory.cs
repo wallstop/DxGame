@@ -9,8 +9,8 @@ namespace Babel.Player
             health: new Property<int>(10, "Health"),
             maxHealth: new Property<int>(10, "MaxHealth"),
             defense: new Property<int>(1, "Defense"),
-            moveSpeed: new Property<float>(6.5f, "MoveSpeed"),
-            jumpSpeed: new Property<float>(13.0f, "JumpSpeed"),
+            moveSpeed: new Property<float>(1f, "MoveSpeed"),
+            jumpSpeed: new Property<float>(4f, "JumpSpeed"),
             attackSpeed: new Property<int>(10, "AttackSpeed"),
             attackDamage: new Property<int>(5, "AttackDamage"));
 

@@ -152,13 +152,13 @@ namespace DxCore.Core.Components.Advanced.Properties
 
         protected virtual void EmitMoveLeftForce()
         {
-            Core.Physics.Impulse moveLeft = new Core.Physics.Impulse(new DxVector2(-EntityProperties.MoveSpeed.CurrentValue, 0));
+            Core.Physics.Force moveLeft = new Core.Physics.Force(new DxVector2(-EntityProperties.MoveSpeed.CurrentValue, 0));
             new PhysicsAttachment(moveLeft, Parent.Id).Emit();
         }
 
         protected virtual void EmitMoveRightForce()
         {
-            Core.Physics.Impulse moveRight = new Core.Physics.Impulse(new DxVector2(EntityProperties.MoveSpeed.CurrentValue, 0));
+            Core.Physics.Force moveRight = new Core.Physics.Force(new DxVector2(EntityProperties.MoveSpeed.CurrentValue, 0));
             new PhysicsAttachment(moveRight, Parent.Id).Emit();
         }
 
@@ -167,7 +167,7 @@ namespace DxCore.Core.Components.Advanced.Properties
             new PhysicsAttachment(Nullification.Vertical, Parent.Id).Emit();
 
             DxVector2 initialVelocity = new DxVector2(0, -EntityProperties.JumpSpeed.CurrentValue * 1.6);
-            Core.Physics.Impulse jumpForce = new Core.Physics.Impulse(initialVelocity);
+            Core.Physics.Force jumpForce = new Core.Physics.Force(initialVelocity);
             new PhysicsAttachment(jumpForce, Parent.Id).Emit();
         }
 

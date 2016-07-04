@@ -44,9 +44,10 @@ namespace DxCore.Core.Map
                     .Build();
         }
 
-        private static void SetPhysicsComponentStatic(Body body, Fixture fixture, PhysicsComponent self)
+        private void SetPhysicsComponentStatic(Body body, Fixture fixture, PhysicsComponent self)
         {
             body.BodyType = BodyType.Static;
+            fixture.UserData = this;
         }
     }
 }

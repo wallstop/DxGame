@@ -13,7 +13,7 @@ namespace DxCore.Core.Physics
 
         public Force(DxVector2 force)
         {
-            Value = force;
+            Value = force * DxGame.Instance.CurrentUpdateTime.ScaleFactor;
         }
     }
 }

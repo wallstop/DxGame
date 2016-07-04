@@ -9,14 +9,13 @@ namespace Babel.Player
             health: new Property<int>(10, "Health"),
             maxHealth: new Property<int>(10, "MaxHealth"),
             defense: new Property<int>(1, "Defense"),
-            moveSpeed: new Property<float>(1f, "MoveSpeed"),
-            jumpSpeed: new Property<float>(4f, "JumpSpeed"),
+            moveSpeed: new Property<float>(4f, "MoveSpeed"),
+            jumpSpeed: new Property<float>(250f, "JumpSpeed"),
             attackSpeed: new Property<int>(10, "AttackSpeed"),
             attackDamage: new Property<int>(5, "AttackDamage"));
 
         public static void GenericLevelUp(EntityProperties properties, LeveledUpMessage levelUpMessage)
         {
-
             const int healthGain = 4;
             properties.MaxHealth.BaseValue += healthGain;
 
@@ -32,7 +31,6 @@ namespace Babel.Player
                 const int defenseGain = 1;
                 properties.Defense.BaseValue += defenseGain;
             }
-
         }
     }
 }

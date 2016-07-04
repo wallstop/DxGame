@@ -12,18 +12,26 @@ using DxCore.Core.Generators;
 using DxCore.Core.Primitives;
 using DxCore.Core.State;
 using Microsoft.Xna.Framework;
+using NLog;
 
 namespace Babel.Generators
 {
     public class BabelPlayerGenerator : IPlayerGenerator
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private readonly FloatingHealthIndicator healthBar_;
         private readonly PhysicsComponent physics_;
         private readonly EntityPropertiesComponent playerProperties_;
 
         public BabelPlayerGenerator(DxVector2 playerPosition)
         {
-            physics_ = PhysicsComponent.Builder().WithBounds(new DxVector2(75, 75)).WithPosition(playerPosition).Build();
+            physics_ =
+                PhysicsComponent.Builder()
+                    .WithBounds(new DxVector2(75, 75))
+                    .WithPosition(playerPosition)
+                    .WithPhysicsInitialization(SensorFactory.MapCollisionSensor)
+                    .Build();
             playerProperties_ = new EntityPropertiesComponent(PlayerFactory.BasicPlayerProperties,
                 PlayerFactory.GenericLevelUp);
             /* Fuck with the health so we can check if the hp bar works */

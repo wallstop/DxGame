@@ -1,10 +1,8 @@
-﻿using DxCore;
-using DxCore.Core.Components.Basic;
+﻿using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Physics;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
-using DxCore.Core.Components.Advanced;
 
 namespace Pong.Core.Components
 {
@@ -19,9 +17,9 @@ namespace Pong.Core.Components
         private static readonly DxVector2 Up = new DxVector2(0, -1);
         private static readonly DxVector2 Down = new DxVector2(0, 1);
 
-        private Impulse MoveUpImpulse => new Impulse(Up * DxGame.Instance.CurrentUpdateTime.ScaleFactor);
+        private Impulse MoveUpImpulse => new Impulse(Up);
 
-        private Impulse MoveDownImpulse => new Impulse(Down * DxGame.Instance.CurrentUpdateTime.ScaleFactor);
+        private Impulse MoveDownImpulse => new Impulse(Down);
 
         public override void OnAttach()
         {

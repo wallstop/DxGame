@@ -112,6 +112,8 @@
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
     <Compile Include="Core\Components\Advanced\Physics\PhysicsComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Physics\SensorComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Physics\SensorFactory.cs" />
     <Compile Include="Core\Components\Advanced\Player\ActivePlayerComponent.cs" />
     <Compile Include="Core\Components\Advanced\Player\PlayerNameComponent.cs" />
     <Compile Include="Core\Components\Advanced\Position\IPositional.cs" />

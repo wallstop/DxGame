@@ -86,7 +86,7 @@ namespace DxCore.Core
 
             if(components_.Contains(component))
             {
-                LOG.Info($"Ignoring attach of {typeof(Component)} that already exists on {this}");
+                LOG.Info("Ignoring attach of {0} that already exists on {1}", typeof(Component), this);
                 return;
             }
 

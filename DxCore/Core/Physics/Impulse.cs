@@ -13,7 +13,7 @@ namespace DxCore.Core.Physics
 
         public Impulse(DxVector2 value)
         {
-            Value = value;
+            Value = value * DxGame.Instance.CurrentUpdateTime.ScaleFactor;
         }
     }
 }

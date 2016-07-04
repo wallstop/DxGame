@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -11,6 +12,7 @@ using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 using FarseerPhysics.Collision.Shapes;
 using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
 using NLog;
 using Component = DxCore.Core.Components.Basic.Component;
 
@@ -36,6 +38,8 @@ namespace DxCore.Core.Components.Advanced.Physics
 
         [DataMember] private PhysicsInitialization initialization_;
 
+        [DataMember] private List<SensorComponent> attachedSensors_;
+
         [DataMember]
         public float Density { get; private set; }
 
@@ -55,6 +59,9 @@ namespace DxCore.Core.Components.Advanced.Physics
         [IgnoreDataMember]
         public Fixture Fixture { get; private set; }
 
+        [IgnoreDataMember]
+        private Fixture SensorFixture { get; set; }
+
         [DataMember]
         public PhysicsType PhysicsType { get; private set; }
 
@@ -63,6 +70,9 @@ namespace DxCore.Core.Components.Advanced.Physics
 
         [IgnoreDataMember]
         public float Width => bounds_.X;
+
+        [IgnoreDataMember]
+        public IEnumerable<SensorComponent> AttachedSensors => attachedSensors_.ToList();
 
         [IgnoreDataMember]
         public DxVector2 Position
@@ -102,6 +112,8 @@ namespace DxCore.Core.Components.Advanced.Physics
             CollisionGroup collisionGroup, PhysicsType physicsType, float density, bool gravityOn, float restitution,
             float friction, bool directPositionAccess, PhysicsInitialization initialization)
         {
+            attachedSensors_ = new List<SensorComponent>();
+
             origin_ = origin;
             bounds_ = bounds;
             gravity_ = gravityOn;
@@ -124,6 +136,74 @@ namespace DxCore.Core.Components.Advanced.Physics
         {
             RegisterMessageHandler<PhysicsAttachment>(HandlePhysicsAttachment);
             base.OnAttach();
+        }
+
+        public void Attach(SensorComponent sensor)
+        {
+            if(Validate.Check.IsNullOrDefault(sensor))
+            {
+                Logger.Debug("Ignoring attachment of null {0}", typeof(SensorComponent));
+                return;
+            }
+
+            if(Validate.Check.IsElementOf(attachedSensors_, sensor))
+            {
+                Logger.Debug("Ignoring double sensor registration of {0}", sensor);
+                return;
+            }
+
+            attachedSensors_.Add(sensor);
+            AttachSensor(sensor);
+        }
+
+        private void AttachSensor(SensorComponent sensor)
+        {
+            if(ReferenceEquals(Fixture, null))
+            {
+                return;
+            }
+            foreach(OnCollisionEventHandler onCollisionHandler in sensor.OnCollisionEventHandlers)
+            {
+                SensorFixture.OnCollision += onCollisionHandler;
+            }
+            foreach(BeforeCollisionEventHandler beforeCollisionHandler in sensor.BeforeCollisionEventHandlers)
+            {
+                SensorFixture.BeforeCollision += beforeCollisionHandler;
+            }
+            foreach(AfterCollisionEventHandler afterCollisionHandler in sensor.AfterCollisionEventHandlers)
+            {
+                SensorFixture.AfterCollision += afterCollisionHandler;
+            }
+        }
+
+        public void Detach(SensorComponent sensor)
+        {
+            if(Validate.Check.IsNullOrDefault(sensor))
+            {
+                Logger.Debug("Ignoring detachment of null {0}", typeof(SensorComponent));
+                return;
+            }
+
+            bool removeSuccessful = attachedSensors_.Remove(sensor);
+
+            if(!removeSuccessful)
+            {
+                Logger.Debug("Ignoring detachment of {0} (not attached)", sensor);
+                return;
+            }
+
+            foreach(OnCollisionEventHandler onCollisionHandler in sensor.OnCollisionEventHandlers)
+            {
+                SensorFixture.OnCollision -= onCollisionHandler;
+            }
+            foreach(BeforeCollisionEventHandler beforeCollisionHandler in sensor.BeforeCollisionEventHandlers)
+            {
+                SensorFixture.BeforeCollision -= beforeCollisionHandler;
+            }
+            foreach(AfterCollisionEventHandler afterCollisionHandler in sensor.AfterCollisionEventHandlers)
+            {
+                SensorFixture.AfterCollision -= afterCollisionHandler;
+            }
         }
 
         private void HandlePhysicsAttachment(PhysicsAttachment physicsAttachment)
@@ -211,8 +291,8 @@ namespace DxCore.Core.Components.Advanced.Physics
                     new DxRectangle(0, 0, Width, Height).Vertices()
                         .Select(vertex => vertex * WorldModel.DxToFarseerScale)
                         .ToVertices(), Density);
-
-            Body = new Body(gameWorld, origin_.Vector2 * WorldModel.DxToFarseerScale)
+            
+            Body = new Body(gameWorld, origin_.Vector2 * WorldModel.DxToFarseerScale, 0, this)
             {
                 BodyType = ResolveCollisionType(PhysicsType),
                 FixedRotation = true
@@ -225,6 +305,13 @@ namespace DxCore.Core.Components.Advanced.Physics
 
             Fixture = Body.CreateFixture(bounds, this);
             Fixture.CollidesWith = CollisionGroup.CollisionCategory;
+
+            // TODO: Remove this
+            SensorFixture = Fixture;
+            foreach(SensorComponent sensor in attachedSensors_)
+            {
+                AttachSensor(sensor);
+            }
 
             Body.Restitution = restitution_;
             Body.Friction = friction_;

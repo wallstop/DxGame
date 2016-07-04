@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
 using NLog;
 
 namespace DxCore.Core.Properties
@@ -48,7 +47,8 @@ namespace DxCore.Core.Properties
     [DataContract]
     public sealed class Property<T> : IProperty
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        // ReSharper disable once StaticMemberInGenericType
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         // TODO: Convert these to weak references (Similar to EventModel?)
         [DataMember] private readonly List<PropertyListener<T>> listeners_ = new List<PropertyListener<T>>();
@@ -73,18 +73,22 @@ namespace DxCore.Core.Properties
             }
         }
 
-        [DataMember]
+        [IgnoreDataMember]
         public T CurrentValue => currentValue_;
+
+        [DataMember]
+        private T PreviousValue { get; set; }
 
         public Property(T value, string name)
         {
             BaseValue = value;
             Name = name;
+            PreviousValue = CurrentValue;
         }
 
         public Property(Property<T> copy)
         {
-            Validate.Hard.IsNotNull(copy, StringUtils.GetFormattedNullOrDefaultMessage(this, copy));
+            Validate.Hard.IsNotNull(copy, () => this.GetFormattedNullOrDefaultMessage(copy));
             BaseValue = copy.BaseValue;
             Name = copy.Name;
             listeners_.AddRange(copy.listeners_);
@@ -98,9 +102,10 @@ namespace DxCore.Core.Properties
 
         public void TriggerListeners()
         {
-            T previous = CurrentValue;
+            T previous = PreviousValue;
             T current = CurrentValue;
             InternalTriggerListeners(previous, current);
+            PreviousValue = CurrentValue;
         }
 
         private void InternalTriggerListeners(T previous, T current)
@@ -113,8 +118,7 @@ namespace DxCore.Core.Properties
 
         public void AttachListener(PropertyListener<T> listener)
         {
-            Validate.Hard.IsNotNullOrDefault(listener,
-                $"Cannot attach a null {typeof(PropertyListener<T>)} to a {typeof(Property<T>)} ({Name})");
+            Validate.Hard.IsNotNullOrDefault(listener, () => $"Cannot attach a null {typeof(PropertyListener<T>)} to a {typeof(Property<T>)} ({Name})");
             listeners_.Add(listener);
         }
 
@@ -127,14 +131,14 @@ namespace DxCore.Core.Properties
         {
             if(mutator == null)
             {
-                LOG.Error($"Attempted to find a null {GetType()} from Property {Name}");
+                Logger.Error($"Attempted to find a null {GetType()} from Property {Name}");
                 return;
             }
 
             InternalAddMutator(mutator);
-            if(LOG.IsDebugEnabled)
+            if(Logger.IsDebugEnabled)
             {
-                LOG.Debug(
+                Logger.Debug(
                     $"Added {1} {GetType()} count for a total of {mutatorCounts_[mutator]} of PropertyMutator {mutator} to {Name}");
             }
         }
@@ -143,13 +147,13 @@ namespace DxCore.Core.Properties
         {
             if(mutator == null || !mutatorCounts_.ContainsKey(mutator))
             {
-                LOG.Error($"Attempted to remove non-existing {mutator} from Property {Name}");
+                Logger.Error($"Attempted to remove non-existing {mutator} from Property {Name}");
                 return;
             }
 
-            if(LOG.IsDebugEnabled)
+            if(Logger.IsDebugEnabled)
             {
-                LOG.Debug(
+                Logger.Debug(
                     $"Decremented Instance Count of PropertyMutator {mutator} from {mutatorCounts_[mutator]} to {mutatorCounts_[mutator] - 1} for Property {Name}");
             }
 

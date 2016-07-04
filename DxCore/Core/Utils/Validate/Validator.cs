@@ -130,12 +130,10 @@ namespace DxCore.Core.Utils.Validate
             return noNullElements;
         }
 
-        public bool AreEqual<T>(T first, T second) where T : IEquatable<T> => AreEqual(first, second, DefaultMessage);
+        public bool AreEqual<T>(T first, T second) => AreEqual(first, second, DefaultMessage);
+        public bool AreEqual<T>(T first, T second, string message) => AreEqual(first, second, () => message);
 
-        public bool AreEqual<T>(T first, T second, string message) where T : IEquatable<T>
-            => AreEqual(first, second, () => message);
-
-        public bool AreEqual<T>(T first, T second, Func<string> messageProducer) where T : IEquatable<T>
+        public bool AreEqual<T>(T first, T second, Func<string> messageProducer)
         {
             bool areEqual = Objects.Equals(first, second);
             FailIfFalse(areEqual, messageProducer);

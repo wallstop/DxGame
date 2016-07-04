@@ -9,6 +9,7 @@ using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Player;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Generators;
+using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.State;
 using Microsoft.Xna.Framework;
@@ -30,6 +31,8 @@ namespace Babel.Generators
                 PhysicsComponent.Builder()
                     .WithBounds(new DxVector2(75, 75))
                     .WithPosition(playerPosition)
+                    .WithCollisionGroup(CollisionGroup.Entities)
+                    .WithCollidesWith(CollisionGroup.All.Not(CollisionGroup.Entities))
                     .WithPhysicsInitialization(SensorFactory.MapCollisionSensor)
                     .Build();
             playerProperties_ = new EntityPropertiesComponent(PlayerFactory.BasicPlayerProperties,

@@ -17,6 +17,7 @@ using DxCore.Core.Experience;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Models;
+using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.State;
 using DxCore.Core.Utils;
@@ -46,6 +47,8 @@ namespace Babel.Enemies
             var enemyPhysics =
                 PhysicsComponent.Builder()
                     .WithBounds(new DxVector2(50, 50))
+                                        .WithCollisionGroup(CollisionGroup.Entities)
+                    .WithCollidesWith(CollisionGroup.All.Not(CollisionGroup.Entities))
                     .WithPosition(DxVector2.EmptyVector)
                     .WithDirectPositionAccess()
                     .Build();

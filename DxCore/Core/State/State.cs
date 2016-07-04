@@ -6,8 +6,6 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core;
-using DXGame.Core.Utils;
 using NLog;
 
 namespace DxCore.Core.State
@@ -122,16 +120,16 @@ namespace DxCore.Core.State
 
             public State Build()
             {
-                Validate.Hard.IsNotNullOrDefault(action_,
+                Validate.Hard.IsNotNullOrDefault(action_, () => 
                     $"Cannot create a {nameof(State)} with a null/default {nameof(action_)}");
 
-                Validate.Hard.IsNotNullOrDefault(name_,
+                Validate.Hard.IsNotNullOrDefault(name_, () => 
                     $"Cannot create a {nameof(State)} with a null/default/empty {nameof(name_)}");
                 if(transitions_.Count == 0)
                 {
                     LOG.Trace($"Creating {nameof(State)} ({name_}) without any transitions");
                 }
-                Validate.Hard.NoNullElements(transitions_, $"Cannot create a {nameof(State)} with null transitions");
+                Validate.Hard.NoNullElements(transitions_, () => $"Cannot create a {nameof(State)} with null transitions");
 
                 return new State(transitions_, name_, action_, onEnter_, onExit_);
             }
@@ -156,8 +154,7 @@ namespace DxCore.Core.State
 
             public StateBuilder WithAction(Action<List<Message>, DxGameTime> action)
             {
-                Validate.Hard.IsNull(action_,
-                    $"Cannot assign a {nameof(action)} to a Builder with an already assigned {nameof(action)}");
+                Validate.Hard.IsNull(action_, () =>  $"Cannot assign a {nameof(action)} to a Builder with an already assigned {nameof(action)}");
                 action_ = action;
                 return this;
             }

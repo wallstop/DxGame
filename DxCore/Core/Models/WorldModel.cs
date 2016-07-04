@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
@@ -32,7 +31,7 @@ namespace DxCore.Core.Models
         }
     }
 
-    public class WorldModel : Model
+    public sealed class WorldModel : Model
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -58,11 +57,6 @@ namespace DxCore.Core.Models
         private const int TopEdgeIndex = 2;
         private const int BottomEdgeIndex = 3;
 
-        private const float StepRate = 1 / 60.0f;
-        private static readonly TimeSpan TargetFps = TimeSpan.FromSeconds(StepRate);
-
-        private TimeSpan LastTicked { get; set; }
-
         public World World { get; }
 
         public DxRectangle Bounds { get; private set; }
@@ -80,7 +74,6 @@ namespace DxCore.Core.Models
         public WorldModel()
         {
             World = new World(new Vector2(0, 9.82f));
-            LastTicked = TimeSpan.Zero;
             WorldBounds = new List<PhysicsComponent>(4);
         }
 
@@ -98,15 +91,6 @@ namespace DxCore.Core.Models
         protected override void Update(DxGameTime gameTime)
         {
             FullThrottleUpdate(gameTime);
-        }
-
-        private void RateLimitedUpdate(DxGameTime gameTime)
-        {
-            if(LastTicked + TargetFps < gameTime.TotalGameTime)
-            {
-                LastTicked = gameTime.TotalGameTime;
-                World.Step(StepRate);
-            }
         }
 
         private void FullThrottleUpdate(DxGameTime gameTime)
@@ -169,7 +153,9 @@ namespace DxCore.Core.Models
                     We double up left & top, because bottom & right are simply translations of these lines. 
                     The body creation below will take care of this translation for us :^)
 
-                    These lines need to be position non-relative
+                    These lines need to be position non-relative. Ie, they need to describe the line from the
+                    perspective of the body, which is just a point. The left & top borders are origin-based,
+                    so these will do.
                 */
                 singleBound.LeftBorder, singleBound.LeftBorder, singleBound.TopBorder, singleBound.TopBorder
             };
@@ -188,7 +174,8 @@ namespace DxCore.Core.Models
 
                 /* 
                     Assign after fixture creation, so all fixtures receive this sweet, sweet info.
-                    Fixtures don't inherit automatically.
+                    Fixtures don't inherit automatically. (If you assign to a body and then create
+                    a fixture, the fixture will not have the same properties)
                 */
                 worldBody.IgnoreGravity = true;
                 worldBody.CollidesWith = Category.All;

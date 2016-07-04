@@ -88,6 +88,7 @@
     <Compile Include="Core\Components\Advanced\Behavior\BehaviorComponent.cs" />
     <Compile Include="Core\Components\Advanced\CollisionDestructibleComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\AbstractCommandComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Command\EntityMovementCommandResponder.cs" />
     <Compile Include="Core\Components\Advanced\Command\PathfindingInputComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PlayerInputListener.cs" />
     <Compile Include="Core\Components\Advanced\Command\RandomCommander.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="Core\Input\IMeasuredInputEvent.cs" />
     <Compile Include="Core\Map\MapLayout.cs" />
     <Compile Include="Core\Messaging\Camera\ZoomRequest.cs" />
+    <Compile Include="Core\Messaging\Movement\MovementRequest.cs" />
     <Compile Include="Core\Messaging\Physics\PhysicsAttachment.cs" />
     <Compile Include="Core\Messaging\UpdateCameraBounds.cs" />
     <Compile Include="Core\Messaging\AudioMessage.cs" />

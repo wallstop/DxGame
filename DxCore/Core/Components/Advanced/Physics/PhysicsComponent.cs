@@ -304,7 +304,8 @@ namespace DxCore.Core.Components.Advanced.Physics
             }
 
             Fixture = Body.CreateFixture(bounds, this);
-            Fixture.CollidesWith = CollisionGroup.CollisionCategory;
+            Fixture.CollidesWith = CollidesWith.CollisionCategory;
+            Fixture.CollisionCategories = CollisionGroup.CollisionCategory;
 
             // TODO: Remove this
             SensorFixture = Fixture;

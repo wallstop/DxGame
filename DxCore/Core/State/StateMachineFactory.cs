@@ -243,7 +243,7 @@ namespace DxCore.Core.State
                     return;
                 }
                 /* TODO: Capture gametime of force emission event, use current time to scale negation force applied */
-                Force pleaseStopMoving = new Force(new DxVector2(-HorizontalForce, 0));
+                Nullification pleaseStopMoving = new Nullification(new DxVector2(HorizontalForce, 0));
                 new PhysicsAttachment(pleaseStopMoving, EntityId).Emit();
                 HorizontalForce = 0;
             }
@@ -310,7 +310,7 @@ namespace DxCore.Core.State
                     return;
                 }
                 float jumpPower = MaxVerticalForce;
-                Impulse jumpPlease = new Impulse(new DxVector2(0, -jumpPower));
+                Force jumpPlease = new Force(new DxVector2(0, -jumpPower));
                 new PhysicsAttachment(jumpPlease, EntityId).Emit();
                 VerticalForce = jumpPower;
             }

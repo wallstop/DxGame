@@ -255,11 +255,37 @@ namespace DxCore.Core.Components.Advanced.Physics
 
         private void HandleNullificationAttachment(Nullification nullification)
         {
-            DxVector2 velocityToNegate = nullification.MaxForce;
+            DxVector2 velocityToNegate = nullification.Value;
 
-            /* QUICK AND DIRTY BOYS */
 
-            //Body.LinearVelocity -= velocityToNegate.Vector2;
+            /* 
+                QUICK AND DIRTY BOYS 
+
+                Note: This is likely super buggy in the case of non-commandment driven forces interacting with bodies and 
+                the player wanting to "stop".
+
+                O WELL, burn that bridge when we come to it
+                
+            */
+            Vector2 linearVelocity = Body.LinearVelocity;
+            if(velocityToNegate.X < 0 && linearVelocity.X < 0)
+            {
+                linearVelocity.X = 0;
+            }else if(velocityToNegate.X > 0 && linearVelocity.X > 0)
+            {
+                linearVelocity.X = 0;
+            }
+
+            if(velocityToNegate.Y < 0 && linearVelocity.Y < 0)
+            {
+                linearVelocity.Y = 0;
+            }
+            else if(velocityToNegate.Y > 0 && linearVelocity.Y > 0)
+            {
+                linearVelocity.Y = 0;
+            }
+
+            Body.LinearVelocity = linearVelocity;
         }
 
         public override void Initialize()

@@ -9,11 +9,11 @@ namespace DxCore.Core.Physics
     public sealed class Nullification
     {
         [DataMember]
-        public DxVector2 MaxForce { get; private set; }
+        public DxVector2 Value { get; private set; }
 
         public Nullification(DxVector2 maxForceToNullify)
         {
-            MaxForce = maxForceToNullify;
+            Value = maxForceToNullify;
         }
     }
 }

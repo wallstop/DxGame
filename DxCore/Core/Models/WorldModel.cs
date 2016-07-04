@@ -73,7 +73,7 @@ namespace DxCore.Core.Models
 
         public WorldModel()
         {
-            World = new World(new Vector2(0, 9.82f));
+            World = new World(new Vector2(0, 20f));
             WorldBounds = new List<PhysicsComponent>(4);
         }
 

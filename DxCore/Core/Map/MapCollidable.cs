@@ -38,8 +38,8 @@ namespace DxCore.Core.Map
                     .WithBounds(space.Dimensions)
                     .WithCollisionGroup(CollisionGroup.Map)
                     .WithoutGravity()
-                    .WithoutFriction()
                     .WithoutRestitution()
+                    .WithoutFriction()
                     .WithPhysicsInitialization(SetPhysicsComponentStatic)
                     .Build();
         }

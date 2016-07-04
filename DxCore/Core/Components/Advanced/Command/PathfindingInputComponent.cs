@@ -20,7 +20,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         public PathfindingInputComponent()
         {
-            UpdatePriority = UpdatePriority.HIGH;
+            UpdatePriority = UpdatePriority.High;
         }
 
         public override void OnAttach()

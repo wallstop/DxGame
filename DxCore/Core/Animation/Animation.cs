@@ -97,7 +97,7 @@ namespace DxCore.Core.Animation
             throw new NotImplementedException();
         }
 
-        public UpdatePriority UpdatePriority => UpdatePriority.NORMAL;
+        public UpdatePriority UpdatePriority => UpdatePriority.Normal;
 
         /* TODO: Make proper builders for everything */
 

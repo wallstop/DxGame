@@ -13,6 +13,7 @@ using DxCore.Core.Utils.Validate;
 using FarseerPhysics.Collision.Shapes;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
+using Microsoft.Xna.Framework;
 using NLog;
 using Component = DxCore.Core.Components.Basic.Component;
 
@@ -244,11 +245,6 @@ namespace DxCore.Core.Components.Advanced.Physics
                     Body.ApplyLinearImpulse(impulse.Value.Vector2, Body.WorldCenter);
                     break;
                 }
-                case BodyType.Kinematic:
-                {
-                    Body.LinearVelocity += impulse.Value.Vector2;
-                    break;
-                }
                 default:
                 {
                     Logger.Debug("Ignoring impulse {0} for {1}", impulse, Id);
@@ -259,27 +255,11 @@ namespace DxCore.Core.Components.Advanced.Physics
 
         private void HandleNullificationAttachment(Nullification nullification)
         {
-            DxVector2 negationVelocity = Body.LinearVelocity;
-            switch(nullification.Axis)
-            {
-                case Axis.X:
-                {
-                    negationVelocity.X = 0;
-                    break;
-                }
+            DxVector2 velocityToNegate = nullification.MaxForce;
 
-                case Axis.Y:
-                {
-                    negationVelocity.Y = 0;
-                    break;
-                }
-                default:
-                {
-                    throw new InvalidEnumArgumentException(
-                        $"Unknown {typeof(Axis)}: {nullification.Axis} used in {typeof(Nullification)}");
-                }
-            }
-            Body.LinearVelocity = negationVelocity.Vector2;
+            /* QUICK AND DIRTY BOYS */
+
+            //Body.LinearVelocity -= velocityToNegate.Vector2;
         }
 
         public override void Initialize()

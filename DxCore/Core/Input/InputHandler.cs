@@ -61,7 +61,7 @@ namespace DxCore.Core.Input
             CurrentMouseEvents = new ReadOnlyCollection<MouseEvent>(new List<MouseEvent>());
             FinishedMouseEvents = new ReadOnlyCollection<MouseEvent>(new List<MouseEvent>());
             currentMouseState_ = Mouse.GetState();
-            UpdatePriority = UpdatePriority.INPUT;
+            UpdatePriority = UpdatePriority.Input;
         }
 
         protected override void Update(DxGameTime gameTime)

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Utils.Validate;
+using DxCore.Core.Primitives;
 
 namespace DxCore.Core.Physics
 {
@@ -8,16 +8,12 @@ namespace DxCore.Core.Physics
     [DataContract]
     public sealed class Nullification
     {
-        public static readonly Nullification Vertical = new Nullification(Axis.Y);
-        public static readonly Nullification Horizontal = new Nullification(Axis.X);
-
         [DataMember]
-        public Axis Axis { get; private set; }
+        public DxVector2 MaxForce { get; private set; }
 
-        private Nullification(Axis axis)
+        public Nullification(DxVector2 maxForceToNullify)
         {
-            Validate.Hard.IsNotNullOrDefault(axis);
-            Axis = axis;
+            MaxForce = maxForceToNullify;
         }
     }
 }

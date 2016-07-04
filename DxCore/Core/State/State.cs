@@ -22,9 +22,9 @@ namespace DxCore.Core.State
     [DataContract]
     public sealed class State : IProcessable, IIdentifiable
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public UpdatePriority UpdatePriority => UpdatePriority.NORMAL;
+        public UpdatePriority UpdatePriority => UpdatePriority.Normal;
 
         [DataMember] private bool triggered_;
 
@@ -78,7 +78,7 @@ namespace DxCore.Core.State
 
         public State WithTransition(Transition transition)
         {
-            Validate.Hard.IsNotNull(transition, $"Cannot add a null {nameof(transition)} to a {nameof(State)}");
+            Validate.Hard.IsNotNull(transition, () => $"Cannot add a null {nameof(transition)} to a {nameof(State)}");
             transitions_.Add(transition);
             return this;
         }
@@ -120,16 +120,17 @@ namespace DxCore.Core.State
 
             public State Build()
             {
-                Validate.Hard.IsNotNullOrDefault(action_, () => 
-                    $"Cannot create a {nameof(State)} with a null/default {nameof(action_)}");
+                Validate.Hard.IsNotNullOrDefault(action_,
+                    () => $"Cannot create a {nameof(State)} with a null/default {nameof(action_)}");
 
-                Validate.Hard.IsNotNullOrDefault(name_, () => 
-                    $"Cannot create a {nameof(State)} with a null/default/empty {nameof(name_)}");
+                Validate.Hard.IsNotNullOrDefault(name_,
+                    () => $"Cannot create a {nameof(State)} with a null/default/empty {nameof(name_)}");
                 if(transitions_.Count == 0)
                 {
-                    LOG.Trace($"Creating {nameof(State)} ({name_}) without any transitions");
+                    Logger.Trace($"Creating {nameof(State)} ({name_}) without any transitions");
                 }
-                Validate.Hard.NoNullElements(transitions_, () => $"Cannot create a {nameof(State)} with null transitions");
+                Validate.Hard.NoNullElements(transitions_,
+                    () => $"Cannot create a {nameof(State)} with null transitions");
 
                 return new State(transitions_, name_, action_, onEnter_, onExit_);
             }
@@ -154,7 +155,8 @@ namespace DxCore.Core.State
 
             public StateBuilder WithAction(Action<List<Message>, DxGameTime> action)
             {
-                Validate.Hard.IsNull(action_, () =>  $"Cannot assign a {nameof(action)} to a Builder with an already assigned {nameof(action)}");
+                Validate.Hard.IsNull(action_,
+                    () => $"Cannot assign a {nameof(action)} to a Builder with an already assigned {nameof(action)}");
                 action_ = action;
                 return this;
             }

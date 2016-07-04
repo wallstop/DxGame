@@ -77,11 +77,20 @@ namespace DxCore.Core.State
                     .WithExit(movementRegulator.StopJumping)
                     .Build();
 
+            State initialJumpState =
+                State.Builder().WithName("Initial Jumping").WithAction(movementRegulator.Jump).Build();
+
+            Trigger fromInitialToFullFledgedJumpTrigger = (messages, gameTime) => true;
+            Transition initialJumpToFullFledgedJumpTransition = new Transition(fromInitialToFullFledgedJumpTrigger,
+                jumpState);
+
             animationBuilder.WithStateAndAsset(idleState,
                 AnimationFactory.AnimationFor(entityName, StandardAnimationType.Idle))
                 .WithStateAndAsset(movementState,
                     AnimationFactory.AnimationFor(entityName, StandardAnimationType.Moving))
-                .WithStateAndAsset(jumpState, AnimationFactory.AnimationFor(entityName, StandardAnimationType.Jumping));
+                .WithStateAndAsset(jumpState, AnimationFactory.AnimationFor(entityName, StandardAnimationType.Jumping))
+                .WithStateAndAsset(initialJumpState,
+                    AnimationFactory.AnimationFor(entityName, StandardAnimationType.Jumping));
 
             Trigger movementTrigger = AnyMoveLeftOrRightCommands;
             Trigger jumpTrigger = AnyJumpCommands;
@@ -94,7 +103,7 @@ namespace DxCore.Core.State
             Transition movementTransition = new Transition(movementTrigger, movementState);
             Transition jumpMovementTransition = new Transition(movementTrigger, jumpState);
 
-            Transition jumpTransition = new Transition(jumpTrigger, jumpState, Priority.High);
+            Transition jumpTransition = new Transition(jumpTrigger, initialJumpState, Priority.High);
             Transition returnToIdleTransition = new Transition(returnToIdleTrigger, idleState, Priority.Low);
             Transition returnToNormalJumpTransition = new Transition(returnToIdleTrigger, jumpState, Priority.Low);
             Transition movingBothDirectionsIsReallyIdleTransition =
@@ -111,6 +120,8 @@ namespace DxCore.Core.State
             movementState.WithTransition(jumpTransition);
             movementState.WithTransition(returnToIdleTransition);
             movementState.WithTransition(movingBothDirectionsIsReallyIdleTransition);
+
+            initialJumpState.WithTransition(initialJumpToFullFledgedJumpTransition);
 
             jumpState.WithTransition(jumpMovementTransition);
             jumpState.WithTransition(movingBothDirectionsIsReallyNormalJumpingTransition);
@@ -157,8 +168,9 @@ namespace DxCore.Core.State
                 then there will bea message in the queue next frame. This was causing a bug of 
                 double-applying the jump force 
             */
-            var collisionMessages = messages.OfType<CollisionMessage>();
-            return collisionMessages.Any(collision => collision.CollisionDirections.ContainsKey(Direction.South));
+            List<CollisionMessage> collisionMessages = messages.OfType<CollisionMessage>().ToList();
+            bool triggered = collisionMessages.Any(collision => collision.CollisionDirections.ContainsKey(Direction.South));
+            return triggered;
         }
 
         /* 
@@ -216,15 +228,16 @@ namespace DxCore.Core.State
                 EntityProperties = entityProperties;
             }
 
-            public void DoNothing(List<Message> messages, DxGameTime gameTime) => HorizontalStop(messages, gameTime);
+            public void DoNothing(List<Message> messages, DxGameTime gameTime) => HorizontalStop(gameTime);
 
-            public void HorizontalStop(List<Message> messages, DxGameTime gameTime)
+            public void HorizontalStop(DxGameTime gameTime)
             {
                 if(HorizontalForce == 0)
                 {
                     return;
                 }
-                Force pleaseStopMoving = new Force(new DxVector2(-HorizontalForce, 0));
+                /* TODO: Capture gametime of force emission event, use current time to scale negation force applied */
+                Force pleaseStopMoving = new Force(new DxVector2(-HorizontalForce * 118/120.0, 0));
                 new PhysicsAttachment(pleaseStopMoving, EntityId).Emit();
                 HorizontalForce = 0;
             }

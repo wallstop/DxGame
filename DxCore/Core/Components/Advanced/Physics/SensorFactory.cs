@@ -3,6 +3,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Utils.Distance;
 using FarseerPhysics.Collision;
 using FarseerPhysics.Dynamics;
+using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
 using NLog;
@@ -15,6 +16,10 @@ namespace DxCore.Core.Components.Advanced.Physics
 
         public static void MapCollisionSensor(Body body, Fixture fixture, PhysicsComponent initializedComponent)
         {
+            /* 
+                Note: This sensor will emit a message for *EACH* map tile that it collides with, per frame. 
+                Might want to fix that
+            */
             AABB fixtureBounds;
             fixture.GetAABB(out fixtureBounds, 0);
 
@@ -25,7 +30,7 @@ namespace DxCore.Core.Components.Advanced.Physics
                 new Vector2(upper.X - 1, upper.Y), body, null);
             mapCollisionSensor.IsSensor = true;
 
-            mapCollisionSensor.BeforeCollision += (Fixture self, Fixture maybeMapTile) =>
+            mapCollisionSensor.OnCollision += (Fixture self, Fixture maybeMapTile, Contact contact) =>
             {
                 MapCollidable mapTile = maybeMapTile.UserData as MapCollidable;
                 if(ReferenceEquals(mapTile, null))

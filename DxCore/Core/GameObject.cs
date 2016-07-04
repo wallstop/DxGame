@@ -62,7 +62,7 @@ namespace DxCore.Core
         }
 
         public UniqueId Id => id_;
-        public UpdatePriority UpdatePriority => UpdatePriority.GAME_OBJECT;
+        public UpdatePriority UpdatePriority => UpdatePriority.GameObject;
 
         public void Process(DxGameTime gameTime) {}
 

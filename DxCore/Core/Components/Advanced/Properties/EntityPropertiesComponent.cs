@@ -123,54 +123,6 @@ namespace DxCore.Core.Components.Advanced.Properties
             }
         }
 
-        public virtual void EmitMovementForceFor(Commandment commandment)
-        {
-            switch(commandment)
-            {
-                case Commandment.MoveLeft:
-                {
-                    EmitMoveLeftForce();
-                    break;
-                }
-                case Commandment.MoveRight:
-                {
-                    EmitMoveRightForce();
-                    break;
-                }
-                case Commandment.MoveUp:
-                {
-                    EmitJumpForce();
-                    break;
-                }
-                default:
-                {
-                        Logger.Debug("Ignoring force emission for {0} of {1}", typeof(Commandment), commandment);
-                    break;
-                }
-            }
-        }
-
-        protected virtual void EmitMoveLeftForce()
-        {
-            Core.Physics.Impulse moveLeft = new Core.Physics.Impulse(new DxVector2(-EntityProperties.MoveSpeed.CurrentValue, 0));
-            new PhysicsAttachment(moveLeft, Parent.Id).Emit();
-        }
-
-        protected virtual void EmitMoveRightForce()
-        {
-            Core.Physics.Impulse moveRight = new Core.Physics.Impulse(new DxVector2(EntityProperties.MoveSpeed.CurrentValue, 0));
-            new PhysicsAttachment(moveRight, Parent.Id).Emit();
-        }
-
-        protected virtual void EmitJumpForce()
-        {
-            new PhysicsAttachment(Nullification.Vertical, Parent.Id).Emit();
-
-            DxVector2 initialVelocity = new DxVector2(0, -EntityProperties.JumpSpeed.CurrentValue * 1.6);
-            Core.Physics.Impulse jumpForce = new Core.Physics.Impulse(initialVelocity);
-            new PhysicsAttachment(jumpForce, Parent.Id).Emit();
-        }
-
         protected virtual void EntityDeathListener(int previousHealth, int currentHealth)
         {
             /* Have we received lethal damage? */

@@ -216,6 +216,12 @@ namespace DxCore.Core.State
             [DataMember]
             private float VerticalForce { get; set; }
 
+            [DataMember]
+            private TimeSpan HorizontalForceEmission { get; set; }
+
+            [DataMember]
+            private TimeSpan VerticalForceEmission { get; set; }
+
             [IgnoreDataMember]
             private float MaxHorizontalForce => EntityProperties.EntityProperties.MoveSpeed.CurrentValue;
 
@@ -237,7 +243,7 @@ namespace DxCore.Core.State
                     return;
                 }
                 /* TODO: Capture gametime of force emission event, use current time to scale negation force applied */
-                Force pleaseStopMoving = new Force(new DxVector2(-HorizontalForce * 118/120.0, 0));
+                Force pleaseStopMoving = new Force(new DxVector2(-HorizontalForce, 0));
                 new PhysicsAttachment(pleaseStopMoving, EntityId).Emit();
                 HorizontalForce = 0;
             }
@@ -252,12 +258,12 @@ namespace DxCore.Core.State
                     {
                         case Commandment.MoveRight:
                         {
-                            MoveRight();
+                            MoveRight(gameTime);
                             return;
                         }
                         case Commandment.MoveLeft:
                         {
-                            MoveLeft();
+                            MoveLeft(gameTime);
                             return;
                         }
                         default:
@@ -267,24 +273,27 @@ namespace DxCore.Core.State
                 DoNothing(messages, gameTime);
             }
 
-            public void MoveLeft()
+            public void MoveLeft(DxGameTime gameTime)
             {
                 if(HorizontalForce == -MaxHorizontalForce)
                 {
                     return; // Nothing to do, probably
                 }
+                /* TODO: Don't use force differential, simply apply. (How to factor into emission time?) */
+                HorizontalForceEmission = gameTime.TotalGameTime;
                 float forceDifferential = -MaxHorizontalForce - HorizontalForce;
                 Force movePlease = new Force(new DxVector2(forceDifferential, 0));
                 new PhysicsAttachment(movePlease, EntityId).Emit();
                 HorizontalForce += forceDifferential;
             }
 
-            public void MoveRight()
+            public void MoveRight(DxGameTime gameTime)
             {
                 if(HorizontalForce == MaxHorizontalForce)
                 {
                     return; // Nothing to do, probably
                 }
+                HorizontalForceEmission = gameTime.TotalGameTime;
                 float forceDifferential = MaxHorizontalForce - HorizontalForce;
                 Force movePlease = new Force(new DxVector2(forceDifferential, 0));
                 new PhysicsAttachment(movePlease, EntityId).Emit();

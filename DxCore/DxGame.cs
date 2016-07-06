@@ -74,7 +74,7 @@ namespace DxCore
         // TODO: Thread safety? Move this to some kind of Context static class?
         public static DxGame Instance => singleton_;
         public virtual double PhysicsUpdateFrequency => 1 / 60.0;
-        public virtual double TargetFps => 60.0;
+        public virtual double TargetFps => 120.0;
         protected static readonly TimeSpan MinimumFramerate = TimeSpan.FromMilliseconds(1 / 10.0);
         public GameElementCollection NewGameElements { get; } = new GameElementCollection();
         public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
@@ -160,7 +160,7 @@ namespace DxCore
                 PreferredBackBufferWidth = Screen.Width
             };
 
-            TargetElapsedTime = TimeSpan.FromSeconds(1.0 / TargetFps);
+            TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0 / TargetFps);
             IsFixedTimeStep = false;
 
             // LOL VSYNC

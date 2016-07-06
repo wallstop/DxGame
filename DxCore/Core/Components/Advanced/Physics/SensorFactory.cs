@@ -26,8 +26,8 @@ namespace DxCore.Core.Components.Advanced.Physics
             Vector2 lower = fixtureBounds.LowerBound - body.Position;
             Vector2 upper = fixtureBounds.UpperBound - body.Position;
 
-            Fixture mapCollisionSensor = FixtureFactory.AttachEdge(new Vector2(lower.X + 1, upper.Y),
-                new Vector2(upper.X - 1, upper.Y), body, null);
+            Fixture mapCollisionSensor = FixtureFactory.AttachEdge(new Vector2(lower.X + 0.1f, upper.Y),
+                new Vector2(upper.X - 0.1f, upper.Y), body, null);
             mapCollisionSensor.IsSensor = true;
 
             mapCollisionSensor.OnCollision += (Fixture self, Fixture maybeMapTile, Contact contact) =>

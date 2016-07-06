@@ -28,6 +28,7 @@ namespace DxCore.Core.Models
                 Validate.Hard.IsNotNullOrDefault(value,
                     () => $"Cannot assign a null {typeof(Level.Level)} to a {typeof(MapModel)}");
                 level_ = value;
+                new UpdateWorldBounds(level_.Map.MapDescriptor.Bounds).Emit();
                 new UpdateCameraBounds(level_.Map.MapDescriptor.Bounds).Emit();
             }
         }

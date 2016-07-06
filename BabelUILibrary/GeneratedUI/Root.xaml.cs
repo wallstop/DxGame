@@ -24,22 +24,41 @@ namespace EmptyKeys.UserInterface.Generated {
     
     
     [GeneratedCodeAttribute("Empty Keys UI Generator", "2.3.0.0")]
-    public partial class MainMenu : UserControl {
+    public partial class Root : UIRoot {
         
         private Grid e_0;
         
-        public MainMenu() {
-            Style style = UserControlStyle.CreateUserControlStyle();
+        private TextBlock e_1;
+        
+        public Root() : 
+                base() {
+            this.Initialize();
+        }
+        
+        public Root(int width, int height) : 
+                base(width, height) {
+            this.Initialize();
+        }
+        
+        private void Initialize() {
+            Style style = RootStyle.CreateRootStyle();
             style.TargetType = this.GetType();
             this.Style = style;
             this.InitializeComponent();
         }
         
         private void InitializeComponent() {
+            this.Background = new SolidColorBrush(new ColorW(255, 255, 255, 0));
+            this.Background.Opacity = 0F;
             // e_0 element
             this.e_0 = new Grid();
             this.Content = this.e_0;
             this.e_0.Name = "e_0";
+            // e_1 element
+            this.e_1 = new TextBlock();
+            this.e_0.Children.Add(this.e_1);
+            this.e_1.Name = "e_1";
+            this.e_1.Text = "Wow guys a real UI";
         }
     }
 }

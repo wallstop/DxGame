@@ -11,7 +11,7 @@ namespace Babel.Menus
         public override void Initialize()
         {
             // TODO: Remove dependence on hardcoded font values
-            var spriteFont = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Gungsuh");
+            var spriteFont = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Gungsuh_20");
             MenuItem play =
                 new MenuItem().WithText("Play")
                     .WithAction(PlayAction)

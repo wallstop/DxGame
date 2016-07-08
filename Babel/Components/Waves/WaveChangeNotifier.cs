@@ -81,8 +81,8 @@ namespace Babel.Components.Waves
         public override void LoadContent()
         {
             // TODO: Make a FontCache
-            spriteFont_ = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Pericles");
-            WaveText = new TextComponent(Position, spriteFont_, "Fonts/Pericles");
+            spriteFont_ = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Pericles_20");
+            WaveText = new TextComponent(Position, spriteFont_, "Fonts/Pericles_20");
         }
 
         private static Color DetermineColorFade(TimeSpan currentTime, TimeSpan max)

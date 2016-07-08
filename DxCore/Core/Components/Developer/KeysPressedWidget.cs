@@ -26,7 +26,7 @@ namespace DxCore.Core.Components.Developer
 
         public override void LoadContent()
         {
-            spriteFont_ = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Pericles");
+            spriteFont_ = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Pericles_20");
         }
 
         protected override void Update(DxGameTime gameTime)

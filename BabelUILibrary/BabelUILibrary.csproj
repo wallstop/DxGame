@@ -77,6 +77,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Models\UiModel.cs" />
+    <Compile Include="GeneratedUI\ResourceBindings.xaml.cs" />
+    <Compile Include="GeneratedUI\ResourceBindings.xaml_bindings.cs" />
     <Compile Include="GeneratedUI\Root.xaml.cs" />
     <Compile Include="GeneratedUI\Root.xaml_bindings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

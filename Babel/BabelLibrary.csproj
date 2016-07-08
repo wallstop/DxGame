@@ -113,7 +113,6 @@
     <Compile Include="Items\TheFirstFlame.cs" />
     <Compile Include="Items\VisibleItemComponent.cs" />
     <Compile Include="Level\SimpleRotatingLevelProgression.cs" />
-    <Compile Include="Main\BabelGame.cs" />
     <Compile Include="Menus\HostMultiplayerMenu.cs" />
     <Compile Include="Menus\JoinMultiplayerMenu.cs" />
     <Compile Include="Menus\MainMenu.cs" />
@@ -136,10 +135,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BabelUILibrary\BabelUILibrary.csproj">
-      <Project>{8b1a439d-e018-4489-b83a-26b8b93b1ed9}</Project>
-      <Name>BabelUILibrary</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DxCore\DxCore.csproj">
       <Project>{be7e2670-e97a-456e-9279-25dcb3541d5d}</Project>
       <Name>DxCore</Name>

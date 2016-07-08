@@ -32,7 +32,7 @@ namespace BabelUILibrary.Core.Models
 
         public override void LoadContent()
         {
-            SpriteFont font = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Pericles");
+            SpriteFont font = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Pericles_20");
             FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
 
             // I guess we bind controls here?

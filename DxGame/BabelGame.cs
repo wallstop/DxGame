@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Babel.Menus;
 using BabelUILibrary.Core.Models;
-using DxCore;
 using DxCore.Core.Models;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Babel.Main
+namespace DxGame
 {
-    public class BabelGame : DxGame
+    public class BabelGame : DxCore.DxGame
     {
         private int NativeScreenWidth { get; set; }
         private int NativeScreenHeight { get; set; }
@@ -25,8 +28,7 @@ namespace Babel.Main
 
         private void HandleDeviceCreated(object sender, EventArgs eventArgs)
         {
-            // What does this even do?
-            Engine engine = new MonoGameEngine(GraphicsDevice, NativeScreenWidth, NativeScreenHeight);
+            new MonoGameEngine(GraphicsDevice, NativeScreenWidth, NativeScreenHeight);
         }
 
         private void HandlePreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs eventArgs)
@@ -63,7 +65,6 @@ namespace Babel.Main
 
             NetworkModel netModel = new NetworkModel();
             netModel.Create();
-
 
             new DeveloperModel().Create();
         }

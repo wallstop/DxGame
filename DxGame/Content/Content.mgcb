@@ -19,24 +19,6 @@
 /processorParam:Quality=Best
 /build:Audio/Music/MusicToDelight.mp3
 
-#begin Fonts/ComicSans.spriteFont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Fonts/ComicSans.spriteFont
-
-#begin Fonts/Pericles.spriteFont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Fonts/Pericles.spriteFont
-
-#begin Fonts/Gungsuh.spriteFont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=NoChange
-/build:Fonts/Gungsuh.spriteFont
-
 #begin Map/Sample.mdtr
 /copy:Map/Sample.mdtr
 
@@ -147,4 +129,52 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:MousePointer.png
+
+#begin Fonts/ComicSans_14.spriteFont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/ComicSans_14.spriteFont
+
+#begin Fonts/ComicSans_20.spriteFont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/ComicSans_20.spriteFont
+
+#begin Fonts/Gungsuh_14.spriteFont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Gungsuh_14.spriteFont
+
+#begin Fonts/Gungsuh_20.spriteFont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Gungsuh_20.spriteFont
+
+#begin Fonts/Pericles_14.spriteFont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Pericles_14.spriteFont
+
+#begin Fonts/Pericles_20.spriteFont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Pericles_20.spriteFont
+
+#begin Menu/temp_MainMenuBackground.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Menu/temp_MainMenuBackground.jpg
 

@@ -46,7 +46,6 @@
     <Compile Include="Core\Components\DrawableCircle.cs" />
     <Compile Include="Core\Components\PaddleCommandProcessor.cs" />
     <Compile Include="Core\Components\PhysicsCollisionComponent.cs" />
-    <Compile Include="Core\Contact.cs" />
     <Compile Include="Core\Generators\BallFactory.cs" />
     <Compile Include="Core\Generators\PaddleFactory.cs" />
     <Compile Include="Pong.cs" />

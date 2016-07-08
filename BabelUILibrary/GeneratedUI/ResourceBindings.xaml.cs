@@ -41,9 +41,9 @@ namespace EmptyKeys.UserInterface.Generated {
         private void InitializeResources() {
             // Resource - [BackgroundMainMenu] BitmapImage
             BitmapImage r_0_bm = new BitmapImage();
-            r_0_bm.TextureAsset = "Menu/temp_MainMenuBackground";
+            r_0_bm.TextureAsset = "Menu/MainMenuBackground";
             this.Add("BackgroundMainMenu", r_0_bm);
-            ImageManager.Instance.AddImage("Menu/temp_MainMenuBackground");
+            ImageManager.Instance.AddImage("Menu/MainMenuBackground");
         }
     }
 }

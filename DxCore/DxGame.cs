@@ -135,8 +135,6 @@ namespace DxCore
         public GameSettings GameSettings { get; }
         public Controls Controls { get; }
 
-        protected abstract void SetUp();
-
         protected DxGame()
         {
             lock(GameLock)
@@ -486,19 +484,13 @@ namespace DxCore
             base.Update(gameTime.ToGameTime());
         }
 
-        /// <summary>
-        ///     This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            var dxGameTime = new DxGameTime(gameTime);
             /* We may end up modifying these as we iterate over them, so take an immutable copy */
             foreach(var drawable in DxGameElements.Drawables)
             {
-                drawable.Draw(SpriteBatch, dxGameTime);
+                drawable.Draw(SpriteBatch, CurrentDrawTime);
             }
-            base.Draw(gameTime);
         }
 
         protected override void Dispose(bool disposing)

@@ -25,3 +25,39 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/Segoe_UI_15_Bold.spritefont
 
+#begin Fonts/ComicSans_14.spriteFont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/ComicSans_14.spriteFont
+
+#begin Fonts/ComicSans_20.spriteFont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/ComicSans_20.spriteFont
+
+#begin Fonts/Gungsuh_14.spriteFont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Gungsuh_14.spriteFont
+
+#begin Fonts/Gungsuh_20.spriteFont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Gungsuh_20.spriteFont
+
+#begin Fonts/Pericles_14.spriteFont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Pericles_14.spriteFont
+
+#begin Fonts/Pericles_20.spriteFont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Pericles_20.spriteFont
+

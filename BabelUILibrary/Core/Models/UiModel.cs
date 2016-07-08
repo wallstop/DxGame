@@ -34,6 +34,7 @@ namespace BabelUILibrary.Core.Models
         {
             SpriteFont font = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Pericles_20");
             FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
+            ImageManager.Instance.LoadImages(DxGame.Instance.Content);
 
             // I guess we bind controls here?
 

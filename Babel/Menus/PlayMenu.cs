@@ -11,7 +11,7 @@ namespace Babel.Menus
     {
         public override void Initialize()
         {
-            var spriteFont = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Gungsuh");
+            var spriteFont = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Gungsuh_20");
             MenuItem singlePlayer =
                 new MenuItem().WithText("Single Player")
                     .WithAction(SinglePlayerAction)

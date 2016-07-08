@@ -83,19 +83,15 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="license.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="BehaviorsLicense.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Page Include="ResourceBindings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Menu\temp_MainMenuBackground.jpg">
+    <Resource Include="license.txt" />
+    <Resource Include="BehaviorsLicense.txt" />
+    <Content Include="Menu\MainMenuBackground.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

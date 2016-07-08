@@ -2,5 +2,5 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:ek="clr-namespace:EmptyKeys.UserInterface.Designer;assembly=EmptyKeys.UserInterface.Designer"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
-    <BitmapImage x:Key="BackgroundMainMenu" UriSource="Menu/temp_MainMenuBackground.jpg" />
+    <BitmapImage x:Key="BackgroundMainMenu" UriSource="Menu/MainMenuBackground.png" />
 </ResourceDictionary>

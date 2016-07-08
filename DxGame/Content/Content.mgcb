@@ -166,7 +166,7 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/Pericles_20.spriteFont
 
-#begin Menu/temp_MainMenuBackground.jpg
+#begin Menu/temp_MainMenuBackground.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -176,5 +176,13 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Menu/temp_MainMenuBackground.jpg
+/build:Menu/temp_MainMenuBackground.png
+
+#begin Fonts/visitor_tt1_brk_regular_20.PNG
+/importer:TextureImporter
+/processor:FontTextureProcessor
+/processorParam:FirstCharacter= 
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:Fonts/visitor_tt1_brk_regular_20.PNG
 

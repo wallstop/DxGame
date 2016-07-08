@@ -28,7 +28,7 @@ namespace DxGame
 
         private void HandleDeviceCreated(object sender, EventArgs eventArgs)
         {
-            new MonoGameEngine(GraphicsDevice, NativeScreenWidth, NativeScreenHeight);
+            Engine engine = new MonoGameEngine(GraphicsDevice, NativeScreenWidth, NativeScreenHeight);
         }
 
         private void HandlePreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs eventArgs)
@@ -43,12 +43,6 @@ namespace DxGame
             Graphics.SynchronizeWithVerticalRetrace = false;
             Graphics.PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8;
             eventArgs.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 16;
-        }
-
-        protected override void SetUp()
-        {
-            Console.WriteLine(":^)");
-            // TODO
         }
 
         protected override void Initialize()

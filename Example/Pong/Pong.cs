@@ -30,12 +30,6 @@ namespace Pong
             /* Score tracking */
         }
 
-        protected override void SetUp()
-        {
-            // NO-OP LOL, we're not special at all
-            // TODO: Remove this necessity?
-        }
-
         protected override void Initialize()
         {
             base.Initialize();

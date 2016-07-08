@@ -32,7 +32,7 @@ namespace BabelUILibrary.Core.Models
 
         public override void LoadContent()
         {
-            SpriteFont font = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Pericles_20");
+            SpriteFont font = DxGame.Instance.Content.Load<SpriteFont>("Fonts/visitor_tt1_brk_regular_26");
             FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
             ImageManager.Instance.LoadImages(DxGame.Instance.Content);
 

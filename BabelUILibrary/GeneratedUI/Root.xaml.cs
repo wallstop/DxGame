@@ -107,7 +107,7 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_2.HorizontalAlignment = HorizontalAlignment.Center;
             this.e_2.VerticalAlignment = VerticalAlignment.Center;
             this.e_2.Text = "Babel";
-            this.e_2.FontSize = 1000F;
+            this.e_2.FontFamily = new FontFamily("Fonts/visitor_tt1_brk_regular_72");
             Grid.SetColumn(this.e_2, 1);
             Grid.SetRow(this.e_2, 0);
             Grid.SetColumnSpan(this.e_2, 4);
@@ -158,7 +158,7 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_6.VerticalAlignment = VerticalAlignment.Center;
             this.e_6.Content = "Quit";
             Grid.SetRow(this.e_6, 3);
-            FontManager.Instance.AddFont("Segoe UI", 1000F, FontStyle.Regular, "Segoe_UI_750_Regular");
+            FontManager.Instance.AddFont("Fonts/visitor_tt1_brk_regular_72", 12F, FontStyle.Regular, "Fonts/visitor_tt1_brk_regular_72_9_Regular");
         }
         
         private static void InitializeElementResources(UIElement elem) {

@@ -66,6 +66,10 @@
       <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.5.1.1679\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.3.5\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -76,6 +80,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\RootController.cs" />
     <Compile Include="Core\Models\UiModel.cs" />
     <Compile Include="GeneratedUI\ResourceBindings.xaml.cs" />
     <Compile Include="GeneratedUI\Root.xaml.cs" />
@@ -90,6 +95,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Babel\BabelLibrary.csproj">
+      <Project>{670a47c4-18df-4a35-a6e2-48c1af010c0b}</Project>
+      <Name>BabelLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DxCore\DxCore.csproj">
       <Project>{be7e2670-e97a-456e-9279-25dcb3541d5d}</Project>
       <Name>DxCore</Name>

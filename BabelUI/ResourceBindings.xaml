@@ -4,5 +4,21 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <BitmapImage x:Key="BackgroundMainMenu" UriSource="Menu/MainMenuBackground.png" />
 
-    <FontFamily x:Key="Visitor">Fonts/visitor_tt1_brk</FontFamily>
+    <FontFamily x:Key="VisitorFont">Fonts/visitor_tt1_brk</FontFamily>
+
+    <!--  TODO: Move these to their own styles config  -->
+    <Style x:Key="BaseStyle" TargetType="{x:Type Control}">
+        <Setter Property="FontFamily" Value="{StaticResource VisitorFont}" />
+    </Style>
+
+    <Style x:Key="ButtonStyle"
+           BasedOn="{StaticResource BaseStyle}"
+           TargetType="{x:Type Button}">
+        <Setter Property="FontSize" Value="34.666666666666666666666666666" />
+        <Setter Property="Opacity" Value="0.85" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
 </ResourceDictionary>

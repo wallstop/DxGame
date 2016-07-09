@@ -1,4 +1,5 @@
-﻿using DxCore;
+﻿using BabelUILibrary.Controls;
+using DxCore;
 using DxCore.Core;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils.Validate;
@@ -13,11 +14,15 @@ namespace BabelUILibrary.Core.Models
     {
         public Root UI { get; }
 
+        private RootController RootController { get; }
+
         public UiModel(Root rootUi)
         {
             Validate.Hard.IsNotNullOrDefault(rootUi);
             DrawPriority = DrawPriority.MenuLayer;
             UI = rootUi;
+            RootController = new RootController();
+            rootUi.DataContext = RootController;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
@@ -32,7 +37,7 @@ namespace BabelUILibrary.Core.Models
 
         public override void LoadContent()
         {
-            SpriteFont font = DxGame.Instance.Content.Load<SpriteFont>("Fonts/visitor_tt1_brk_9_regular");
+            SpriteFont font = DxGame.Instance.Content.Load<SpriteFont>("Fonts/visitor_tt1_brk_26_regular");
             FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
             FontManager.Instance.LoadFonts(DxGame.Instance.Content, "");
             ImageManager.Instance.LoadImages(DxGame.Instance.Content);

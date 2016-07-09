@@ -22,7 +22,7 @@
         <SolidColorBrush Opacity="0" />
     </ek:UIRoot.Background>
 
-    <Grid>
+    <Grid Visibility="{Binding RootVisible}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*" />
             <ColumnDefinition Width="3*" />
@@ -38,15 +38,17 @@
         </Grid.RowDefinitions>
         <Image Grid.RowSpan="3"
                Grid.ColumnSpan="6"
-               Opacity="0.9"
+               Opacity="0.7"
                Source="{DynamicResource BackgroundMainMenu}" />
         <TextBlock Grid.Row="0"
                    Grid.Column="1"
                    Grid.ColumnSpan="4"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
-                   FontFamily="{DynamicResource Visitor}"
-                   FontSize="72"
+                   FontFamily="{DynamicResource VisitorFont}"
+                   FontSize="100"
+                   Foreground="Indigo"
+                   Opacity="0.9"
                    Text="Babel" />
         <Grid Grid.Row="0"
               Grid.RowSpan="3"
@@ -61,23 +63,26 @@
             </Grid.RowDefinitions>
 
             <Button Grid.Row="1"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
+                    Command="{Binding PlayCommand}"
                     Content="Play"
-                    FontFamily="{DynamicResource Visitor}"
-                    FontSize="20" />
+                    FontFamily="{DynamicResource VisitorFont}"
+                    Foreground="DarkBlue"
+                    Style="{DynamicResource ButtonStyle}"
+                    TabIndex="0" />
             <Button Grid.Row="2"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
+                    Command="{Binding SettingsCommand}"
                     Content="Settings"
-                    FontFamily="{DynamicResource Visitor}"
-                    FontSize="20" />
+                    FontFamily="{DynamicResource VisitorFont}"
+                    Foreground="DarkBlue"
+                    Style="{DynamicResource ButtonStyle}"
+                    TabIndex="1" />
             <Button Grid.Row="3"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
+                    Command="{Binding QuitCommand}"
                     Content="Quit"
-                    FontFamily="{DynamicResource Visitor}"
-                    FontSize="20" />
+                    FontFamily="{DynamicResource VisitorFont}"
+                    Foreground="DarkBlue"
+                    Style="{DynamicResource ButtonStyle}"
+                    TabIndex="2" />
         </Grid>
     </Grid>
 </ek:UIRoot>

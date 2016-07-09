@@ -130,42 +130,6 @@
 /processorParam:TextureFormat=Color
 /build:MousePointer.png
 
-#begin Fonts/ComicSans_14.spriteFont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Fonts/ComicSans_14.spriteFont
-
-#begin Fonts/ComicSans_20.spriteFont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Fonts/ComicSans_20.spriteFont
-
-#begin Fonts/Gungsuh_14.spriteFont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Fonts/Gungsuh_14.spriteFont
-
-#begin Fonts/Gungsuh_20.spriteFont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Fonts/Gungsuh_20.spriteFont
-
-#begin Fonts/Pericles_14.spriteFont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Fonts/Pericles_14.spriteFont
-
-#begin Fonts/Pericles_20.spriteFont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Fonts/Pericles_20.spriteFont
-
 #begin Menu/MainMenuBackground.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -225,4 +189,12 @@
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Color
 /build:Fonts/visitor_tt1_brk_75_Regular.bmp
+
+#begin Fonts/04b03_20_Regular.bmp
+/importer:TextureImporter
+/processor:FontTextureProcessor
+/processorParam:FirstCharacter= 
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:Fonts/04b03_20_Regular.bmp
 

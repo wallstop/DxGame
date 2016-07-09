@@ -29,6 +29,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Test\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FarseerPhysics MonoGame, Version=3.5.0.40766, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FarseerPhysics.MonoGame.Unofficial.3.5.0\lib\FarseerPhysics MonoGame.dll</HintPath>
@@ -273,6 +282,8 @@
     <Compile Include="Core\Properties\Property.cs" />
     <Compile Include="Core\Properties\PropertyMutator.cs" />
     <Compile Include="Core\Serializer.cs" />
+    <Compile Include="Core\Service\ServiceProvider.cs" />
+    <Compile Include="Core\Service\IService.cs" />
     <Compile Include="Core\Settings\AbstractSettings.cs" />
     <Compile Include="Core\Settings\Controls.cs" />
     <Compile Include="Core\Settings\GameSettings.cs" />

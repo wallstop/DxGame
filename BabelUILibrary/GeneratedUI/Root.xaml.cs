@@ -107,10 +107,11 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_2.HorizontalAlignment = HorizontalAlignment.Center;
             this.e_2.VerticalAlignment = VerticalAlignment.Center;
             this.e_2.Text = "Babel";
-            this.e_2.FontFamily = new FontFamily("Fonts/visitor_tt1_brk_regular_72");
+            this.e_2.FontSize = 72F;
             Grid.SetColumn(this.e_2, 1);
             Grid.SetRow(this.e_2, 0);
             Grid.SetColumnSpan(this.e_2, 4);
+            this.e_2.SetResourceReference(TextBlock.FontFamilyProperty, "Visitor");
             // e_3 element
             this.e_3 = new Grid();
             this.e_0.Children.Add(this.e_3);
@@ -140,25 +141,32 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_4.Name = "e_4";
             this.e_4.HorizontalAlignment = HorizontalAlignment.Center;
             this.e_4.VerticalAlignment = VerticalAlignment.Center;
+            this.e_4.FontSize = 20F;
             this.e_4.Content = "Play";
             Grid.SetRow(this.e_4, 1);
+            this.e_4.SetResourceReference(Button.FontFamilyProperty, "Visitor");
             // e_5 element
             this.e_5 = new Button();
             this.e_3.Children.Add(this.e_5);
             this.e_5.Name = "e_5";
             this.e_5.HorizontalAlignment = HorizontalAlignment.Center;
             this.e_5.VerticalAlignment = VerticalAlignment.Center;
+            this.e_5.FontSize = 20F;
             this.e_5.Content = "Settings";
             Grid.SetRow(this.e_5, 2);
+            this.e_5.SetResourceReference(Button.FontFamilyProperty, "Visitor");
             // e_6 element
             this.e_6 = new Button();
             this.e_3.Children.Add(this.e_6);
             this.e_6.Name = "e_6";
             this.e_6.HorizontalAlignment = HorizontalAlignment.Center;
             this.e_6.VerticalAlignment = VerticalAlignment.Center;
+            this.e_6.FontSize = 20F;
             this.e_6.Content = "Quit";
             Grid.SetRow(this.e_6, 3);
-            FontManager.Instance.AddFont("Fonts/visitor_tt1_brk_regular_72", 12F, FontStyle.Regular, "Fonts/visitor_tt1_brk_regular_72_9_Regular");
+            this.e_6.SetResourceReference(Button.FontFamilyProperty, "Visitor");
+            FontManager.Instance.AddFont("Fonts/visitor_tt1_brk", 72F, FontStyle.Regular, "Fonts/visitor_tt1_brk_54_Regular");
+            FontManager.Instance.AddFont("Fonts/visitor_tt1_brk", 20F, FontStyle.Regular, "Fonts/visitor_tt1_brk_15_Regular");
         }
         
         private static void InitializeElementResources(UIElement elem) {

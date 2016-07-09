@@ -101,7 +101,7 @@
 
 
 
-ekUIGen.exe -i="$(ProjectDir)\" -o="$(ProjectDir)..\BabelUILibrary\GeneratedUI" -oa="$(ProjectDir)..\DxGame\Content" -bd="$(TargetDir)\" -rm=MonoGame /generate-bindings</PostBuildEvent>
+ekUIGen.exe -i="$(ProjectDir)\"  --no-fonts -o="$(ProjectDir)..\BabelUILibrary\GeneratedUI" -oa="$(ProjectDir)..\DxGame\Content" -bd="$(TargetDir)\" -rm=MonoGame /generate-bindings</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

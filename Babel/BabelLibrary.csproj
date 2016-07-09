@@ -113,12 +113,6 @@
     <Compile Include="Items\TheFirstFlame.cs" />
     <Compile Include="Items\VisibleItemComponent.cs" />
     <Compile Include="Level\SimpleRotatingLevelProgression.cs" />
-    <Compile Include="Menus\HostMultiplayerMenu.cs" />
-    <Compile Include="Menus\JoinMultiplayerMenu.cs" />
-    <Compile Include="Menus\MainMenu.cs" />
-    <Compile Include="Menus\Menu.cs" />
-    <Compile Include="Menus\MenuItem.cs" />
-    <Compile Include="Menus\PlayMenu.cs" />
     <Compile Include="Messaging\NewWaveMessage.cs" />
     <Compile Include="Models\GameModel.cs" />
     <Compile Include="Network\BabelNetworkClient.cs" />
@@ -141,7 +135,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Actions\" />
     <Folder Include="Components\PropertyModifiers\" />
     <Folder Include="Components\Widgets\" />
     <Folder Include="Physics\" />

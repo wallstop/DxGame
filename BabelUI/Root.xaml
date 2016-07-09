@@ -45,7 +45,8 @@
                    Grid.ColumnSpan="4"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
-                   FontFamily="Fonts/visitor_tt1_brk_regular_72"
+                   FontFamily="{DynamicResource Visitor}"
+                   FontSize="72"
                    Text="Babel" />
         <Grid Grid.Row="0"
               Grid.RowSpan="3"
@@ -62,15 +63,21 @@
             <Button Grid.Row="1"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Content="Play" />
+                    Content="Play"
+                    FontFamily="{DynamicResource Visitor}"
+                    FontSize="20" />
             <Button Grid.Row="2"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Content="Settings" />
+                    Content="Settings"
+                    FontFamily="{DynamicResource Visitor}"
+                    FontSize="20" />
             <Button Grid.Row="3"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Content="Quit" />
+                    Content="Quit"
+                    FontFamily="{DynamicResource Visitor}"
+                    FontSize="20" />
         </Grid>
     </Grid>
 </ek:UIRoot>

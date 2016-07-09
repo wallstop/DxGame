@@ -43,6 +43,8 @@ namespace EmptyKeys.UserInterface.Generated {
             BitmapImage r_0_bm = new BitmapImage();
             r_0_bm.TextureAsset = "Menu/MainMenuBackground";
             this.Add("BackgroundMainMenu", r_0_bm);
+            // Resource - [Visitor] FontFamily
+            this.Add("Visitor", new FontFamily("Fonts/visitor_tt1_brk"));
             ImageManager.Instance.AddImage("Menu/MainMenuBackground");
         }
     }

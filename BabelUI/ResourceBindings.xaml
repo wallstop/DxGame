@@ -3,4 +3,6 @@
                     xmlns:ek="clr-namespace:EmptyKeys.UserInterface.Designer;assembly=EmptyKeys.UserInterface.Designer"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <BitmapImage x:Key="BackgroundMainMenu" UriSource="Menu/MainMenuBackground.png" />
+
+    <FontFamily x:Key="Visitor">Fonts/visitor_tt1_brk</FontFamily>
 </ResourceDictionary>

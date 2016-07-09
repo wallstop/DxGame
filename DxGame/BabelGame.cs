@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Babel.Menus;
 using BabelUILibrary.Core.Models;
 using DxCore.Core.Models;
 using EmptyKeys.UserInterface;
@@ -50,9 +45,6 @@ namespace DxGame
             base.Initialize();
             UiModel uiModel = new UiModel(new Root());
             uiModel.Create();
-
-            MainMenu playMenu = new MainMenu();
-            playMenu.Create();
 
             FrameModel frameModel = new FrameModel();
             frameModel.Create();

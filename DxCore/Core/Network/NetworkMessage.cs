@@ -34,7 +34,7 @@ namespace DxCore.Core.Network
         public UniqueId Id { get; private set; }
 
         [DataMember]
-        public DxGameTime TimeStamp { get; private set; } = DxGame.Instance.CurrentTime;
+        public DxGameTime TimeStamp { get; private set; } = DxGame.Instance.CurrentUpdateTime;
 
         public static NetworkMessage FromNetIncomingMessage(NetIncomingMessage message)
         {

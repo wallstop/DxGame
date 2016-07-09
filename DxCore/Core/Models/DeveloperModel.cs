@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Components.Developer;
 using DxCore.Core.GraphicsWidgets.HUD;
@@ -25,8 +26,6 @@ namespace DxCore.Core.Models
         private readonly DeveloperSwitch devSwitch_;
 
         public DeveloperMode DeveloperMode => devSwitch_.DeveloperMode;
-
-        public override bool ShouldSerialize => false;
 
         public DeveloperModel()
         {

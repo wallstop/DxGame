@@ -8,23 +8,31 @@ namespace DxCore.Core.Primitives
 {
     [Serializable]
     [DataContract]
-    public struct DxRectangle : IEquatable<DxRectangle>, IEquatable<Rectangle>, IShape
+    public struct DxRectangle : IEquatable<DxRectangle>, IEquatable<Rectangle>
     {
-        private const float TOLERANCE = 0.000001f;
+        private const float Tolerance = 0.000001f;
         [DataMember] public float Height;
         [DataMember] public float Width;
         [DataMember] public float X;
         [DataMember] public float Y;
         public float Area => Width * Height;
         public static DxRectangle EmptyRectangle => new DxRectangle();
+
+        public DxVector2 TopLeft => new DxVector2(Left, Top);
+        public DxVector2 TopRight => new DxVector2(Right, Top);
+        public DxVector2 BottomLeft => new DxVector2(Left, Bottom);
+        public DxVector2 BottomRight => new DxVector2(Right, Bottom);
+
         public float Left => X;
         public float Right => X + Width;
         public float Top => Y;
         public float Bottom => Y + Height;
 
+        public Rectangle Rectangle => ToRectangle();
+
         public DxVector2 Dimensions => new DxVector2(Width, Height);
 
-        public DxVector2 Center => new DxVector2((X + Width) / 2,(Y + Height) / 2);
+        public DxVector2 Center => new DxVector2(X + Width / 2, Y + Height / 2);
         /* 
             Cartesian quadrants of this rectangle:
             https://en.wikipedia.org/wiki/Quadrant_%28plane_geometry%29
@@ -129,9 +137,9 @@ namespace DxCore.Core.Primitives
 
         public static bool operator ==(DxRectangle lhs, DxRectangle rhs)
         {
-            return lhs.X.FuzzyCompare(rhs.X, TOLERANCE) == 0 && lhs.Y.FuzzyCompare(rhs.Y, TOLERANCE) == 0 &&
-                   lhs.Width.FuzzyCompare(rhs.Width, TOLERANCE) == 0 &&
-                   lhs.Height.FuzzyCompare(rhs.Height, TOLERANCE) == 0;
+            return lhs.X.FuzzyCompare(rhs.X, Tolerance) == 0 && lhs.Y.FuzzyCompare(rhs.Y, Tolerance) == 0 &&
+                   lhs.Width.FuzzyCompare(rhs.Width, Tolerance) == 0 &&
+                   lhs.Height.FuzzyCompare(rhs.Height, Tolerance) == 0;
         }
 
         public static bool operator !=(DxRectangle lhs, DxRectangle rhs)
@@ -179,6 +187,15 @@ namespace DxCore.Core.Primitives
         public bool Contains(float x, float y)
         {
             return X <= x && x < X + Width && Y <= y && y < Y + Height;
+        }
+
+        public bool Contains(DxRectangle rectangle)
+        {
+            if(X <= rectangle.X && rectangle.X + rectangle.Width <= X + Width && Y <= rectangle.Y)
+            {
+                return rectangle.Y + rectangle.Height <= Y + Height;
+            }
+            return false;
         }
 
         public bool Contains(DxVector2 point)

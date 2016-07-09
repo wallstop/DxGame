@@ -7,7 +7,7 @@ namespace DxCore.Core.Primitives
 {
     [Serializable]
     [DataContract]
-    public struct DxCircle : IEquatable<DxCircle>, IShape
+    public struct DxCircle : IEquatable<DxCircle>
     {
         [DataMember]
         public DxVector2 Center { get; }

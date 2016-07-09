@@ -22,7 +22,7 @@ namespace DxCore.Core.Messaging
 
         public static Message EmptyMessage { get; } = new Message(TimeSpan.Zero, GameId.Empty);
 
-        protected Message() : this(DxGame.Instance.CurrentTime.TotalGameTime, DxGame.Instance.GameGuid) {}
+        protected Message() : this(DxGame.Instance.CurrentUpdateTime.TotalGameTime, DxGame.Instance.GameGuid) {}
 
         protected Message(TimeSpan timeSpan, GameId gameId)
         {

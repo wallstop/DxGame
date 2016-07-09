@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
@@ -56,7 +56,7 @@ namespace DxCore.Core.Components.Advanced.Entities
                 return;
             }
 
-            PositionalComponent entityPosition = Parent.ComponentOfType<PositionalComponent>();
+            PhysicsComponent entityPosition = Parent.ComponentOfType<PhysicsComponent>();
             DxVector2 position = entityPosition.Position;
 
             List<GameObject> spawnedItems = ItemProduction.Invoke(position);

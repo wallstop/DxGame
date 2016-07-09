@@ -28,8 +28,6 @@ namespace DxCore.Core.Models
 
         public ExperienceModel() : this(SimpleExponentialEaseInOut) {}
 
-        public override bool ShouldSerialize => false;
-
         public ExperienceModel(ExperienceFunction experienceFunction)
         {
             Validate.Hard.IsNotNullOrDefault(experienceFunction,

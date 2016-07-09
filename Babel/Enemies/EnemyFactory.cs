@@ -10,20 +10,17 @@ using DxCore.Core.Components.Advanced.Damage;
 using DxCore.Core.Components.Advanced.Entities;
 using DxCore.Core.Components.Advanced.Impulse;
 using DxCore.Core.Components.Advanced.Physics;
-using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Components.Advanced.Triggers;
-using DxCore.Core.Components.Developer;
 using DxCore.Core.Events;
 using DxCore.Core.Experience;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Models;
+using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.State;
 using DxCore.Core.Utils;
-using DXGame.Core;
-using DXGame.Core.Utils;
 
 namespace Babel.Enemies
 {
@@ -34,23 +31,27 @@ namespace Babel.Enemies
         private static List<GameObject> Spawn<T>(DxVector2 position) where T : ItemComponent
         {
             GameObject item = ItemFactory.GenerateVisible<T>(position);
-            List<GameObject> spawnedObjects = new List<GameObject> { item };
+            List<GameObject> spawnedObjects = new List<GameObject> {item};
             return spawnedObjects;
         }
 
         public static GameObject SmallBox()
         {
-            string entityName = "SmallBox";
+            string entityName = "Sprites/SmallBox/SmallBox";
             var teamComponent = new TeamComponent(Team.EnemyTeam);
             // Build spatial component from bounds
-            var enemySpatial = new MapBoundedSpatialComponent(DxVector2.EmptyVector, new DxVector2(50, 50));
             var platformDropper = new MapPlatformDropper();
             var entityType = EntityType.EntityTypeFor(entityName);
             var entityTypeComponent = new EntityTypeComponent(entityType);
             var pathfinding = new PathfindingInputComponent();
-            var pathDrawer = new PathDrawer();
             var enemyPhysics =
-                MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(enemySpatial).Build();
+                PhysicsComponent.Builder()
+                    .WithBounds(new DxVector2(50, 50))
+                                        .WithCollisionGroup(CollisionGroup.Entities)
+                    .WithCollidesWith(CollisionGroup.All.Not(CollisionGroup.Entities))
+                    .WithPosition(DxVector2.EmptyVector)
+                    .WithDirectPositionAccess()
+                    .Build();
 
             /* TODO: Configure properties */
             var enemyProperties = new EntityPropertiesComponent(EnemyPropertyFactory.PropertiesFor(entityType),
@@ -61,7 +62,7 @@ namespace Babel.Enemies
             var floatingHealthBar =
                 FloatingHealthIndicator.Builder()
                     .WithEntityProperties(enemyProperties)
-                    .WithPosition(enemySpatial)
+                    .WithPosition(enemyPhysics)
                     .Build();
 
             var damageComponent = DamageComponent.Builder().WithEntityProprerties(enemyProperties).Build();
@@ -70,14 +71,14 @@ namespace Babel.Enemies
 
             var enemyObject =
                 GameObject.Builder()
-                    .WithComponents(enemySpatial, enemyPhysics, enemyProperties, floatingHealthBar, deathExploder,
-                        damageComponent, teamComponent, pathfinding, platformDropper, pathDrawer, entityTypeComponent, experienceDropper, itemDropper)
+                    .WithComponents(enemyPhysics, enemyProperties, floatingHealthBar, deathExploder, damageComponent,
+                        teamComponent, pathfinding, platformDropper, entityTypeComponent, experienceDropper, itemDropper)
                     .Build();
             // Create a state machine for the enemy in question
             // Horrifically complex; weep, gnash teeth
             StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(enemyObject, entityName);
             // Build and attach AI
-            var simpleAi = SimpleEnemyAI.Builder().WithSpatialComponent(enemySpatial).Build();
+            var simpleAi = SimpleEnemyAI.Builder().WithPositional(enemyPhysics).Build();
             enemyObject.AttachComponent(simpleAi);
 
             return enemyObject;
@@ -88,21 +89,26 @@ namespace Babel.Enemies
             string entityName = "LargeBox";
             var teamComponent = new TeamComponent(Team.EnemyTeam);
             // Build spatial component from bounds
-            var enemySpatial = new MapBoundedSpatialComponent(DxVector2.EmptyVector, new DxVector2(250, 250));
             var platformDropper = new MapPlatformDropper();
             var entityType = EntityType.EntityTypeFor(entityName);
             var entityTypeComponent = new EntityTypeComponent(entityType);
             var pathfinding = new PathfindingInputComponent();
             var enemyPhysics =
-                MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(enemySpatial).Build();
+                /* Need direct positional access so spawner can spawn these guys properly. TODO: Fix */
+                PhysicsComponent.Builder()
+                    .WithBounds(new DxVector2(250, 250))
+                    .WithPosition(DxVector2.EmptyVector)
+                    .WithDirectPositionAccess()
+                    .Build();
 
             /* TODO: Configure properties */
-            var enemyProperties = new EntityPropertiesComponent(EnemyPropertyFactory.PropertiesFor(entityType), EntityPropertiesComponent.NullLevelUpResponse);
+            var enemyProperties = new EntityPropertiesComponent(EnemyPropertyFactory.PropertiesFor(entityType),
+                EntityPropertiesComponent.NullLevelUpResponse);
             ExperienceDropperComponent experienceDropper = new ExperienceDropperComponent(new Experience(50));
             var floatingHealthBar =
                 FloatingHealthIndicator.Builder()
                     .WithEntityProperties(enemyProperties)
-                    .WithPosition(enemySpatial)
+                    .WithPosition(enemyPhysics)
                     .Build();
 
             var damageComponent = DamageComponent.Builder().WithEntityProprerties(enemyProperties).Build();
@@ -111,55 +117,14 @@ namespace Babel.Enemies
 
             var enemyObject =
                 GameObject.Builder()
-                    .WithComponents(enemySpatial, enemyPhysics, enemyProperties, floatingHealthBar, deathExploder,
-                        damageComponent, teamComponent, pathfinding, platformDropper, entityTypeComponent, experienceDropper)
+                    .WithComponents(enemyPhysics, enemyProperties, floatingHealthBar, deathExploder, damageComponent,
+                        teamComponent, pathfinding, platformDropper, entityTypeComponent, experienceDropper)
                     .Build();
             // Create a state machine for the enemy in question
             // Horrifically complex; weep, gnash teeth
             StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(enemyObject, entityName);
             // Build and attach AI
-            var simpleAi = SimpleEnemyAI.Builder().WithSpatialComponent(enemySpatial).Build();
-            enemyObject.AttachComponent(simpleAi);
-
-            return enemyObject;
-        }
-
-        public static GameObject Golem()
-        {
-            string entityName = "Golem";
-            var teamComponent = new TeamComponent(Team.EnemyTeam);
-            // Build spatial component from bounds
-            var enemySpatial = new MapBoundedSpatialComponent(DxVector2.EmptyVector, new DxVector2(250, 250));
-            var platformDropper = new MapPlatformDropper();
-            var entityType = EntityType.EntityTypeFor(entityName);
-            var entityTypeComponent = new EntityTypeComponent(entityType);
-            var pathfinding = new PathfindingInputComponent();
-            var enemyPhysics =
-                MapCollidablePhysicsComponent.Builder().WithWorldForces().WithSpatialComponent(enemySpatial).Build();
-
-            /* TODO: Configure properties */
-            var enemyProperties = new EntityPropertiesComponent(EnemyPropertyFactory.PropertiesFor(entityType), EntityPropertiesComponent.NullLevelUpResponse);
-            ExperienceDropperComponent experienceDropper = new ExperienceDropperComponent(new Experience(50));
-            var floatingHealthBar =
-                FloatingHealthIndicator.Builder()
-                    .WithEntityProperties(enemyProperties)
-                    .WithPosition(enemySpatial)
-                    .Build();
-
-            var damageComponent = DamageComponent.Builder().WithEntityProprerties(enemyProperties).Build();
-
-            var deathExploder = new DeathEffectComponent(DeathEffectComponent.SimpleEnemyBloodParticles);
-
-            var enemyObject =
-                GameObject.Builder()
-                    .WithComponents(enemySpatial, enemyPhysics, enemyProperties, floatingHealthBar, deathExploder,
-                        damageComponent, teamComponent, pathfinding, platformDropper, entityTypeComponent, experienceDropper)
-                    .Build();
-            // Create a state machine for the enemy in question
-            // Horrifically complex; weep, gnash teeth
-            StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(enemyObject, entityName);
-            // Build and attach AI
-            var simpleAi = SimpleEnemyAI.Builder().WithSpatialComponent(enemySpatial).Build();
+            var simpleAi = SimpleEnemyAI.Builder().WithPositional(enemyPhysics).Build();
             enemyObject.AttachComponent(simpleAi);
 
             return enemyObject;
@@ -170,15 +135,15 @@ namespace Babel.Enemies
             TriggerComponent trigger = new TriggerComponent(() =>
             {
                 EventModel eventModel = DxGame.Instance.Model<EventModel>();
-                if (ReferenceEquals(eventModel, null))
+                if(ReferenceEquals(eventModel, null))
                 {
                     return false;
                 }
                 EventRequest request = EventRequest.Builder().WithType<EntityDeathMessage>().Build();
-                List<Event> deathEvents = eventModel.EventsFor(request, DxGame.Instance.CurrentTime);
+                List<Event> deathEvents = eventModel.EventsFor(request, DxGame.Instance.CurrentUpdateTime);
                 return
                     deathEvents.Select(deathEvent => deathEvent.Message as EntityDeathMessage)
-                               .Any(deathMessage => Objects.Equals(gameObject, deathMessage.Entity));
+                        .Any(deathMessage => Objects.Equals(gameObject, deathMessage.Entity));
             }, () =>
             {
                 LevelEndRequest levelEndRequest = new LevelEndRequest();

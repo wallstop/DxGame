@@ -41,7 +41,7 @@ namespace Babel.Network
                 ConvertMessageType<ClientTimeSynchronizationRequest>(message);
 
             ServerTimeUpdate timeUpdate = new ServerTimeUpdate(timeSynchronizationRequest.ClientSideGameTime,
-                DxGame.Instance.CurrentTime);
+                DxGame.Instance.CurrentUpdateTime);
             NetOutgoingMessage outgoingTimeUpdate = timeUpdate.ToNetOutgoingMessage(ServerConnection);
             ServerConnection.SendMessage(outgoingTimeUpdate, connection, NetDeliveryMethod.Unreliable);
         }
@@ -63,7 +63,7 @@ namespace Babel.Network
         {
             ClientConnectionRequest clientConnectionRequest = ConvertMessageType<ClientConnectionRequest>(message);
 
-            Validate.Hard.IsFalse(ClientFrameStates.ContainsKey(connection),
+            Validate.Hard.IsFalse(ClientFrameStates.ContainsKey(connection), () =>
                 $"Received ClientConnectionRequest that we're already tracking, this is an issue! Request: {clientConnectionRequest}");
 
             ServerEventTracker eventTracker = new ServerEventTracker(baseEventTracker_);

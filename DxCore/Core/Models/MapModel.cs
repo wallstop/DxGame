@@ -17,9 +17,23 @@ namespace DxCore.Core.Models
         public DxRectangle RandomSpawnLocation => Map.RandomSpawnLocation;
         public DxVector2 PlayerSpawn => Map.PlayerSpawn;
         public DxRectangle MapBounds => Map.MapDescriptor.Bounds;
-        public Level.Level Level { get; private set; }
+
+        private Level.Level level_;
+
+        public Level.Level Level
+        {
+            get { return level_; }
+            private set
+            {
+                Validate.Hard.IsNotNullOrDefault(value,
+                    () => $"Cannot assign a null {typeof(Level.Level)} to a {typeof(MapModel)}");
+                level_ = value;
+                new UpdateWorldBounds(level_.Map.MapDescriptor.Bounds).Emit();
+                new UpdateCameraBounds(level_.Map.MapDescriptor.Bounds).Emit();
+            }
+        }
+
         public Map.Map Map => Level.Map;
-        public override bool ShouldSerialize => false;
 
         private ILevelProgressionStrategy LevelProgressionStrategy { get; }
 
@@ -54,6 +68,7 @@ namespace DxCore.Core.Models
             Level = nextLevel;
             MapRotationNotification mapRotationNotification = new MapRotationNotification();
             mapRotationNotification.Emit();
+            
         }
 
         public void HandleMapFinishedLoading(MapRotationNotification mapRotationNotification)

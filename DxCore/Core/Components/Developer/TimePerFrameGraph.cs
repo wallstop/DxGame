@@ -50,8 +50,6 @@ namespace DxCore.Core.Components.Developer
         [DataMember]
         private Graph Graph { get; set; }
 
-        public override bool ShouldSerialize => false;
-
         public TimePerFrameGraph()
         {
             GameTimes = new LinkedList<DxGameTime>();
@@ -64,6 +62,15 @@ namespace DxCore.Core.Components.Developer
         }
 
         protected override void Update(DxGameTime gameTime)
+        {
+            var developerModel = DxGame.Instance.Model<DeveloperModel>();
+            if(developerModel?.DeveloperMode == DeveloperMode.FullOn)
+            {
+
+            }
+        }
+
+        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             var developerModel = DxGame.Instance.Model<DeveloperModel>();
             if(developerModel?.DeveloperMode == DeveloperMode.FullOn)
@@ -83,14 +90,6 @@ namespace DxCore.Core.Components.Developer
                         break;
                     }
                 }
-            }
-        }
-
-        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
-        {
-            var developerModel = DxGame.Instance.Model<DeveloperModel>();
-            if(developerModel?.DeveloperMode == DeveloperMode.FullOn)
-            {
                 var screenRegion = DxGame.Instance.ScreenRegion;
                 /* Draw direction to the screen buffer - there currently is no translation matrix for direct GPU primitives */
                 var drawLocation = new Vector2(screenRegion.Width / 2.0f, 0);

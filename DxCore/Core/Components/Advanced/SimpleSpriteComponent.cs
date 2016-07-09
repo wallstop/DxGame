@@ -12,19 +12,14 @@ namespace DxCore.Core.Components.Advanced
 {
     [Serializable]
     [DataContract]
-    public class SimpleSpriteComponent : DrawableComponent
+    public class SimpleSpriteComponent : DrawableComponent, ISpatial
     {
         [DataMember] protected string assetName_;
-        [DataMember] protected DxRectangle boundingBox_;
-        [DataMember] protected PositionalComponent position_;
+        [DataMember] protected ISpatial spatial_;
         [NonSerialized] [IgnoreDataMember] protected Texture2D texture_;
 
-        [IgnoreDataMember]
-        public DxRectangle BoundingBox
-        {
-            get { return boundingBox_; }
-            set { boundingBox_ = value; }
-        }
+        public DxVector2 WorldCoordinates => spatial_.WorldCoordinates;
+        public DxRectangle Space => spatial_.Space;
 
         [IgnoreDataMember]
         public string AssetName
@@ -33,31 +28,22 @@ namespace DxCore.Core.Components.Advanced
             set { assetName_ = value; }
         }
 
-        private SimpleSpriteComponent(string asset, PositionalComponent position, DxRectangle boundingBox)
+        private SimpleSpriteComponent(string asset, ISpatial spatial)
         {
-            Validate.Hard.IsNotNullOrDefault(asset, this.GetFormattedNullOrDefaultMessage(nameof(asset)));
             assetName_ = asset;
-            Validate.Hard.IsNotNullOrDefault(position, this.GetFormattedNullOrDefaultMessage(position));
-            position_ = position;
-            boundingBox_ = boundingBox;
+            spatial_ = spatial;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            spriteBatch.Draw(texture_, position_.Position.Vector2, null, Color.White, 0.0f, Vector2.Zero, 1.0f,
-                SpriteEffects.None, 0);
+            spriteBatch.Draw(texture_, spatial_.Space.Rectangle, Color.White);
         }
 
         public override void Initialize()
         {
-            Validate.Hard.IsNotNull(DxGame.Instance.Content, this.GetFormattedNullOrDefaultMessage(DxGame.Instance.Content));
+            Validate.Hard.IsNotNull(DxGame.Instance.Content,
+                this.GetFormattedNullOrDefaultMessage(DxGame.Instance.Content));
             texture_ = DxGame.Instance.Content.Load<Texture2D>(assetName_);
-            // Assign boundingBox to be the shape of the texture only if it hasn't been custom-set
-            // TODO: Change to an isLoaded bool flag / state
-            if(Validate.Check.IsNullOrDefault(boundingBox_))
-            {
-                boundingBox_ = new DxRectangle(0, 0, texture_.Width, texture_.Height);
-            }
         }
 
         public static SimpleSpriteComponentBuilder Builder()
@@ -68,12 +54,13 @@ namespace DxCore.Core.Components.Advanced
         public class SimpleSpriteComponentBuilder : IBuilder<SimpleSpriteComponent>
         {
             private string asset_;
-            private DxRectangle boundingBox_;
-            private PositionalComponent position_;
+            private ISpatial spatial_;
 
             public SimpleSpriteComponent Build()
             {
-                return new SimpleSpriteComponent(asset_, position_, boundingBox_);
+                Validate.Hard.IsNotNullOrDefault(asset_);
+                Validate.Hard.IsNotNullOrDefault(spatial_);
+                return new SimpleSpriteComponent(asset_, spatial_);
             }
 
             public SimpleSpriteComponentBuilder WithAsset(string asset)
@@ -82,15 +69,9 @@ namespace DxCore.Core.Components.Advanced
                 return this;
             }
 
-            public SimpleSpriteComponentBuilder WithPosition(PositionalComponent position)
+            public SimpleSpriteComponentBuilder WithSpatial(ISpatial spatial)
             {
-                position_ = position;
-                return this;
-            }
-
-            public SimpleSpriteComponentBuilder WithBoundingBox(DxRectangle boundingBox)
-            {
-                boundingBox_ = boundingBox;
+                spatial_ = spatial;
                 return this;
             }
         }

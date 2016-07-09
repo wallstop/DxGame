@@ -18,7 +18,7 @@ namespace DxCore.Core.Components.Developer
     {
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            foreach(var spatial in DxGame.Instance.DxGameElements.OfType<SpatialComponent>())
+            foreach(ISpatial spatial in DxGame.Instance.DxGameElements.OfType<ISpatial>())
             {
                 spriteBatch.DrawBorder(spatial.Space, 1, Color.Red);
             }

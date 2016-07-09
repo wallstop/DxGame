@@ -24,11 +24,9 @@ namespace DxCore.Core.Components.Developer
 
         protected SpriteFont spriteFont_;
 
-        public override bool ShouldSerialize => false;
-
         public override void LoadContent()
         {
-            spriteFont_ = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Pericles");
+            spriteFont_ = DxGame.Instance.Content.Load<SpriteFont>("Fonts/04b03_20_Regular");
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -39,10 +37,19 @@ namespace DxCore.Core.Components.Developer
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
+
+            CameraModel camera = DxGame.Instance.Model<CameraModel>();
+            if(ReferenceEquals(camera, null))
+            {
+                
+            }
+
             string keyText =
                 currentEvents_.Select(keyboardEvent => keyboardEvent.Source)
                     .Select(key => key.ToString())
                     .Aggregate("", (i, j) => i + " " + j);
+
+
 
             Vector2 drawLocation = DxGame.Instance.OffsetFromScreen(OFFSET);
 

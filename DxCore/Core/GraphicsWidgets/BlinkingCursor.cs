@@ -20,7 +20,6 @@ namespace DxCore.Core.GraphicsWidgets
 
         public bool Drawn { get; protected set; } = true;
         protected TimeSpan LastToggled { get; set; } = TimeSpan.Zero;
-        public override bool ShouldSerialize => false;
 
         private BlinkingCursor(Texture2D cursorTexture, TimeSpan blinkRate, DxRectangle space)
         {

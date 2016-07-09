@@ -198,7 +198,7 @@ namespace DxCore.Core.Components.Network
         private void HandleServerTimeUpdate(NetworkMessage message, NetConnection netConnection)
         {
             ServerTimeUpdate serverTimeUpdate = ConvertMessageType<ServerTimeUpdate>(message);
-            DxGameTime currentTime = DxGame.Instance.CurrentTime;
+            DxGameTime currentTime = DxGame.Instance.CurrentUpdateTime;
 
             double roundTripLatencyInMillis =
                 (currentTime.TotalGameTime - serverTimeUpdate.ClientGameTime).TotalMilliseconds;
@@ -226,7 +226,7 @@ namespace DxCore.Core.Components.Network
 
             // TODO: Feed this into a PID controller or some shit
             LOG.Info(
-                $"Skew: {offsetInMillis} millis, Average one way latency of {oneWayLatency} millis for timestamp: {serverTimeUpdate.ClientGameTime} (currently {DxGame.Instance.CurrentTime.TotalGameTime}");
+                $"Skew: {offsetInMillis} millis, Average one way latency of {oneWayLatency} millis for timestamp: {serverTimeUpdate.ClientGameTime} (currently {DxGame.Instance.CurrentUpdateTime.TotalGameTime}");
 
             TimeSkewRequest timeSkewRequest = new TimeSkewRequest(offsetInMillis);
             timeSkewRequest.Emit();

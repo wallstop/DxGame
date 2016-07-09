@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
+using DxCore.Core.Messaging.Physics;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Properties;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
+using NLog;
 
 namespace DxCore.Core.Components.Advanced.Properties
 {
@@ -26,6 +27,8 @@ namespace DxCore.Core.Components.Advanced.Properties
     [DataContract]
     public class EntityPropertiesComponent : Component
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private static readonly TimeSpan FORCED_NOTIFICATION_TRIGGER_DELAY = TimeSpan.FromSeconds(1 / 2.0);
 
         [DataMember] private TimeSpan lastTriggerNotification_;
@@ -120,43 +123,6 @@ namespace DxCore.Core.Components.Advanced.Properties
             }
         }
 
-        public virtual Force MovementForceFor(Commandment commandment)
-        {
-            switch(commandment)
-            {
-                case Commandment.MoveLeft:
-                    return MoveLeftForce();
-                case Commandment.MoveRight:
-                    return MoveRightForce();
-                case Commandment.MoveUp:
-                    return JumpForce();
-                default:
-                    return Force.NullForce;
-            }
-        }
-
-        protected virtual Force MoveLeftForce()
-        {
-            var movement = new Movement(new DxVector2(-EntityProperties.MoveSpeed.CurrentValue, 0), "MoveLeft");
-            return movement.Force;
-        }
-
-        protected virtual Force MoveRightForce()
-        {
-            var movement = new Movement(new DxVector2(EntityProperties.MoveSpeed.CurrentValue, 0), "MoveRight");
-            return movement.Force;
-        }
-
-        protected virtual Force JumpForce()
-        {
-            var physics = Parent.ComponentOfType<PhysicsComponent>();
-            var currentVelocity = physics.Velocity;
-            physics.Velocity = new DxVector2(currentVelocity.X, Math.Min(0, currentVelocity.Y));
-            var initialVelocity = new DxVector2(0, -EntityProperties.JumpSpeed.CurrentValue * 1.6);
-            var force = new Force(initialVelocity, InitialJumpAcceleration, JumpDissipation(), "Jump");
-            return force;
-        }
-
         protected virtual void EntityDeathListener(int previousHealth, int currentHealth)
         {
             /* Have we received lethal damage? */
@@ -167,73 +133,6 @@ namespace DxCore.Core.Components.Advanced.Properties
                 /* The world deserves to know. We were important. */
                 entityDeathMessage.Emit();
             }
-        }
-
-        protected virtual DissipationFunction JumpDissipation()
-        {
-            DissipationFunction dissipation =
-                (DxVector2 externalVelocity, DxVector2 acceleration, DxGameTime gameTime, out DxVector2 newAcceleration)
-                    =>
-                {
-                    /* If our jumping force is applying a (down into the ground) acceleration, we're done! */
-                    bool done = externalVelocity.Y >= 0;
-                    newAcceleration = acceleration;
-                    return done;
-                };
-            return dissipation;
-        }
-    }
-
-    [Serializable]
-    [DataContract]
-    internal sealed class Movement
-    {
-        [DataMember] private bool dissipated_;
-
-        [DataMember]
-        public Force Force { get; }
-
-        [DataMember]
-        private DxVector2 Direction { get; }
-
-        public Movement(DxVector2 directionalForceVector, string forceName)
-        {
-            Direction = directionalForceVector;
-            Force = new Force(DxVector2.EmptyVector, directionalForceVector, DissipationFunction, forceName);
-        }
-
-        /* Honestly I do not remember wtf any of this is, seems pretty complicated & cool */
-
-        private bool DissipationFunction(DxVector2 externalVelocity, DxVector2 currentAcceleration, DxGameTime gameTime,
-            out DxVector2 newAcceleration)
-        {
-            var xDirectionSign = Math.Sign(Direction.X);
-            var xIsNegative = xDirectionSign == -1;
-            DxVector2 accelerationVector = new DxVector2
-            {
-                X =
-                    xIsNegative
-                        ? Math.Min(Direction.X - externalVelocity.X, 0)
-                        : Math.Max(Direction.X - externalVelocity.X, 0)
-            };
-            accelerationVector.X = xIsNegative
-                ? Math.Max(accelerationVector.X, Direction.X)
-                : Math.Min(accelerationVector.X, Direction.X);
-
-            var yDirectionSign = Math.Sign(Direction.Y);
-            var yIsNegative = yDirectionSign == -1;
-
-            accelerationVector.Y = yIsNegative
-                ? Math.Min(Direction.Y - externalVelocity.Y, 0)
-                : Math.Max(Direction.Y - externalVelocity.Y, 0);
-            accelerationVector.Y = yIsNegative
-                ? Math.Max(accelerationVector.Y, Direction.Y)
-                : Math.Min(accelerationVector.Y, Direction.Y);
-            var hasDissipated = dissipated_;
-            // Dissipate after one frame always (we need continual move left requests to actually move)
-            dissipated_ = true;
-            newAcceleration = accelerationVector;
-            return dissipated_;
         }
     }
 }

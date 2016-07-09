@@ -39,6 +39,7 @@ namespace DxCore.Core.Models
             get { return bounds_; }
             set
             {
+                // TODO: Offload
                 DxVector2 screenCenter = DxGame.Instance.Graphics.Bounds().Center;
                 bounds_ = new DxRectangle(value.X + screenCenter.X, value.Y + screenCenter.Y,
                     Math.Max(0, value.Width - screenCenter.X * 2), Math.Max(0, value.Height - screenCenter.Y * 2));
@@ -139,9 +140,9 @@ namespace DxCore.Core.Models
             Position += adjustment;
         }
 
-        public DxVector2 Transformed(DxVector2 nonScaledUiPoint)
+        public DxVector2 Transformed(DxVector2 worldCoordinate)
         {
-            return Vector2.Transform(nonScaledUiPoint.Vector2, Transform);
+            return Vector2.Transform(worldCoordinate.Vector2, Transform);
         }
 
         public DxVector2 Invert(DxVector2 nonScaledUiPoint)

@@ -5,9 +5,9 @@ using System.Runtime.Serialization;
 using DxCore.Core.Animation;
 using DxCore.Core.Components.Advanced;
 using DxCore.Core.Components.Advanced.Physics;
-using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Messaging;
+using DxCore.Core.Messaging.Physics;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils.Distance;
@@ -47,45 +47,50 @@ namespace DxCore.Core.State
 
         public static void BuildAndAttachBasicMovementStateMachineAndAnimations(GameObject entity, string entityName)
         {
-            Validate.Hard.IsNotNull(entity, $"Cannot make a {typeof(StateMachine)} for a null {typeof(GameObject)}");
+            Validate.Hard.IsNotNull(entity,
+                () => $"Cannot make a {typeof(StateMachine)} for a null {typeof(GameObject)}");
             /* Need properties for movement forces */
             var entityProperties = entity.ComponentOfType<EntityPropertiesComponent>();
             Validate.Hard.IsNotNull(entityProperties,
-                $"Cannot make a {typeof(StateMachine)} for a null {typeof(EntityPropertiesComponent)}");
+                () => $"Cannot make a {typeof(StateMachine)} for a null {typeof(EntityPropertiesComponent)}");
             /* Need physics to apply the forces to */
             var physics = entity.ComponentOfType<PhysicsComponent>();
             Validate.Hard.IsNotNull(physics,
-                $"Cannot make a {typeof(StateMachine)} for a null {typeof(PhysicsComponent)}");
+                () => $"Cannot make a {typeof(StateMachine)} for a null {typeof(PhysicsComponent)}");
             /* Need position to tie into animation */
-            var position = entity.ComponentOfType<PositionalComponent>();
+            var position = entity.ComponentOfType<PhysicsComponent>();
             Validate.Hard.IsNotNull(position,
-                $"Cannot make a {typeof(StateMachine)} for a null {typeof(PositionalComponent)}");
+                () => $"Cannot make a {typeof(StateMachine)} for a null {typeof(PhysicsComponent)}");
 
             StateMachine.StateMachineBuilder stateMachineBuilder = StateMachine.Builder();
             AnimationComponent.AnimationComponentBuilder animationBuilder =
                 AnimationComponent.Builder().WithPosition(position);
 
-            SimpleActionResolver actionResolver = new SimpleActionResolver(entity);
-            State idleState =
-                State.Builder()
-                    .WithName("Idle")
-                    .WithAction(actionResolver.IdleAction)
-                    .WithEntrance(actionResolver.OnIdleEnterAction)
-                    .Build();
+            MovementRegulator movementRegulator = new MovementRegulator(entity.Id, entityProperties);
+            State idleState = State.Builder().WithName("Idle").WithAction(movementRegulator.DoNothing).Build();
 
-            State movementState = State.Builder().WithName("Moving").WithAction(actionResolver.MovementAction).Build();
+            State movementState = State.Builder().WithName("Moving").WithAction(movementRegulator.Movement).Build();
             State jumpState =
                 State.Builder()
                     .WithName("Jumping")
-                    .WithAction(actionResolver.MovementAction)
-                    .WithEntrance(actionResolver.OnJumpEnterAction)
+                    .WithAction(movementRegulator.Jump)
+                    .WithExit(movementRegulator.StopJumping)
                     .Build();
+
+            State initialJumpState =
+                State.Builder().WithName("Initial Jumping").WithAction(movementRegulator.Jump).Build();
+
+            Trigger fromInitialToFullFledgedJumpTrigger = (messages, gameTime) => true;
+            Transition initialJumpToFullFledgedJumpTransition = new Transition(fromInitialToFullFledgedJumpTrigger,
+                jumpState);
 
             animationBuilder.WithStateAndAsset(idleState,
                 AnimationFactory.AnimationFor(entityName, StandardAnimationType.Idle))
                 .WithStateAndAsset(movementState,
                     AnimationFactory.AnimationFor(entityName, StandardAnimationType.Moving))
-                .WithStateAndAsset(jumpState, AnimationFactory.AnimationFor(entityName, StandardAnimationType.Jumping));
+                .WithStateAndAsset(jumpState, AnimationFactory.AnimationFor(entityName, StandardAnimationType.Jumping))
+                .WithStateAndAsset(initialJumpState,
+                    AnimationFactory.AnimationFor(entityName, StandardAnimationType.Jumping));
 
             Trigger movementTrigger = AnyMoveLeftOrRightCommands;
             Trigger jumpTrigger = AnyJumpCommands;
@@ -98,7 +103,7 @@ namespace DxCore.Core.State
             Transition movementTransition = new Transition(movementTrigger, movementState);
             Transition jumpMovementTransition = new Transition(movementTrigger, jumpState);
 
-            Transition jumpTransition = new Transition(jumpTrigger, jumpState, Priority.High);
+            Transition jumpTransition = new Transition(jumpTrigger, initialJumpState, Priority.High);
             Transition returnToIdleTransition = new Transition(returnToIdleTrigger, idleState, Priority.Low);
             Transition returnToNormalJumpTransition = new Transition(returnToIdleTrigger, jumpState, Priority.Low);
             Transition movingBothDirectionsIsReallyIdleTransition =
@@ -115,6 +120,8 @@ namespace DxCore.Core.State
             movementState.WithTransition(jumpTransition);
             movementState.WithTransition(returnToIdleTransition);
             movementState.WithTransition(movingBothDirectionsIsReallyIdleTransition);
+
+            initialJumpState.WithTransition(initialJumpToFullFledgedJumpTransition);
 
             jumpState.WithTransition(jumpMovementTransition);
             jumpState.WithTransition(movingBothDirectionsIsReallyNormalJumpingTransition);
@@ -161,8 +168,9 @@ namespace DxCore.Core.State
                 then there will bea message in the queue next frame. This was causing a bug of 
                 double-applying the jump force 
             */
-            var collisionMessages = messages.OfType<CollisionMessage>();
-            return collisionMessages.Any(collision => collision.CollisionDirections.ContainsKey(Direction.South));
+            List<CollisionMessage> collisionMessages = messages.OfType<CollisionMessage>().ToList();
+            bool triggered = collisionMessages.Any(collision => collision.CollisionDirections.ContainsKey(Direction.South));
+            return triggered;
         }
 
         /* 
@@ -194,29 +202,53 @@ namespace DxCore.Core.State
 
         [Serializable]
         [DataContract]
-        private class SimpleActionResolver
+        internal sealed class MovementRegulator
         {
             [DataMember]
-            private GameObject Entity { get; }
+            private UniqueId EntityId { get; set; }
 
-            public SimpleActionResolver(GameObject entity)
+            [DataMember]
+            private EntityPropertiesComponent EntityProperties { get; set; }
+
+            [DataMember]
+            private float HorizontalForce { get; set; }
+
+            [DataMember]
+            private float VerticalForce { get; set; }
+
+            [DataMember]
+            private TimeSpan HorizontalForceEmission { get; set; }
+
+            [DataMember]
+            private TimeSpan VerticalForceEmission { get; set; }
+
+            [IgnoreDataMember]
+            private float MaxHorizontalForce => EntityProperties.EntityProperties.MoveSpeed.CurrentValue;
+
+            [IgnoreDataMember]
+            private float MaxVerticalForce => EntityProperties.EntityProperties.JumpSpeed.CurrentValue;
+
+            public MovementRegulator(UniqueId id, EntityPropertiesComponent entityProperties)
             {
-                Entity = entity;
+                EntityId = id;
+                EntityProperties = entityProperties;
             }
 
-            public void OnIdleEnterAction(DxGameTime gameTime)
+            public void DoNothing(List<Message> messages, DxGameTime gameTime) => HorizontalStop(gameTime);
+
+            public void HorizontalStop(DxGameTime gameTime)
             {
-                /* Cease X actions, we're done! */
-                Entity.ComponentOfType<PhysicsComponent>().Velocity = new DxVector2(0,
-                    Entity.ComponentOfType<PhysicsComponent>().Velocity.Y);
+                if(HorizontalForce == 0)
+                {
+                    return;
+                }
+                /* TODO: Capture gametime of force emission event, use current time to scale negation force applied */
+                Nullification pleaseStopMoving = new Nullification(new DxVector2(HorizontalForce, 0));
+                new PhysicsAttachment(pleaseStopMoving, EntityId).Emit();
+                HorizontalForce = 0;
             }
 
-            public void IdleAction(List<Message> messages, DxGameTime gameTIme)
-            {
-                // Super lazy, nothing to do, nothing to see
-            }
-
-            public void MovementAction(List<Message> messages, DxGameTime gameTime)
+            public void Movement(List<Message> messages, DxGameTime gameTime)
             {
                 List<CommandMessage> commandMessages =
                     messages.OfType<CommandMessage>().OrderBy(commandMessage => commandMessage.Commandment).ToList();
@@ -226,40 +258,66 @@ namespace DxCore.Core.State
                     {
                         case Commandment.MoveRight:
                         {
-                            Force force =
-                                Entity.ComponentOfType<EntityPropertiesComponent>()
-                                    .MovementForceFor(Commandment.MoveRight);
-                            AttachForce(Entity, force);
+                            MoveRight(gameTime);
                             return;
                         }
                         case Commandment.MoveLeft:
                         {
-                            Force force =
-                                Entity.ComponentOfType<EntityPropertiesComponent>()
-                                    .MovementForceFor(Commandment.MoveLeft);
-                            AttachForce(Entity, force);
+                            MoveLeft(gameTime);
                             return;
                         }
                         default:
                             break;
                     }
                 }
+                DoNothing(messages, gameTime);
             }
 
-            public void OnJumpEnterAction(DxGameTime gameTime)
+            public void MoveLeft(DxGameTime gameTime)
             {
-                Force force = Entity.ComponentOfType<EntityPropertiesComponent>().MovementForceFor(Commandment.MoveUp);
-                AttachForce(Entity, force);
+                if(HorizontalForce == -MaxHorizontalForce)
+                {
+                    return; // Nothing to do, probably
+                }
+                /* TODO: Don't use force differential, simply apply. (How to factor into emission time?) */
+                HorizontalForceEmission = gameTime.TotalGameTime;
+                float forceDifferential = -MaxHorizontalForce - HorizontalForce;
+                Force movePlease = new Force(new DxVector2(forceDifferential, 0));
+                new PhysicsAttachment(movePlease, EntityId).Emit();
+                HorizontalForce += forceDifferential;
             }
 
-            public void JumpAction(DxGameTime gameTime)
+            public void MoveRight(DxGameTime gameTime)
             {
-                /* We jump until we are no longer jumping */
+                if(HorizontalForce == MaxHorizontalForce)
+                {
+                    return; // Nothing to do, probably
+                }
+                HorizontalForceEmission = gameTime.TotalGameTime;
+                float forceDifferential = MaxHorizontalForce - HorizontalForce;
+                Force movePlease = new Force(new DxVector2(forceDifferential, 0));
+                new PhysicsAttachment(movePlease, EntityId).Emit();
+                HorizontalForce += forceDifferential;
             }
 
-            private static void AttachForce(GameObject entity, Force force)
+            public void Jump(List<Message> messages, DxGameTime gameTime)
             {
-                new AttachForce(entity.Id, force).Emit();
+                Movement(messages, gameTime);
+                if(VerticalForce != 0)
+                {
+                    // TODO: Smart re-application of forces
+                    
+                    return;
+                }
+                float jumpPower = MaxVerticalForce;
+                Force jumpPlease = new Force(new DxVector2(0, -jumpPower));
+                new PhysicsAttachment(jumpPlease, EntityId).Emit();
+                VerticalForce = jumpPower;
+            }
+
+            public void StopJumping(DxGameTime gameTime)
+            {
+                VerticalForce = 0;
             }
         }
     }

@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced;
 using DxCore.Core.Components.Advanced.Entities;
 using DxCore.Core.Components.Advanced.Physics;
-using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
@@ -24,7 +23,7 @@ namespace DxCore.Core
         [DataMember]
         public GameObject Object { get; }
 
-        public SpatialComponent Position => Object.ComponentOfType<SpatialComponent>();
+        public PhysicsComponent Position => Object.ComponentOfType<PhysicsComponent>();
         public EntityPropertiesComponent Properties => Object.ComponentOfType<EntityPropertiesComponent>();
         public PhysicsComponent Physics => Object.ComponentOfType<PhysicsComponent>();
         public AnimationComponent Animation => Object.ComponentOfType<AnimationComponent>();

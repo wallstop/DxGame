@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Animation;
-using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.State;
@@ -20,7 +20,7 @@ namespace DxCore.Core.Components.Advanced
         [DataMember] private readonly Dictionary<State.State, Animation.Animation> animationsForStates_;
 
         [DataMember]
-        public PositionalComponent Position { get; }
+        public PhysicsComponent Position { get; }
 
         [DataMember]
         public StateMachine StateMachine { get; }
@@ -28,7 +28,7 @@ namespace DxCore.Core.Components.Advanced
         [DataMember] private State.State lastState_;
 
         private AnimationComponent(StateMachine stateMachine,
-            Dictionary<State.State, Animation.Animation> animationsForStates, PositionalComponent position)
+            Dictionary<State.State, Animation.Animation> animationsForStates, PhysicsComponent position)
         {
             StateMachine = stateMachine;
             Position = position;
@@ -85,7 +85,7 @@ namespace DxCore.Core.Components.Advanced
             private readonly Dictionary<State.State, Animation.Animation> animationsForStates_ =
                 new Dictionary<State.State, Animation.Animation>();
 
-            private PositionalComponent position_;
+            private PhysicsComponent position_;
             private StateMachine stateMachine_;
 
             public AnimationComponent Build()
@@ -95,9 +95,8 @@ namespace DxCore.Core.Components.Advanced
                 return new AnimationComponent(stateMachine_, animationsForStates_, position_);
             }
 
-            public AnimationComponentBuilder WithPosition(PositionalComponent position)
+            public AnimationComponentBuilder WithPosition(PhysicsComponent position)
             {
-                Validate.Hard.IsNull(position_, $"Cannot double-assign a {typeof(PositionalComponent)} to a {GetType()}");
                 position_ = position;
                 return this;
             }
@@ -111,7 +110,8 @@ namespace DxCore.Core.Components.Advanced
             public AnimationComponentBuilder WithStateAndAsset(State.State state, AnimationDescriptor descriptor)
             {
                 Validate.Hard.IsNotNullOrDefault(state, () => this.GetFormattedNullOrDefaultMessage(nameof(descriptor)));
-                Validate.Hard.IsFalse(animationsForStates_.ContainsKey(state), () => this.GetFormattedAlreadyContainsMessage(state, animationsForStates_.Keys));
+                Validate.Hard.IsFalse(animationsForStates_.ContainsKey(state),
+                    () => this.GetFormattedAlreadyContainsMessage(state, animationsForStates_.Keys));
                 Animation.Animation animation = new Animation.Animation(descriptor);
                 animationsForStates_.Add(state, animation);
                 return this;

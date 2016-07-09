@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 using NLog;
 
@@ -13,7 +12,7 @@ namespace DxCore.Core.Models
     [Serializable]
     public class PlayerModel : Model
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         [DataMember]
         public Player ActivePlayer { get; private set; }
@@ -36,10 +35,10 @@ namespace DxCore.Core.Models
             Validate.Hard.IsNotNull(player, $"Cannot initialize {GetType()} with a null/default ActivePlayer ({player})");
             if(Validate.Check.IsNotNullOrDefault(ActivePlayer))
             {
-                LOG.Info($"Re-initializing {GetType()} with a different active player {nameof(ActivePlayer)}");
+                Logger.Info($"Re-initializing {GetType()} with a different active player {nameof(ActivePlayer)}");
             }
 
-            LOG.Debug($"Assigning {player} to be ActivePlayer");
+            Logger.Debug($"Assigning {player} to be ActivePlayer");
             ActivePlayer = player;
             Players.Add(player);
             return this;
@@ -49,7 +48,7 @@ namespace DxCore.Core.Models
         {
             Validate.Hard.IsNotNull(players, $"Cannot initialize {GetType()} with null/default {nameof(players)})");
 
-            LOG.Info("Initialized ");
+            Logger.Info("Initialized ");
             Players = players;
             if(Validate.Check.IsNotNullOrDefault(ActivePlayer))
             {

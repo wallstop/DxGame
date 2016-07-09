@@ -1,69 +1,357 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced.Position;
-using DxCore.Core.Components.Basic;
-using DxCore.Core.Messaging;
+using DxCore.Core.Messaging.Physics;
+using DxCore.Core.Models;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Distance;
 using DxCore.Core.Utils.Validate;
+using FarseerPhysics.Collision.Shapes;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
+using Microsoft.Xna.Framework;
+using NLog;
+using Component = DxCore.Core.Components.Basic.Component;
 
 namespace DxCore.Core.Components.Advanced.Physics
 {
-    /**
-        <summary>
-            Basic component that is responsible for managing "Physics" type stuff. Anything that wants to respond to physical interactions
-            with other objects needs to have a Physics Component (bullets, map collisions, etc)
-        </summary>
-    */
+    public delegate void PhysicsInitialization(Body body, Fixture fixture, PhysicsComponent self);
 
-    [DataContract]
     [Serializable]
-    public class PhysicsComponent : Component
+    [DataContract]
+    public sealed class PhysicsComponent : Component, ISpatial
     {
-        /* Currently acting forces on this object. This will typically include gravity & air resistance */
-        [DataMember] protected readonly List<Force> forces_ = new List<Force>();
-        [DataMember] protected SpatialComponent space_;
-        [DataMember] protected DxVector2 velocity_;
-        public IEnumerable<Force> Forces => forces_;
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public virtual DxVector2 Velocity
+        [DataMember] private DxVector2 origin_;
+
+        [DataMember] private readonly DxVector2 bounds_;
+
+        [DataMember] private readonly bool gravity_;
+
+        [DataMember] private readonly float friction_;
+        [DataMember] private readonly float restitution_;
+        [DataMember] private readonly bool directPositionAccess_;
+
+        [DataMember] private PhysicsInitialization initialization_;
+
+        [DataMember] private List<SensorComponent> attachedSensors_;
+
+        [DataMember]
+        public float Density { get; private set; }
+
+        /*
+            TODO: Decouple body from PhysicsComponent. Our view of PhysicsComponent is really a "Fixture" instead of a "Body"
+        */
+
+        [IgnoreDataMember]
+        private Body Body { get; set; }
+
+        [DataMember]
+        public CollisionGroup CollisionGroup { get; private set; }
+
+        [DataMember]
+        public CollisionGroup CollidesWith { get; private set; }
+
+        [IgnoreDataMember]
+        public Fixture Fixture { get; private set; }
+
+        [IgnoreDataMember]
+        private Fixture SensorFixture { get; set; }
+
+        [DataMember]
+        public PhysicsType PhysicsType { get; private set; }
+
+        [IgnoreDataMember]
+        public float Height => bounds_.Y;
+
+        [IgnoreDataMember]
+        public float Width => bounds_.X;
+
+        [IgnoreDataMember]
+        public IEnumerable<SensorComponent> AttachedSensors => attachedSensors_.ToList();
+
+        [IgnoreDataMember]
+        public DxVector2 Position
         {
-            get { return velocity_; }
-            set { velocity_ = value; }
+            get { return Body?.Position * WorldModel.FarseerToDxScale ?? DxVector2.EmptyVector; }
+            set
+            {
+                if(directPositionAccess_)
+                {
+                    // TODO: Fix the shit out of this
+                    if(ReferenceEquals(Body, null))
+                    {
+                        origin_ = value;
+                    }
+                    else
+                    {
+                        Body.Position = value.Vector2 * WorldModel.DxToFarseerScale;
+                    }
+                }
+                else
+                {
+                    Logger.Debug("Ignoring direct position set of {0}", value);
+                }
+            }
         }
 
-        public virtual DxVector2 Position
+        [IgnoreDataMember]
+        public DxVector2 WorldCoordinates => Position;
+
+        [IgnoreDataMember]
+        public DxRectangle Space => new DxRectangle(Position.X, Position.Y, Width, Height);
+
+        [IgnoreDataMember]
+        public DxVector2 Center => Space.Center;
+
+        private PhysicsComponent(DxVector2 origin, DxVector2 bounds, CollisionGroup collidesWith,
+            CollisionGroup collisionGroup, PhysicsType physicsType, float density, bool gravityOn, float restitution,
+            float friction, bool directPositionAccess, PhysicsInitialization initialization)
         {
-            get { return space_.Position; }
-            set { space_.Position = value; }
+            attachedSensors_ = new List<SensorComponent>();
+
+            origin_ = origin;
+            bounds_ = bounds;
+            gravity_ = gravityOn;
+            restitution_ = restitution;
+            friction_ = friction;
+            directPositionAccess_ = directPositionAccess;
+            initialization_ = initialization;
+            PhysicsType = physicsType;
+            CollidesWith = collidesWith;
+            CollisionGroup = collisionGroup;
+            Density = density;
         }
 
-        public DxRectangle Space => space_.Space;
-        public virtual SpatialComponent SpatialComponent => space_;
-
-        protected PhysicsComponent(DxVector2 velocity, DxVector2 acceleration, SpatialComponent position,
-            UpdatePriority updatePriority)
+        public override void LoadContent()
         {
-            velocity_ = velocity;
-            space_ = position;
-            UpdatePriority = updatePriority;
+            base.LoadContent();
         }
 
         public override void OnAttach()
         {
-            RegisterMessageHandler<CollisionMessage>(HandleCollisionMessage);
-            RegisterMessageHandler<AttachForce>(HandleAttachForce);
+            RegisterMessageHandler<PhysicsAttachment>(HandlePhysicsAttachment);
             base.OnAttach();
         }
 
-        protected virtual void AttachForce(Force force)
+        public void Attach(SensorComponent sensor)
         {
-            Validate.Hard.IsNotNull(force, () => this.GetFormattedNullOrDefaultMessage(force));
-            forces_.Add(force);
-            Velocity += force.InitialVelocity;
+            if(Validate.Check.IsNullOrDefault(sensor))
+            {
+                Logger.Debug("Ignoring attachment of null {0}", typeof(SensorComponent));
+                return;
+            }
+
+            if(Validate.Check.IsElementOf(attachedSensors_, sensor))
+            {
+                Logger.Debug("Ignoring double sensor registration of {0}", sensor);
+                return;
+            }
+
+            attachedSensors_.Add(sensor);
+            AttachSensor(sensor);
+        }
+
+        private void AttachSensor(SensorComponent sensor)
+        {
+            if(ReferenceEquals(Fixture, null))
+            {
+                return;
+            }
+            foreach(OnCollisionEventHandler onCollisionHandler in sensor.OnCollisionEventHandlers)
+            {
+                SensorFixture.OnCollision += onCollisionHandler;
+            }
+            foreach(BeforeCollisionEventHandler beforeCollisionHandler in sensor.BeforeCollisionEventHandlers)
+            {
+                SensorFixture.BeforeCollision += beforeCollisionHandler;
+            }
+            foreach(AfterCollisionEventHandler afterCollisionHandler in sensor.AfterCollisionEventHandlers)
+            {
+                SensorFixture.AfterCollision += afterCollisionHandler;
+            }
+        }
+
+        public void Detach(SensorComponent sensor)
+        {
+            if(Validate.Check.IsNullOrDefault(sensor))
+            {
+                Logger.Debug("Ignoring detachment of null {0}", typeof(SensorComponent));
+                return;
+            }
+
+            bool removeSuccessful = attachedSensors_.Remove(sensor);
+
+            if(!removeSuccessful)
+            {
+                Logger.Debug("Ignoring detachment of {0} (not attached)", sensor);
+                return;
+            }
+
+            foreach(OnCollisionEventHandler onCollisionHandler in sensor.OnCollisionEventHandlers)
+            {
+                SensorFixture.OnCollision -= onCollisionHandler;
+            }
+            foreach(BeforeCollisionEventHandler beforeCollisionHandler in sensor.BeforeCollisionEventHandlers)
+            {
+                SensorFixture.BeforeCollision -= beforeCollisionHandler;
+            }
+            foreach(AfterCollisionEventHandler afterCollisionHandler in sensor.AfterCollisionEventHandlers)
+            {
+                SensorFixture.AfterCollision -= afterCollisionHandler;
+            }
+        }
+
+        private void HandlePhysicsAttachment(PhysicsAttachment physicsAttachment)
+        {
+            // TODO: Route cleaner
+            object physicsInteraction;
+            Type attachmentType = physicsAttachment.Extract(out physicsInteraction);
+            if(attachmentType == typeof(Force))
+            {
+                HandleForceAttachment((Force) physicsInteraction);
+                return;
+            }
+            if(attachmentType == typeof(Core.Physics.Impulse))
+            {
+                HandleImpulseAttachment((Core.Physics.Impulse) physicsInteraction);
+                return;
+            }
+            if(attachmentType == typeof(Nullification))
+            {
+                HandleNullificationAttachment((Nullification) physicsInteraction);
+                return;
+            }
+            Logger.Warn("No {0} handler found for {1}", typeof(PhysicsAttachment), physicsAttachment);
+        }
+
+        private void HandleForceAttachment(Force force)
+        {
+            Body.ApplyForce(force.Value.Vector2, Body.WorldCenter);
+        }
+
+        private void HandleImpulseAttachment(Core.Physics.Impulse impulse)
+        {
+            switch(Body.BodyType)
+            {
+                /* Depending on body type, ApplyLinearImpulse may be a simple no-op */
+                case BodyType.Dynamic:
+                {
+                    Body.ApplyLinearImpulse(impulse.Value.Vector2, Body.WorldCenter);
+                    break;
+                }
+                default:
+                {
+                    Logger.Debug("Ignoring impulse {0} for {1}", impulse, Id);
+                    break;
+                }
+            }
+        }
+
+        private void HandleNullificationAttachment(Nullification nullification)
+        {
+            DxVector2 velocityToNegate = nullification.Value;
+
+
+            /* 
+                QUICK AND DIRTY BOYS 
+
+                Note: This is likely super buggy in the case of non-commandment driven forces interacting with bodies and 
+                the player wanting to "stop".
+
+                O WELL, burn that bridge when we come to it
+                
+            */
+            Vector2 linearVelocity = Body.LinearVelocity;
+            if(velocityToNegate.X < 0 && linearVelocity.X < 0)
+            {
+                linearVelocity.X = 0;
+            }else if(velocityToNegate.X > 0 && linearVelocity.X > 0)
+            {
+                linearVelocity.X = 0;
+            }
+
+            if(velocityToNegate.Y < 0 && linearVelocity.Y < 0)
+            {
+                linearVelocity.Y = 0;
+            }
+            else if(velocityToNegate.Y > 0 && linearVelocity.Y > 0)
+            {
+                linearVelocity.Y = 0;
+            }
+
+            Body.LinearVelocity = linearVelocity;
+        }
+
+        public override void Initialize()
+        {
+            World gameWorld = DxGame.Instance.Model<WorldModel>().World;
+
+            PolygonShape bounds =
+                new PolygonShape(
+                    new DxRectangle(0, 0, Width, Height).Vertices()
+                        .Select(vertex => vertex * WorldModel.DxToFarseerScale)
+                        .ToVertices(), Density);
+            
+            Body = new Body(gameWorld, origin_.Vector2 * WorldModel.DxToFarseerScale, 0, this)
+            {
+                BodyType = ResolveCollisionType(PhysicsType),
+                FixedRotation = true
+            };
+
+            if(!gravity_)
+            {
+                Body.IgnoreGravity = true;
+            }
+
+            Fixture = Body.CreateFixture(bounds, this);
+            Fixture.CollidesWith = CollidesWith.CollisionCategory;
+            Fixture.CollisionCategories = CollisionGroup.CollisionCategory;
+
+            // TODO: Remove this
+            SensorFixture = Fixture;
+            foreach(SensorComponent sensor in attachedSensors_)
+            {
+                AttachSensor(sensor);
+            }
+
+            Body.Restitution = restitution_;
+            Body.Friction = friction_;
+            base.Initialize();
+
+            if(!ReferenceEquals(initialization_, null))
+            {
+                initialization_.Invoke(Body, Fixture, this);
+            }
+        }
+
+        private static BodyType ResolveCollisionType(PhysicsType physicsType)
+        {
+            switch(physicsType)
+            {
+                case PhysicsType.Dynamic:
+                {
+                    return BodyType.Dynamic;
+                }
+                case PhysicsType.Static:
+                {
+                    return BodyType.Static;
+                }
+                case PhysicsType.Kinematic:
+                {
+                    return BodyType.Kinematic;
+                }
+                default:
+                {
+                    throw new InvalidEnumArgumentException(
+                        $"Unknown {typeof(BodyType)} for {typeof(PhysicsType)} {physicsType}");
+                }
+            }
         }
 
         public static PhysicsComponentBuilder Builder()
@@ -71,120 +359,128 @@ namespace DxCore.Core.Components.Advanced.Physics
             return new PhysicsComponentBuilder();
         }
 
-        public static Tuple<DxVector2, DxVector2> ForceComputation(DxGameTime gameTime, DxVector2 position,
-            DxVector2 velocity, List<Force> forces)
-        {
-            double scaleAmount = gameTime.ScaleFactor;
-            DxVector2 acceleration = new DxVector2();
-            foreach(var force in forces)
-            {
-                force.Update(velocity, acceleration, gameTime);
-                if(!force.Dissipated)
-                {
-                    acceleration += force.Acceleration;
-                }
-            }
-            velocity += acceleration * scaleAmount;
-            position += velocity * scaleAmount;
-            return Tuple.Create(position, velocity);
-        }
-
-        protected override void Update(DxGameTime gameTime)
-        {
-            var physicsOutput = ForceComputation(gameTime, Position, Velocity, forces_);
-            Velocity = physicsOutput.Item2;
-            Position = physicsOutput.Item1;
-            forces_.RemoveAll(force => force.Dissipated);
-        }
-
-        protected void HandleAttachForce(AttachForce forceAttachment)
-        {
-            AttachForce(forceAttachment.Force);
-        }
-
-        protected virtual void HandleCollisionMessage(CollisionMessage message)
-        {
-            var collisionDirections = message.CollisionDirections;
-            var velocity = Velocity;
-            // Collide on against y axis (vertical)? Cease movement and acceleration in that direction
-            if(collisionDirections.ContainsKey(Direction.East) || collisionDirections.ContainsKey(Direction.West))
-            {
-                velocity.X = 0;
-            }
-            // Same for horizontal movement
-            if(collisionDirections.ContainsKey(Direction.South) || collisionDirections.ContainsKey(Direction.North))
-            {
-                velocity.Y = 0;
-            }
-            Velocity = velocity;
-        }
-
         public class PhysicsComponentBuilder : IBuilder<PhysicsComponent>
         {
-            protected readonly HashSet<Force> forces_ = new HashSet<Force>();
-            protected DxVector2 acceleration_;
-            protected SpatialComponent space_;
-            protected UpdatePriority updatePriority_ = UpdatePriority.PHYSICS;
-            protected DxVector2 velocity_;
+            private const float Density = 0.0f;
 
-            public virtual PhysicsComponent Build()
-            {
-                var physics = new PhysicsComponent(velocity_, acceleration_, space_, updatePriority_);
-                foreach(var force in forces_)
-                {
-                    physics.AttachForce(force);
-                }
-                return physics;
-            }
+            private float density_ = Density;
+            private DxVector2? position_;
+            private DxVector2? bounds_;
+            private bool gravity_ = true;
+            private bool directPositionAccess_;
+            private float restitution_;
+            private PhysicsType physicsType_ = PhysicsType.Dynamic;
+            private float friction_ = 1f;
+            private CollisionGroup collisionGroup_ = CollisionGroup.All;
+            private CollisionGroup collidesWith_ = CollisionGroup.All;
+            private PhysicsInitialization initialization_;
 
-            public virtual PhysicsComponentBuilder WithForce(Force force)
+            public PhysicsComponentBuilder WithPhysicsInitialization(PhysicsInitialization postInit)
             {
-                Validate.Hard.IsNotNull(force, this.GetFormattedNullOrDefaultMessage(force));
-                forces_.Add(force);
+                initialization_ = postInit;
                 return this;
             }
 
-            public virtual PhysicsComponentBuilder WithUpdatePriority(UpdatePriority updatePriority)
+            public PhysicsComponentBuilder WithCollidesWith(CollisionGroup collidesWith)
             {
-                updatePriority_ = updatePriority;
+                collidesWith_ = collidesWith;
                 return this;
             }
 
-            public virtual PhysicsComponentBuilder WithSpatialComponent(SpatialComponent space)
+            public PhysicsComponentBuilder WithCollisionGroup(CollisionGroup collisionGroup)
             {
-                space_ = space;
+                collisionGroup_ = collisionGroup;
                 return this;
             }
 
-            public virtual PhysicsComponentBuilder WithAcceleration(DxVector2 acceleration)
+            public PhysicsComponentBuilder WithoutRestitution()
             {
-                acceleration_ = acceleration;
+                return WithRestitution(0);
+            }
+
+            public PhysicsComponentBuilder WithRestitution(double restitution = 1)
+            {
+                restitution_ = (float) restitution;
                 return this;
             }
 
-            public virtual PhysicsComponentBuilder WithVelocity(DxVector2 velocity)
+            public PhysicsComponentBuilder WithoutFriction()
             {
-                velocity_ = velocity;
+                return WithFriction(0);
+            }
+
+            public PhysicsComponentBuilder WithFriction(double friction = 1)
+            {
+                friction_ = (float) friction;
                 return this;
             }
 
-            public virtual PhysicsComponentBuilder WithAirResistance()
+            public PhysicsComponentBuilder WithDensity(double density)
             {
-                forces_.Add(WorldForces.AirResistance);
+                density_ = (float) density;
                 return this;
             }
 
-            public virtual PhysicsComponentBuilder WithWorldForces()
+            public PhysicsComponentBuilder WithoutGravity()
             {
-                WithAirResistance();
-                WithGravity();
+                return WithGravity(false);
+            }
+
+            public PhysicsComponentBuilder WithGravity(bool gravityOn = true)
+            {
+                gravity_ = gravityOn;
                 return this;
             }
 
-            public virtual PhysicsComponentBuilder WithGravity()
+            public PhysicsComponentBuilder WithPosition(DxVector2 position)
             {
-                forces_.Add(WorldForces.Gravity);
+                position_ = position;
                 return this;
+            }
+
+            public PhysicsComponentBuilder WithBounds(DxVector2 bounds)
+            {
+                bounds_ = bounds;
+                return this;
+            }
+
+            public PhysicsComponentBuilder WithCollisionType(PhysicsType physicsType)
+            {
+                physicsType_ = physicsType;
+                return this;
+            }
+
+            public PhysicsComponentBuilder WithoutCollision()
+            {
+                WithCollisionGroup(CollisionGroup.None);
+                WithCollidesWith(CollisionGroup.None);
+                return this;
+            }
+
+            public PhysicsComponentBuilder WithDirectPositionAccess(bool directPositionAcces = true)
+            {
+                directPositionAccess_ = directPositionAcces;
+                return this;
+            }
+
+            public PhysicsComponentBuilder WithoutDirectPositionAccess()
+            {
+                return WithDirectPositionAccess(false);
+            }
+
+            public PhysicsComponent Build()
+            {
+                Validate.Hard.IsNotNullOrDefault(position_);
+                Validate.Hard.IsNotNullOrDefault(bounds_);
+                Validate.Hard.IsNotNegative(density_);
+                Validate.Hard.IsNotNullOrDefault(collisionGroup_);
+                Validate.Hard.IsNotNullOrDefault(collidesWith_);
+
+                DxVector2 position = position_.Value;
+                DxVector2 bounds = bounds_.Value;
+
+                return new PhysicsComponent(position, bounds, collidesWith_, collisionGroup_, physicsType_, density_,
+                    gravity_, restitution_, friction_, directPositionAccess_, initialization_);
             }
         }
     }

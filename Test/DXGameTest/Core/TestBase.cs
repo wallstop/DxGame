@@ -5,7 +5,6 @@ namespace DXGameTest.Core
 {
     public class TestGame : DxGame
     {
-        protected override void SetUp() {}
     }
 
     [SetUpFixture]

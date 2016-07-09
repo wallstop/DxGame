@@ -7,13 +7,13 @@ namespace DxCore.Core
 {
     public enum UpdatePriority
     {
-        GAME_OBJECT = -150, /* Game Objects need to update before all else so their message queues are swapped */
-        INPUT = -130,
-        PHYSICS = -100,
-        STATE = 0,
-        HIGH = 1,
-        NORMAL = 5,
-        LOW = 10
+        GameObject = -150, /* Game Objects need to update before all else so their message queues are swapped */
+        Input = -130,
+        Physics = -100,
+        High = 1,
+        Normal = 5,
+        Low = 10,
+        State = 100
     }
 
     public interface IProcessable : IComparable<IProcessable>

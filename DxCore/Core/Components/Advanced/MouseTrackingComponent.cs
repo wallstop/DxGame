@@ -1,32 +1,36 @@
-﻿using System;
-using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced.Position;
+﻿using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using Microsoft.Xna.Framework.Input;
 
 namespace DxCore.Core.Components.Advanced
 {
-    [Serializable]
-    [DataContract]
-    public class MouseTrackingComponent : PositionalComponent
+    public class MouseTrackingComponent : Component, ISpatial
     {
-        [DataMember]
+        private ISpatial MouseSpatial { get; }
+
         public bool Clicked { get; private set; }
 
-        [DataMember]
         private bool ClickInProgress { get; set; }
 
-        public MouseTrackingComponent() : base(new DxVector2())
+        public DxVector2 WorldCoordinates => MouseSpatial.WorldCoordinates;
+        public DxRectangle Space => MouseSpatial.Space;
+
+        public MouseTrackingComponent()
         {
             Clicked = false;
             ClickInProgress = false;
+
+            MouseSpatial =
+                SpatialComponent.UiTrackingBasedBuilder()
+                    .WithUiOffsetProvider(() => Mouse.GetState().Position)
+                    .WithDimensions(50, 50)
+                    .Build();
         }
 
         protected override void Update(DxGameTime gameTime)
         {
-            base.Update(gameTime);
             MouseState mouseState = Mouse.GetState();
-            Position = new DxVector2(mouseState.Position.X, mouseState.Position.Y);
             if(ClickInProgress)
             {
                 // Only check left button for now. We can enhance this later.

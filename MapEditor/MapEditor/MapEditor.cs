@@ -44,8 +44,6 @@ namespace MapEditor
             eventArgs.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 16;
         }
 
-        protected override void SetUp() {}
-
         protected override void Initialize()
         {
             // TODO: Clean up init

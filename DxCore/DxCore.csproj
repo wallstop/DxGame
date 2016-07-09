@@ -29,7 +29,20 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Test\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FarseerPhysics MonoGame, Version=3.5.0.40766, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FarseerPhysics.MonoGame.Unofficial.3.5.0\lib\FarseerPhysics MonoGame.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="GeoAPI, Version=1.7.4.0, Culture=neutral, PublicKeyToken=a1a0da7def465678, processorArchitecture=MSIL">
       <HintPath>..\packages\GeoAPI.1.7.4\lib\net45\GeoAPI.dll</HintPath>
       <Private>True</Private>
@@ -38,8 +51,8 @@
       <HintPath>..\packages\Lidgren.Network.1.0.2\lib\net451\Lidgren.Network.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MathNet.Numerics, Version=3.11.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MathNet.Numerics.3.11.1\lib\net40\MathNet.Numerics.dll</HintPath>
+    <Reference Include="MathNet.Numerics, Version=3.12.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.3.12.0\lib\net40\MathNet.Numerics.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
@@ -47,21 +60,26 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1-beta1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.3.5\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.4.0-beta13\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.1.2.0-rc2-24027\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\packages\System.Collections.Immutable.1.2.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -75,23 +93,11 @@
     <Compile Include="Core\Animation\AnimationFactory.cs" />
     <Compile Include="Core\Animation\AnimationFrameOffset.cs" />
     <Compile Include="Core\Animation\FrameDescriptor.cs" />
-    <Compile Include="Core\Behavior\Behavior.cs" />
-    <Compile Include="Core\Behavior\GoalInterpreter.cs" />
-    <Compile Include="Core\Behavior\Goals\AbstractGoal.cs" />
-    <Compile Include="Core\Behavior\Goals\BuffGoal.cs" />
-    <Compile Include="Core\Behavior\Goals\DebuffGoal.cs" />
-    <Compile Include="Core\Behavior\Goals\IGoal.cs" />
-    <Compile Include="Core\Behavior\Goals\MovementGoal.cs" />
-    <Compile Include="Core\Behavior\Goals\PainGoal.cs" />
-    <Compile Include="Core\Behavior\Goals\ProtectionGoal.cs" />
-    <Compile Include="Core\Behavior\Goals\SlayerGoal.cs" />
-    <Compile Include="Core\Behavior\Score.cs" />
-    <Compile Include="Core\Behavior\Utility.cs" />
     <Compile Include="Core\Components\Advanced\AnimationComponent.cs" />
     <Compile Include="Core\Components\Advanced\Behavior\BehaviorComponent.cs" />
-    <Compile Include="Core\Components\Advanced\CollidableComponent.cs" />
     <Compile Include="Core\Components\Advanced\CollisionDestructibleComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\AbstractCommandComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Command\EntityMovementCommandResponder.cs" />
     <Compile Include="Core\Components\Advanced\Command\PathfindingInputComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\PlayerInputListener.cs" />
     <Compile Include="Core\Components\Advanced\Command\RandomCommander.cs" />
@@ -111,18 +117,17 @@
     <Compile Include="Core\Components\Advanced\Impulse\AttackCommandResponder.cs" />
     <Compile Include="Core\Components\Advanced\Impulse\MapPlatformDropper.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapRotationTriggerComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Map\MapTileComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapTransition.cs" />
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
-    <Compile Include="Core\Components\Advanced\Physics\MapCollidablePhysicsComponent.cs" />
     <Compile Include="Core\Components\Advanced\Physics\PhysicsComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Physics\UnforcableMapCollidablePhysicsComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Physics\UnforcablePhysicsComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Physics\SensorComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Physics\SensorFactory.cs" />
     <Compile Include="Core\Components\Advanced\Player\ActivePlayerComponent.cs" />
     <Compile Include="Core\Components\Advanced\Player\PlayerNameComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Position\BoundedSpatialComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Position\MapBoundedSpatialComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Position\PositionalComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Position\IPositional.cs" />
+    <Compile Include="Core\Components\Advanced\Position\ISpatial.cs" />
     <Compile Include="Core\Components\Advanced\Position\SpatialComponent.cs" />
     <Compile Include="Core\Components\Advanced\Properties\EntityPropertiesComponent.cs" />
     <Compile Include="Core\Components\Advanced\ShadowComponent.cs" />
@@ -143,7 +148,6 @@
     <Compile Include="Core\Components\Developer\HealthAdjustor.cs" />
     <Compile Include="Core\Components\Developer\KeysPressedWidget.cs" />
     <Compile Include="Core\Components\Developer\LifeSuckerComponent.cs" />
-    <Compile Include="Core\Components\Developer\PathDrawer.cs" />
     <Compile Include="Core\Components\Developer\TeamCounterWidget.cs" />
     <Compile Include="Core\Components\Developer\TimePerFrameGraph.cs" />
     <Compile Include="Core\Components\Network\AbstractNetworkClient.cs" />
@@ -151,9 +155,13 @@
     <Compile Include="Core\Components\Network\NetworkClientConfig.cs" />
     <Compile Include="Core\Input\IMeasuredInputEvent.cs" />
     <Compile Include="Core\Map\MapLayout.cs" />
-    <Compile Include="Core\Messaging\AttachForce.cs" />
     <Compile Include="Core\Messaging\Camera\ZoomRequest.cs" />
+    <Compile Include="Core\Messaging\Movement\MovementRequest.cs" />
+    <Compile Include="Core\Messaging\Physics\PhysicsAttachment.cs" />
     <Compile Include="Core\Messaging\UpdateCameraBounds.cs" />
+    <Compile Include="Core\Messaging\AudioMessage.cs" />
+    <Compile Include="Core\Messaging\UpdateWorldBounds.cs" />
+    <Compile Include="Core\Models\AudioModel.cs" />
     <Compile Include="Core\Network\Port.cs" />
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
     <Compile Include="Core\Components\Utils\RectangleAreaComparer.cs" />
@@ -199,7 +207,6 @@
     <Compile Include="Core\Map\Map.cs" />
     <Compile Include="Core\Map\MapCollidable.cs" />
     <Compile Include="Core\Map\MapDescriptor.cs" />
-    <Compile Include="Core\Map\NavigableSurface.cs" />
     <Compile Include="Core\Map\Tile.cs" />
     <Compile Include="Core\Map\TilePosition.cs" />
     <Compile Include="Core\Map\TileType.cs" />
@@ -238,7 +245,7 @@
     <Compile Include="Core\Messaging\PhysicsMessage.cs" />
     <Compile Include="Core\Models\BehaviorModel.cs" />
     <Compile Include="Core\Models\CameraModel.cs" />
-    <Compile Include="Core\Models\CollisionModel.cs" />
+    <Compile Include="Core\Models\WorldModel.cs" />
     <Compile Include="Core\Models\DeveloperModel.cs" />
     <Compile Include="Core\Models\EnvironmentModel.cs" />
     <Compile Include="Core\Models\EventModel.cs" />
@@ -255,17 +262,13 @@
     <Compile Include="Core\Network\DxVectorLerpMessage.cs" />
     <Compile Include="Core\Network\NetworkMessage.cs" />
     <Compile Include="Core\Network\ServerEventTracker.cs" />
-    <Compile Include="Core\Pathfinding\CommandChain.cs" />
-    <Compile Include="Core\Pathfinding\DisplacementApproximator.cs" />
-    <Compile Include="Core\Pathfinding\ExplorableMesh.cs" />
-    <Compile Include="Core\Pathfinding\ExplorableMeshCache.cs" />
-    <Compile Include="Core\Pathfinding\Path.cs" />
-    <Compile Include="Core\Pathfinding\PathfindingConstants.cs" />
-    <Compile Include="Core\Pathfinding\PathfindingResult.cs" />
-    <Compile Include="Core\Pathfinding\Simulation.cs" />
+    <Compile Include="Core\Physics\Axis.cs" />
+    <Compile Include="Core\Physics\CollisionGroup.cs" />
     <Compile Include="Core\Physics\Force.cs" />
+    <Compile Include="Core\Physics\Impulse.cs" />
     <Compile Include="Core\Physics\Interaction.cs" />
-    <Compile Include="Core\Physics\WorldForces.cs" />
+    <Compile Include="Core\Physics\Nullification.cs" />
+    <Compile Include="Core\Physics\PhysicsType.cs" />
     <Compile Include="Core\Player.cs" />
     <Compile Include="Core\Primitives\DxCircle.cs" />
     <Compile Include="Core\Primitives\DxColor.cs" />
@@ -275,11 +278,12 @@
     <Compile Include="Core\Primitives\DxRadian.cs" />
     <Compile Include="Core\Primitives\DxRectangle.cs" />
     <Compile Include="Core\Primitives\DxVector2.cs" />
-    <Compile Include="Core\Primitives\IShape.cs" />
     <Compile Include="Core\Properties\EntityProperties.cs" />
     <Compile Include="Core\Properties\Property.cs" />
     <Compile Include="Core\Properties\PropertyMutator.cs" />
     <Compile Include="Core\Serializer.cs" />
+    <Compile Include="Core\Service\ServiceProvider.cs" />
+    <Compile Include="Core\Service\IService.cs" />
     <Compile Include="Core\Settings\AbstractSettings.cs" />
     <Compile Include="Core\Settings\Controls.cs" />
     <Compile Include="Core\Settings\GameSettings.cs" />
@@ -321,6 +325,7 @@
     <Compile Include="Core\Utils\Distance\QuadTree.cs" />
     <Compile Include="Core\Utils\Distance\RTree.cs" />
     <Compile Include="Core\Utils\EnumUtils.cs" />
+    <Compile Include="Core\Utils\FarseerExtensions.cs" />
     <Compile Include="Core\Utils\FixedSizedBuffer.cs" />
     <Compile Include="Core\Utils\GameElementCollection.cs" />
     <Compile Include="Core\Utils\GameObjectUtils.cs" />

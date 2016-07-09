@@ -64,8 +64,9 @@ namespace DxCore.Core.Utils.Distance
 
         public QuadTree(Coordinate<T> coordinate, DxRectangle boundary, IEnumerable<T> points, int bucketSize)
         {
-            Validate.Validate.Hard.IsTrue(bucketSize > 0, $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
-            Validate.Validate.Hard.IsNotNull(coordinate, this.GetFormattedNullOrDefaultMessage(nameof(coordinate)));
+            Validate.Validate.Hard.IsPositive(bucketSize,
+                () => $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
+            Validate.Validate.Hard.IsNotNull(coordinate, () => this.GetFormattedNullOrDefaultMessage(nameof(coordinate)));
             coordinate_ = coordinate;
             boundary_ = boundary;
             head_ = new QuadTreeNode<T>(boundary, coordinate_, points.ToList(), bucketSize);
@@ -128,7 +129,7 @@ namespace DxCore.Core.Utils.Distance
             }
         }
 
-        public List<T> InRange(IShape range)
+        public List<T> InRange(DxRectangle range)
         {
             if(!range.Intersects(boundary_))
             {

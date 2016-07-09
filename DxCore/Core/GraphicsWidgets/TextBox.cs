@@ -20,7 +20,7 @@ namespace DxCore.Core.GraphicsWidgets
         private int cursorPosition_;
         private ImmutableHashSet<Keys> validKeys_ = ImmutableHashSet<Keys>.Empty;
         public string Text { get; protected set; }
-        public SpatialComponent SpatialComponent { get; }
+        public ISpatial SpatialComponent { get; }
 
         public IEnumerable<Keys> ValidKeys
         {
@@ -46,7 +46,6 @@ namespace DxCore.Core.GraphicsWidgets
             }
         }
 
-        public override bool ShouldSerialize => false;
         protected BlinkingCursor BlinkingCursor { get; }
         protected SpriteFont SpriteFont { get; }
         protected Texture2D Background { get; }
@@ -64,7 +63,7 @@ namespace DxCore.Core.GraphicsWidgets
         }
 
         private TextBox(BlinkingCursor blinkingCursor, List<Keys> validKeys, Texture2D background, Color textColor,
-            SpatialComponent spatial, SpriteFont spriteFont, int maxLength)
+            ISpatial spatial, SpriteFont spriteFont, int maxLength)
         {
             Text = "";
             CursorPosition = 0;
@@ -85,7 +84,7 @@ namespace DxCore.Core.GraphicsWidgets
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             spriteBatch.Draw(Background, destinationRectangle: SpatialComponent.Space.ToRectangle());
-            spriteBatch.DrawString(SpriteFont, Text, SpatialComponent.Position.Vector2, TextColor);
+            spriteBatch.DrawString(SpriteFont, Text, SpatialComponent.WorldCoordinates.Vector2, TextColor);
 
             // TODO: Change this to some kind of focused-style state, possible set via the owner
             if(InFocus)
@@ -106,7 +105,8 @@ namespace DxCore.Core.GraphicsWidgets
                     inputModel.InputHandler.FinishedKeyboardEvents.Where(key => ValidKeys.Contains(key.Source));
                 HandleKeyboardEvents(finishedKeys);
                 IEnumerable<KeyboardEvent> longPressedKeys =
-                    inputModel.InputHandler.CurrentKeyboardEvents.Where(key => key.HeldDown && ValidKeys.Contains(key.Source));
+                    inputModel.InputHandler.CurrentKeyboardEvents.Where(
+                        key => key.HeldDown && ValidKeys.Contains(key.Source));
                 HandleKeyboardEvents(longPressedKeys);
             }
 
@@ -115,9 +115,9 @@ namespace DxCore.Core.GraphicsWidgets
 
             var textDimensions = SpriteFont.MeasureString(textSubstring);
 
-            cursorPosition.X = SpatialComponent.Position.X + textDimensions.X;
+            cursorPosition.X = SpatialComponent.WorldCoordinates.X + textDimensions.X;
             /* TODO: Find a better way of doing this than hard-coding "a" */
-            cursorPosition.Y = SpatialComponent.Position.Y +
+            cursorPosition.Y = SpatialComponent.WorldCoordinates.Y +
                                (textDimensions.Y == 0 ? SpriteFont.MeasureString("a").Y : textDimensions.Y);
             BlinkingCursor.Space = cursorPosition;
             BlinkingCursor.Process(gameTime);
@@ -190,16 +190,17 @@ namespace DxCore.Core.GraphicsWidgets
             private Texture2D backgroundTexture_ = TextureFactory.TextureForColor(Color.White);
             private Color cursorColor_ = Color.Black;
             private int maxLength_;
-            private SpatialComponent spatial_;
+            private ISpatial spatial_;
             private SpriteFont spriteFont_;
             private Color textColor_ = Color.Black;
             private List<Keys> validKeys_ = new List<Keys>(KeyboardEvent.KeyCharacters.Keys);
 
             public TextBox Build()
             {
-                Validate.Hard.IsNotNullOrDefault(spriteFont_, this.GetFormattedNullOrDefaultMessage(spriteFont_));
-                Validate.Hard.IsTrue(maxLength_ > 0, $"Cannot create a {typeof(TextBox)} with a MaxLength of {maxLength_}");
-                Validate.Hard.IsNotNullOrDefault(spatial_, this.GetFormattedNullOrDefaultMessage(spatial_));
+                Validate.Hard.IsNotNullOrDefault(spriteFont_, () => this.GetFormattedNullOrDefaultMessage(spriteFont_));
+                Validate.Hard.IsPositive(maxLength_,
+                    () => $"Cannot create a {typeof(TextBox)} with a MaxLength of {maxLength_}");
+                Validate.Hard.IsNotNullOrDefault(spatial_);
 
                 const string testString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
                 var stringMeasurement = spriteFont_.MeasureString(testString);
@@ -240,7 +241,7 @@ namespace DxCore.Core.GraphicsWidgets
                 return this;
             }
 
-            public TextBoxBuilder WithSpatialComponent(SpatialComponent spatial)
+            public TextBoxBuilder WithSpatial(ISpatial spatial)
             {
                 spatial_ = spatial;
                 return this;

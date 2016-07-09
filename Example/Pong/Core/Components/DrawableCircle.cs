@@ -1,4 +1,4 @@
-﻿using DxCore.Core.Components.Advanced.Position;
+﻿using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
@@ -21,9 +21,9 @@ namespace Pong.Core.Components
 
         private float Radius { get; }
 
-        private SpatialComponent Spatial { get; }
+        private PhysicsComponent Spatial { get; }
 
-        public DrawableCircle(SpatialComponent spatial, Color color, float radius)
+        public DrawableCircle(PhysicsComponent spatial, Color color, float radius)
         {
             Validate.Hard.IsNotNullOrDefault(spatial, () => this.GetFormattedNullOrDefaultMessage(spatial));
             Spatial = spatial;

@@ -24,6 +24,7 @@ namespace DxCore.Core.State
 
         protected StateMachine(State initialState, Dictionary<UniqueId, State> statesById)
         {
+            UpdatePriority = UpdatePriority.State;
             InitialState = initialState;
             statesById_ = new ReadOnlyDictionary<UniqueId, State>(statesById);
             Reset();

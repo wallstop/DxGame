@@ -18,7 +18,7 @@ namespace DxCore.Core.Messaging
     [DataContract]
     public sealed class MessageHandler
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         [DataMember]
         public bool RegisterGlobally { get; set; } = true;
@@ -161,7 +161,7 @@ namespace DxCore.Core.Messaging
             TypedHandler<T> typedHandler = HandlerForType<T>(handlersByType_);
             if(!typedHandler.Handlers.Any())
             {
-                LOG.Debug("Deregistering handler type {0} without any handlers", typeof(T));
+                Logger.Debug("Deregistering handler type {0} without any handlers", typeof(T));
             }
             typedHandler.Handlers.Clear();
             typedHandler.Deregistration?.Invoke();

@@ -4,7 +4,6 @@ using System.Linq;
 using DxCore.Core.Frames;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Models
 {
@@ -24,8 +23,6 @@ namespace DxCore.Core.Models
             FrameRetention = timespan;
             return this;
         }
-
-        public override bool ShouldSerialize => false;
 
         public void AttachFrame(Frame frame)
         {

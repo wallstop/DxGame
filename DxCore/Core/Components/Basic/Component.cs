@@ -57,11 +57,9 @@ namespace DxCore.Core.Components.Basic
         [DataMember]
         protected List<Action> DeregistrationHandles { get; set; } = new List<Action>();
 
-        public virtual bool ShouldSerialize => true;
-
         protected Component()
         {
-            UpdatePriority = UpdatePriority.NORMAL;
+            UpdatePriority = UpdatePriority.Normal;
             Id = new UniqueId();
             Initialized = false;
         }
@@ -95,10 +93,10 @@ namespace DxCore.Core.Components.Basic
         }
 
         [DataMember]
-        public UniqueId Id { get; }
+        public UniqueId Id { get; private set; }
 
         [DataMember]
-        public UpdatePriority UpdatePriority { protected set; get; }
+        public UpdatePriority UpdatePriority { get; protected set; }
 
         public void Process(DxGameTime gameTime)
         {

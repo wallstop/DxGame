@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
@@ -50,9 +50,10 @@ namespace DxCore.Core.Components.Advanced.Entities
             if(spawnCheck.Item1)
             {
                 GameObject spawnedObject = spawnCheck.Item2;
-                PositionalComponent position = spawnedObject.Components.OfType<PositionalComponent>().FirstOrDefault();
+                PhysicsComponent position = spawnedObject.ComponentOfType<PhysicsComponent>();
                 if(!ReferenceEquals(position, null))
                 {
+                    // TODO: Fix direct position access
                     position.Position = RandomPositionInSpawnArea();
                 }
 

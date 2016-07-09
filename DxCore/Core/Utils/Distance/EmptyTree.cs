@@ -22,7 +22,7 @@ namespace DxCore.Core.Utils.Distance
         public List<T> Elements => Enumerable.Empty<T>().ToList();
         public List<DxRectangle> Nodes => Enumerable.Empty<DxRectangle>().ToList();
         public List<DxRectangle> Divisions => Enumerable.Empty<DxRectangle>().ToList();
-        public List<T> InRange(IShape range) => Enumerable.Empty<T>().ToList();
+        public List<T> InRange(DxRectangle range) => Enumerable.Empty<T>().ToList();
 
         public bool Closest(DxVector2 position, out T result)
         {

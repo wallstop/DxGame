@@ -29,37 +29,46 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Test\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EmptyKeys.UserInterface, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EmptyKeysUI.2.2.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Common\AnyCPU\EmptyKeys.UserInterface.dll</HintPath>
+    <Reference Include="EmptyKeys.UserInterface, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EmptyKeysUI.2.3.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Common\AnyCPU\EmptyKeys.UserInterface.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EmptyKeys.UserInterface.CocosSharp, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EmptyKeysUI.2.2.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\CocosSharp\AnyCPU\EmptyKeys.UserInterface.CocosSharp.dll</HintPath>
+    <Reference Include="EmptyKeys.UserInterface.CocosSharp, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EmptyKeysUI.2.3.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\CocosSharp\AnyCPU\EmptyKeys.UserInterface.CocosSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EmptyKeys.UserInterface.Core, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EmptyKeysUI.2.2.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Common\AnyCPU\EmptyKeys.UserInterface.Core.dll</HintPath>
+    <Reference Include="EmptyKeys.UserInterface.Core, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EmptyKeysUI.2.3.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Common\AnyCPU\EmptyKeys.UserInterface.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EmptyKeys.UserInterface.Debug, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EmptyKeysUI.2.2.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Common\AnyCPU\EmptyKeys.UserInterface.Debug.dll</HintPath>
+    <Reference Include="EmptyKeys.UserInterface.Debug, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EmptyKeysUI.2.3.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Common\AnyCPU\EmptyKeys.UserInterface.Debug.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EmptyKeys.UserInterface.FNA, Version=2.2.0.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\..\packages\EmptyKeysUI.2.2.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\FNA\x86\EmptyKeys.UserInterface.FNA.dll</HintPath>
+    <Reference Include="EmptyKeys.UserInterface.FNA, Version=2.3.0.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\..\packages\EmptyKeysUI.2.3.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\FNA\x86\EmptyKeys.UserInterface.FNA.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EmptyKeys.UserInterface.MonoGame, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EmptyKeysUI.2.2.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\MonoGame\AnyCPU\EmptyKeys.UserInterface.MonoGame.dll</HintPath>
+    <Reference Include="EmptyKeys.UserInterface.MonoGame, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EmptyKeysUI.2.3.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\MonoGame\AnyCPU\EmptyKeys.UserInterface.MonoGame.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EmptyKeys.UserInterface.SunBurn, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EmptyKeysUI.2.2.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Sunburn\AnyCPU\EmptyKeys.UserInterface.SunBurn.dll</HintPath>
+    <Reference Include="EmptyKeys.UserInterface.SunBurn, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EmptyKeysUI.2.3.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Sunburn\AnyCPU\EmptyKeys.UserInterface.SunBurn.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EmptyKeys.UserInterface.Xenko, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EmptyKeysUI.2.2.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Xenko\AnyCPU\EmptyKeys.UserInterface.Xenko.dll</HintPath>
+    <Reference Include="EmptyKeys.UserInterface.Xenko, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EmptyKeysUI.2.3.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Xenko\AnyCPU\EmptyKeys.UserInterface.Xenko.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
@@ -67,12 +76,17 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NLog.4.3.5\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\..\packages\NLog.4.4.0-beta13\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -112,8 +126,6 @@
   <ItemGroup>
     <Content Include="BehaviorsLicense.txt" />
     <Content Include="license.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

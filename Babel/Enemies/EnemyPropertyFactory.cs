@@ -14,7 +14,7 @@ namespace Babel.Enemies
         {
             switch(entityType.Name)
             {
-                case "SmallBox":
+                case "Sprites/SmallBox/SmallBox":
                     return SmallBoxProperties;
                 case "LargeBox":
                     return LargeBoxProperties;

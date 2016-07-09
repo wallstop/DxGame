@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
@@ -42,7 +42,7 @@ namespace DxCore.Core.Components.Advanced.Entities
         protected virtual void HandleEntityDeath(EntityDeathMessage deathMessage)
         {
             Team sourceTeam = Parent?.ComponentOfType<TeamComponent>()?.Team;
-            DxVector2 sourcePosition = Parent?.ComponentOfType<SpatialComponent>()?.Center ?? new DxVector2();
+            DxVector2 sourcePosition = Parent?.ComponentOfType<PhysicsComponent>()?.Center ?? new DxVector2();
             ExperienceDroppedMessage experienceDropped = new ExperienceDroppedMessage(sourceTeam, sourcePosition, Radius,
                 Experience);
             experienceDropped.Emit();

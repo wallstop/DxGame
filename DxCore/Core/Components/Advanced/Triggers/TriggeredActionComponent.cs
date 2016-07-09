@@ -48,7 +48,7 @@ namespace DxCore.Core.Components.Advanced.Triggers
             source_ = source;
             action_ = action;
             finalAction_ = finalAction;
-            TimeInitialized = DxGame.Instance.CurrentTime.TotalGameTime;
+            TimeInitialized = DxGame.Instance.CurrentUpdateTime.TotalGameTime;
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -115,7 +115,7 @@ namespace DxCore.Core.Components.Advanced.Triggers
             tickTrigger_ = tickTrigger;
             action_ = action;
             finalAction_ = finalAction;
-            TimeInitialized = DxGame.Instance.CurrentTime.TotalGameTime;
+            TimeInitialized = DxGame.Instance.CurrentUpdateTime.TotalGameTime;
         }
 
         protected override void Update(DxGameTime gameTime)

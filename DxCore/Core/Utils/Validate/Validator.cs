@@ -27,8 +27,8 @@ namespace DxCore.Core.Utils.Validate
             return expression;
         }
 
-        public bool IsFalse(bool expression) => IsFalse(expression);
-        public bool IsFalse(bool expression, string message) => IsFalse(expression, message);
+        public bool IsFalse(bool expression) => IsFalse(expression, DefaultMessage);
+        public bool IsFalse(bool expression, string message) => IsFalse(expression, () => message);
         public bool IsFalse(bool expression, Func<string> messageProducer) => IsTrue(!expression, messageProducer);
 
         public bool IsInClosedInterval<T>(T value, T min, T max) where T : IComparable<T>
@@ -130,12 +130,10 @@ namespace DxCore.Core.Utils.Validate
             return noNullElements;
         }
 
-        public bool AreEqual<T>(T first, T second) where T : IEquatable<T> => AreEqual(first, second, DefaultMessage);
+        public bool AreEqual<T>(T first, T second) => AreEqual(first, second, DefaultMessage);
+        public bool AreEqual<T>(T first, T second, string message) => AreEqual(first, second, () => message);
 
-        public bool AreEqual<T>(T first, T second, string message) where T : IEquatable<T>
-            => AreEqual(first, second, () => message);
-
-        public bool AreEqual<T>(T first, T second, Func<string> messageProducer) where T : IEquatable<T>
+        public bool AreEqual<T>(T first, T second, Func<string> messageProducer)
         {
             bool areEqual = Objects.Equals(first, second);
             FailIfFalse(areEqual, messageProducer);
@@ -163,6 +161,52 @@ namespace DxCore.Core.Utils.Validate
             bool isPositive = 0 < value;
             FailIfFalse(isPositive, messageProducer);
             return isPositive;
+        }
+
+        public bool IsNotNegative(double value) => IsNotNegative(value, DefaultMessage);
+        public bool IsNotNegative(double value, string message) => IsNotNegative(value, () => message);
+
+        public bool IsNotNegative(double value, Func<string> messageProducer)
+        {
+            bool isNotNegative = 0 <= value;
+            FailIfFalse(isNotNegative, messageProducer);
+            return isNotNegative;
+        }
+
+        public bool IsNegative(double value) => IsNegative(value, DefaultMessage);
+        public bool IsNegative(double value, string message) => IsNegative(value, () => message);
+
+        public bool IsNegative(double value, Func<string> messageProducer)
+        {
+            bool isNegative = value < 0;
+            FailIfFalse(isNegative, messageProducer);
+            return isNegative;
+        }
+
+        public bool IsElementOf<T>(IEnumerable<T> enumeration, T element)
+            => IsElementOf(enumeration, element, DefaultMessage);
+
+        public bool IsElementOf<T>(IEnumerable<T> enumeration, T element, string message)
+            => IsElementOf(enumeration, element, () => message);
+
+        public bool IsElementOf<T>(IEnumerable<T> enumeration, T element, Func<string> messageProducer)
+        {
+            bool isElementOf = enumeration.Contains(element);
+            FailIfFalse(isElementOf, messageProducer);
+            return isElementOf;
+        }
+
+        public bool IsNotElementOf<T>(IEnumerable<T> enumeration, T element)
+            => IsNotElementOf(enumeration, element, DefaultMessage);
+
+        public bool IsNotElementOf<T>(IEnumerable<T> enumeration, T element, string message)
+            => IsNotElementOf(enumeration, element, () => message);
+
+        public bool IsNotElementOf<T>(IEnumerable<T> enumeration, T element, Func<string> messageProducer)
+        {
+            bool isNotElementOf = !enumeration.Contains(element);
+            FailIfFalse(isNotElementOf, messageProducer);
+            return isNotElementOf;
         }
     }
 }

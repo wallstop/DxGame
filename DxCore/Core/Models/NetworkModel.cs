@@ -15,8 +15,6 @@ namespace DxCore.Core.Models
 
         public IEnumerable<AbstractNetworkServer> Servers => connections_.OfType<AbstractNetworkServer>();
 
-        public override bool ShouldSerialize => false;
-
         // TODO: Get outta here
         public NetworkModel WithClient(AbstractNetworkClient client)
         {

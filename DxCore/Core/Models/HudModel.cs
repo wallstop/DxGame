@@ -1,5 +1,4 @@
 ﻿using DxCore.Core.GraphicsWidgets.HUD;
-using DXGame.Core;
 
 namespace DxCore.Core.Models
 {

@@ -24,11 +24,9 @@ namespace DxCore.Core.Components.Developer
         private TimeSpan lastUpdated_ = TimeSpan.Zero;
         protected SpriteFont spriteFont_;
 
-        public override bool ShouldSerialize => false;
-
         public override void LoadContent()
         {
-            spriteFont_ = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Pericles");
+            spriteFont_ = DxGame.Instance.Content.Load<SpriteFont>("Fonts/04b03_20_Regular");
         }
 
         protected override void Update(DxGameTime gameTime)

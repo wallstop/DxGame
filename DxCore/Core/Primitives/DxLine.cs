@@ -17,6 +17,8 @@ namespace DxCore.Core.Primitives
 
         public DxVector2 Vector => new DxVector2(End.X - Start.X, End.Y - Start.Y);
 
+        public DxLine Reverse => new DxLine(End, Start);
+
         /* Careful with vertical lines */
         public float Slope => (End.Y - Start.Y) / (End.X - Start.X);
 

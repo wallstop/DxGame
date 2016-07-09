@@ -47,7 +47,7 @@ namespace MapEditorLibrary.Core.Models
 
         public override void LoadContent()
         {
-            SpriteFont font = DxGame.Instance.Content.Load<SpriteFont>("Segoe_UI_15_Bold");
+            SpriteFont font = DxGame.Instance.Content.Load<SpriteFont>("Fonts/visitor_tt1_brk_15_Regular");
             FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
 
             // I guess we bind controls here?

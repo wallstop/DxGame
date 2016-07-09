@@ -36,7 +36,7 @@ namespace DxCore.Core.GraphicsWidgets.HUD
 
         public override void LoadContent()
         {
-            spriteFont_ = DxGame.Instance.Content.Load<SpriteFont>("Fonts/Pericles_20");
+            spriteFont_ = DxGame.Instance.Content.Load<SpriteFont>("Fonts/04b03_20_Regular");
             fpsTracker_.LoadContent();
             base.LoadContent();
         }

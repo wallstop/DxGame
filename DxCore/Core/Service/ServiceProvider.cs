@@ -65,7 +65,7 @@ namespace DxCore.Core.Service
                 service = Service<T>.Instance;
                 Service<T>.Instance = null;
             }
-            using(new CriticalRegion(Lock, CriticalRegion.LockType.Read))
+            using(new CriticalRegion(Lock, CriticalRegion.LockType.Write))
             {
                 return ServicePool.Remove(service);
             }
@@ -92,16 +92,23 @@ namespace DxCore.Core.Service
                 Service<T>.Instance = null;
             }
 
-            using(new CriticalRegion(Lock, CriticalRegion.LockType.Read))
+            using(new CriticalRegion(Lock, CriticalRegion.LockType.Write))
             {
                 return ServicePool.Remove(service);
             }
         }
 
+        /**
+            <summary>
+                Returns all Services currently registered with ServiceProvider.
+                Changes to the returned Set will not modify services owned by ServiceProvider.
+            </summary>
+        */
         public HashSet<IService> GetAll()
         {
             using(new CriticalRegion(Lock, CriticalRegion.LockType.Read))
             {
+                /* Serve up a copy to prevent meddling kids */
                 return ServicePool.ToHashSet();
             }
         }

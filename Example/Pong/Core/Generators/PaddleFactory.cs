@@ -111,6 +111,7 @@ namespace Pong.Core.Generators
 
                 WorldEdge edge = edgeProducer.Invoke();
 
+                /* Bind the paddle to the wall - this prevents any force from the ball hitting the paddle moving the paddle in any direction */
                 PrismaticJoint connectedToWallJoint = JointFactory.CreatePrismaticJoint(world, edge.Body, paddleBody,
                     offset, new Vector2(0, 1));
                 connectedToWallJoint.LocalAnchorA = offset;

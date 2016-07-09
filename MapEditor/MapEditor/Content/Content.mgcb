@@ -13,51 +13,59 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin Segoe_UI_15_Bold.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Segoe_UI_15_Bold.spritefont
+#begin Fonts/04b03_20_Regular.bmp
+/importer:TextureImporter
+/processor:FontTextureProcessor
+/processorParam:FirstCharacter= 
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:Fonts/04b03_20_Regular.bmp
 
-#begin Fonts/Segoe_UI_15_Bold.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Fonts/Segoe_UI_15_Bold.spritefont
+#begin Fonts/visitor_tt1_brk_9_Regular.bmp
+/importer:TextureImporter
+/processor:FontTextureProcessor
+/processorParam:FirstCharacter= 
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:Fonts/visitor_tt1_brk_9_Regular.bmp
 
-#begin Fonts/ComicSans_14.spriteFont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Fonts/ComicSans_14.spriteFont
+#begin Fonts/visitor_tt1_brk_15_Regular.bmp
+/importer:TextureImporter
+/processor:FontTextureProcessor
+/processorParam:FirstCharacter= 
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:Fonts/visitor_tt1_brk_15_Regular.bmp
 
-#begin Fonts/ComicSans_20.spriteFont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Fonts/ComicSans_20.spriteFont
+#begin Fonts/visitor_tt1_brk_26_Regular.bmp
+/importer:TextureImporter
+/processor:FontTextureProcessor
+/processorParam:FirstCharacter= 
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:Fonts/visitor_tt1_brk_26_Regular.bmp
 
-#begin Fonts/Gungsuh_14.spriteFont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Fonts/Gungsuh_14.spriteFont
+#begin Fonts/visitor_tt1_brk_54_Regular.bmp
+/importer:TextureImporter
+/processor:FontTextureProcessor
+/processorParam:FirstCharacter= 
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:Fonts/visitor_tt1_brk_54_Regular.bmp
 
-#begin Fonts/Gungsuh_20.spriteFont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Fonts/Gungsuh_20.spriteFont
+#begin Fonts/visitor_tt1_brk_72_Regular.bmp
+/importer:TextureImporter
+/processor:FontTextureProcessor
+/processorParam:FirstCharacter= 
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:Fonts/visitor_tt1_brk_72_Regular.bmp
 
-#begin Fonts/Pericles_14.spriteFont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Fonts/Pericles_14.spriteFont
-
-#begin Fonts/Pericles_20.spriteFont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Fonts/Pericles_20.spriteFont
+#begin Fonts/visitor_tt1_brk_75_Regular.bmp
+/importer:TextureImporter
+/processor:FontTextureProcessor
+/processorParam:FirstCharacter= 
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:Fonts/visitor_tt1_brk_75_Regular.bmp
 

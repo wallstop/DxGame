@@ -1,9 +1,8 @@
-﻿using DxCore.Core.Map;
+﻿using DxCore.Core.Components.Advanced.Map;
 using DxCore.Core.Messaging;
 using DxCore.Core.Utils.Distance;
 using FarseerPhysics.Collision;
 using FarseerPhysics.Dynamics;
-using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
 using NLog;
@@ -30,9 +29,9 @@ namespace DxCore.Core.Components.Advanced.Physics
                 new Vector2(upper.X - 0.1f, upper.Y), body, null);
             mapCollisionSensor.IsSensor = true;
 
-            mapCollisionSensor.OnCollision += (Fixture self, Fixture maybeMapTile, Contact contact) =>
+            mapCollisionSensor.OnCollision += (self, maybeMapTile, contact) =>
             {
-                MapCollidable mapTile = maybeMapTile.UserData as MapCollidable;
+                MapGeometryComponent mapTile = maybeMapTile.UserData as MapGeometryComponent;
                 if(ReferenceEquals(mapTile, null))
                 {
                     return false;

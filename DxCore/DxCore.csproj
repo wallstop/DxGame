@@ -116,13 +116,13 @@
     <Compile Include="Core\Components\Advanced\IEnvironmentComponent.cs" />
     <Compile Include="Core\Components\Advanced\Impulse\AttackCommandResponder.cs" />
     <Compile Include="Core\Components\Advanced\Impulse\MapPlatformDropper.cs" />
+    <Compile Include="Core\Components\Advanced\Map\MapGeometryComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapRotationTriggerComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapTileComponent.cs" />
     <Compile Include="Core\Components\Advanced\Map\MapTransition.cs" />
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
     <Compile Include="Core\Components\Advanced\Physics\PhysicsComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Physics\SensorComponent.cs" />
     <Compile Include="Core\Components\Advanced\Physics\SensorFactory.cs" />
     <Compile Include="Core\Components\Advanced\Player\ActivePlayerComponent.cs" />
     <Compile Include="Core\Components\Advanced\Player\PlayerNameComponent.cs" />
@@ -205,7 +205,7 @@
     <Compile Include="Core\Level\Level.cs" />
     <Compile Include="Core\Map\BoundingBox.cs" />
     <Compile Include="Core\Map\Map.cs" />
-    <Compile Include="Core\Map\MapCollidable.cs" />
+    <Compile Include="Core\Map\MapTile.cs" />
     <Compile Include="Core\Map\MapDescriptor.cs" />
     <Compile Include="Core\Map\Tile.cs" />
     <Compile Include="Core\Map\TilePosition.cs" />
@@ -274,7 +274,7 @@
     <Compile Include="Core\Primitives\DxColor.cs" />
     <Compile Include="Core\Primitives\DxDegree.cs" />
     <Compile Include="Core\Primitives\DxGameTime.cs" />
-    <Compile Include="Core\Primitives\DxLine.cs" />
+    <Compile Include="Core\Primitives\DxLineSegment.cs" />
     <Compile Include="Core\Primitives\DxRadian.cs" />
     <Compile Include="Core\Primitives\DxRectangle.cs" />
     <Compile Include="Core\Primitives\DxVector2.cs" />
@@ -341,6 +341,7 @@
     <Compile Include="Core\Utils\Objects.cs" />
     <Compile Include="Core\Utils\Optional.cs" />
     <Compile Include="Core\Utils\Pair.cs" />
+    <Compile Include="Core\Utils\PrimitiveExtensions.cs" />
     <Compile Include="Core\Utils\ProducerConsumerCollectionExtensions.cs" />
     <Compile Include="Core\Utils\RandomUtils.cs" />
     <Compile Include="Core\Utils\SpringFunctions.cs" />

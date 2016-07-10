@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced.Physics;
+using DxCore.Core.Components.Advanced.Map;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
@@ -18,8 +18,7 @@ namespace DxCore.Core.Map
     [DataContract]
     public class Map : DrawableComponent
     {
-        [DataMember]
-        private MapDescriptor mapDescriptor_;
+        [DataMember] private MapDescriptor mapDescriptor_;
 
         [IgnoreDataMember]
         public MapDescriptor MapDescriptor
@@ -33,10 +32,10 @@ namespace DxCore.Core.Map
         }
 
         [DataMember]
-        private Dictionary<TilePosition, MapCollidable> MapCollidables { get; set; }
+        private Dictionary<TilePosition, MapTile> MapTiles { get; set; }
 
         [DataMember]
-        public ISpatialTree<MapCollidable> Collidables { get; private set; }
+        public ISpatialTree<MapTile> TileSpatialTree { get; private set; }
 
         [DataMember]
         public DxVector2 PlayerSpawn { get; private set; }
@@ -65,22 +64,20 @@ namespace DxCore.Core.Map
             }
         }
 
-        public static Dictionary<TilePosition, MapCollidable> DetermineCollidables(MapDescriptor mapDescriptor)
+        public static Dictionary<TilePosition, MapTile> DetermineMapTiles(MapDescriptor mapDescriptor)
         {
             Validate.Hard.IsNotNullOrDefault(mapDescriptor);
-            Dictionary<TilePosition, MapCollidable> mapCollidables =
-                new Dictionary<TilePosition, MapCollidable>(mapDescriptor.Tiles.Count);
+            Dictionary<TilePosition, MapTile> mapTiles = new Dictionary<TilePosition, MapTile>(mapDescriptor.Tiles.Count);
 
             foreach(KeyValuePair<TilePosition, Tile> tilePair in mapDescriptor.Tiles)
             {
                 TilePosition position = tilePair.Key;
                 Tile tile = tilePair.Value;
-                mapCollidables[position] = new MapCollidable(tile,
-                    new DxRectangle(position.X * mapDescriptor.TileWidth,
-                        position.Y * mapDescriptor.TileHeight, mapDescriptor.TileWidth,
-                        mapDescriptor.TileHeight));
+                mapTiles[position] = new MapTile(tile,
+                    new DxRectangle(position.X * mapDescriptor.TileWidth, position.Y * mapDescriptor.TileHeight,
+                        mapDescriptor.TileWidth, mapDescriptor.TileHeight));
             }
-            return mapCollidables;
+            return mapTiles;
         }
 
         public Map(MapDescriptor descriptor)
@@ -88,12 +85,8 @@ namespace DxCore.Core.Map
             Validate.Hard.IsNotNullOrDefault(descriptor, this.GetFormattedNullOrDefaultMessage(nameof(descriptor)));
             MapDescriptor = descriptor;
 
-            MapCollidables = DetermineCollidables(descriptor);
-            foreach(PhysicsComponent mapTilePhysics in MapCollidables.Values.Select(collidable => collidable.Physics))
-            {
-                mapTilePhysics.Create();
-            }
-            Collidables = new RTree<MapCollidable>(mapCollidable => mapCollidable.Space, MapCollidables.Values.ToList());
+            MapTiles = DetermineMapTiles(descriptor);
+            TileSpatialTree = new RTree<MapTile>(mapTile => mapTile.Space, MapTiles.Values.ToList());
             DrawPriority = DrawPriority.Map;
 
             PlayerSpawn = RandomSpawnLocation.Position;
@@ -101,13 +94,20 @@ namespace DxCore.Core.Map
 
         public override void LoadContent()
         {
-            foreach(MapCollidable mapCollidable in MapCollidables.Values)
+            foreach(MapTile mapTile in MapTiles.Values)
             {
                 /* Loading cache - textures should be loaded in automagically */
-                tileTextureCache_.Get(mapCollidable.Tile);
+                tileTextureCache_.Get(mapTile.Tile);
             }
 
             base.LoadContent();
+        }
+
+        public override void Initialize()
+        {
+            MapGeometryComponent mapGeometry =
+                new MapGeometryComponent(MapTiles.Values.Select(tile => tile.Space).ToList());
+            mapGeometry.Create();
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
@@ -116,32 +116,16 @@ namespace DxCore.Core.Map
             range.X *= -1;
             range.Y *= -1;
 
-            List<MapCollidable> mapCollidablesOnScreen = Collidables.InRange(range);
-            foreach(MapCollidable mapCollidable in mapCollidablesOnScreen)
+            List<MapTile> mapTilesOnScreen = TileSpatialTree.InRange(range);
+            foreach(MapTile mapTile in mapTilesOnScreen)
             {
-                spriteBatch.Draw(tileTextureCache_.Get(mapCollidable.Tile), null, mapCollidable.Space);
+                spriteBatch.Draw(tileTextureCache_.Get(mapTile.Tile), null, mapTile.Space);
             }
-
-            ///* 
-            //    Map is pretty special: We want actually want to draw whatever chunk of the map the screen is currently seeing. 
-            //    However, we've already set up a matrix translation on our camera for every object. So, we need to undo the translation (just flip x & y)
-            //*/
-            //DxRectangle target = range;
-            //target.X = -target.X;
-            //target.Y = -target.Y;
-
-            //foreach(var mapLayerEntry in MapTexturesAndLayers)
-            //{
-            //    Texture2D mapImage = mapLayerEntry.Key;
-            //    int layer = mapLayerEntry.Value;
-            //    spriteBatch.Draw(mapImage, target.ToRectangle(), (target / MapDescriptor.Scale).ToRectangle(),
-            //        Color.White, 0, new Vector2(), SpriteEffects.None, layer);
-            //}
         }
 
         private bool CollidesWithMap(DxRectangle region)
         {
-            List<MapCollidable> collisions = Collidables.InRange(region);
+            List<MapTile> collisions = TileSpatialTree.InRange(region);
             return collisions.Any(collidable => collidable.Space.Intersects(region));
         }
     }

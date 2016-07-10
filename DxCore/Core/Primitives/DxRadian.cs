@@ -74,9 +74,9 @@ namespace DxCore.Core.Primitives
             return new DxRadian(vector);
         }
 
-        public static implicit operator DxRadian(DxLine line)
+        public static implicit operator DxRadian(DxLineSegment lineSegment)
         {
-            return new DxRadian(line.Vector);
+            return new DxRadian(lineSegment.Vector);
         }
 
         public override int GetHashCode()

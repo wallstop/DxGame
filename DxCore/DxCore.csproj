@@ -150,6 +150,7 @@
     <Compile Include="Core\Components\Developer\LifeSuckerComponent.cs" />
     <Compile Include="Core\Components\Developer\TeamCounterWidget.cs" />
     <Compile Include="Core\Components\Developer\TimePerFrameGraph.cs" />
+    <Compile Include="Core\Components\Developer\WorldDrawer.cs" />
     <Compile Include="Core\Components\Network\AbstractNetworkClient.cs" />
     <Compile Include="Core\Components\Network\AbstractNetworkServer.cs" />
     <Compile Include="Core\Components\Network\NetworkClientConfig.cs" />

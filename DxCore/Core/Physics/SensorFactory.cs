@@ -15,6 +15,8 @@ namespace DxCore.Core.Physics
 
         public static void WorldCollisionSensor(Body body, Fixture fixture, PhysicsComponent initializedComponent)
         {
+            // TODO: Expand to all directions
+
             /* 
                 Note: This sensor will emit a message for *EACH* map tile that it collides with, per frame. 
                 Might want to fix that

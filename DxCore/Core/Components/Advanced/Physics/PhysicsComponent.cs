@@ -152,7 +152,7 @@ namespace DxCore.Core.Components.Advanced.Physics
 
         private void HandleForceAttachment(Force force)
         {
-            Body.ApplyForce(force.Value.Vector2, Body.WorldCenter);
+            Body.ApplyForce(force.Value.FarseerScaled().Vector2, Body.WorldCenter);
         }
 
         private void HandleImpulseAttachment(Core.Physics.Impulse impulse)
@@ -162,7 +162,7 @@ namespace DxCore.Core.Components.Advanced.Physics
                 /* Depending on body type, ApplyLinearImpulse may be a simple no-op */
                 case BodyType.Dynamic:
                 {
-                    Body.ApplyLinearImpulse(impulse.Value.Vector2, Body.WorldCenter);
+                    Body.ApplyLinearImpulse(impulse.Value.FarseerScaled().Vector2, Body.WorldCenter);
                     break;
                 }
                 default:

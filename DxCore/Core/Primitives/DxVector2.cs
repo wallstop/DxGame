@@ -138,6 +138,11 @@ namespace DxCore.Core.Primitives
             return lhs;
         }
 
+        public static DxVector2 operator /(DxVector2 lhs, double divisor)
+        {
+            return lhs / (float) divisor;
+        }
+
         public static implicit operator DxVector2(Vector2 vector)
         {
             return new DxVector2(vector);

@@ -330,6 +330,7 @@
     <Compile Include="Core\Utils\EnumUtils.cs" />
     <Compile Include="Core\Utils\FarseerExtensions.cs" />
     <Compile Include="Core\Utils\FixedSizedBuffer.cs" />
+    <Compile Include="Core\Utils\ForceExtensions.cs" />
     <Compile Include="Core\Utils\GameElementCollection.cs" />
     <Compile Include="Core\Utils\GameObjectUtils.cs" />
     <Compile Include="Core\Utils\GenericUtils.cs" />

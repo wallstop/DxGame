@@ -15,6 +15,7 @@ namespace DxCore.Core.Physics
         public static CollisionGroup Map = new CollisionGroup(Category.Cat1);
         public static CollisionGroup Entities = new CollisionGroup(Category.Cat2);
 
+        // TODO: Test
         public static class Alias<T>
         {
             private static ConcurrentDictionary<T, CollisionGroup> Aliases { get; } =

@@ -6,10 +6,13 @@ using DxCore.Core.Utils;
 
 namespace DxCore.Core
 {
+    internal static class SerializerEncoding
+    {
+        public static readonly Encoding Encoding = Encoding.Default;
+    }
+
     public static class Serializer<T>
     {
-        internal static readonly Encoding Encoding = Encoding.Default;
-
         private static DataContractJsonSerializer JsonSerializer => new DataContractJsonSerializer(typeof(T),
             new DataContractJsonSerializerSettings { UseSimpleDictionaryFormat = true });
 
@@ -63,7 +66,7 @@ namespace DxCore.Core
 
         public static T ReadFromJsonFile(string path)
         {
-            var settingsAsText = File.ReadAllText(path, Encoding);
+            var settingsAsText = File.ReadAllText(path, SerializerEncoding.Encoding);
             var settingsAsJsonByteArray = settingsAsText.GetBytes();
             return JsonDeserialize(settingsAsJsonByteArray);
         }
@@ -80,7 +83,7 @@ namespace DxCore.Core
         public static string ToJson<T>(this T input)
         {
             byte[] json = Serializer<T>.JsonSerialize(input);
-            string jsonAsText = Serializer<T>.Encoding.GetString(json);
+            string jsonAsText = SerializerEncoding.Encoding.GetString(json);
             return jsonAsText;
         }
 

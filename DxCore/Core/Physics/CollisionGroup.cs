@@ -56,5 +56,11 @@ namespace DxCore.Core.Physics
         {
             return new CollisionGroup(CollisionCategory & ~collisionGroup.CollisionCategory);
         }
+
+        public static implicit operator Category(CollisionGroup group)
+        {
+            Validate.Hard.IsNotNull(group);
+            return group.CollisionCategory;
+        }
     }
 }

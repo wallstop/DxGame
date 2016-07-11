@@ -12,13 +12,7 @@ namespace DxCore.Core.Utils
 
     public static class PrimitiveExtensions
     {
-        /**
-            <summary>
-                Given an enumeration of Rectangles, returns bundles of points representing simplified polygons
-            </summary>
-        */
-
-        public static List<List<DxVector2>> Simplify(this IEnumerable<DxRectangle> bunchaRectangles)
+        public static List<DxLineSegment> Edges(this IEnumerable<DxRectangle> bunchaRectangles)
         {
             /* 
                 Algorithm is pretty simple: 
@@ -27,13 +21,8 @@ namespace DxCore.Core.Utils
                         Pick edge, remove
                         Walk shape, removing edges from the pool
                         When no more, finalize shape
-                    Poop out some shapes
-
-                TODO: Currently this converts rectangles with their corners touching
-                (https://i.ytimg.com/vi/vfiSNCZE7Dg/hqdefault.jpg) into one "shape".
-                We could do some smarter detection of polygons where we keep track of
-                the outline that we've created so far and some smart puzzle-piece
-                style creation with backtracking. But the time for that is not now.
+                    Take finalized shape, turn into edge bundle
+                    Poop that bad boy out
             */
             List<DxLineSegment> shapeEdges =
                 bunchaRectangles.SelectMany(rectangle => rectangle.Lines)
@@ -42,25 +31,26 @@ namespace DxCore.Core.Utils
                     .SelectMany(lineSegment => lineSegment)
                     .ToList();
 
-            List<List<DxVector2>> shapes = new List<List<DxVector2>>();
-            List<DxVector2> currentShape = new List<DxVector2>();
+            List<List<DxLineSegment>> shapes = new List<List<DxLineSegment>>();
+            List<DxLineSegment> currentShape = new List<DxLineSegment>();
             DxLineSegment? currentEdge = null;
-            shapeWalkin: while(shapeEdges.Any() || currentShape.Any())
+            shapeWalkin:
+            while(shapeEdges.Any() || currentShape.Any())
             {
                 if(!currentEdge.HasValue)
                 {
                     if(currentShape.Any())
                     {
                         shapes.Add(currentShape);
-                        currentShape = new List<DxVector2>();
+                        currentShape = new List<DxLineSegment>();
                         continue;
                     }
-                    currentEdge = shapeEdges[shapeEdges.Count -1];
-                    shapeEdges.RemoveAt(shapeEdges.Count -1);
+                    currentEdge = shapeEdges[shapeEdges.Count - 1];
+                    shapeEdges.RemoveAt(shapeEdges.Count - 1);
                     continue;
                 }
 
-                currentShape.Add(currentEdge.Value.Start);
+                currentShape.Add(currentEdge.Value);
 
                 for(int i = 0; i < shapeEdges.Count; ++i)
                 {
@@ -79,13 +69,47 @@ namespace DxCore.Core.Utils
                     {
                         currentEdge = edgeToConsider.Reverse;
                         shapeEdges.RemoveAt(i);
-                        goto shapeWalkin;;
+                        goto shapeWalkin;
+                        ;
                     }
                 }
                 currentEdge = null;
             }
 
-            return shapes;
+            /* 
+                Shape bundles done! Now we turn them into vertical and horizontal edges.
+                We can get away with this because we know they're rectangles instead of 
+                arbitrary polygons.
+            */
+            return shapes.SelectMany(shape =>
+            {
+                List<DxLineSegment> horizontalEdges =
+                    // ReSharper disable once CompareOfFloatsByEqualityOperator
+                    shape.Where(lineSegment => lineSegment.Start.Y == lineSegment.End.Y)
+                        .GroupBy(lineSegment => lineSegment.Start.Y)
+                        .Select(groupedLineSegment =>
+                        {
+                            float y = groupedLineSegment.Key;
+                            SortedSet<float> xValues =
+                                new SortedSet<float>(
+                                    groupedLineSegment.SelectMany(segment => new[] {segment.Start.X, segment.End.X}));
+                            return new DxLineSegment(new DxVector2(xValues.Min, y), new DxVector2(xValues.Max, y));
+                        }).ToList();
+
+                List<DxLineSegment> verticalEdges =
+                    // ReSharper disable once CompareOfFloatsByEqualityOperator
+                    shape.Where(lineSegment => lineSegment.Start.X == lineSegment.End.X)
+                        .GroupBy(lineSegment => lineSegment.Start.X)
+                        .Select(groupedLineSegment =>
+                        {
+                            float x = groupedLineSegment.Key;
+                            SortedSet<float> yValues =
+                                new SortedSet<float>(
+                                    groupedLineSegment.SelectMany(segment => new[] {segment.Start.Y, segment.End.Y}));
+                            return new DxLineSegment(new DxVector2(x, yValues.Min), new DxVector2(x, yValues.Max));
+                        }).ToList();
+                return horizontalEdges.Concat(verticalEdges).ToList();
+            }).ToList();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Messaging;
+using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
@@ -32,7 +33,7 @@ namespace DxCore.Core.Models
         }
     }
 
-    public sealed class WorldModel : Model
+    public sealed class WorldModel : Model, IWorldCollidable
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -136,7 +137,7 @@ namespace DxCore.Core.Models
             Bounds = updateWorldBounds.Bounds;
         }
 
-        private static WorldEdge[] GenerateWorldBounds(World world, DxRectangle singleBound)
+        private WorldEdge[] GenerateWorldBounds(World world, DxRectangle singleBound)
         {
             // TODO: Clean up
             const int numBounds = 4;
@@ -165,9 +166,9 @@ namespace DxCore.Core.Models
             {
                 DxLineSegment edgeAsLineSegment = borders[i];
                 Vector2 edgePosition = edgeAsLineSegment.Start.Vector2 * DxToFarseerScale;
-                Body worldBody = BodyFactory.CreateBody(world, bodyPositions[i]);
+                Body worldBody = BodyFactory.CreateBody(world, bodyPositions[i], 0, this);
                 Fixture fixture = FixtureFactory.AttachEdge(edgePosition, edgeAsLineSegment.End.Vector2 * DxToFarseerScale,
-                    worldBody);
+                    worldBody, this);
                 fixture.CollidesWith = Category.All;
 
                 EdgeShape edgeShape = (EdgeShape) fixture.Shape;

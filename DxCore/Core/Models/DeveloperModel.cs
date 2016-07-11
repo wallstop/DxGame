@@ -31,12 +31,10 @@ namespace DxCore.Core.Models
             var fpsTracker = new FpsWidget();
             components_.Add(fpsTracker);
             devSwitch_ = new DeveloperSwitch();
-            var mapTreeWidget =
-                new CollisionTreeWidget<MapTile>(
-                    () => DxGame.Instance.Model<MapModel>()?.Map?.TileSpatialTree ?? EmptyTree<MapTile>.Instance);
-            components_.Add(mapTreeWidget);
-            var boundingBoxWidget = new BoundingBoxWidget();
-            components_.Add(boundingBoxWidget);
+            WorldDrawer worldDrawer = new WorldDrawer();
+            worldDrawer.Create();
+//            var boundingBoxWidget = new BoundingBoxWidget();
+//            components_.Add(boundingBoxWidget);
             var teamCounterWidget = new TeamCounterWidget();
             components_.Add(teamCounterWidget);
             var timePerFrameBackground = new TimePerFrameGraphBackground();

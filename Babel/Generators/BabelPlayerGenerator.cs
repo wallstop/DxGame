@@ -8,7 +8,6 @@ using DxCore.Core.Components.Advanced.Entities;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Player;
 using DxCore.Core.Components.Advanced.Properties;
-using DxCore.Core.Generators;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.State;
@@ -17,7 +16,7 @@ using NLog;
 
 namespace Babel.Generators
 {
-    public class BabelPlayerGenerator : IPlayerGenerator
+    public class BabelPlayerGenerator
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -33,7 +32,7 @@ namespace Babel.Generators
                     .WithPosition(playerPosition)
                     .WithCollisionGroup(CollisionGroup.Entities)
                     .WithCollidesWith(CollisionGroup.All.Not(CollisionGroup.Entities))
-                    .WithPhysicsInitialization(SensorFactory.MapCollisionSensor)
+                    .WithPhysicsInitialization(SensorFactory.WorldCollisionSensor)
                     .Build();
             playerProperties_ = new EntityPropertiesComponent(PlayerFactory.BasicPlayerProperties,
                 PlayerFactory.GenericLevelUp);
@@ -51,7 +50,7 @@ namespace Babel.Generators
             healthBar_.LoadContent();
         }
 
-        public IPlayerGenerator From(DxVector2 playerPosition)
+        public BabelPlayerGenerator From(DxVector2 playerPosition)
         {
             return new BabelPlayerGenerator(playerPosition);
         }

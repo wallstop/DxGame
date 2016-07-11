@@ -20,6 +20,17 @@ namespace DxCore.Core.Utils
             };
         }
 
+        public static List<DxVector2> DxVertices(this DxRectangle space)
+        {
+            return new List<DxVector2>(4)
+            {
+                new DxVector2(space.X, space.Y),
+                new DxVector2(space.X + space.Width, space.Y),
+                new DxVector2(space.X + space.Width, space.Y + space.Height),
+                new DxVector2(space.X, space.Y + space.Height)
+            };
+        }
+
         public static Vertices ToVertices(this IEnumerable<DxVector2> source)
         {
             return ToVertices(source.Select(dxVector => dxVector.Vector2));

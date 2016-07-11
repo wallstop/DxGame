@@ -3,7 +3,6 @@ using DxCore;
 using DxCore.Core;
 using DxCore.Core.Components.Advanced.Command;
 using DxCore.Core.Components.Network;
-using DxCore.Core.Generators;
 using DxCore.Core.Messaging.Network;
 using DxCore.Core.Models;
 using DxCore.Core.Network;
@@ -69,7 +68,7 @@ namespace Babel.Network
             ServerEventTracker eventTracker = new ServerEventTracker(baseEventTracker_);
 
             MapModel mapModel = DxGame.Instance.Model<MapModel>();
-            IPlayerGenerator playerGenerator =
+            BabelPlayerGenerator playerGenerator =
                 new BabelPlayerGenerator(mapModel.RandomSpawnLocation.Center);
 
             SimpleRelayingCommandComponent networkPlayerCommand = new SimpleRelayingCommandComponent(TickRate);

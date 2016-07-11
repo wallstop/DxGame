@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Models;
@@ -8,6 +7,7 @@ using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
+using FarseerPhysics.Collision.Shapes;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 
@@ -15,10 +15,10 @@ namespace DxCore.Core.Components.Advanced.Map
 {
     [Serializable]
     [DataContract]
-    public sealed class MapGeometryComponent : Component
+    public sealed class MapGeometryComponent : Component, IWorldCollidable
     {
         [DataMember]
-        private List<List<DxVector2>> MapGeometry { get; set; }
+        private List<DxLineSegment> MapGeometry { get; set; }
 
         [IgnoreDataMember]
         private Body MapGeometryBody { get; set; }
@@ -26,19 +26,22 @@ namespace DxCore.Core.Components.Advanced.Map
         public MapGeometryComponent(ICollection<DxRectangle> mapTiles)
         {
             Validate.Hard.IsNotNull(mapTiles);
-            MapGeometry = mapTiles.Simplify();
+            MapGeometry = mapTiles.Edges();
         }
 
         public override void Initialize()
         {
             WorldModel worldModel = DxGame.Instance.Model<WorldModel>();
             MapGeometryBody = BodyFactory.CreateBody(worldModel.World, this);
-            foreach(List<DxVector2> shape in MapGeometry)
+            foreach(DxLineSegment edge in MapGeometry)
             {
-                Fixture shapeBounds = FixtureFactory.AttachPolygon(shape.Select(point => point * WorldModel.DxToFarseerScale).ToVertices(), 0, MapGeometryBody, this);
-                shapeBounds.CollisionCategories = CollisionGroup.Map.CollisionCategory;
+                EdgeShape edgeShape = new EdgeShape(edge.Start.Vector2 * WorldModel.DxToFarseerScale, edge.End.Vector2 * WorldModel.DxToFarseerScale);
+                Fixture fixture = MapGeometryBody.CreateFixture(edgeShape, this);
+                fixture.CollisionCategories = CollisionGroup.Map.CollisionCategory;
+                fixture.CollidesWith = CollisionGroup.All;
             }
 
+            MapGeometryBody.SleepingAllowed = false;
             MapGeometryBody.Restitution = 0;
             MapGeometryBody.Friction = 0;
             MapGeometryBody.FixedRotation = true;

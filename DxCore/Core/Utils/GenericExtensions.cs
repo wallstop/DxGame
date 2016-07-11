@@ -2,18 +2,18 @@
 
 namespace DxCore.Core.Utils
 {
-    public static class GenericUtils
+    public static class GenericExtensions
     {
-        public static T CheckedCast<T>(object typedObject, string message) where T : class
+        public static T CheckedCast<T>(object typedObject, Func<string> mesageProducer) where T : class
         {
             var casted = typedObject as T;
-            Validate.Validate.Hard.IsNotNull(casted, message);
+            Validate.Validate.Hard.IsNotNull(casted, mesageProducer);
             return casted;
         }
 
         public static T CheckedCast<T>(object typedObject) where T : class
         {
-            return CheckedCast<T>(typedObject, $"Could not cast {typedObject} to {typeof (T)}");
+            return CheckedCast<T>(typedObject, () => $"Could not cast {typedObject} to {typeof (T)}");
         }
 
         public static T Create<T>(Type type)

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Distance;
 using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Map
@@ -43,6 +45,34 @@ namespace DxCore.Core.Map
             return Objects.HashCode(X, Y);
         }
 
+        public TilePosition Neighbor(Direction direction)
+        {
+            switch(direction)
+            {
+                case Direction.East:
+                {
+                    return new TilePosition(X + 1, Y);
+                }
+                case Direction.North:
+                {
+                    return new TilePosition(X, Y - 1);
+                }
+                case Direction.South:
+                {
+                    return new TilePosition(X, Y + 1);
+                }
+                case Direction.West:
+                {
+                    return new TilePosition(X - 1, Y);
+                }
+                default:
+                {
+                    throw new InvalidEnumArgumentException(
+                        $"No neighbor mapping found for {typeof(Direction)} {direction}");
+                }
+            }
+        }
+
         public static bool operator ==(TilePosition lhs, TilePosition rhs)
         {
             return lhs.X == rhs.X && lhs.Y == rhs.Y;
@@ -65,7 +95,6 @@ namespace DxCore.Core.Map
         }
 
         /* We need a public static Parse method if we want these to be dictionary keys & JSON serialized */
-        public static TilePosition Parse(string toParse)
-            => SerializerExtensions.Parse<TilePosition>(toParse);
+        public static TilePosition Parse(string toParse) => SerializerExtensions.Parse<TilePosition>(toParse);
     }
 }

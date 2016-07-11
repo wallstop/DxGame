@@ -123,6 +123,7 @@
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
     <Compile Include="Core\Components\Advanced\Physics\PhysicsComponent.cs" />
+    <Compile Include="Core\Pathfinding\NavigableMesh.cs" />
     <Compile Include="Core\Physics\SensorFactory.cs" />
     <Compile Include="Core\Components\Advanced\Player\ActivePlayerComponent.cs" />
     <Compile Include="Core\Components\Advanced\Player\PlayerNameComponent.cs" />
@@ -314,12 +315,12 @@
     <Compile Include="Core\Utils\Cache\Simple\ISimpleCache.cs" />
     <Compile Include="Core\Utils\Cache\Simple\UnboundedLoadingSimpleCache.cs" />
     <Compile Include="Core\Utils\Cache\Simple\UnboundedSimpleCache.cs" />
-    <Compile Include="Core\Utils\CollectionUtils.cs" />
+    <Compile Include="Core\Utils\CollectionExtensions.cs" />
     <Compile Include="Core\Utils\ColorFactory.cs" />
     <Compile Include="Core\Utils\ColorUtils.cs" />
     <Compile Include="Core\Utils\CriticalRegion.cs" />
     <Compile Include="Core\Utils\DateTimeConstants.cs" />
-    <Compile Include="Core\Utils\DictionaryUtils.cs" />
+    <Compile Include="Core\Utils\DictionaryExtensions.cs" />
     <Compile Include="Core\Utils\Distance\Directions.cs" />
     <Compile Include="Core\Utils\Distance\Distance.cs" />
     <Compile Include="Core\Utils\Distance\EmptyTree.cs" />
@@ -333,7 +334,7 @@
     <Compile Include="Core\Utils\ForceExtensions.cs" />
     <Compile Include="Core\Utils\GameElementCollection.cs" />
     <Compile Include="Core\Utils\GameObjectUtils.cs" />
-    <Compile Include="Core\Utils\GenericUtils.cs" />
+    <Compile Include="Core\Utils\GenericExtensions.cs" />
     <Compile Include="Core\Utils\IBuilder.cs" />
     <Compile Include="Core\Utils\IdBasedCounter.cs" />
     <Compile Include="Core\Utils\ImmutablePair.cs" />

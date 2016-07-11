@@ -15,5 +15,7 @@ namespace DxCore.Core.Physics
         {
             Value = maxForceToNullify;
         }
+
+        public override string ToString() => this.ToJson();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Messaging;
+using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
@@ -14,14 +15,15 @@ using NLog;
 
 namespace DxCore.Core.Models
 {
+
     public struct WorldEdge
     {
         public Body Body { get; }
         public Fixture Fixture { get; }
 
-        public DxLine Edge { get; }
+        public DxLineSegment Edge { get; }
 
-        public WorldEdge(Body body, Fixture fixture, DxLine edge)
+        public WorldEdge(Body body, Fixture fixture, DxLineSegment edge)
         {
             Validate.Hard.IsNotNull(body);
             Body = body;
@@ -31,7 +33,7 @@ namespace DxCore.Core.Models
         }
     }
 
-    public sealed class WorldModel : Model
+    public sealed class WorldModel : Model, IWorldCollidable
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -135,7 +137,7 @@ namespace DxCore.Core.Models
             Bounds = updateWorldBounds.Bounds;
         }
 
-        private static WorldEdge[] GenerateWorldBounds(World world, DxRectangle singleBound)
+        private WorldEdge[] GenerateWorldBounds(World world, DxRectangle singleBound)
         {
             // TODO: Clean up
             const int numBounds = 4;
@@ -147,7 +149,7 @@ namespace DxCore.Core.Models
                 singleBound.TopRight.Vector2 * DxToFarseerScale, singleBound.TopLeft.Vector2 * DxToFarseerScale,
                 singleBound.BottomLeft.Vector2 * DxToFarseerScale
             };
-            DxLine[] borders =
+            DxLineSegment[] borders =
             {
                 /* 
                     We double up left & top, because bottom & right are simply translations of these lines. 
@@ -162,11 +164,11 @@ namespace DxCore.Core.Models
 
             for(int i = 0; i < numBounds; ++i)
             {
-                DxLine edgeAsLine = borders[i];
-                Vector2 edgePosition = edgeAsLine.Start.Vector2 * DxToFarseerScale;
-                Body worldBody = BodyFactory.CreateBody(world, bodyPositions[i]);
-                Fixture fixture = FixtureFactory.AttachEdge(edgePosition, edgeAsLine.End.Vector2 * DxToFarseerScale,
-                    worldBody);
+                DxLineSegment edgeAsLineSegment = borders[i];
+                Vector2 edgePosition = edgeAsLineSegment.Start.Vector2 * DxToFarseerScale;
+                Body worldBody = BodyFactory.CreateBody(world, bodyPositions[i], 0, this);
+                Fixture fixture = FixtureFactory.AttachEdge(edgePosition, edgeAsLineSegment.End.Vector2 * DxToFarseerScale,
+                    worldBody, this);
                 fixture.CollidesWith = Category.All;
 
                 EdgeShape edgeShape = (EdgeShape) fixture.Shape;
@@ -183,7 +185,7 @@ namespace DxCore.Core.Models
                 worldBody.Friction = 0;
                 worldBody.Restitution = 0;
                 worldBody.FixedRotation = true;
-                WorldEdge edge = new WorldEdge(worldBody, fixture, edgeAsLine);
+                WorldEdge edge = new WorldEdge(worldBody, fixture, edgeAsLineSegment);
                 worldBounds[i] = edge;
             }
 

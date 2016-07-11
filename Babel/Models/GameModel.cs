@@ -5,7 +5,6 @@ using Babel.Generators;
 using Babel.Level;
 using DxCore;
 using DxCore.Core;
-using DxCore.Core.Generators;
 using DxCore.Core.Level;
 using DxCore.Core.Models;
 
@@ -56,7 +55,7 @@ namespace Babel.Models
 
         public void InitializePlayer()
         {
-            IPlayerGenerator playerGenerator = new BabelPlayerGenerator(mapModel_.PlayerSpawn);
+            BabelPlayerGenerator playerGenerator = new BabelPlayerGenerator(mapModel_.PlayerSpawn);
             List<GameObject> generatedObjects = playerGenerator.Generate();
 
             // TODO: We need to throw this away if we're doing a network game

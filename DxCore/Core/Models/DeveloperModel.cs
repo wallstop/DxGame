@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Components.Developer;
 using DxCore.Core.GraphicsWidgets.HUD;
@@ -9,7 +8,6 @@ using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
-using DXGame.Core;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DxCore.Core.Models
@@ -33,11 +31,10 @@ namespace DxCore.Core.Models
             var fpsTracker = new FpsWidget();
             components_.Add(fpsTracker);
             devSwitch_ = new DeveloperSwitch();
-            var mapTreeWidget =
-                new CollisionTreeWidget<MapCollidable>(() => DxGame.Instance.Model<MapModel>()?.Map?.Collidables ?? EmptyTree<MapCollidable>.Instance);
-            components_.Add(mapTreeWidget);
-            var boundingBoxWidget = new BoundingBoxWidget();
-            components_.Add(boundingBoxWidget);
+            WorldDrawer worldDrawer = new WorldDrawer();
+            worldDrawer.Create();
+//            var boundingBoxWidget = new BoundingBoxWidget();
+//            components_.Add(boundingBoxWidget);
             var teamCounterWidget = new TeamCounterWidget();
             components_.Add(teamCounterWidget);
             var timePerFrameBackground = new TimePerFrameGraphBackground();

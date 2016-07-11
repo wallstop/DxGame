@@ -24,7 +24,7 @@ namespace DxCore
         The way in which the game updates. If we are a server, or singleplayer, we will be in an "Active" state. That is, once we read input from our connected clients, 
         WE decide exactly what the state should be, and dictate it to everyone else.
         For connected clients, we need to be in "Cooperative" mode. That is, we need to do client-side prediction, update our state accordingly, but also take in over-rules
-        from the server in case an action / soemthing that we thought happened didn't actually happen. In that way, we are "cooperating" with the server.
+        from the server in case an action / something that we thought happened didn't actually happen. In that way, we are "cooperating" with the server.
         In Passive mode, no action that we take has any effect. Our state is treated as "read only" from our point of view. This is useful for things like "spectating" or
         simple network tests.
     */
@@ -73,7 +73,8 @@ namespace DxCore
         public GameElementCollection DxGameElements { get; protected set; }
         // TODO: Thread safety? Move this to some kind of Context static class?
         public static DxGame Instance => singleton_;
-        public virtual double PhysicsUpdateFrequency => 1 / 60.0;
+        // TODO: What is the difference? :^?
+        public virtual double PhysicsUpdateFrequency => 1 / 120.0;
         public virtual double TargetFps => 120.0;
         protected static readonly TimeSpan MinimumFramerate = TimeSpan.FromMilliseconds(1 / 10.0);
         public GameElementCollection NewGameElements { get; } = new GameElementCollection();
@@ -99,7 +100,7 @@ namespace DxCore
 
         public Stopwatch GameTimer { get; }
 
-        // TODO: Move all this crap out somewhow
+        // TODO: Move all this crap out somehow
 
         public DxRectangle ScreenRegion
         {
@@ -115,7 +116,7 @@ namespace DxCore
                 float y = Screen.Height / 2.0f - cameraModel.Position.Y;
 
                 // Attempt to bind by map rules
-                // TODO: Shove this shit in the camera mdel
+                // TODO: Shove this shit in the camera model
                 MapModel mapModel = Model<MapModel>();
                 if(!ReferenceEquals(mapModel, null))
                 {
@@ -465,7 +466,7 @@ namespace DxCore
             // Should probably thread this... but wait until we have perf testing :)
             networkModel?.ReceiveData(gameTime);
             /* We may end up modifying these as we iterate over them, so take an immutable copy */
-            TimeSpan physicsTarget = TimeSpan.FromSeconds(PhysicsUpdateFrequency);
+            TimeSpan physicsTarget = TimeSpan.FromMilliseconds(PhysicsUpdateFrequency * 1000.0);
             if((lastUpdated_ + physicsTarget) < gameTime.TotalGameTime)
             {
                 DxGameTime fakedGameTime = new DxGameTime(gameTime.TotalGameTime, gameTime.TotalGameTime - lastUpdated_,

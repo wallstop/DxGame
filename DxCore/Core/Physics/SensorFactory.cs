@@ -1,21 +1,22 @@
-﻿using DxCore.Core.Map;
+﻿using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Messaging;
 using DxCore.Core.Utils.Distance;
 using FarseerPhysics.Collision;
 using FarseerPhysics.Dynamics;
-using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
 using NLog;
 
-namespace DxCore.Core.Components.Advanced.Physics
+namespace DxCore.Core.Physics
 {
     public static class SensorFactory
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public static void MapCollisionSensor(Body body, Fixture fixture, PhysicsComponent initializedComponent)
+        public static void WorldCollisionSensor(Body body, Fixture fixture, PhysicsComponent initializedComponent)
         {
+            // TODO: Expand to all directions
+
             /* 
                 Note: This sensor will emit a message for *EACH* map tile that it collides with, per frame. 
                 Might want to fix that
@@ -30,18 +31,18 @@ namespace DxCore.Core.Components.Advanced.Physics
                 new Vector2(upper.X - 0.1f, upper.Y), body, null);
             mapCollisionSensor.IsSensor = true;
 
-            mapCollisionSensor.OnCollision += (Fixture self, Fixture maybeMapTile, Contact contact) =>
+            mapCollisionSensor.OnCollision += (self, maybeMapTile, contact) =>
             {
-                MapCollidable mapTile = maybeMapTile.UserData as MapCollidable;
-                if(ReferenceEquals(mapTile, null))
+                IWorldCollidable worldCollidable = maybeMapTile.UserData as IWorldCollidable;
+                if(ReferenceEquals(worldCollidable, null))
                 {
                     return false;
                 }
-                CollisionMessage mapCollision = new CollisionMessage();
-                mapCollision.WithDirectionAndSource(Direction.South, mapTile);
-                mapCollision.Target = initializedComponent.Parent.Id;
-                Logger.Debug("Triggered map collision");
-                mapCollision.Emit();
+                CollisionMessage worldCollision = new CollisionMessage();
+                worldCollision.WithDirectionAndSource(Direction.South, worldCollidable);
+                worldCollision.Target = initializedComponent.Parent.Id;
+                Logger.Info($"Triggered map collision: {contact}");
+                worldCollision.Emit();
                 return false;
             };
         }

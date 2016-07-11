@@ -49,19 +49,19 @@ namespace DxCore.Core.Primitives
         public DxRectangle QuadrantThree => new DxRectangle(X, Y + Height / 2, Width / 2, Height / 2);
         public DxRectangle QuadrantFour => new DxRectangle(X + Width / 2, Y + Height / 2, Width / 2, Height / 2);
 
-        public DxLine LeftBorder => new DxLine(X, Y, X, Y + Height);
-        public DxLine RightBorder => new DxLine(X + Width, Y, X + Width, Y + Height);
-        public DxLine BottomBorder => new DxLine(X, Y + Height, X + Width, Y + Height);
-        public DxLine TopBorder => new DxLine(X, Y, X + Width, Y);
+        public DxLineSegment LeftBorder => new DxLineSegment(X, Y, X, Y + Height);
+        public DxLineSegment RightBorder => new DxLineSegment(X + Width, Y, X + Width, Y + Height);
+        public DxLineSegment BottomBorder => new DxLineSegment(X, Y + Height, X + Width, Y + Height);
+        public DxLineSegment TopBorder => new DxLineSegment(X, Y, X + Width, Y);
 
         public DxVector2 Position => new DxVector2(X, Y);
 
-        public List<DxLine> Lines
+        public List<DxLineSegment> Lines
         {
             get
             {
                 const int numLines = 4;
-                var lines = new List<DxLine>(numLines) {TopBorder, BottomBorder, LeftBorder, RightBorder};
+                var lines = new List<DxLineSegment>(numLines) {TopBorder, BottomBorder, LeftBorder, RightBorder};
                 return lines;
             }
         }

@@ -139,15 +139,15 @@ namespace Babel.Level
             Spawner.SpawnerBuilder levelEndSpawner = Spawner.Builder();
             /* Try and put it on a surface */
             Map map = CurrentMap;
-            List<MapCollidable> mapTiles = map.Collidables.Elements.ToList();
+            List<MapTile> mapTiles = map.TileSpatialTree.Elements.ToList();
             DxVector2 mapTransitionLocation;
             do
             {
-                MapCollidable mapTile = ThreadLocalRandom.Current.FromCollection(mapTiles);
+                MapTile mapTile = ThreadLocalRandom.Current.FromCollection(mapTiles);
                 float x = ThreadLocalRandom.Current.NextFloat(mapTile.Space.X, mapTile.Space.X + mapTile.Space.Width);
                 mapTransitionLocation = new DxVector2(x, mapTile.Space.Y - 7.5f);
             } while(
-                map.Collidables.InRange(new DxRectangle(mapTransitionLocation.X, mapTransitionLocation.Y, 5, 5)).Any());
+                map.TileSpatialTree.InRange(new DxRectangle(mapTransitionLocation.X, mapTransitionLocation.Y, 5, 5)).Any());
             levelEndSpawner.WithSpawnArea(new DxRectangle(mapTransitionLocation.X, mapTransitionLocation.Y, 1, 1));
 
             GameObject mapTransitionObject = GameObject.Builder().Build();

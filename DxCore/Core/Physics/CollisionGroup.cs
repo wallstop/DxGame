@@ -15,6 +15,7 @@ namespace DxCore.Core.Physics
         public static CollisionGroup Map = new CollisionGroup(Category.Cat1);
         public static CollisionGroup Entities = new CollisionGroup(Category.Cat2);
 
+        // TODO: Test
         public static class Alias<T>
         {
             private static ConcurrentDictionary<T, CollisionGroup> Aliases { get; } =
@@ -55,6 +56,12 @@ namespace DxCore.Core.Physics
         public CollisionGroup Not(CollisionGroup collisionGroup)
         {
             return new CollisionGroup(CollisionCategory & ~collisionGroup.CollisionCategory);
+        }
+
+        public static implicit operator Category(CollisionGroup group)
+        {
+            Validate.Hard.IsNotNull(group);
+            return group.CollisionCategory;
         }
     }
 }

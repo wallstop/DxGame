@@ -69,3 +69,35 @@
 /processorParam:TextureFormat=Color
 /build:Fonts/visitor_tt1_brk_75_Regular.bmp
 
+#begin Fonts/04b03_10_Regular.bmp
+/importer:TextureImporter
+/processor:FontTextureProcessor
+/processorParam:FirstCharacter= 
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:Fonts/04b03_10_Regular.bmp
+
+#begin Fonts/04b03_16_Regular.bmp
+/importer:TextureImporter
+/processor:FontTextureProcessor
+/processorParam:FirstCharacter= 
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:Fonts/04b03_16_Regular.bmp
+
+#begin Fonts/04b03_26_Regular.bmp
+/importer:TextureImporter
+/processor:FontTextureProcessor
+/processorParam:FirstCharacter= 
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:Fonts/04b03_26_Regular.bmp
+
+#begin Fonts/04b03_72_Regular.bmp
+/importer:TextureImporter
+/processor:FontTextureProcessor
+/processorParam:FirstCharacter= 
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:Fonts/04b03_72_Regular.bmp
+

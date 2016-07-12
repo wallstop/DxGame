@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
+using NLog;
 
 namespace DxCore.Core.Components.Advanced.Command
 {
@@ -10,6 +11,8 @@ namespace DxCore.Core.Components.Advanced.Command
     [DataContract]
     public class PathfindingInputComponent : AbstractCommandComponent
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         [DataMember] private LinkedList<DxVector2> waypoints_ = new LinkedList<DxVector2>();
 
         [DataMember] private TimeSpan currentTimeout_;
@@ -25,11 +28,15 @@ namespace DxCore.Core.Components.Advanced.Command
 
         public override void OnAttach()
         {
-            RegisterMessageHandler<PathFindingRequest>(HandlePathFindingRequest);
+            RegisterMessageHandler<PathfindingResponse>(HandlePathfindingResponse);
             base.OnAttach();
         }
 
-        private void HandlePathFindingRequest(PathFindingRequest request) {}
+        private void HandlePathfindingResponse(PathfindingResponse pathfindingResponse)
+        {
+            // TODO: Interpret& turn into commands
+            Logger.Debug("Finished pathding. Response: {0}", pathfindingResponse.Path);
+        }
 
         protected override void Update(DxGameTime gameTime) {}
     }

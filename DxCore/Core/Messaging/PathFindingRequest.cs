@@ -1,21 +1,29 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
-using DXGame.Core;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Messaging
 {
     [Serializable]
     [DataContract]
-    public class PathFindingRequest : Message, ITargetedMessage
+    public sealed class PathFindingRequest : Message
     {
         [DataMember]
-        public DxVector2 Location { get; set; }
+        public DxVector2 Start { get; private set; }
 
         [DataMember]
-        public TimeSpan Timeout { get; set; }
+        public DxVector2 Goal { get; private set; }
 
         [DataMember]
-        public UniqueId Target { get; set; }
+        public UniqueId Requester { get; private set; }
+
+        public PathFindingRequest(DxVector2 start, DxVector2 goal, UniqueId requester)
+        {
+            Start = start;
+            Goal = goal;
+            Validate.Hard.IsNotNull(requester);
+            Requester = requester;
+        }
     }
 }

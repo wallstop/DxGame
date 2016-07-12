@@ -45,7 +45,7 @@ namespace DxCore.Core.Map
             return Objects.HashCode(X, Y);
         }
 
-        public TilePosition Neighbor(Direction direction)
+        public TilePosition? Neighbor(Direction direction)
         {
             switch(direction)
             {
@@ -55,6 +55,10 @@ namespace DxCore.Core.Map
                 }
                 case Direction.North:
                 {
+                    if(Y == 0)
+                    {
+                        return null;
+                    }
                     return new TilePosition(X, Y - 1);
                 }
                 case Direction.South:
@@ -63,6 +67,10 @@ namespace DxCore.Core.Map
                 }
                 case Direction.West:
                 {
+                    if(X == 0)
+                    {
+                        return null;
+                    }
                     return new TilePosition(X - 1, Y);
                 }
                 default:

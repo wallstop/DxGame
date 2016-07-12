@@ -175,17 +175,23 @@ namespace DxCore.Core.Pathfinding
                 TilePosition position = chosenPositionAndNode.Key;
                 NavigableMeshNode node = chosenPositionAndNode.Value;
 
-                TilePosition immediateRight = position.Neighbor(Direction.East);
                 NavigableMeshNode neighbor;
-                if(meshNodes.TryGetValue(immediateRight, out neighbor))
+                TilePosition? immediateRight = position.Neighbor(Direction.East);
+                if(immediateRight.HasValue)
                 {
-                    node.Neighbors.Add(neighbor);
+                    if(meshNodes.TryGetValue(immediateRight.Value, out neighbor))
+                    {
+                        node.Neighbors.Add(neighbor);
+                    }
                 }
 
-                TilePosition immediateLeft = position.Neighbor(Direction.West);
-                if(meshNodes.TryGetValue(immediateLeft, out neighbor))
+                TilePosition? immediateLeft = position.Neighbor(Direction.West);
+                if(immediateLeft.HasValue)
                 {
-                    node.Neighbors.Add(neighbor);
+                    if(meshNodes.TryGetValue(immediateLeft.Value, out neighbor))
+                    {
+                        node.Neighbors.Add(neighbor);
+                    }
                 }
 
                 // TODO: Jumpable terrain. Ignore for now, MVP style

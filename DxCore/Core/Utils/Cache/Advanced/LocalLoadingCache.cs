@@ -4,11 +4,17 @@ namespace DxCore.Core.Utils.Cache.Advanced
 {
     public class LocalLoadingCache<K, V> : LocalCache<K, V>, ILoadingCache<K, V>
     {
-        private Func<V> ValueLoader { get; }
+        private Func<K, V> ValueLoader { get; }
 
-        public LocalLoadingCache(CacheBuilder<K, V> cacheBuilder, Func<V> valueLoader) : base(cacheBuilder)
+        public LocalLoadingCache(CacheBuilder<K, V> cacheBuilder, Func<V> valueLoader) 
+            :  this(cacheBuilder, key => valueLoader.Invoke())
         {
-            Validate.Validate.Hard.IsNotNull(valueLoader, this.GetFormattedNullOrDefaultMessage(nameof(valueLoader)));
+        }
+
+        public LocalLoadingCache(CacheBuilder<K, V> cacheBuilder, Func<K, V> valueLoader) : base(cacheBuilder)
+        {
+            Validate.Validate.Hard.IsNotNull(valueLoader,
+                () => this.GetFormattedNullOrDefaultMessage(nameof(valueLoader)));
             ValueLoader = valueLoader;
         }
 

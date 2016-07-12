@@ -22,8 +22,8 @@ namespace MapEditorLibrary.Core.Components
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly ICache<Tile, Texture2D> tileTextureCache_ =
-            new LocalCache<Tile, Texture2D>(CacheBuilder<Tile, Texture2D>.NewBuilder());
+        private readonly ILoadingCache<Tile, Texture2D> tileTextureCache_ =
+            CacheBuilder<Tile, Texture2D>.NewBuilder().Build(tile => DxGame.Instance.Content.Load<Texture2D>(tile.Asset));
 
         private MapDescriptor.MapDescriptorBuilder MapBuilder { get; }
 
@@ -174,8 +174,7 @@ namespace MapEditorLibrary.Core.Components
                 DxRectangle space = new DxRectangle(tilePosition.X * tileWidth, tilePosition.Y * tileHeight, tileWidth,
                     tileHeight);
 
-                Texture2D tileTexture = tileTextureCache_.Get(tile,
-                    () => DxGame.Instance.Content.Load<Texture2D>(tile.Asset));
+                Texture2D tileTexture = tileTextureCache_.Get(tile);
 
                 spriteBatch.Draw(tileTexture, space, Color.White);
             }

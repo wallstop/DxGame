@@ -26,6 +26,11 @@ namespace DxCore.Core.Utils.Cache.Advanced
             return new LocalCache<K, V>(this);
         }
 
+        public ILoadingCache<K, V> Build(Func<K, V> valueLoader)
+        {
+            return new LocalLoadingCache<K, V>(this, valueLoader);
+        }
+
         public ILoadingCache<K, V> Build(Func<V> valueLoader)
         {
             return new LocalLoadingCache<K, V>(this, valueLoader);

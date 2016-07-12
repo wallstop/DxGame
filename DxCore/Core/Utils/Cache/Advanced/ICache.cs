@@ -1,13 +1,12 @@
 ﻿using System;
-using DXGame.Core.Utils;
 
 namespace DxCore.Core.Utils.Cache.Advanced
 {
-    public interface ICache<in K, V>
+    public interface ICache<K, V>
     {
         bool GetIfPresent(K key, out V value);
 
-        V Get(K key, Func<V> valueLoader);
+        V Get(K key, Func<K, V> valueLoader);
 
         void Put(K key, V value);
 

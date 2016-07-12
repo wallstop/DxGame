@@ -123,6 +123,7 @@
     <Compile Include="Core\Components\Advanced\MouseTrackingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
     <Compile Include="Core\Components\Advanced\Physics\PhysicsComponent.cs" />
+    <Compile Include="Core\Messaging\PathfindingResponse.cs" />
     <Compile Include="Core\Pathfinding\NavigableMesh.cs" />
     <Compile Include="Core\Physics\SensorFactory.cs" />
     <Compile Include="Core\Components\Advanced\Player\ActivePlayerComponent.cs" />

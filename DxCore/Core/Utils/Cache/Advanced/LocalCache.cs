@@ -6,6 +6,7 @@ using System.Threading;
 
 namespace DxCore.Core.Utils.Cache.Advanced
 {
+    // TODO: LRU caching
     public class LocalCache<K, V> : ICache<K, V>
     {
         private const int DrainThreshold = 0x3F;
@@ -137,7 +138,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
             }
         }
 
-        public V Get(K key, Func<V> valueLoader)
+        public V Get(K key, Func<K, V> valueLoader)
         {
             try
             {
@@ -149,7 +150,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
                 {
                     lockedValue = cache_.AddOrUpdate(key, keyArg =>
                     {
-                        StampedAndLockedValue<V> newLockedValue = NewStampedAndLockedValue(valueLoader);
+                        StampedAndLockedValue<V> newLockedValue = NewStampedAndLockedValue(key, valueLoader);
                         /* Totally new - no need to lock it, we have TOTAL control */
                         RecordWrite(key, currentTicks);
                         return newLockedValue;
@@ -158,7 +159,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
                         V outValue;
                         if(!UpdateOrExpireStampedAndLockedValueForRead(keyArg, existingValue, out outValue))
                         {
-                            StampedAndLockedValue<V> newLockedValue = NewStampedAndLockedValue(valueLoader);
+                            StampedAndLockedValue<V> newLockedValue = NewStampedAndLockedValue(key, valueLoader);
                             RecordWrite(key, currentTicks);
                             return newLockedValue;
                         }
@@ -374,9 +375,9 @@ namespace DxCore.Core.Utils.Cache.Advanced
             return true;
         }
 
-        private StampedAndLockedValue<V> NewStampedAndLockedValue(Func<V> valueLoader)
+        private StampedAndLockedValue<V> NewStampedAndLockedValue(K key, Func<K, V> valueLoader)
         {
-            V value = valueLoader.Invoke();
+            V value = valueLoader.Invoke(key);
             return NewStampedAndLockedValue(value);
         }
 
@@ -484,7 +485,9 @@ namespace DxCore.Core.Utils.Cache.Advanced
     }
 
     /**
-        Records an Access snapshot for a given key. These entries are shoved onto a respective read / write queue. Once in awhile, the queues are flushed. We're able to gaurantee that an entry should be expired IFF:
+        Records an Access snapshot for a given key. These entries are shoved onto a respective read / write queue. Once in awhile, the queues are flushed. 
+        We're able to guarantee that an entry should be expired IFF:
+
         * The key exists in the cache
         * The access tickstamp is the same as this access entry
         * The write tickstamp is the same as this access entry
@@ -495,7 +498,8 @@ namespace DxCore.Core.Utils.Cache.Advanced
         * If a key->value was removed, it will not exist in the cache
 
         Combined with the fact that we do not record StampedAccessEntries for operations that we don't care about (ie, configured, via a DiscardingQueue), 
-        this allows us to 
+        this allows us to use these to compare against values stored within the queue, making the final decision on whether or not to expire entries
+        by comparing stored values with access entries.
     */
 
     internal sealed class StampedAccessEntry<K>

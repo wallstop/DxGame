@@ -13,7 +13,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
 
         public V Get(Func<V> valueLoader)
         {
-            return Get(FastCacheKey.Instance, valueLoader);
+            return Get(FastCacheKey.Instance, instance => valueLoader.Invoke());
         }
 
         public void Put(V value)

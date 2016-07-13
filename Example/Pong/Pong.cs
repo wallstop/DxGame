@@ -23,7 +23,7 @@ namespace Pong
             /* A ball */
             /* A ball kicker-offer */
 
-            // TODO //////////////////////////
+            // TODO /////////////////////////
 
             /* Goal detection */
             /* Ball reset after goal */

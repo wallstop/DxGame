@@ -8,7 +8,7 @@ using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DxCore.Core.Components.Advanced
+namespace DxCore.Core.Components.Advanced.Sprite
 {
     [Serializable]
     [DataContract]

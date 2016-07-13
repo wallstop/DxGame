@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 
-namespace DxCore.Core.Components.Advanced
+namespace DxCore.Core.Components.Advanced.Collision
 {
     [Serializable]
     [DataContract]

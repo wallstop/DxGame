@@ -3,7 +3,7 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using Microsoft.Xna.Framework.Input;
 
-namespace DxCore.Core.Components.Advanced
+namespace DxCore.Core.Components.Advanced.Position
 {
     public class MouseTrackingComponent : Component, ISpatial
     {

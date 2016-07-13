@@ -4,16 +4,16 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 
-namespace DxCore.Core.Components.Advanced
+namespace DxCore.Core.Components.Advanced.Team
 {
     [Serializable]
     [DataContract]
     public class TeamComponent : Component
     {
         [DataMember]
-        public Team Team { get; }
+        public DxCore.Core.Team Team { get; }
 
-        public TeamComponent(Team team)
+        public TeamComponent(DxCore.Core.Team team)
         {
             Validate.Hard.IsNotNull(team, () => this.GetFormattedNullOrDefaultMessage(team));
             Team = team;

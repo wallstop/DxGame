@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using DxCore.Core.Map;
 using DxCore.Core.Primitives;
@@ -46,6 +47,9 @@ namespace DxCore.Core.Pathfinding
 
         public List<NavigableMeshNode> PathFind(DxVector2 startPosition, DxVector2 endPosition)
         {
+#if DEBUG
+            Stopwatch timer = Stopwatch.StartNew();
+#endif
             NavigableMeshNode start;
             if(!QueryableMesh.Closest(startPosition, out start))
             {
@@ -74,15 +78,21 @@ namespace DxCore.Core.Pathfinding
                 [start] = scoreFunction(start, goal)
             };
 
+            int nodesConsidered = 0;
             while(openSet.Any())
             {
                 NavigableMeshNode current = openSet.OrderBy(node => fScore.GetOrElse(node, float.MaxValue)).First();
                 if(current == goal)
                 {
+#if DEBUG
+                    Logger.Debug("Pathfinding from {0} to {1} took {2}ms. Considered {3} nodes", startPosition, endPosition, timer.Elapsed.TotalMilliseconds, nodesConsidered);
+#endif
+                    Logger.Debug("Found path from {0} to {1}", startPosition, endPosition);
                     return ReconstructPath(cameFrom, current);
                 }
                 openSet.Remove(current);
                 closedSet.Add(current);
+                ++nodesConsidered;
                 foreach(NavigableMeshNode neighbor in current.Neighbors)
                 {
                     if(closedSet.Contains(neighbor))
@@ -105,6 +115,9 @@ namespace DxCore.Core.Pathfinding
                     fScore[neighbor] = gScore[neighbor] + scoreFunction(neighbor, goal);
                 }
             }
+#if DEBUG
+            Logger.Debug("Pathfinding from {0} to {1} took {2}ms. Considered {3} nodes", startPosition, endPosition, timer.Elapsed.TotalMilliseconds, nodesConsidered);
+#endif
             Logger.Info("Failed to find path from {0} to {1}", startPosition, endPosition);
             return new List<NavigableMeshNode>(0);
         }

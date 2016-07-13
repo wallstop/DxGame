@@ -215,7 +215,7 @@ namespace DxCore.Core.Messaging
                 return;
             }
 
-            Logger.Info("Could not find a matching handler for Id: {0}, Message: {1}", target, typedAndTargetedMessage);
+            Logger.Trace("Could not find a matching handler for Id: {0}, Message: {1}", target, typedAndTargetedMessage);
         }
     }
 }

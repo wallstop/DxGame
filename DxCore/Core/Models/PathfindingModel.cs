@@ -62,12 +62,15 @@ namespace DxCore.Core.Models
         private static void RequestPathfinding(NavigableMesh mesh, PathFindingRequest request,
             ConcurrentQueue<PathfindingResponse> finishedResponses)
         {
-            new Task<List<NavigableMeshNode>>(() => mesh.PathFind(request.Start, request.Goal)).ContinueWith(
-                pathfindingResult =>
-                {
-                    PathfindingResponse response = new PathfindingResponse(pathfindingResult.Result, request.Requester);
-                    finishedResponses.Enqueue(response);
-                });
+            Task<List<NavigableMeshNode>> futurePathfinding =
+                new Task<List<NavigableMeshNode>>(() => mesh.PathFind(request.Start, request.Goal));
+
+            futurePathfinding.Start();
+            futurePathfinding.ContinueWith(pathfindingResult =>
+            {
+                PathfindingResponse response = new PathfindingResponse(pathfindingResult.Result, request.Requester);
+                finishedResponses.Enqueue(response);
+            });
         }
     }
 }

@@ -37,8 +37,8 @@ namespace Babel.Enemies
             health: new Property<int>(5, "Health"),
             maxHealth: new Property<int>(5, "MaxHealth"),
             defense: new Property<int>(1, "Defense"),
-            moveSpeed: new Property<float>(7.5f, "MoveSpeed"),
-            jumpSpeed: new Property<float>(18.0f, "JumpSpeed"),
+            moveSpeed: new Property<float>(200f, "MoveSpeed"),
+            jumpSpeed: new Property<float>(700f, "JumpSpeed"),
             attackSpeed: new Property<int>(1, "AttackSpeed"));
 
         private static EntityProperties LargeBoxProperties => new EntityProperties(

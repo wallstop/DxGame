@@ -35,29 +35,26 @@ namespace DxCore.Core.Messaging
             Simple handy-dandy wrapper around Commandment-specific util methods (since methods cannot be global namespaced)
         </summary>
     */
+
     public static class Commandments
     {
-        public static readonly ReadOnlyDictionary<Direction, Commandment> DIRECTIONS_TO_MOVEMENTS = new ReadOnlyDictionary
-            <Direction, Commandment>(
-            new Dictionary<Direction, Commandment>
+        public static readonly ReadOnlyDictionary<Direction, Commandment> DIRECTIONS_TO_MOVEMENTS =
+            new ReadOnlyDictionary<Direction, Commandment>(new Dictionary<Direction, Commandment>
             {
                 [Direction.East] = Commandment.MoveRight,
                 [Direction.West] = Commandment.MoveLeft,
                 [Direction.North] = Commandment.MoveUp,
                 [Direction.South] = Commandment.MoveDown
-            }
-            );
+            });
 
-        public static readonly ReadOnlyDictionary<Commandment, Direction> MOVEMENT_TO_DIRECTIONS = new ReadOnlyDictionary
-            <Commandment, Direction>(
-            new Dictionary<Commandment, Direction>
+        public static readonly ReadOnlyDictionary<Commandment, Direction> MOVEMENT_TO_DIRECTIONS =
+            new ReadOnlyDictionary<Commandment, Direction>(new Dictionary<Commandment, Direction>
             {
                 [Commandment.MoveRight] = Direction.East,
                 [Commandment.MoveLeft] = Direction.West,
                 [Commandment.MoveUp] = Direction.North,
                 [Commandment.MoveDown] = Direction.South
-            }
-            );
+            });
 
         public static readonly ReadOnlyCollection<Commandment> ABILITY_COMMANDMENTS =
             new ReadOnlyCollection<Commandment>(new List<Commandment>
@@ -80,7 +77,6 @@ namespace DxCore.Core.Messaging
             });
     }
 
-
     /**
         What "commands" components send to other components. These are packaged up & enumerated
         so both behaviors & programmers can have a fairly easy time dealing with them.
@@ -95,31 +91,28 @@ namespace DxCore.Core.Messaging
     public class CommandMessage : Message, IEquatable<CommandMessage>, ITargetedMessage
     {
         [DataMember]
-        public Commandment Commandment { get; set; }
+        public Commandment Commandment { get; private set; }
 
         [DataMember]
-        public UniqueId GameObjectId { get; set; }
+        public UniqueId GameObjectId { get; private set; }
 
         public bool Equals(CommandMessage other)
         {
             return !ReferenceEquals(null, other) && Commandment == other.Commandment;
         }
 
-        public CommandMessage(UniqueId gameObjectId)
-            :this(Commandment.None)
+        public CommandMessage(Commandment commandment, UniqueId gameObjectId)
         {
             Validate.Hard.IsNotNullOrDefault(gameObjectId);
             GameObjectId = gameObjectId;
-        }
-
-        public CommandMessage(Commandment commandment)
-        {
             Commandment = commandment;
         }
 
+        public CommandMessage(UniqueId gameObjectId) : this(Commandment.None, gameObjectId) {}
+
         public static Commandment CommandmentForDirection(Direction direction)
         {
-            switch (direction)
+            switch(direction)
             {
                 case Direction.East:
                     return Commandment.MoveRight;
@@ -131,7 +124,7 @@ namespace DxCore.Core.Messaging
                     return Commandment.MoveDown;
                 default:
                     throw new InvalidEnumArgumentException(
-                        $"Could not determine appropriate {typeof (Commandment)} for {direction}");
+                        $"Could not determine appropriate {typeof(Commandment)} for {direction}");
             }
         }
 

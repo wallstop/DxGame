@@ -60,7 +60,7 @@ namespace DxCore.Core.Components.Advanced.Command
 
         private void EmitCommand()
         {
-            CommandMessage commandMessage = new CommandMessage(CurrentCommand) {GameObjectId = Parent.Id};
+            CommandMessage commandMessage = new CommandMessage(CurrentCommand, Parent?.Id);
             commandMessage.Emit();
         }
 

@@ -19,7 +19,7 @@ namespace DxCore.Core.Components.Advanced.Command
     {
         protected virtual void BroadcastCommandment(Commandment commandment)
         {
-            CommandMessage commandMessage = new CommandMessage(commandment) {GameObjectId = Parent?.Id};
+            CommandMessage commandMessage = new CommandMessage(commandment, Parent?.Id);
             commandMessage.Emit();
 
             if(commandment == Commandment.MoveDown)

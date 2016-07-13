@@ -79,13 +79,15 @@ namespace DxCore.Core.Pathfinding
             };
 
             int nodesConsidered = 0;
+            NavigableMeshNode current = null;
             while(openSet.Any())
             {
-                NavigableMeshNode current = openSet.OrderBy(node => fScore.GetOrElse(node, float.MaxValue)).First();
+                current = openSet.OrderBy(node => fScore.GetOrElse(node, float.MaxValue)).First();
                 if(current == goal)
                 {
 #if DEBUG
-                    Logger.Debug("Pathfinding from {0} to {1} took {2}ms. Considered {3} nodes", startPosition, endPosition, timer.Elapsed.TotalMilliseconds, nodesConsidered);
+                    Logger.Debug("Pathfinding from {0} to {1} took {2}ms. Considered {3} nodes", startPosition,
+                        endPosition, timer.Elapsed.TotalMilliseconds, nodesConsidered);
 #endif
                     Logger.Debug("Found path from {0} to {1}", startPosition, endPosition);
                     return ReconstructPath(cameFrom, current);
@@ -116,10 +118,18 @@ namespace DxCore.Core.Pathfinding
                 }
             }
 #if DEBUG
-            Logger.Debug("Pathfinding from {0} to {1} took {2}ms. Considered {3} nodes", startPosition, endPosition, timer.Elapsed.TotalMilliseconds, nodesConsidered);
+            Logger.Debug("Pathfinding from {0} to {1} took {2}ms. Considered {3} nodes", startPosition, endPosition,
+                timer.Elapsed.TotalMilliseconds, nodesConsidered);
 #endif
-            Logger.Info("Failed to find path from {0} to {1}", startPosition, endPosition);
-            return new List<NavigableMeshNode>(0);
+            Logger.Info("Failed to find path from {0} to {1}, throwing back gibberish", startPosition, endPosition);
+            if(ReferenceEquals(current, null))
+            {
+                return new List<NavigableMeshNode>(0);
+            }
+            else
+            {
+                return ReconstructPath(cameFrom, current);
+            }
         }
 
         private static float AsTheCrowFliesDistanceSquared(NavigableMeshNode start, NavigableMeshNode end)
@@ -136,6 +146,7 @@ namespace DxCore.Core.Pathfinding
                 current = cameFrom[current];
                 path.Add(current);
             }
+            path.Reverse();
             return path;
         }
 

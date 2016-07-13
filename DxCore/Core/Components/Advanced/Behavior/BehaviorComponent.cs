@@ -11,9 +11,9 @@ namespace DxCore.Core.Components.Advanced.Behavior
     public class BehaviorComponent : Component
     {
         [DataMember]
-        public Team Team { get; }
+        public DxCore.Core.Team Team { get; }
 
-        protected BehaviorComponent(Team team)
+        protected BehaviorComponent(DxCore.Core.Team team)
         {
             Team = team;
         }
@@ -25,7 +25,7 @@ namespace DxCore.Core.Components.Advanced.Behavior
 
         public class BehaviorComponentBuilder : IBuilder<BehaviorComponent>
         {
-            private Team team_;
+            private DxCore.Core.Team team_;
 
             public BehaviorComponent Build()
             {
@@ -34,7 +34,7 @@ namespace DxCore.Core.Components.Advanced.Behavior
                 return new BehaviorComponent(team_);
             }
 
-            public BehaviorComponentBuilder WithTeam(Team team)
+            public BehaviorComponentBuilder WithTeam(DxCore.Core.Team team)
             {
                 team_ = team;
                 return this;

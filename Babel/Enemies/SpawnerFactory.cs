@@ -3,7 +3,7 @@ using System.Linq;
 using Babel.Messaging;
 using DxCore;
 using DxCore.Core;
-using DxCore.Core.Components.Advanced;
+using DxCore.Core.Components.Advanced.Entity;
 using DxCore.Core.Components.Advanced.Entities;
 using DxCore.Core.Events;
 using DxCore.Core.Messaging;

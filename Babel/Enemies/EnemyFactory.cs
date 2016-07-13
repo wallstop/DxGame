@@ -12,6 +12,8 @@ using DxCore.Core.Components.Advanced.Impulse;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Components.Advanced.Triggers;
+using DxCore.Core.Components.Advanced.Team;
+using DxCore.Core.Components.Advanced.Entity;
 using DxCore.Core.Events;
 using DxCore.Core.Experience;
 using DxCore.Core.Messaging;

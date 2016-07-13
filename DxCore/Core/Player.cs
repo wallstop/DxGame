@@ -4,6 +4,8 @@ using DxCore.Core.Components.Advanced;
 using DxCore.Core.Components.Advanced.Entities;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Properties;
+using DxCore.Core.Components.Advanced.Animated;
+using DxCore.Core.Components.Advanced.Player;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 
@@ -26,7 +28,7 @@ namespace DxCore.Core
         public PhysicsComponent Position => Object.ComponentOfType<PhysicsComponent>();
         public EntityPropertiesComponent Properties => Object.ComponentOfType<EntityPropertiesComponent>();
         public PhysicsComponent Physics => Object.ComponentOfType<PhysicsComponent>();
-        public AnimationComponent Animation => Object.ComponentOfType<AnimationComponent>();
+        public AnimatedComponent Animation => Object.ComponentOfType<AnimatedComponent>();
         public SkillComponent Abilities => Object.ComponentOfType<SkillComponent>();
         public EntityLevelComponent EntityLevel => Object.ComponentOfType<EntityLevelComponent>();
 

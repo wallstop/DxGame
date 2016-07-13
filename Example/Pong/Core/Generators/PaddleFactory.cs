@@ -1,9 +1,9 @@
 ﻿using System;
 using DxCore;
 using DxCore.Core;
-using DxCore.Core.Components.Advanced;
 using DxCore.Core.Components.Advanced.Command;
 using DxCore.Core.Components.Advanced.Physics;
+using DxCore.Core.Components.Advanced.Sprite;
 using DxCore.Core.Messaging;
 using DxCore.Core.Models;
 using DxCore.Core.Physics;

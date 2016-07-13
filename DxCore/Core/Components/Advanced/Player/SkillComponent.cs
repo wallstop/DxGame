@@ -10,7 +10,7 @@ using DxCore.Core.Skills;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 
-namespace DxCore.Core.Components.Advanced
+namespace DxCore.Core.Components.Advanced.Player
 {
     /**
         <summary>

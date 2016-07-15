@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Babel.Components;
 using Babel.Items;
-using DxCore;
 using DxCore.Core;
 using DxCore.Core.Components.Advanced;
 using DxCore.Core.Components.Advanced.Command;
@@ -11,16 +9,10 @@ using DxCore.Core.Components.Advanced.Entities;
 using DxCore.Core.Components.Advanced.Impulse;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Properties;
-using DxCore.Core.Components.Advanced.Triggers;
-using DxCore.Core.Events;
 using DxCore.Core.Experience;
-using DxCore.Core.Messaging;
-using DxCore.Core.Messaging.Entity;
-using DxCore.Core.Models;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.State;
-using DxCore.Core.Utils;
 
 namespace Babel.Enemies
 {
@@ -47,10 +39,11 @@ namespace Babel.Enemies
             var enemyPhysics =
                 PhysicsComponent.Builder()
                     .WithBounds(new DxVector2(50, 50))
-                                        .WithCollisionGroup(CollisionGroup.Entities)
+                    .WithCollisionGroup(CollisionGroup.Entities)
                     .WithCollidesWith(CollisionGroup.All.Not(CollisionGroup.Entities))
                     .WithPosition(DxVector2.EmptyVector)
                     .WithDirectPositionAccess()
+                    .WithWorldCollisionSensor()
                     .Build();
 
             /* TODO: Configure properties */
@@ -128,29 +121,6 @@ namespace Babel.Enemies
             enemyObject.AttachComponent(simpleAi);
 
             return enemyObject;
-        }
-
-        public static GameObject LevelEndOnDeadListener(GameObject gameObject)
-        {
-            TriggerComponent trigger = new TriggerComponent(() =>
-            {
-                EventModel eventModel = DxGame.Instance.Model<EventModel>();
-                if(ReferenceEquals(eventModel, null))
-                {
-                    return false;
-                }
-                EventRequest request = EventRequest.Builder().WithType<EntityDeathMessage>().Build();
-                List<Event> deathEvents = eventModel.EventsFor(request, DxGame.Instance.CurrentUpdateTime);
-                return
-                    deathEvents.Select(deathEvent => deathEvent.Message as EntityDeathMessage)
-                        .Any(deathMessage => Objects.Equals(gameObject, deathMessage.Entity));
-            }, () =>
-            {
-                LevelEndRequest levelEndRequest = new LevelEndRequest();
-                levelEndRequest.Emit();
-            });
-            GameObject triggerHolder = GameObject.Builder().WithComponent(trigger).Build();
-            return triggerHolder;
         }
     }
 }

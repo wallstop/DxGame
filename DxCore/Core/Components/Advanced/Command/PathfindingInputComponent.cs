@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Map;
 using DxCore.Core.Messaging;
-using DxCore.Core.Pathfinding;
 using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
 using NLog;
 
 namespace DxCore.Core.Components.Advanced.Command
@@ -44,6 +45,7 @@ namespace DxCore.Core.Components.Advanced.Command
                 return;
             }
 
+            /* Need a spatial */
             ISpatial spatial = Parent.Components.OfType<ISpatial>().FirstOrDefault();
             if(ReferenceEquals(spatial, null))
             {
@@ -51,28 +53,43 @@ namespace DxCore.Core.Components.Advanced.Command
                 new CommandMessage(Commandment.None, Parent.Id).Emit();
                 return;
             }
-            NavigableMeshNode target = Path.Peek();
-            if(target.Space.Contains(spatial.Space.Center))
+
+            /* Remove any no-op commands - ie, "go to exactly where you are" */
+            NavigableMeshNode target = null;
+            while(Path.Any() && (target = Path.Peek()).Space.Contains(spatial.Space))
             {
                 Path.Dequeue();
-                new CommandMessage(Commandment.None, Parent.Id).Emit();
-                return;
-                // We'll get it next frame
+                target = null;
             }
 
-            DxVector2 discrepancy = target.Space.Center - spatial.Space.Center;
-            if(discrepancy.X < 0)
+            /* No path left? Hang out dog. */
+            if(ReferenceEquals(target, null))
             {
-                new CommandMessage(Commandment.MoveLeft, Parent.Id).Emit();
+                new CommandMessage(Commandment.None, Parent.Id).Emit();
+                return;
             }
-            else if(discrepancy.X > 0)
+
+            /* Alright, we have a valid path. Figure out how to proceed */
+            DxVector2 discrepancy = target.Space.Center - spatial.Space.Center;
+            Commandment command;
+            if((target.Space.Height + spatial.Space.Height) / 2 < -discrepancy.Y)
             {
-                new CommandMessage(Commandment.MoveRight, Parent.Id).Emit();
+                command = Commandment.MoveUp;
+            }
+            else if(discrepancy.X < 0)
+            {
+                command = Commandment.MoveLeft;
+            }
+            else if(0 < discrepancy.X)
+            {
+                command = Commandment.MoveRight;
             }
             else
             {
-                new CommandMessage(Commandment.None, Parent.Id).Emit();
+                command = Commandment.None;
             }
+
+            new CommandMessage(command, Parent.Id).Emit();
         }
     }
 }

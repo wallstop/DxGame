@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using DxCore.Core.Map;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
 using DxCore.Core.Utils.Validate;
-using NLog;
 
-namespace DxCore.Core.Pathfinding
+namespace DxCore.Core.Map
 {
     public sealed class NavigableMeshNode
     {
@@ -24,12 +21,12 @@ namespace DxCore.Core.Pathfinding
             Space = space;
             Neighbors = new List<NavigableMeshNode>();
         }
+
+        public override string ToString() => Space.ToString();
     }
 
     public sealed class NavigableMesh
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
         public ReadOnlyDictionary<TilePosition, NavigableMeshNode> Mesh { get; private set; }
         public ISpatialTree<NavigableMeshNode> QueryableMesh { get; private set; }
 
@@ -47,21 +44,15 @@ namespace DxCore.Core.Pathfinding
 
         public List<NavigableMeshNode> PathFind(DxVector2 startPosition, DxVector2 endPosition)
         {
-#if DEBUG
-            Stopwatch timer = Stopwatch.StartNew();
-#endif
             NavigableMeshNode start;
             if(!QueryableMesh.Closest(startPosition, out start))
             {
-                Logger.Info("Start: Could not find a {0} that was closest to {1}", typeof(NavigableMeshNode),
-                    startPosition);
                 return new List<NavigableMeshNode>(0);
             }
 
             NavigableMeshNode goal;
             if(!QueryableMesh.Closest(endPosition, out goal))
             {
-                Logger.Info("End: Could not find a {0} that was closest to {1}", typeof(NavigableMeshNode), endPosition);
                 return new List<NavigableMeshNode>(0);
             }
 
@@ -78,23 +69,16 @@ namespace DxCore.Core.Pathfinding
                 [start] = scoreFunction(start, goal)
             };
 
-            int nodesConsidered = 0;
             NavigableMeshNode current = null;
             while(openSet.Any())
             {
                 current = openSet.OrderBy(node => fScore.GetOrElse(node, float.MaxValue)).First();
                 if(current == goal)
                 {
-#if DEBUG
-                    Logger.Debug("Pathfinding from {0} to {1} took {2}ms. Considered {3} nodes", startPosition,
-                        endPosition, timer.Elapsed.TotalMilliseconds, nodesConsidered);
-#endif
-                    Logger.Debug("Found path from {0} to {1}", startPosition, endPosition);
                     return ReconstructPath(cameFrom, current);
                 }
                 openSet.Remove(current);
                 closedSet.Add(current);
-                ++nodesConsidered;
                 foreach(NavigableMeshNode neighbor in current.Neighbors)
                 {
                     if(closedSet.Contains(neighbor))
@@ -117,19 +101,14 @@ namespace DxCore.Core.Pathfinding
                     fScore[neighbor] = gScore[neighbor] + scoreFunction(neighbor, goal);
                 }
             }
-#if DEBUG
-            Logger.Debug("Pathfinding from {0} to {1} took {2}ms. Considered {3} nodes", startPosition, endPosition,
-                timer.Elapsed.TotalMilliseconds, nodesConsidered);
-#endif
-            Logger.Info("Failed to find path from {0} to {1}, throwing back gibberish", startPosition, endPosition);
+
             if(ReferenceEquals(current, null))
             {
                 return new List<NavigableMeshNode>(0);
             }
-            else
-            {
-                return ReconstructPath(cameFrom, current);
-            }
+            /* Pick a card... any card */
+            current = ThreadLocalRandom.Current.FromCollection(cameFrom.Keys);
+            return ReconstructPath(cameFrom, current);
         }
 
         private static float AsTheCrowFliesDistanceSquared(NavigableMeshNode start, NavigableMeshNode end)
@@ -180,7 +159,7 @@ namespace DxCore.Core.Pathfinding
                         DxRectangle navigationSpace = new DxRectangle(i * tileWidth, j * tileHeight, tileWidth,
                             tileHeight);
                         NavigableMeshNode navigationPoint = new NavigableMeshNode(navigationSpace);
-                        navigationPoints[originalTilePosition] = navigationPoint;
+                        navigationPoints[belowTilePosition] = navigationPoint;
                     }
                     /* Otherwise, no, we're just floating in space. Ignore :( */
                 }
@@ -199,27 +178,123 @@ namespace DxCore.Core.Pathfinding
                 TilePosition position = chosenPositionAndNode.Key;
                 NavigableMeshNode node = chosenPositionAndNode.Value;
 
-                NavigableMeshNode neighbor;
-                TilePosition? immediateRight = position.Neighbor(Direction.East);
-                if(immediateRight.HasValue)
+                const int numAdjacentTileDirections = 2;
+                List<Direction> adjacentNeighborDirections = new List<Direction>(numAdjacentTileDirections)
                 {
-                    if(meshNodes.TryGetValue(immediateRight.Value, out neighbor))
+                    Direction.East,
+                    Direction.West
+                };
+                foreach(Direction direction in adjacentNeighborDirections.ToArray())
+                {
+                    NavigableMeshNode neighbor;
+                    /* We can always move freely east */
+                    TilePosition? adjacent = position.Neighbor(direction);
+                    if(!adjacent.HasValue)
                     {
+                        continue;
+                    }
+                    if(meshNodes.TryGetValue(adjacent.Value, out neighbor))
+                    {
+                        adjacentNeighborDirections.Remove(direction);
                         node.Neighbors.Add(neighbor);
                     }
                 }
 
-                TilePosition? immediateLeft = position.Neighbor(Direction.West);
-                if(immediateLeft.HasValue)
-                {
-                    if(meshNodes.TryGetValue(immediateLeft.Value, out neighbor))
-                    {
-                        node.Neighbors.Add(neighbor);
-                    }
-                }
+                /* ...and within commonly jumpable terrain */
+                SearchJumpableTerrain(meshNodes, position, node);
+                SearchDroppableTerrain(meshNodes, position, node, adjacentNeighborDirections);
 
-                // TODO: Jumpable terrain. Ignore for now, MVP style
+                // TODO: Add in support for "dropping" down to lower tiles
             }
+        }
+
+        private static void SearchDroppableTerrain(Dictionary<TilePosition, NavigableMeshNode> meshNodes,
+            TilePosition position, NavigableMeshNode root, List<Direction> searchDirections)
+        {
+            if(!searchDirections.Any())
+            {
+                return;
+            }
+
+            /* 
+                Simple strategy: 
+                    We assume that every entity can drop to any tile that is within
+                    the raycast line of a slope of two
+
+                    |OXXXX
+                    |OOXXX
+                    |OOOXX
+                    |OOOOX
+                    |OOOOO
+
+                    Where any tile below an O is reachable and any tile at or beneath an X
+                    is not. Additionally, if we do encounter a tile, we need to reign-in
+                    our search, as we'll have stopped dropping at that point.
+            */
+            const int widthPerLevel = 2;
+            int maxY = meshNodes.Keys.Select(_ => _.Y).Max();
+            Dictionary<Direction, int> searchLimits = searchDirections.ToDictionary(_ => _, direction => 0);
+            for(int yDepth = 1; position.Y + yDepth <= maxY; ++yDepth)
+            {
+                int y = position.Y + yDepth;
+                foreach(Direction direction in searchDirections)
+                {
+                    int multiplier = direction == Direction.East ? 1 : -1;
+                    int limiter = searchLimits[direction];
+                    for(int i = 1; i < widthPerLevel * yDepth - limiter; ++i)
+                    {
+                        int x = position.X + i * multiplier;
+                        if(!TilePosition.ValidTileCoordinates(x, y))
+                        {
+                            continue;
+                        }
+                        TilePosition dropTilePosition = new TilePosition(x, y);
+                        NavigableMeshNode neighbor;
+                        if(meshNodes.TryGetValue(dropTilePosition, out neighbor))
+                        {
+                            root.Neighbors.Add(neighbor);
+                            searchLimits[direction] = i;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void SearchJumpableTerrain(Dictionary<TilePosition, NavigableMeshNode> meshNodes,
+            TilePosition position, NavigableMeshNode root)
+        {
+            const int maxXSearch = 2;
+            const int maxYSearch = 2;
+
+            List<NavigableMeshNode> potentialNeighbors = new List<NavigableMeshNode>();
+
+            for(int i = -maxXSearch; i <= maxXSearch; ++i)
+            {
+                int x = position.X + i;
+                for(int j = -1; -maxYSearch <= j; --j)
+                {
+                    int y = position.Y + j;
+                    if(!TilePosition.ValidTileCoordinates(x, y))
+                    {
+                        continue;
+                    }
+
+                    TilePosition tilePosition = new TilePosition(x, y);
+                    NavigableMeshNode neighbor;
+                    if(meshNodes.TryGetValue(tilePosition, out neighbor))
+                    {
+                        /* Tile directly above us? We can't jump :( */
+                        if(i == 0)
+                        {
+                            return;
+                        }
+                        potentialNeighbors.Add(neighbor);
+                    }
+                }
+            }
+
+            root.Neighbors.AddRange(potentialNeighbors);
         }
     }
 }

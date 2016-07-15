@@ -34,10 +34,14 @@ namespace DxCore.Core.Map
 
         public TilePosition(int x, int y)
         {
-            Validate.Hard.IsTrue(0 <= x);
-            Validate.Hard.IsTrue(0 <= y);
+            Validate.Hard.IsTrue(ValidTileCoordinates(x, y));
             X = x;
             Y = y;
+        }
+
+        public static bool ValidTileCoordinates(int x, int y)
+        {
+            return 0 <= x && 0 <= y;
         }
 
         public override int GetHashCode()

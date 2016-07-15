@@ -7,6 +7,7 @@ using NLog;
 
 namespace DxCore.Core.Messaging
 {
+    // TODO: Refactor
     public static class GlobalMessageBus
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();

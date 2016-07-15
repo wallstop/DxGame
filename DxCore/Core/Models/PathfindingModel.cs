@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DxCore.Core.Map;
 using DxCore.Core.Messaging;
-using DxCore.Core.Pathfinding;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils.Cache.Advanced;
 

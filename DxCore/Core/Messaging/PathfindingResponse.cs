@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using DxCore.Core.Pathfinding;
+using DxCore.Core.Map;
 using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Messaging

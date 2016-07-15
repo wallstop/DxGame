@@ -291,7 +291,6 @@ namespace DxCore.Core.Components.Advanced.Physics
                 CollisionMessage worldCollision = new CollisionMessage();
                 worldCollision.WithDirectionAndSource(Direction.South, worldCollidable);
                 worldCollision.Target = Parent.Id;
-                Logger.Info($"Triggered map collision: {contact}");
                 worldCollision.Emit();
                 return false;
             };

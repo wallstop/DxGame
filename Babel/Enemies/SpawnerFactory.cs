@@ -5,18 +5,14 @@ using DxCore;
 using DxCore.Core;
 using DxCore.Core.Components.Advanced;
 using DxCore.Core.Components.Advanced.Entities;
-using DxCore.Core.Events;
 using DxCore.Core.Messaging;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
-using DXGame.Core;
 using NLog;
 
 namespace Babel.Enemies
 {
     public static class SpawnerFactory
     {
-
         public static Spawner WaveBasedSmallBoxSpawner()
         {
             var spawnFunction = new SimpleSmallBoxWaveSpawnFunction();
@@ -25,20 +21,13 @@ namespace Babel.Enemies
 
         public static Spawner SimpleLargeBoxSpawner()
         {
-            var spawnFunction = new SimpleLargeBoxSpawnFunction();
-            return
-                RandomSpawner.Builder()
-                    .WithSpawnTrigger(spawnFunction.Spawn)
-                    .Build();
+            throw new NotImplementedException();
         }
 
         public static Spawner SimpleSmallBoxSpawner()
         {
             var spawnFunction = new SimpleSmallBoxSpawnFunction();
-            return
-                RandomSpawner.Builder()
-                    .WithSpawnTrigger(spawnFunction.Spawn)
-                    .Build();
+            return RandomSpawner.Builder().WithSpawnTrigger(spawnFunction.Spawn).Build();
         }
 
         /*
@@ -46,33 +35,6 @@ namespace Babel.Enemies
             This way, we're able to serialize over the network. We could easily close over a boolean on the stack,
             but then we could not serialize the state.
         */
-
-        [Serializable]
-        private class SimpleLargeBoxSpawnFunction
-        {
-            private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-            private TimeSpan lastSpawned_ = TimeSpan.Zero;
-
-            private bool hasFullySpawned_ = false;
-
-            private GameObject largeBox_ = null;
-            
-            public Tuple<bool, GameObject> Spawn(DxGameTime gameTime)
-            {
-                if (ReferenceEquals(largeBox_, null))
-                {
-                    largeBox_ = EnemyFactory.LargeBox();
-                    return Tuple.Create(true, largeBox_);
-                }
-                if (!hasFullySpawned_)
-                {
-                    hasFullySpawned_ = true;
-                    GameObject levelEndTrigger = EnemyFactory.LevelEndOnDeadListener(largeBox_);
-                    return Tuple.Create(true, levelEndTrigger);
-                }
-                return Tuple.Create<bool, GameObject>(false, null);
-            }
-        }
 
         [Serializable]
         private class SimpleSmallBoxSpawnFunction
@@ -83,7 +45,7 @@ namespace Babel.Enemies
             private TimeSpan lastSpawned_ = TimeSpan.Zero;
             private int numSpawned_;
 
-            private EntityType entityType_ = null;
+            private EntityType entityType_;
 
             public Tuple<bool, GameObject> Spawn(DxGameTime gameTime)
             {
@@ -95,8 +57,7 @@ namespace Babel.Enemies
                 }
                 var entityTypeComponents = DxGame.Instance.DxGameElements.OfType<EntityTypeComponent>();
                 int numBoxesInPlay =
-                    entityTypeComponents
-                        .Count(entityTypeComponent => entityType_.Equals(entityTypeComponent.EntityType));
+                    entityTypeComponents.Count(entityTypeComponent => entityType_.Equals(entityTypeComponent.EntityType));
 
                 var totalTime = gameTime.TotalGameTime;
                 if(lastSpawned_ + SPAWN_DELAY < totalTime && numBoxesInPlay < MAX_BOXES_IN_PLAY)
@@ -111,36 +72,30 @@ namespace Babel.Enemies
         }
 
         [Serializable]
-        internal sealed class SimpleSmallBoxWaveSpawnFunction
+        internal sealed class SimpleSmallBoxWaveSpawnFunction : IDisposable
         {
             private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-            private static readonly int MAX_BOXES_IN_PLAY = 25;
+            private static readonly int MAX_BOXES_IN_PLAY = 125;
 
-            private static readonly int NUM_BOXES_PER_WAVE = 5;
+            private static readonly int NUM_BOXES_PER_WAVE = 50;
 
-            private int numBoxesSpawnedInWave_ = 0;
-            private int totalBoxesSpawned_ = 0;
+            private int numBoxesSpawnedInWave_;
+            private int totalBoxesSpawned_;
 
-            private EventListener EventListener { get; }
+            private UniqueId Id { get; }
+            private MessageHandler MessageHandler { get; }
 
             public SimpleSmallBoxWaveSpawnFunction()
             {
-                EventModel eventModel = DxGame.Instance.Model<EventModel>();
-                EventListener = new EventListener(ProcessEvent);
-                eventModel.AttachEventListener(EventListener);
+                Id = new UniqueId();
+                MessageHandler = new MessageHandler(Id);
+                MessageHandler.RegisterMessageHandler<NewWaveMessage>(HandleNewWaveMessage);
                 numBoxesSpawnedInWave_ = 0;
             }
 
-            private void ProcessEvent(Event gameEvent)
+            private void HandleNewWaveMessage(NewWaveMessage maybeNewWaveMessage)
             {
-                Message eventMessage = gameEvent.Message;
-                NewWaveMessage maybeNewWaveMessage = eventMessage as NewWaveMessage;
-                if(ReferenceEquals(maybeNewWaveMessage, null))
-                {
-                    return;
-                }
-
-                LOG.Info($"Received New Wave notification {maybeNewWaveMessage} - triggering spawn");
+                LOG.Info("Received New Wave notification {0} - triggering spawn", maybeNewWaveMessage);
                 numBoxesSpawnedInWave_ = 0;
             }
 
@@ -156,6 +111,11 @@ namespace Babel.Enemies
 
                 GameObject smallBox = EnemyFactory.SmallBox();
                 return Tuple.Create(true, smallBox);
+            }
+
+            public void Dispose()
+            {
+                MessageHandler.Deregister();
             }
         }
     }

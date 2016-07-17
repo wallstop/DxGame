@@ -11,11 +11,11 @@ using DxCore.Core.Utils.Distance;
 using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DxCore.Core.Components.Advanced
+namespace DxCore.Core.Components.Advanced.Animated
 {
     [Serializable]
     [DataContract]
-    public class AnimationComponent : DrawableComponent
+    public class AnimatedComponent : DrawableComponent
     {
         [DataMember] private readonly Dictionary<State.State, Animation.Animation> animationsForStates_;
 
@@ -27,7 +27,7 @@ namespace DxCore.Core.Components.Advanced
 
         [DataMember] private State.State lastState_;
 
-        private AnimationComponent(StateMachine stateMachine,
+        private AnimatedComponent(StateMachine stateMachine,
             Dictionary<State.State, Animation.Animation> animationsForStates, PhysicsComponent position)
         {
             StateMachine = stateMachine;
@@ -80,7 +80,7 @@ namespace DxCore.Core.Components.Advanced
             animation.Draw(spritebatch, gameTime, Position.Position, orientation);
         }
 
-        public class AnimationComponentBuilder : IBuilder<AnimationComponent>
+        public class AnimationComponentBuilder : IBuilder<AnimatedComponent>
         {
             private readonly Dictionary<State.State, Animation.Animation> animationsForStates_ =
                 new Dictionary<State.State, Animation.Animation>();
@@ -88,11 +88,11 @@ namespace DxCore.Core.Components.Advanced
             private PhysicsComponent position_;
             private StateMachine stateMachine_;
 
-            public AnimationComponent Build()
+            public AnimatedComponent Build()
             {
                 Validate.Hard.IsNotNull(position_, this.GetFormattedNullOrDefaultMessage(position_));
                 Validate.Hard.IsNotNull(stateMachine_, this.GetFormattedNullOrDefaultMessage(stateMachine_));
-                return new AnimationComponent(stateMachine_, animationsForStates_, position_);
+                return new AnimatedComponent(stateMachine_, animationsForStates_, position_);
             }
 
             public AnimationComponentBuilder WithPosition(PhysicsComponent position)

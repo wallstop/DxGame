@@ -4,7 +4,7 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Utils.Distance;
 
-namespace DxCore.Core.Components.Advanced
+namespace DxCore.Core.Components.Advanced.Animated
 {
     /** 
         <summary>

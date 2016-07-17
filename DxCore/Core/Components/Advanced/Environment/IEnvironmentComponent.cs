@@ -1,6 +1,6 @@
 ﻿using DxCore.Core.Primitives;
 
-namespace DxCore.Core.Components.Advanced
+namespace DxCore.Core.Components.Advanced.Environment
 {
     /* TODO: Refactor into Environment + Component interface (should probably rethink component heirarchy as well) */
 

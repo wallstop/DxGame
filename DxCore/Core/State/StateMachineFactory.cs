@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Animation;
-using DxCore.Core.Components.Advanced;
+using DxCore.Core.Components.Advanced.Animated;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Messaging;
@@ -63,8 +63,8 @@ namespace DxCore.Core.State
                 () => $"Cannot make a {typeof(StateMachine)} for a null {typeof(PhysicsComponent)}");
 
             StateMachine.StateMachineBuilder stateMachineBuilder = StateMachine.Builder();
-            AnimationComponent.AnimationComponentBuilder animationBuilder =
-                AnimationComponent.Builder().WithPosition(position);
+            AnimatedComponent.AnimationComponentBuilder animationBuilder =
+                AnimatedComponent.Builder().WithPosition(position);
 
             MovementRegulator movementRegulator = new MovementRegulator(entity.Id, entityProperties);
             State idleState = State.Builder().WithName("Idle").WithAction(movementRegulator.DoNothing).Build();
@@ -130,7 +130,7 @@ namespace DxCore.Core.State
 
             StateMachine stateMachine = stateMachineBuilder.WithInitialState(idleState).Build();
             entity.AttachComponent(stateMachine);
-            AnimationComponent animationComponent = animationBuilder.WithStateMachine(stateMachine).Build();
+            AnimatedComponent animationComponent = animationBuilder.WithStateMachine(stateMachine).Build();
             entity.AttachComponent(animationComponent);
         }
 

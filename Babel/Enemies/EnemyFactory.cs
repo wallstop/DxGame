@@ -9,6 +9,8 @@ using DxCore.Core.Components.Advanced.Entities;
 using DxCore.Core.Components.Advanced.Impulse;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Properties;
+using DxCore.Core.Components.Advanced.Team;
+using DxCore.Core.Components.Advanced.Entity;
 using DxCore.Core.Experience;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;

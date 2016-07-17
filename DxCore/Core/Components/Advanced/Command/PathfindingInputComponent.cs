@@ -55,13 +55,13 @@ namespace DxCore.Core.Components.Advanced.Command
 
             /* Remove any no-op commands - ie, "go to exactly where you are" */
             NavigableMeshNode target = null;
-            while(Path.Any() && (target = Path.Peek()).Space.Contains(spatial.Space))
+            while(Path.Any() && ((target = Path.Peek()).Space.Contains(spatial.Space) || spatial.Space.Contains(target.Space)))
             {
                 Path.Dequeue();
                 target = null;
             }
 
-            /* No path left? Hang out dog. */
+            /* No path left? Hang out, dog. */
             if(ReferenceEquals(target, null))
             {
                 new CommandMessage(Commandment.None, Parent.Id).Emit();

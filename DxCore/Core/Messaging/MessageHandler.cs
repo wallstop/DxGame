@@ -108,7 +108,7 @@ namespace DxCore.Core.Messaging
             wrongGameRejectionFunction_ = rejectionFunction;
         }
 
-        private bool ShouldPropogate<T>(T message) where T : Message
+        private bool ShouldPropagate<T>(T message) where T : Message
         {
             if(ReferenceEquals(boundGameId_, null))
             {
@@ -180,7 +180,7 @@ namespace DxCore.Core.Messaging
 
         public void HandleTypedMessage<T>(T message) where T : Message
         {
-            if(!ShouldPropogate(message))
+            if(!ShouldPropagate(message))
             {
                 wrongGameRejectionFunction_.Invoke(message);
                 return;
@@ -191,7 +191,7 @@ namespace DxCore.Core.Messaging
 
         public void HandleUntypedMessage(Message message)
         {
-            if(!ShouldPropogate(message))
+            if(!ShouldPropagate(message))
             {
                 wrongGameRejectionFunction_.Invoke(message);
                 return;

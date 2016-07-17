@@ -34,12 +34,22 @@ namespace BabelUILibrary.Controls
 
         private void OnPlay(object context)
         {
+            if(!RootVisible)
+            {
+                return;
+            }
+
             RootVisible = false;
             new GameModel().Create();
         }
 
         private void OnQuit(object context)
         {
+            if(!RootVisible)
+            {
+                return;
+            }
+
             RootVisible = false;
             Logger.Info("Exiting, seeya");
             DxGame.Instance.Exit();
@@ -47,6 +57,11 @@ namespace BabelUILibrary.Controls
 
         private void OnSettings(object context)
         {
+            if(!RootVisible)
+            {
+                return;
+            }
+
             IMessageBoxService messageBoxService = GetService<IMessageBoxService>();
             if(ReferenceEquals(messageBoxService, null))
             {

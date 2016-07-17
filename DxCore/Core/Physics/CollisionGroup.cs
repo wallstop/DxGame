@@ -10,10 +10,11 @@ namespace DxCore.Core.Physics
     [DataContract]
     public sealed class CollisionGroup
     {
-        public static CollisionGroup All = new CollisionGroup(Category.All);
-        public static CollisionGroup None = new CollisionGroup(Category.None);
-        public static CollisionGroup Map = new CollisionGroup(Category.Cat1);
-        public static CollisionGroup Entities = new CollisionGroup(Category.Cat2);
+        public static readonly CollisionGroup All = new CollisionGroup(Category.All);
+        public static readonly CollisionGroup None = new CollisionGroup(Category.None);
+        public static readonly CollisionGroup Map = new CollisionGroup(Category.Cat1);
+        public static readonly CollisionGroup Entities = new CollisionGroup(Category.Cat2);
+        public static readonly CollisionGroup MovementSensors = new CollisionGroup(Category.Cat3);
 
         // TODO: Test
         public static class Alias<T>

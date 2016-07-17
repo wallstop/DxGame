@@ -16,7 +16,7 @@ namespace Babel.Components
     [DataContract]
     public class SimpleEnemyAI : AbstractCommandComponent
     {
-        private static readonly TimeSpan MOVEMENT_DELAY_CHECK = TimeSpan.FromSeconds(2);
+        private static readonly TimeSpan MOVEMENT_DELAY_CHECK = TimeSpan.FromSeconds(3);
 
         private static readonly TimeSpan PATHFINDING_TIMEOUT = MOVEMENT_DELAY_CHECK;
         // just cuz
@@ -52,14 +52,9 @@ namespace Babel.Components
                 return;
             }
 
-            PathFindingRequest pathfindingRequest = new PathFindingRequest
-            {
-                Location =
-                    new DxVector2(player.Position.Position.X,
-                        player.Position.Position.Y + player.Position.Height - 0.001),
-                Timeout = PATHFINDING_TIMEOUT,
-                Target = Parent?.Id
-            };
+
+
+            PathFindingRequest pathfindingRequest = new PathFindingRequest(Positional.WorldCoordinates, player.Position.Center, Parent?.Id);
             pathfindingRequest.Emit();
             timeSinceLastMovementRequest_ = TimeSpan.Zero;
         }

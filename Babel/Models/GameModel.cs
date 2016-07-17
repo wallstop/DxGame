@@ -33,9 +33,6 @@ namespace Babel.Models
 
         public override void Initialize()
         {
-
-            new EventModel().Create();
-
             ILevelProgressionStrategy levelProgression = new SimpleRotatingLevelProgression();
             levelProgression.Init();
 

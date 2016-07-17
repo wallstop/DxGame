@@ -34,7 +34,7 @@ namespace Babel.Generators
                     .WithPosition(playerPosition)
                     .WithCollisionGroup(CollisionGroup.Entities)
                     .WithCollidesWith(CollisionGroup.All.Not(CollisionGroup.Entities))
-                    .WithPhysicsInitialization(SensorFactory.WorldCollisionSensor)
+                    .WithWorldCollisionSensor()
                     .Build();
             playerProperties_ = new EntityPropertiesComponent(PlayerFactory.BasicPlayerProperties,
                 PlayerFactory.GenericLevelUp);

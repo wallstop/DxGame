@@ -1,6 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Distance;
 using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Map
@@ -32,15 +34,55 @@ namespace DxCore.Core.Map
 
         public TilePosition(int x, int y)
         {
-            Validate.Hard.IsTrue(0 <= x);
-            Validate.Hard.IsTrue(0 <= y);
+            Validate.Hard.IsTrue(ValidTileCoordinates(x, y));
             X = x;
             Y = y;
+        }
+
+        public static bool ValidTileCoordinates(int x, int y)
+        {
+            return 0 <= x && 0 <= y;
         }
 
         public override int GetHashCode()
         {
             return Objects.HashCode(X, Y);
+        }
+
+        public TilePosition? Neighbor(Direction direction)
+        {
+            switch(direction)
+            {
+                case Direction.East:
+                {
+                    return new TilePosition(X + 1, Y);
+                }
+                case Direction.North:
+                {
+                    if(Y == 0)
+                    {
+                        return null;
+                    }
+                    return new TilePosition(X, Y - 1);
+                }
+                case Direction.South:
+                {
+                    return new TilePosition(X, Y + 1);
+                }
+                case Direction.West:
+                {
+                    if(X == 0)
+                    {
+                        return null;
+                    }
+                    return new TilePosition(X - 1, Y);
+                }
+                default:
+                {
+                    throw new InvalidEnumArgumentException(
+                        $"No neighbor mapping found for {typeof(Direction)} {direction}");
+                }
+            }
         }
 
         public static bool operator ==(TilePosition lhs, TilePosition rhs)
@@ -65,7 +107,6 @@ namespace DxCore.Core.Map
         }
 
         /* We need a public static Parse method if we want these to be dictionary keys & JSON serialized */
-        public static TilePosition Parse(string toParse)
-            => SerializerExtensions.Parse<TilePosition>(toParse);
+        public static TilePosition Parse(string toParse) => SerializerExtensions.Parse<TilePosition>(toParse);
     }
 }

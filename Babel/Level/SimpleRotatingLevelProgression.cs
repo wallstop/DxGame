@@ -5,15 +5,12 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Babel.Components.Waves;
 using Babel.Enemies;
-using DxCore;
 using DxCore.Core;
 using DxCore.Core.Components.Advanced.Entities;
 using DxCore.Core.Components.Basic;
-using DxCore.Core.Events;
 using DxCore.Core.Level;
 using DxCore.Core.Map;
 using DxCore.Core.Messaging;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
@@ -147,13 +144,13 @@ namespace Babel.Level
                 float x = ThreadLocalRandom.Current.NextFloat(mapTile.Space.X, mapTile.Space.X + mapTile.Space.Width);
                 mapTransitionLocation = new DxVector2(x, mapTile.Space.Y - 7.5f);
             } while(
-                map.TileSpatialTree.InRange(new DxRectangle(mapTransitionLocation.X, mapTransitionLocation.Y, 5, 5)).Any());
+                map.TileSpatialTree.InRange(new DxRectangle(mapTransitionLocation.X, mapTransitionLocation.Y, 5, 5))
+                    .Any());
             levelEndSpawner.WithSpawnArea(new DxRectangle(mapTransitionLocation.X, mapTransitionLocation.Y, 1, 1));
 
             GameObject mapTransitionObject = GameObject.Builder().Build();
 
             LevelEndTrigger levelEndTrigger = new LevelEndTrigger(mapTransitionObject);
-            DxGame.Instance.Model<EventModel>().AttachEventListener(new EventListener(levelEndTrigger.LevelEndListener));
             SpawnTrigger spawnTrigger = levelEndTrigger.CheckForLevelEndRequest;
 
             levelEndSpawner.WithSpawnTrigger(spawnTrigger);
@@ -197,21 +194,19 @@ namespace Babel.Level
 
     [DataContract]
     [Serializable]
-    internal sealed class LevelEndTrigger
+    internal sealed class LevelEndTrigger : IDisposable
     {
         [DataMember] private readonly GameObject mapTransitionObject_;
         [DataMember] private bool alreadyTriggered_;
 
         [DataMember] private bool levelEndTriggered_;
 
-        public void LevelEndListener(Event gameEvent)
+        [DataMember] private MessageHandler MessageHandler { get; set; }
+
+        [DataMember] private UniqueId Id { get; set; }
+
+        private void HandleLevelEndRequest(LevelEndRequest levelEndRequest)
         {
-            Message message = gameEvent.Message;
-            LevelEndRequest levelEndRequest = message as LevelEndRequest;
-            if(ReferenceEquals(levelEndRequest, null))
-            {
-                return;
-            }
             levelEndTriggered_ = true;
         }
 
@@ -219,6 +214,9 @@ namespace Babel.Level
         {
             Validate.Hard.IsNotNullOrDefault(mapTransitionObject,
                 this.GetFormattedNullOrDefaultMessage("MapTransitionObject"));
+            Id = new UniqueId();
+            MessageHandler = new MessageHandler(Id);
+            MessageHandler.RegisterMessageHandler<LevelEndRequest>(HandleLevelEndRequest);
             mapTransitionObject_ = mapTransitionObject;
             alreadyTriggered_ = false;
             levelEndTriggered_ = false;
@@ -236,6 +234,11 @@ namespace Babel.Level
                 return Tuple.Create(true, mapTransitionObject_);
             }
             return Tuple.Create<bool, GameObject>(false, null);
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 

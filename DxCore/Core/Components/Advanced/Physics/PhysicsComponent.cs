@@ -1,16 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Physics;
 using DxCore.Core.Models;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Distance;
 using DxCore.Core.Utils.Validate;
+using FarseerPhysics.Collision;
 using FarseerPhysics.Collision.Shapes;
 using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
 using NLog;
 using Component = DxCore.Core.Components.Basic.Component;
@@ -34,6 +39,7 @@ namespace DxCore.Core.Components.Advanced.Physics
         [DataMember] private readonly float friction_;
         [DataMember] private readonly float restitution_;
         [DataMember] private readonly bool directPositionAccess_;
+        [DataMember] private readonly bool worldCollisionSensor_;
 
         [DataMember] private PhysicsInitialization initialization_;
 
@@ -101,7 +107,7 @@ namespace DxCore.Core.Components.Advanced.Physics
 
         private PhysicsComponent(DxVector2 origin, DxVector2 bounds, CollisionGroup collidesWith,
             CollisionGroup collisionGroup, PhysicsType physicsType, float density, bool gravityOn, float restitution,
-            float friction, bool directPositionAccess, PhysicsInitialization initialization)
+            float friction, bool directPositionAccess, bool worldCollisionSensor, PhysicsInitialization initialization)
         {
             origin_ = origin;
             bounds_ = bounds;
@@ -109,6 +115,7 @@ namespace DxCore.Core.Components.Advanced.Physics
             restitution_ = restitution;
             friction_ = friction;
             directPositionAccess_ = directPositionAccess;
+            worldCollisionSensor_ = worldCollisionSensor;
             initialization_ = initialization;
             PhysicsType = physicsType;
             CollidesWith = collidesWith;
@@ -226,7 +233,7 @@ namespace DxCore.Core.Components.Advanced.Physics
                         .Select(vertex => vertex * WorldModel.DxToFarseerScale)
                         .ToVertices(), Density);
 
-            Body = new Body(gameWorld, origin_.Vector2 * WorldModel.DxToFarseerScale, 0, this)
+            Body = new Body(gameWorld, origin_.Vector2 * WorldModel.DxToFarseerScale, 0, userdata: this)
             {
                 BodyType = ResolveCollisionType(PhysicsType),
                 FixedRotation = true
@@ -238,16 +245,85 @@ namespace DxCore.Core.Components.Advanced.Physics
             }
 
             Fixture = Body.CreateFixture(bounds, this);
-            Fixture.CollidesWith = CollidesWith.CollisionCategory;
-            Fixture.CollisionCategories = CollisionGroup.CollisionCategory;
-
+            Body.CollidesWith = CollisionGroup.Map;
+            Body.IgnoreCCDWith = CollisionGroup.MovementSensors.CollisionCategory | CollisionGroup.Entities;
+            Body.CollisionCategories = CollisionGroup.Entities;
             Body.Restitution = restitution_;
             Body.Friction = friction_;
             base.Initialize();
 
+            if(worldCollisionSensor_)
+            {
+                SetupWorldCollisionSensor();
+            }
+
             if(!ReferenceEquals(initialization_, null))
             {
                 initialization_.Invoke(Body, Fixture, this);
+            }
+        }
+
+        /* Enables a PhysicsComponent to emit CollisionMessages when it collides with the world */
+
+        private void SetupWorldCollisionSensor()
+        {
+            // TODO: Expand to all directions
+
+            /* 
+                Note: This sensor will emit a message for *EACH* map tile that it collides with, per frame. 
+                Might want to fix that
+            */
+            AABB fixtureBounds;
+            Fixture.GetAABB(out fixtureBounds, 0);
+
+            const float scalarSoEdgesArentAlwaysColliding = 0.95f;
+
+            Dictionary<Direction, DxLineSegment> edges = (fixtureBounds.ToDxRectangle() - Body.Position).Edges;
+            foreach(KeyValuePair<Direction, DxLineSegment> directionAndEdge in edges)
+            {
+                Direction collisionDirection = directionAndEdge.Key;
+                DxLineSegment shrunkJustALittle = directionAndEdge.Value.ScaleInPlace(scalarSoEdgesArentAlwaysColliding);
+                Vector2 start = shrunkJustALittle.Start.Vector2;
+                Vector2 end = shrunkJustALittle.End.Vector2;
+                Fixture mapCollisionSensor = FixtureFactory.AttachEdge(start, end, Body, null);
+                mapCollisionSensor.CollidesWith = CollisionGroup.Map;
+                mapCollisionSensor.CollisionCategories = CollisionGroup.MovementSensors;
+                mapCollisionSensor.IsSensor = true;
+                mapCollisionSensor.IgnoreCCDWith = CollisionGroup.MovementSensors.CollisionCategory ^ CollisionGroup.Entities ^
+                                                   CollisionGroup.All.CollisionCategory;
+
+                if(collisionDirection == Direction.South || collisionDirection == Direction.North)
+                {
+                    mapCollisionSensor.OnCollision += (self, maybeMapTile, contact) =>
+                    {
+                        IWorldCollidable worldCollidable = maybeMapTile.UserData as IWorldCollidable;
+                        if(ReferenceEquals(worldCollidable, null))
+                        {
+                            return false;
+                        }
+                        CollisionMessage worldCollision = new CollisionMessage();
+                        worldCollision.WithDirectionAndSource(collisionDirection, worldCollidable);
+                        worldCollision.Target = Parent.Id;
+                        worldCollision.Emit();
+                        return false;
+                    };
+                }
+                if(collisionDirection == Direction.East || collisionDirection == Direction.West)
+                {
+                    mapCollisionSensor.OnSeparation += (self, maybeMapTile) =>
+                    {
+                        IWorldCollidable worldCollidable = maybeMapTile.UserData as IWorldCollidable;
+                        if(ReferenceEquals(worldCollidable, null))
+                        {
+                            return;
+                        }
+                        CollisionMessage worldCollision = new CollisionMessage();
+                        worldCollision.WithDirectionAndSource(collisionDirection, worldCollidable);
+                        worldCollision.Target = Parent.Id;
+                        worldCollision.Emit();
+                        return;
+                    };
+                }
             }
         }
 
@@ -294,7 +370,19 @@ namespace DxCore.Core.Components.Advanced.Physics
             private float friction_ = 1f;
             private CollisionGroup collisionGroup_ = CollisionGroup.All;
             private CollisionGroup collidesWith_ = CollisionGroup.All;
+            private bool worldCollisionSensor_;
             private PhysicsInitialization initialization_;
+
+            public PhysicsComponentBuilder WithWorldCollisionSensor(bool sensorOn = true)
+            {
+                worldCollisionSensor_ = sensorOn;
+                return this;
+            }
+
+            public PhysicsComponentBuilder WithoutWorldCollisionSensor()
+            {
+                return WithWorldCollisionSensor(false);
+            }
 
             public PhysicsComponentBuilder WithPhysicsInitialization(PhysicsInitialization postInit)
             {
@@ -401,7 +489,7 @@ namespace DxCore.Core.Components.Advanced.Physics
                 DxVector2 bounds = bounds_.Value;
 
                 return new PhysicsComponent(position, bounds, collidesWith_, collisionGroup_, physicsType_, density_,
-                    gravity_, restitution_, friction_, directPositionAccess_, initialization_);
+                    gravity_, restitution_, friction_, directPositionAccess_, worldCollisionSensor_, initialization_);
             }
         }
     }

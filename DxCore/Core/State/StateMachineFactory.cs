@@ -163,11 +163,6 @@ namespace DxCore.Core.State
 
         private static bool BelowCollisionTrigger(List<Message> messages, DxGameTime gameTime)
         {
-            /* 
-                Check the future queue - if we have collided THIS FRAME, 
-                then there will bea message in the queue next frame. This was causing a bug of 
-                double-applying the jump force 
-            */
             List<CollisionMessage> collisionMessages = messages.OfType<CollisionMessage>().ToList();
             bool triggered = collisionMessages.Any(collision => collision.CollisionDirections.ContainsKey(Direction.South));
             return triggered;
@@ -252,18 +247,55 @@ namespace DxCore.Core.State
             {
                 List<CommandMessage> commandMessages =
                     messages.OfType<CommandMessage>().OrderBy(commandMessage => commandMessage.Commandment).ToList();
+
+                bool canMoveLeft = true;
+                bool canMoveRight = true;
+                foreach(
+                    Direction collisionDirection in
+                        messages.OfType<CollisionMessage>().SelectMany(_ => _.CollisionDirections.Keys).Distinct())
+                {
+                    switch(collisionDirection)
+                    {
+                        case Direction.East:
+                        {
+                            HorizontalForce = Math.Min(HorizontalForce, 0);
+                            canMoveRight = false;
+                            break;
+                        } case Direction.West:
+                        {
+                            HorizontalForce = Math.Max(HorizontalForce, 0);
+                            canMoveLeft = false;
+                            break;
+                        } case Direction.South:
+                        {
+                            VerticalForce = 0;
+                            break;
+                        }
+                        default:
+                        {
+                            break;
+                        }
+                    }
+                }
+
                 foreach(CommandMessage commandMessage in commandMessages)
                 {
                     switch(commandMessage.Commandment)
                     {
                         case Commandment.MoveRight:
                         {
-                            MoveRight(gameTime);
+                            if(canMoveRight)
+                            {
+                                MoveRight(gameTime);
+                            }
                             return;
                         }
                         case Commandment.MoveLeft:
                         {
-                            MoveLeft(gameTime);
+                            if(canMoveLeft)
+                            {
+                                MoveLeft(gameTime);
+                            }
                             return;
                         }
                         default:
@@ -313,6 +345,11 @@ namespace DxCore.Core.State
                 Force jumpPlease = new Force(new DxVector2(0, -jumpPower));
                 new PhysicsAttachment(jumpPlease, EntityId).Emit();
                 VerticalForce = jumpPower;
+            }
+
+            public void StopMoving(DxGameTime gameTime)
+            {
+                HorizontalForce = 0;
             }
 
             public void StopJumping(DxGameTime gameTime)

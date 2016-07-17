@@ -94,6 +94,8 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_0.ColumnDefinitions.Add(col_e_0_5);
             Binding binding_e_0_Visibility = new Binding("RootVisible");
             this.e_0.SetBinding(Grid.VisibilityProperty, binding_e_0_Visibility);
+            Binding binding_e_0_IsEnabled = new Binding("RootVisible");
+            this.e_0.SetBinding(Grid.IsEnabledProperty, binding_e_0_IsEnabled);
             // e_1 element
             this.e_1 = new Image();
             this.e_0.Children.Add(this.e_1);

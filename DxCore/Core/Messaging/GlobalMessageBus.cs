@@ -7,6 +7,7 @@ using NLog;
 
 namespace DxCore.Core.Messaging
 {
+    // TODO: Refactor
     public static class GlobalMessageBus
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -215,7 +216,7 @@ namespace DxCore.Core.Messaging
                 return;
             }
 
-            Logger.Info("Could not find a matching handler for Id: {0}, Message: {1}", target, typedAndTargetedMessage);
+            Logger.Trace("Could not find a matching handler for Id: {0}, Message: {1}", target, typedAndTargetedMessage);
         }
     }
 }

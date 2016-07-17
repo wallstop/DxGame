@@ -133,7 +133,7 @@ namespace DxCore.Core.Components.Basic
 
         protected static T ConvertMessageType<T>(NetworkMessage message) where T : class
         {
-            return GenericUtils.CheckedCast<T>(message,
+            return GenericExtensions.CheckedCast<T>(message, () =>
                 $"Received message expecting type {typeof(T)}, but was unable to dynamic cast");
         }
 

@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced.Entities;
-using DxCore.Core.Components.Advanced.Triggers;
 using DxCore.Core.Components.Basic;
-using DxCore.Core.Events;
-using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
@@ -44,16 +41,13 @@ namespace DxCore.Core.Level
             }
 
             entityManager_.Create();
-
-            EventObserver spawnObserver =
-                EventObserver.EventObserverBuilder()
-                    .WithAcceptance(DetermineLevelSpawnEvent)
-                    .WithAction(AddEntityToManagementPool)
-                    .Build();
-            entityManager_.Manage(spawnObserver);
-
-            spawnObserver.Create();
             base.Initialize();
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<EntitySpawnedMessage>(AddEntityToManagementPool);
+            base.OnAttach();
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -61,22 +55,14 @@ namespace DxCore.Core.Level
             LevelTime += gameTime.ElapsedGameTime;
         }
 
-        private bool DetermineLevelSpawnEvent(Event gameEvent)
-        {
-            Message gameMessage = gameEvent.Message;
-            EntitySpawnedMessage spawnMessage = gameMessage as EntitySpawnedMessage;
-            if(!ReferenceEquals(spawnMessage, null))
-            {
-                return Spawners.Any(spawner => Equals(spawner.Id, spawnMessage.SpawnerId));
-            }
-            return false;
-        }
-
         // TODO: Manage EntityDeath (not just entity spawn) 
-        private void AddEntityToManagementPool(Event gameEvent)
+        private void AddEntityToManagementPool(EntitySpawnedMessage spawnMessage)
         {
-            EntitySpawnedMessage spawnMessage = gameEvent.Message as EntitySpawnedMessage;
-            Validate.Hard.IsNotNullOrDefault(spawnMessage, () => $"Expected the Event to contain an {typeof(EntitySpawnedMessage)}, but it was not. How did this pass {nameof(DetermineLevelSpawnEvent)}?");
+            if(!Spawners.Any(spawner => Equals(spawner.Id, spawnMessage.SpawnerId)))
+            {
+                return;
+            }
+
             Component spawnedComponent;
             if(spawnMessage.TryGetSpawnedEntity(out spawnedComponent))
             {

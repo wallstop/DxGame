@@ -33,8 +33,6 @@ namespace DxCore.Core.Models
             devSwitch_ = new DeveloperSwitch();
             WorldDrawer worldDrawer = new WorldDrawer();
             worldDrawer.Create();
-//            var boundingBoxWidget = new BoundingBoxWidget();
-//            components_.Add(boundingBoxWidget);
             var teamCounterWidget = new TeamCounterWidget();
             components_.Add(teamCounterWidget);
             var timePerFrameBackground = new TimePerFrameGraphBackground();

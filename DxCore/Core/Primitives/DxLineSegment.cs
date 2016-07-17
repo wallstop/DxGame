@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Primitives
 {
@@ -26,6 +27,29 @@ namespace DxCore.Core.Primitives
         {
             Start = start;
             End = end;
+        }
+
+        /**
+            <summary>
+                Scales the LineSegment as if it were anchored at its current endpoints and the z axis is being scaled by the provided scalar.
+            </summary>
+            <notes> 
+                scalars larger than one will grow the vector, fractional will shrink. Negative scalars are not allowed.
+            </notes>
+
+            {(1, 1), (3,3)} scaledInPlace by 0.5 -> {(1.5,1.5), (2.5,2.5)}
+        */
+
+        public DxLineSegment ScaleInPlace(float scalar)
+        {
+            Validate.Hard.IsNotNegative(scalar,
+                () => $"Cannot shrink a {typeof(DxLineSegment)} with a scalar of {scalar}");
+            DxVector2 currentOffset = End - Start;
+            float offsetMagnitude = currentOffset.Magnitude;
+            float newMagnitude = offsetMagnitude * scalar;
+            float magnitudeDifference = offsetMagnitude - newMagnitude;
+            DxVector2 newOffset = currentOffset.UnitVector * (magnitudeDifference / 2);
+            return new DxLineSegment(Start + newOffset, End - newOffset);
         }
 
         public DxLineSegment(float x1, float y1, float x2, float y2)

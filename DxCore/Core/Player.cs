@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced;
 using DxCore.Core.Components.Advanced.Entities;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Properties;

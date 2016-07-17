@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
+using DxCore.Core.Utils.Distance;
 using Microsoft.Xna.Framework;
 
 namespace DxCore.Core.Primitives
@@ -54,6 +55,16 @@ namespace DxCore.Core.Primitives
         public DxLineSegment BottomBorder => new DxLineSegment(X, Y + Height, X + Width, Y + Height);
         public DxLineSegment TopBorder => new DxLineSegment(X, Y, X + Width, Y);
 
+        public Dictionary<Direction, DxLineSegment> Edges
+            =>
+                new Dictionary<Direction, DxLineSegment>(4)
+                {
+                    [Direction.East] = RightBorder,
+                    [Direction.West] = LeftBorder,
+                    [Direction.North] = TopBorder,
+                    [Direction.South] = BottomBorder
+                };
+
         public DxVector2 Position => new DxVector2(X, Y);
 
         public List<DxLineSegment> Lines
@@ -66,12 +77,18 @@ namespace DxCore.Core.Primitives
             }
         }
 
-        public DxRectangle(Point upperLeftCorner, Point lowerRightCorner)
+        // TODO: THIS SHIT AINT RIGHT
+        public DxRectangle(DxVector2 upperLeftCorner, DxVector2 lowerRightCorner)
         {
             X = upperLeftCorner.X;
             Width = lowerRightCorner.X - upperLeftCorner.X;
             Y = upperLeftCorner.Y;
-            Height = upperLeftCorner.Y - lowerRightCorner.Y;
+            Height = lowerRightCorner.Y - upperLeftCorner.Y;
+        }
+
+        public DxRectangle(Point upperLeftCorner, Point lowerRightCorner)
+            : this(upperLeftCorner.ToVector2(), lowerRightCorner.ToVector2())
+        {
         }
 
         public DxRectangle(Rectangle rectangle)
@@ -172,6 +189,13 @@ namespace DxCore.Core.Primitives
         {
             lhs.X += translation.X;
             lhs.Y += translation.Y;
+            return lhs;
+        }
+
+        public static DxRectangle operator -(DxRectangle lhs, DxVector2 translation)
+        {
+            lhs.X -= translation.X;
+            lhs.Y -= translation.Y;
             return lhs;
         }
 
@@ -291,17 +315,7 @@ namespace DxCore.Core.Primitives
 
         public override bool Equals(object rhs)
         {
-            try
-            {
-                var rectangle = (DxRectangle) rhs;
-                return Equals(rectangle);
-            }
-            catch(Exception)
-            {
-                // Suprress any class cast exceptions
-            }
-
-            return false;
+            return rhs is DxRectangle && Equals((DxRectangle) rhs);
         }
 
         public override string ToString()

@@ -39,12 +39,8 @@ namespace BabelUILibrary.Core.Models
         {
             SpriteFont font = DxGame.Instance.Content.Load<SpriteFont>("Fonts/visitor_tt1_brk_26_regular");
             FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
-            FontManager.Instance.LoadFonts(DxGame.Instance.Content, "");
+            FontManager.Instance.LoadFonts(DxGame.Instance.Content);
             ImageManager.Instance.LoadImages(DxGame.Instance.Content);
-
-            // I guess we bind controls here?
-
-            // TODO: We don't really want drag-drop. What we really want is double click to select
         }
 
         protected override void Update(DxGameTime gameTime)

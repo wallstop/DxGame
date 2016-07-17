@@ -41,12 +41,16 @@ namespace DxCore.Core.Utils
             return new Vertices(source);
         }
 
-
-        public static AABB Aabb(this DxRectangle space)
+        public static AABB ToAabb(this DxRectangle space)
         {
             return new AABB(new Vector2(space.X, space.Y), new Vector2(space.X + space.Width, space.Y + space.Height));
         }
 
-        // TODO
+        public static DxRectangle ToDxRectangle(this AABB aabb)
+        {
+            Vector2 lowerBounds = aabb.LowerBound;
+            Vector2 upperBound = aabb.UpperBound;
+            return new DxRectangle(lowerBounds, upperBound);
+        }
     }
 }

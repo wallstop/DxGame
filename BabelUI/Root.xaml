@@ -22,7 +22,7 @@
         <SolidColorBrush Opacity="0" />
     </ek:UIRoot.Background>
 
-    <Grid Visibility="{Binding RootVisible}">
+    <Grid IsEnabled="{Binding RootVisible}" Visibility="{Binding RootVisible}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*" />
             <ColumnDefinition Width="3*" />

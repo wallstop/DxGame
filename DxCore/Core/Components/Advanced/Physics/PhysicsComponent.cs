@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -232,7 +233,7 @@ namespace DxCore.Core.Components.Advanced.Physics
                         .Select(vertex => vertex * WorldModel.DxToFarseerScale)
                         .ToVertices(), Density);
 
-            Body = new Body(gameWorld, origin_.Vector2 * WorldModel.DxToFarseerScale, 0, this)
+            Body = new Body(gameWorld, origin_.Vector2 * WorldModel.DxToFarseerScale, 0, userdata: this)
             {
                 BodyType = ResolveCollisionType(PhysicsType),
                 FixedRotation = true
@@ -244,9 +245,9 @@ namespace DxCore.Core.Components.Advanced.Physics
             }
 
             Fixture = Body.CreateFixture(bounds, this);
-            Fixture.CollidesWith = CollidesWith.CollisionCategory;
-            Fixture.CollisionCategories = CollisionGroup.CollisionCategory;
-
+            Body.CollidesWith = CollisionGroup.Map;
+            Body.IgnoreCCDWith = CollisionGroup.MovementSensors.CollisionCategory | CollisionGroup.Entities;
+            Body.CollisionCategories = CollisionGroup.Entities;
             Body.Restitution = restitution_;
             Body.Friction = friction_;
             base.Initialize();
@@ -263,6 +264,7 @@ namespace DxCore.Core.Components.Advanced.Physics
         }
 
         /* Enables a PhysicsComponent to emit CollisionMessages when it collides with the world */
+
         private void SetupWorldCollisionSensor()
         {
             // TODO: Expand to all directions
@@ -274,26 +276,55 @@ namespace DxCore.Core.Components.Advanced.Physics
             AABB fixtureBounds;
             Fixture.GetAABB(out fixtureBounds, 0);
 
-            Vector2 lower = fixtureBounds.LowerBound - Body.Position;
-            Vector2 upper = fixtureBounds.UpperBound - Body.Position;
+            const float scalarSoEdgesArentAlwaysColliding = 0.95f;
 
-            Fixture mapCollisionSensor = FixtureFactory.AttachEdge(new Vector2(lower.X + 0.1f, upper.Y),
-                new Vector2(upper.X - 0.1f, upper.Y), Body, null);
-            mapCollisionSensor.IsSensor = true;
-
-            mapCollisionSensor.OnCollision += (self, maybeMapTile, contact) =>
+            Dictionary<Direction, DxLineSegment> edges = (fixtureBounds.ToDxRectangle() - Body.Position).Edges;
+            foreach(KeyValuePair<Direction, DxLineSegment> directionAndEdge in edges)
             {
-                IWorldCollidable worldCollidable = maybeMapTile.UserData as IWorldCollidable;
-                if(ReferenceEquals(worldCollidable, null))
+                Direction collisionDirection = directionAndEdge.Key;
+                DxLineSegment shrunkJustALittle = directionAndEdge.Value.ScaleInPlace(scalarSoEdgesArentAlwaysColliding);
+                Vector2 start = shrunkJustALittle.Start.Vector2;
+                Vector2 end = shrunkJustALittle.End.Vector2;
+                Fixture mapCollisionSensor = FixtureFactory.AttachEdge(start, end, Body, null);
+                mapCollisionSensor.CollidesWith = CollisionGroup.Map;
+                mapCollisionSensor.CollisionCategories = CollisionGroup.MovementSensors;
+                mapCollisionSensor.IsSensor = true;
+                mapCollisionSensor.IgnoreCCDWith = CollisionGroup.MovementSensors.CollisionCategory ^ CollisionGroup.Entities ^
+                                                   CollisionGroup.All.CollisionCategory;
+
+                if(collisionDirection == Direction.South || collisionDirection == Direction.North)
                 {
-                    return false;
+                    mapCollisionSensor.OnCollision += (self, maybeMapTile, contact) =>
+                    {
+                        IWorldCollidable worldCollidable = maybeMapTile.UserData as IWorldCollidable;
+                        if(ReferenceEquals(worldCollidable, null))
+                        {
+                            return false;
+                        }
+                        CollisionMessage worldCollision = new CollisionMessage();
+                        worldCollision.WithDirectionAndSource(collisionDirection, worldCollidable);
+                        worldCollision.Target = Parent.Id;
+                        worldCollision.Emit();
+                        return false;
+                    };
                 }
-                CollisionMessage worldCollision = new CollisionMessage();
-                worldCollision.WithDirectionAndSource(Direction.South, worldCollidable);
-                worldCollision.Target = Parent.Id;
-                worldCollision.Emit();
-                return false;
-            };
+                if(collisionDirection == Direction.East || collisionDirection == Direction.West)
+                {
+                    mapCollisionSensor.OnSeparation += (self, maybeMapTile) =>
+                    {
+                        IWorldCollidable worldCollidable = maybeMapTile.UserData as IWorldCollidable;
+                        if(ReferenceEquals(worldCollidable, null))
+                        {
+                            return;
+                        }
+                        CollisionMessage worldCollision = new CollisionMessage();
+                        worldCollision.WithDirectionAndSource(collisionDirection, worldCollidable);
+                        worldCollision.Target = Parent.Id;
+                        worldCollision.Emit();
+                        return;
+                    };
+                }
+            }
         }
 
         private static BodyType ResolveCollisionType(PhysicsType physicsType)
@@ -339,7 +370,7 @@ namespace DxCore.Core.Components.Advanced.Physics
             private float friction_ = 1f;
             private CollisionGroup collisionGroup_ = CollisionGroup.All;
             private CollisionGroup collidesWith_ = CollisionGroup.All;
-            private bool worldCollisionSensor_ = false;
+            private bool worldCollisionSensor_;
             private PhysicsInitialization initialization_;
 
             public PhysicsComponentBuilder WithWorldCollisionSensor(bool sensorOn = true)

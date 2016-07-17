@@ -32,15 +32,16 @@ namespace DxCore.Core.Components.Advanced.Map
         public override void Initialize()
         {
             WorldModel worldModel = DxGame.Instance.Model<WorldModel>();
-            MapGeometryBody = BodyFactory.CreateBody(worldModel.World, this);
+            MapGeometryBody = BodyFactory.CreateBody(worldModel.World, userData:this);
             foreach(DxLineSegment edge in MapGeometry)
             {
-                EdgeShape edgeShape = new EdgeShape(edge.Start.Vector2 * WorldModel.DxToFarseerScale, edge.End.Vector2 * WorldModel.DxToFarseerScale);
-                Fixture fixture = MapGeometryBody.CreateFixture(edgeShape, this);
-                fixture.CollisionCategories = CollisionGroup.Map.CollisionCategory;
-                fixture.CollidesWith = CollisionGroup.All;
+                EdgeShape edgeShape = new EdgeShape(edge.Start.Vector2 * WorldModel.DxToFarseerScale,
+                    edge.End.Vector2 * WorldModel.DxToFarseerScale);
+                MapGeometryBody.CreateFixture(edgeShape, this);
             }
 
+            MapGeometryBody.CollisionCategories = CollisionGroup.Map;
+            MapGeometryBody.CollidesWith = CollisionGroup.All;
             MapGeometryBody.SleepingAllowed = false;
             MapGeometryBody.Restitution = 0;
             MapGeometryBody.Friction = 0;

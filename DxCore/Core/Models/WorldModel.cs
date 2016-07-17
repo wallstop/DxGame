@@ -15,7 +15,6 @@ using NLog;
 
 namespace DxCore.Core.Models
 {
-
     public struct WorldEdge
     {
         public Body Body { get; }
@@ -106,7 +105,7 @@ namespace DxCore.Core.Models
 
             foreach(DxRectangle area in message.AffectedAreas)
             {
-                AABB affectedArea = area.Aabb();
+                AABB affectedArea = area.ToAabb();
                 foreach(Fixture fixture in World.QueryAABB(ref affectedArea))
                 {
                     affectedFixtures.Add(fixture);
@@ -151,7 +150,7 @@ namespace DxCore.Core.Models
             };
             DxLineSegment[] borders =
             {
-                /* 
+/* 
                     We double up left & top, because bottom & right are simply translations of these lines. 
                     The body creation below will take care of this translation for us :^)
 
@@ -166,10 +165,9 @@ namespace DxCore.Core.Models
             {
                 DxLineSegment edgeAsLineSegment = borders[i];
                 Vector2 edgePosition = edgeAsLineSegment.Start.Vector2 * DxToFarseerScale;
-                Body worldBody = BodyFactory.CreateBody(world, bodyPositions[i], 0, this);
-                Fixture fixture = FixtureFactory.AttachEdge(edgePosition, edgeAsLineSegment.End.Vector2 * DxToFarseerScale,
-                    worldBody, this);
-                fixture.CollidesWith = Category.All;
+                Body worldBody = BodyFactory.CreateBody(world, bodyPositions[i], 0, userData:this);
+                Fixture fixture = FixtureFactory.AttachEdge(edgePosition,
+                    edgeAsLineSegment.End.Vector2 * DxToFarseerScale, worldBody, this);
 
                 EdgeShape edgeShape = (EdgeShape) fixture.Shape;
                 Logger.Info("Created world edge at Farseer Coordinates {0}, {1}", edgeShape.Vertex1, edgeShape.Vertex2);
@@ -180,7 +178,8 @@ namespace DxCore.Core.Models
                     a fixture, the fixture will not have the same properties)
                 */
                 worldBody.IgnoreGravity = true;
-                worldBody.CollidesWith = Category.All;
+                worldBody.CollisionCategories = CollisionGroup.Map;
+                worldBody.CollidesWith = CollisionGroup.All;
                 worldBody.BodyType = BodyType.Static;
                 worldBody.Friction = 0;
                 worldBody.Restitution = 0;

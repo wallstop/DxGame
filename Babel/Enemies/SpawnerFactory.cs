@@ -75,9 +75,9 @@ namespace Babel.Enemies
         internal sealed class SimpleSmallBoxWaveSpawnFunction : IDisposable
         {
             private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-            private static readonly int MAX_BOXES_IN_PLAY = 125;
+            private static readonly int MAX_BOXES_IN_PLAY = 50;
 
-            private static readonly int NUM_BOXES_PER_WAVE = 50;
+            private static readonly int NUM_BOXES_PER_WAVE = 5;
 
             private int numBoxesSpawnedInWave_;
             private int totalBoxesSpawned_;

@@ -1,12 +1,11 @@
-﻿using DXGame.Core.Utils;
-
-namespace DxCore.Core.Utils.Cache
+﻿namespace DxCore.Core.Utils.Cache
 {
     public enum RemovalCause
     {
         Explicit,
         Replaced,
-        Expired
+        Expired,
+        Evicted
     }
 
     public sealed class RemovalNotification<K, V>

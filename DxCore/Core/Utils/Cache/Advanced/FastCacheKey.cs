@@ -22,6 +22,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
 
         public override string ToString() => nameof(FastCacheKey);
 
+        // Fair dice roll
         public override int GetHashCode() => 9;
     }
 }

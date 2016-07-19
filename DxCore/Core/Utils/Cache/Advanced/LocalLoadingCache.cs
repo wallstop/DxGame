@@ -6,10 +6,8 @@ namespace DxCore.Core.Utils.Cache.Advanced
     {
         private Func<K, V> ValueLoader { get; }
 
-        public LocalLoadingCache(CacheBuilder<K, V> cacheBuilder, Func<V> valueLoader) 
-            :  this(cacheBuilder, key => valueLoader.Invoke())
-        {
-        }
+        public LocalLoadingCache(CacheBuilder<K, V> cacheBuilder, Func<V> valueLoader)
+            : this(cacheBuilder, ReferenceEquals(valueLoader, null) ? null : (Func<K, V>) (key => valueLoader.Invoke())) {}
 
         public LocalLoadingCache(CacheBuilder<K, V> cacheBuilder, Func<K, V> valueLoader) : base(cacheBuilder)
         {

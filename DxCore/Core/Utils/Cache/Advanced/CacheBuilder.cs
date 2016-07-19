@@ -4,18 +4,47 @@ namespace DxCore.Core.Utils.Cache.Advanced
 {
     public class CacheBuilder<K, V>
     {
-        private const int UNSET_INT = -1;
+        private const int UnsetInt = -1;
 
-        private const int DEFAULT_EXPIRATION_TICKS = 0;
+        private long expireAfterAccessMilliseconds_ = UnsetInt;
+        private long expireAfterWriteMilliseconds_ = UnsetInt;
+        private long maxElements_ = UnsetInt;
 
-        private long expireAfterAccessTicks_ = UNSET_INT;
-        private long expireAfterWriteTicks_ = UNSET_INT;
+        public long? ExpireAfterAccessMilliseconds
+        {
+            get
+            {
+                if(expireAfterAccessMilliseconds_ == UnsetInt)
+                {
+                    return null;
+                }
+                return expireAfterAccessMilliseconds_;
+            }
+        }
 
-        public long ExpireAfterAccessTicks
-            => expireAfterAccessTicks_ == UNSET_INT ? DEFAULT_EXPIRATION_TICKS : expireAfterAccessTicks_;
+        public long? ExpireAfterWriteMilliseconds
+        {
+            get
+            {
+                if(expireAfterWriteMilliseconds_ == UnsetInt)
+                {
+                    return null;
+                }
+                return expireAfterWriteMilliseconds_;
+            }
+        }
 
-        public long ExpireAfterWriteTicks
-            => expireAfterWriteTicks_ == UNSET_INT ? DEFAULT_EXPIRATION_TICKS : expireAfterWriteTicks_;
+        public long? MaxElements
+        {
+            get
+            {
+                if(maxElements_ == UnsetInt)
+                {
+                    return null;
+                }
+                return maxElements_;
+            }
+        }
 
         public Action<RemovalNotification<K, V>> RemovalListener { get; private set; }
 
@@ -43,17 +72,27 @@ namespace DxCore.Core.Utils.Cache.Advanced
 
         public CacheBuilder<K, V> WithExpireAfterAccess(TimeSpan duration)
         {
-            long durationTicks = duration.Ticks;
-            Validate.Validate.Hard.IsTrue(durationTicks >= 0, "Cannot expire after access for a negative duration");
-            expireAfterAccessTicks_ = durationTicks;
+            long durationMilliseconds = (long) Math.Round(duration.TotalMilliseconds);
+            Validate.Validate.Hard.IsNotNegative(durationMilliseconds,
+                () => $"Cannot expire after access of a duration of {durationMilliseconds}ms");
+            expireAfterAccessMilliseconds_ = durationMilliseconds;
             return this;
         }
 
         public CacheBuilder<K, V> WithExpireAfterWrite(TimeSpan duration)
         {
-            long durationTicks = duration.Ticks;
-            Validate.Validate.Hard.IsTrue(durationTicks >= 0, "Cannot expire after write for a negative duration");
-            expireAfterWriteTicks_ = durationTicks;
+            long durationMilliseconds = (long) Math.Round(duration.TotalMilliseconds);
+            Validate.Validate.Hard.IsNotNegative(durationMilliseconds,
+                () => $"Cannot expire after write of a duration of {durationMilliseconds}ms");
+            expireAfterWriteMilliseconds_ = durationMilliseconds;
+            return this;
+        }
+
+        public CacheBuilder<K, V> WithMaxElements(int maxElements)
+        {
+            Validate.Validate.Hard.IsPositive(maxElements,
+                () => $"Cannot cap the max elements of a cache to be {maxElements}");
+            maxElements_ = maxElements;
             return this;
         }
 

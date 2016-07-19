@@ -13,14 +13,14 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
         public void TestExpireAfterAccessUnsetTurnsToDefault()
         {
             CacheBuilder<int, string> cacheBuilder = CacheBuilder<int, string>.NewBuilder();
-            Assert.AreEqual(0, cacheBuilder.ExpireAfterAccessTicks);
+            Assert.IsNull(cacheBuilder.ExpireAfterAccessMilliseconds);
         }
 
         [Test]
         public void TestExpireAfterWriteUnsetTurnsToDefault()
         {
             CacheBuilder<int, string> cacheBuilder = CacheBuilder<int, string>.NewBuilder();
-            Assert.AreEqual(0, cacheBuilder.ExpireAfterWriteTicks);
+            Assert.IsNull(cacheBuilder.ExpireAfterWriteMilliseconds);
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
             CacheBuilder<int, string> cacheBuilder = CacheBuilder<int, string>.NewBuilder();
             TimeSpan expireAfterAccessSeconds = TimeSpan.FromSeconds(ThreadLocalRandom.Current.Next());
             cacheBuilder.WithExpireAfterAccess(expireAfterAccessSeconds);
-            Assert.AreEqual(expireAfterAccessSeconds.Ticks, cacheBuilder.ExpireAfterAccessTicks);
+            Assert.AreEqual((long)Math.Round(expireAfterAccessSeconds.TotalMilliseconds), cacheBuilder.ExpireAfterAccessMilliseconds);
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
             CacheBuilder<int, string> cacheBuilder = CacheBuilder<int, string>.NewBuilder();
             TimeSpan expireAfterWriteSeconds = TimeSpan.FromSeconds(ThreadLocalRandom.Current.Next());
             cacheBuilder.WithExpireAfterAccess(expireAfterWriteSeconds);
-            Assert.AreEqual(expireAfterWriteSeconds.Ticks, cacheBuilder.ExpireAfterAccessTicks);
+            Assert.AreEqual((long)Math.Round(expireAfterWriteSeconds.TotalMilliseconds), cacheBuilder.ExpireAfterAccessMilliseconds);
         }
     }
 }

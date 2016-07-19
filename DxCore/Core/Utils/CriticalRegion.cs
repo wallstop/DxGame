@@ -31,7 +31,7 @@ namespace DxCore.Core.Utils
             Validate.Validate.Hard.IsNotNull(lockType);
             lock_ = readWriteLock;
             type_ = lockType;
-            switch (lockType)
+            switch(lockType)
             {
                 case LockType.Read:
                     lock_.EnterReadLock();
@@ -41,13 +41,13 @@ namespace DxCore.Core.Utils
                     break;
                 default:
                     throw new InvalidEnumArgumentException(
-                        $"Could not determine how to enclose a {typeof (CriticalRegion)} with {typeof (LockType)} {type_}");
+                        $"Could not determine how to enclose a {typeof(CriticalRegion)} with {typeof(LockType)} {type_}");
             }
         }
 
         public void Dispose()
         {
-            switch (type_)
+            switch(type_)
             {
                 case LockType.Read:
                     lock_.ExitReadLock();
@@ -57,7 +57,7 @@ namespace DxCore.Core.Utils
                     break;
                 default:
                     throw new InvalidEnumArgumentException(
-                        $"Could not determine how to exit a {typeof (CriticalRegion)} with {typeof (LockType)} {type_}");
+                        $"Could not determine how to exit a {typeof(CriticalRegion)} with {typeof(LockType)} {type_}");
             }
         }
     }

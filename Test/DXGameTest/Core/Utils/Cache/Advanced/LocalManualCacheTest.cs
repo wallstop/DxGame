@@ -12,7 +12,7 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
         [Test]
         public void TestExpireAfterWriteRespectsTimeout()
         {
-            TimeSpan writeExpiry = TimeSpan.FromMilliseconds(ThreadLocalRandom.Current.Next(1000, 1500));
+            TimeSpan writeExpiry = TimeSpan.FromMilliseconds(ThreadLocalRandom.Current.Next(100, 150));
             ICache<int, string> arbitraryCache =
                 CacheBuilder<int, string>.NewBuilder().WithExpireAfterWrite(writeExpiry).Build();
 
@@ -32,7 +32,7 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
         [Test]
         public void TestExpireAfterAccessRespectsTimeout()
         {
-            TimeSpan accessExpiry = TimeSpan.FromMilliseconds(ThreadLocalRandom.Current.Next(1000, 1500));
+            TimeSpan accessExpiry = TimeSpan.FromMilliseconds(ThreadLocalRandom.Current.Next(100, 150));
             ICache<int, string> arbitraryCache =
                 CacheBuilder<int, string>.NewBuilder().WithExpireAfterAccess(accessExpiry).Build();
 
@@ -42,7 +42,7 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
             int key = ThreadLocalRandom.Current.Next();
             string value = "test value please ignore";
             arbitraryCache.Put(key, value);
-            for(int i = 0; i < ThreadLocalRandom.Current.Next(5, 20); ++i)
+            for(int i = 0; i < ThreadLocalRandom.Current.Next(5, 200); ++i)
             {
                 foundValue = arbitraryCache.GetIfPresent(key, out outValue);
                 Assert.True(foundValue);

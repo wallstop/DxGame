@@ -12,7 +12,12 @@ namespace DXGameTest.Core
         public static void RunMultipleTimes(Action function)
         {
             const int numRunTimes = 10000;
-            for (int i = 0; i < numRunTimes; ++i)
+            RunMultipleTimes(numRunTimes, function);
+        }
+
+        public static void RunMultipleTimes(int numRunTimes, Action function)
+        {
+            for(int i = 0; i < numRunTimes; ++i)
             {
                 function();
             }

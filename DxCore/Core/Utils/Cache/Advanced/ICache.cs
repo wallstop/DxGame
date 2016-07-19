@@ -15,7 +15,5 @@ namespace DxCore.Core.Utils.Cache.Advanced
         void InvalidateAll();
 
         long Size { get; }
-
-        void CleanUp();
     }
 }

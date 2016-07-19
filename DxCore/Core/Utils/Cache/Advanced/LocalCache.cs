@@ -1,522 +1,416 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 
 namespace DxCore.Core.Utils.Cache.Advanced
 {
-    // TODO: LRU caching
+    internal class FatTimer : IDisposable
+    {
+        public Timer ReadTimer;
+        public Timer WriteTimer;
+
+        public void Dispose()
+        {
+            try
+            {
+                ReadTimer?.Dispose();
+            }
+            catch
+            {
+                // This page left blank
+            }
+            try
+            {
+                WriteTimer?.Dispose();
+            }
+            catch
+            {
+                // This one too
+            }
+        }
+    }
+
+    internal enum CacheAction
+    {
+        Read,
+        Write
+    }
+
+    internal class Node<K, V>
+    {
+        public K Key;
+        public V Data;
+        public Node<K, V> Next;
+        public Node<K, V> Previous;
+    }
+
     public class LocalCache<K, V> : ICache<K, V>
     {
-        private const int DrainThreshold = 0x3F;
-        private readonly IProducerConsumerCollection<StampedAccessEntry<K>> accessQueue_;
+        private ReaderWriterLockSlim Lock { get; }
 
-        private readonly ConcurrentDictionary<K, StampedAndLockedValue<V>> cache_ =
-            new ConcurrentDictionary<K, StampedAndLockedValue<V>>();
+        private Dictionary<K, Node<K, V>> LruCache { get; }
+        private Dictionary<K, V> Cache { get; }
+        private Dictionary<K, FatTimer> Timers { get; }
+        private Action<RemovalNotification<K, V>> RemovalListener { get; }
 
-        private readonly Action<RemovalNotification<K, V>> removalListener_;
+        public bool HasRemovalListener => !ReferenceEquals(RemovalListener, null);
 
-        private readonly IProducerConsumerCollection<RemovalNotification<K, V>> removalNotificationQueue_;
+        private Node<K, V> Head { get; }
+        private Node<K, V> Tail { get; }
 
-        private readonly Stopwatch ticker_;
+        public long ExpireAfterAccessMilliseconds { get; }
+        public long ExpireAfterWriteMilliseconds { get; }
+        public long MaxElements { get; }
 
-        private readonly IProducerConsumerCollection<StampedAccessEntry<K>> writeQueue_;
-
-        private int readCount_;
-
-        public long ExpireAfterAccessTicks { get; }
-        public long ExpireAfterWriteTicks { get; }
-
-        public bool ExpiresAfterAccess => ExpireAfterAccessTicks > 0;
-        public bool ExpiresAfterWrite => ExpireAfterWriteTicks > 0;
-
-        private long NewAccessExpiryTimeTick => AccessExpiryTimeTick(NowTick);
-        private long NewWriteExpiryTimeTick => WriteExpiryTimeTick(NowTick);
-
-        private long NowTick => ticker_.ElapsedTicks;
-
-        private readonly ReaderWriterLockSlim lock_ = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        public bool ExpiresAfterAccess => ExpireAfterAccessMilliseconds > 0;
+        public bool ExpiresAfterWrite => ExpireAfterWriteMilliseconds > 0;
+        public bool IsCapped => MaxElements > 0;
 
         public LocalCache(CacheBuilder<K, V> cacheBuilder)
         {
             Validate.Validate.Hard.IsNotNull(cacheBuilder,
                 () => this.GetFormattedNullOrDefaultMessage(nameof(cacheBuilder)));
-            ticker_ = Stopwatch.StartNew();
+
+            const int invalid = -1;
+
+            Lock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+            Cache = new Dictionary<K, V>();
+            LruCache = new Dictionary<K, Node<K, V>>();
+            Timers = new Dictionary<K, FatTimer>();
+
+            Head = new Node<K, V>();
+            Tail = new Node<K, V>();
+            Head.Next = Tail;
+            Tail.Previous = Head;
+
             /* Our input ticks are of the form "Timespan Ticks". We need to transform them to "Stopwatch" ticks */
-            ExpireAfterAccessTicks = TransformTimeSpanTicksToStopwatchTicks(cacheBuilder.ExpireAfterAccessTicks);
-            ExpireAfterWriteTicks = TransformTimeSpanTicksToStopwatchTicks(cacheBuilder.ExpireAfterWriteTicks);
+            ExpireAfterAccessMilliseconds = cacheBuilder.ExpireAfterAccessMilliseconds.GetValueOrDefault(invalid);
+            ExpireAfterWriteMilliseconds = cacheBuilder.ExpireAfterWriteMilliseconds.GetValueOrDefault(invalid);
+            MaxElements = cacheBuilder.MaxElements.GetValueOrDefault(invalid);
 
-            removalListener_ = cacheBuilder.RemovalListener;
-            if(ReferenceEquals(cacheBuilder.RemovalListener, null))
-            {
-                removalNotificationQueue_ = DiscardingQueue<RemovalNotification<K, V>>.Instance;
-            }
-            else
-            {
-                removalNotificationQueue_ = new ConcurrentQueue<RemovalNotification<K, V>>();
-            }
-
-            if(ExpiresAfterAccess)
-            {
-                accessQueue_ = new ConcurrentQueue<StampedAccessEntry<K>>();
-            }
-            else
-            {
-                accessQueue_ = DiscardingQueue<StampedAccessEntry<K>>.Instance;
-            }
-
-            if(ExpiresAfterWrite)
-            {
-                writeQueue_ = new ConcurrentQueue<StampedAccessEntry<K>>();
-            }
-            else
-            {
-                writeQueue_ = DiscardingQueue<StampedAccessEntry<K>>.Instance;
-            }
-        }
-
-        private static int TransformTimeSpanTicksToStopwatchTicks(long ticks)
-        {
-            return (int) Math.Round(1.0 * Stopwatch.Frequency / new TimeSpan(ticks).TotalSeconds);
+            RemovalListener = cacheBuilder.RemovalListener;
         }
 
         public bool GetIfPresent(K key, out V value)
         {
-            try
+            using(new CriticalRegion(Lock, CriticalRegion.LockType.Read))
             {
-                /* We do not need to grab the global lock - locking is only for sane modification of the map. GetIfPresent does no modification */
-                StampedAndLockedValue<V> lockedValue;
-                bool exists = cache_.TryGetValue(key, out lockedValue);
-                if(!exists)
+                CheckTimer(key, CacheAction.Read);
+                if(IsCapped)
                 {
-                    value = default(V);
-                    return false;
+                    Node<K, V> valueNode;
+                    bool present = LruCache.TryGetValue(key, out valueNode);
+                    ExtractValue(valueNode, present, out value);
+                    return present;
                 }
-                return UpdateOrExpireStampedAndLockedValueForRead(key, lockedValue, out value);
-            }
-            finally
-            {
-                PostReadCleanup();
+                return Cache.TryGetValue(key, out value);
             }
         }
 
-        private bool UpdateOrExpireStampedAndLockedValueForRead(K key, StampedAndLockedValue<V> lockedValue,
-            out V outValue)
+        private void ExtractValue(Node<K, V> valueNode, bool present, out V value)
         {
-            long nowTicks = NowTick;
-
-            lockedValue.Lock.EnterUpgradeableReadLock();
-            try
-            {
-                if(lockedValue.IsExpired(nowTicks))
-                {
-                    TryExpireEntries(nowTicks);
-                    outValue = default(V);
-                    return false;
-                }
-
-                /* Neat, new read, record it */
-                RecordRead(key, nowTicks);
-                V value = lockedValue.Value;
-                if(ExpiresAfterAccess)
-                {
-                    lockedValue.Lock.EnterWriteLock();
-                    try
-                    {
-                        lockedValue.AccessExpiry = AccessExpiryTimeTick(nowTicks);
-                    }
-                    finally
-                    {
-                        lockedValue.Lock.ExitWriteLock();
-                    }
-                }
-                outValue = value;
-                return true;
-            }
-            finally
-            {
-                lockedValue.Lock.ExitUpgradeableReadLock();
-            }
+            value = !present ? valueNode.Data : default(V);
         }
 
         public V Get(K key, Func<K, V> valueLoader)
         {
-            try
+            /* Get it if its there */
+            using(new CriticalRegion(Lock, CriticalRegion.LockType.Read))
             {
-                /* TODO: See if we can do this by relying on the concurrentDictionary's atomic operations. Right now, this is *NOT* atomic */
-
-                long currentTicks = NowTick;
-                StampedAndLockedValue<V> lockedValue;
-                using(new CriticalRegion(lock_, CriticalRegion.LockType.Read))
+                CheckTimer(key, CacheAction.Read);
+                if(IsCapped)
                 {
-                    lockedValue = cache_.AddOrUpdate(key, keyArg =>
+                    Node<K, V> valueWrapper;
+                    if(LruCache.TryGetValue(key, out valueWrapper))
                     {
-                        StampedAndLockedValue<V> newLockedValue = NewStampedAndLockedValue(key, valueLoader);
-                        /* Totally new - no need to lock it, we have TOTAL control */
-                        RecordWrite(key, currentTicks);
-                        return newLockedValue;
-                    }, (keyArg, existingValue) =>
-                    {
-                        V outValue;
-                        if(!UpdateOrExpireStampedAndLockedValueForRead(keyArg, existingValue, out outValue))
-                        {
-                            StampedAndLockedValue<V> newLockedValue = NewStampedAndLockedValue(key, valueLoader);
-                            RecordWrite(key, currentTicks);
-                            return newLockedValue;
-                        }
+                        V existingValue;
+                        ExtractValue(valueWrapper, true, out existingValue);
                         return existingValue;
-                    });
-                }
-                V foundValue;
-                using(new CriticalRegion(lockedValue.Lock, CriticalRegion.LockType.Read))
-                {
-                    foundValue = lockedValue.Value;
-                    RecordRead(key, currentTicks);
-                }
-                /* Only lock if we care */
-                if(ExpiresAfterAccess)
-                {
-                    using(new CriticalRegion(lockedValue.Lock, CriticalRegion.LockType.Write))
-                    {
-                        lockedValue.AccessExpiry = AccessExpiryTimeTick(currentTicks);
                     }
                 }
-                return foundValue;
+                else
+                {
+                    V value;
+                    if(Cache.TryGetValue(key, out value))
+                    {
+                        return value;
+                    }
+                }
             }
-            finally
+
+            /* 
+                Get exclusive access. Due to some potential missed atomicity, we need to 
+                check if someone else has grabbed the write lock first. If so,
+                we don't want to invoke the value creator, and simply return the existing value
+            */
+            using(new CriticalRegion(Lock, CriticalRegion.LockType.Write))
             {
-                PostReadCleanup();
+                CheckTimer(key, CacheAction.Write, true);
+                CheckTimer(key, CacheAction.Read);
+
+                if(IsCapped)
+                {
+                    Node<K, V> valueWrapper;
+                    if(LruCache.TryGetValue(key, out valueWrapper))
+                    {
+                        V existingValue;
+                        ExtractValue(valueWrapper, true, out existingValue);
+                        return existingValue;
+                    }
+                    V createdValue = valueLoader(key);
+                    valueWrapper = new Node<K, V> {Key = key, Data = createdValue};
+                    AddNode(valueWrapper);
+                    LruCache.Add(key, valueWrapper);
+                    LruEvict();
+                    return createdValue;
+                }
+                else
+                {
+                    V existingValue;
+                    if(Cache.TryGetValue(key, out existingValue))
+                    {
+                        return existingValue;
+                    }
+                    V createdValue = valueLoader(key);
+                    Cache.Add(key, createdValue);
+                    return createdValue;
+                }
             }
         }
 
         public void Put(K key, V value)
         {
-            long nowTicks = NowTick;
-            try
+            V existingValue;
+            bool replaced = false;
+            using(new CriticalRegion(Lock, CriticalRegion.LockType.Write))
             {
-                PreWriteCleanup(nowTicks);
-                StampedAndLockedValue<V> lockedValue = NewStampedAndLockedValue(value);
-                using(new CriticalRegion(lock_, CriticalRegion.LockType.Read))
+                CheckTimer(key, CacheAction.Write, true);
+                if(IsCapped)
                 {
-                    cache_.AddOrUpdate(key, keyArg => lockedValue, (keyArg, existingValue) =>
+                    Node<K, V> valueWrapper;
+                    replaced = LruCache.TryGetValue(key, out valueWrapper) && !Objects.Equals(valueWrapper.Data, value);
+                    if(replaced)
                     {
-                        V foundValue;
-                        using(new CriticalRegion(existingValue.Lock, CriticalRegion.LockType.Read))
-                        {
-                            foundValue = existingValue.Value;
-                        }
-                        /* Same value? No replacement notification, but we do want to update our timestamps */
-                        if(Objects.Equals(value, foundValue))
-                        {
-                            RecordWrite(key, nowTicks);
-                            if(ExpiresAfterWrite)
-                            {
-                                using(new CriticalRegion(existingValue.Lock, CriticalRegion.LockType.Write))
-                                {
-                                    existingValue.WriteExpiry = NewWriteExpiryTimeTick;
-                                    return existingValue;
-                                }
-                            }
-                        }
-                        /* Otherwise, lock the value and update it */
-                        using(new CriticalRegion(existingValue.Lock, CriticalRegion.LockType.Write))
-                        {
-                            EnqueueNotification(key, existingValue.Value, RemovalCause.Replaced);
-                            existingValue.WriteExpiry = NewWriteExpiryTimeTick;
-                            existingValue.Value = value;
-                            return existingValue;
-                        }
-                    });
+                        existingValue = valueWrapper.Data;
+                        valueWrapper.Data = value;
+                        valueWrapper.Previous.Next = valueWrapper.Next;
+                        valueWrapper.Next.Previous = valueWrapper.Previous;
+                    }
+                    else
+                    {
+                        existingValue = default(V);
+                        valueWrapper = new Node<K, V> {Key = key, Data = value};
+                        LruCache.Add(key, valueWrapper);
+                        AddNode(valueWrapper);
+                        LruEvict();
+                    }
+                }
+                else
+                {
+                    replaced = Cache.TryGetValue(key, out existingValue) && !Objects.Equals(existingValue, value);
+                    Cache[key] = value;
                 }
             }
-            finally
+            if(replaced)
             {
-                RecordWrite(key, nowTicks);
-                PostWriteCleanup();
+                RemovalNotification<K, V> removalNotification = new RemovalNotification<K, V>(key, existingValue,
+                    RemovalCause.Replaced);
+                RemovalListener(removalNotification);
             }
         }
 
         public void Invalidate(K key)
         {
-            try
+            Removal(key, () => false, RemovalCause.Explicit);
+        }
+
+        private FatTimer NewFatTimer(K key)
+        {
+            FatTimer fatTimer = new FatTimer();
+            int alreadyExpired = 0;
+
+            Func<bool> alreadyExpiredCheck = () => Interlocked.Add(ref alreadyExpired, 1) != 1;
+            if(ExpiresAfterWrite)
             {
-                long nowTicks = NowTick;
-                PreWriteCleanup(nowTicks);
-                StampedAndLockedValue<V> lockedValue;
-                if(cache_.TryRemove(key, out lockedValue))
+                fatTimer.WriteTimer = new Timer(_ => { Removal(key, alreadyExpiredCheck, RemovalCause.Expired); });
+            }
+            if(ExpiresAfterAccess)
+            {
+                fatTimer.ReadTimer = new Timer(_ => { Removal(key, alreadyExpiredCheck, RemovalCause.Expired); });
+            }
+            return fatTimer;
+        }
+
+        private void Removal(K key, Func<bool> alreadyExpired, RemovalCause removalCause)
+        {
+            if(alreadyExpired())
+            {
+                /* Someone else already cleaned up after us :( */
+                return;
+            }
+
+            using(new CriticalRegion(Lock, CriticalRegion.LockType.Write))
+            {
+                FatTimer existingTimer;
+                if(Timers.TryGetValue(key, out existingTimer))
                 {
-                    using(new CriticalRegion(lockedValue.Lock, CriticalRegion.LockType.Read))
+                    existingTimer.Dispose();
+                    Timers.Remove(key);
+                }
+                if(!HasRemovalListener)
+                {
+                    if(IsCapped)
                     {
-                        EnqueueNotification(key, lockedValue.Value, RemovalCause.Explicit);
+                        LruCache.Remove(key);
+                    }
+                    else
+                    {
+                        Cache.Remove(key);
+                    }
+                    return;
+                }
+
+                bool removed = false;
+                V removedValue;
+                if(IsCapped)
+                {
+                    Node<K, V> removedValueWrapper;
+                    if(removed = LruCache.TryGetValue(key, out removedValueWrapper))
+                    {
+                        removedValue = removedValueWrapper.Data;
+                        LruCache.Remove(key);
+                    }
+                    else
+                    {
+                        removedValue = default(V);
                     }
                 }
+                else
+                {
+                    if(removed = Cache.TryGetValue(key, out removedValue))
+                    {
+                        Cache.Remove(key);
+                    }
+                }
+
+                if(removed)
+                {
+                    RemovalNotification<K, V> removalNotification = new RemovalNotification<K, V>(key, removedValue,
+                        removalCause);
+                    RemovalListener(removalNotification);
+                }
             }
-            finally
+        }
+
+        private void CheckTimer(K key, CacheAction cacheAction, bool forceCreation = false)
+        {
+            FatTimer existingTimer;
+            if(!Timers.TryGetValue(key, out existingTimer))
             {
-                PostWriteCleanup();
+                if(forceCreation)
+                {
+                    existingTimer = NewFatTimer(key);
+                    Timers.Add(key, existingTimer);
+                }
+                else
+                {
+                    return;
+                }
+            }
+            switch(cacheAction)
+            {
+                case CacheAction.Read:
+                {
+                    if(!ExpiresAfterAccess)
+                    {
+                        return;
+                    }
+                    existingTimer.ReadTimer.Change(ExpireAfterAccessMilliseconds, Timeout.Infinite);
+                    break;
+                }
+                case CacheAction.Write:
+                {
+                    if(!ExpiresAfterWrite)
+                    {
+                        return;
+                    }
+                    existingTimer.WriteTimer.Change(ExpireAfterWriteMilliseconds, Timeout.Infinite);
+                    break;
+                }
+                default:
+                {
+                    throw new InvalidEnumArgumentException($"Unexpected {typeof(CacheAction)} {cacheAction}");
+                }
             }
         }
 
         public void InvalidateAll()
         {
-            try
+            K[] cacheKeys;
+            using(new CriticalRegion(Lock, CriticalRegion.LockType.Read))
             {
-                lock_.EnterUpgradeableReadLock();
-                try
-                {
-                    foreach(KeyValuePair<K, StampedAndLockedValue<V>> entry in cache_)
-                    {
-                        using(new CriticalRegion(entry.Value.Lock, CriticalRegion.LockType.Read))
-                        {
-                            EnqueueNotification(entry.Key, entry.Value.Value, RemovalCause.Explicit);
-                        }
-                    }
-                    lock_.EnterWriteLock();
-                    try
-                    {
-                        cache_.Clear();
-                        writeQueue_.Clear();
-                        accessQueue_.Clear();
-                    }
-                    finally
-                    {
-                        lock_.ExitWriteLock();
-                    }
-                    Interlocked.Exchange(ref readCount_, 0);
-                }
-                finally
-                {
-                    lock_.ExitUpgradeableReadLock();
-                }
+                cacheKeys = IsCapped ? LruCache.Keys.ToArray() : Cache.Keys.ToArray();
             }
-            finally
+            foreach(K cacheKey in cacheKeys)
             {
-                PostWriteCleanup();
+                Removal(cacheKey, () => false, RemovalCause.Explicit);
             }
         }
 
-        public long Size => cache_.Count;
-
-        public void CleanUp()
+        private void AddNode(Node<K, V> valueWrapper)
         {
-            long now = NowTick;
-            RunLockedCleanup(now);
-            RunUnlockedCleanup();
-        }
-
-        private long AccessExpiryTimeTick(long nowTicks)
-        {
-            return ExpiresAfterAccess ? ExpireAfterAccessTicks + nowTicks : long.MaxValue;
-        }
-
-        private void EnqueueNotification(K key, V value, RemovalCause removalCause)
-        {
-            RemovalNotification<K, V> notification = new RemovalNotification<K, V>(key, value, removalCause);
-            removalNotificationQueue_.TryAdd(notification);
-        }
-
-        private void ExpireEntries(long nowTick)
-        {
-            StampedAccessEntry<K> stampedEntry;
-            while(writeQueue_.TryTake(out stampedEntry))
+            if(valueWrapper == Tail.Previous)
             {
-                if(!ExpireEntry(stampedEntry, nowTick))
+                return;
+            }
+            Tail.Previous.Next = valueWrapper;
+            valueWrapper.Previous = Tail.Previous;
+            Tail.Previous = valueWrapper;
+            valueWrapper.Next = Tail;
+        }
+
+        private void LruEvict()
+        {
+            Validate.Validate.Hard.IsTrue(IsCapped);
+            if(LruCache.Count <= MaxElements)
+            {
+                return;
+            }
+
+            Node<K, V> temp = Head.Next;
+            Head.Next = temp.Next;
+            temp.Next.Previous = Head;
+
+            K key = temp.Key;
+            LruCache.Remove(key);
+            FatTimer existingTimer;
+            if(Timers.TryGetValue(key, out existingTimer))
+            {
+                existingTimer.Dispose();
+                Timers.Remove(key);
+            }
+
+            if(!HasRemovalListener)
+            {
+                return;
+            }
+
+            RemovalNotification<K, V> removalNotification = new RemovalNotification<K, V>(key, temp.Data,
+                RemovalCause.Evicted);
+            RemovalListener(removalNotification);
+        }
+
+        public long Size
+        {
+            get
+            {
+                using(new CriticalRegion(Lock, CriticalRegion.LockType.Read))
                 {
-                    break;
+                    return IsCapped ? LruCache.Count : Cache.Count;
                 }
             }
-            while(accessQueue_.TryTake(out stampedEntry))
-            {
-                if(!ExpireEntry(stampedEntry, nowTick))
-                {
-                    break;
-                }
-            }
-        }
-
-        private bool ExpireEntry(StampedAccessEntry<K> stampedEntry, long nowTick)
-        {
-            if(!stampedEntry.IsExpired(nowTick))
-            {
-                return false;
-            }
-
-            K key = stampedEntry.Key;
-            V value;
-            // We want as minimal time in critical region as possible
-            // ReSharper disable TooWideLocalVariableScope
-            StampedAndLockedValue<V> lockedValue;
-            if(cache_.TryGetValue(key, out lockedValue))
-            {
-                using(new CriticalRegion(lockedValue.Lock, CriticalRegion.LockType.Read))
-                {
-                    if(stampedEntry.AccessExpiry != lockedValue.AccessExpiry ||
-                       stampedEntry.WriteExpiry != lockedValue.WriteExpiry)
-                    {
-                        /* Value updated - we'll get a notification later! Return true so we continue to process */
-                        return true;
-                    }
-                    value = lockedValue.Value;
-                    /* Otherwise, remove the bad voy */
-                    StampedAndLockedValue<V> removedValue;
-                    bool success = cache_.TryRemove(key, out removedValue);
-                    // TODO: Validate?
-                }
-            }
-            else
-            {
-                /* Already expired, continue */
-                return true;
-            }
-            EnqueueNotification(key, value, RemovalCause.Expired);
-            return true;
-        }
-
-        private StampedAndLockedValue<V> NewStampedAndLockedValue(K key, Func<K, V> valueLoader)
-        {
-            V value = valueLoader.Invoke(key);
-            return NewStampedAndLockedValue(value);
-        }
-
-        private StampedAndLockedValue<V> NewStampedAndLockedValue(V value)
-        {
-            return new StampedAndLockedValue<V>(value, NewAccessExpiryTimeTick, NewWriteExpiryTimeTick);
-        }
-
-        private void PostReadCleanup()
-        {
-            if((Interlocked.Increment(ref readCount_) & DrainThreshold) == 0)
-            {
-                CleanUp();
-            }
-        }
-
-        private void PostWriteCleanup()
-        {
-            RunUnlockedCleanup();
-        }
-
-        private void PreWriteCleanup(long now)
-        {
-            RunLockedCleanup(now);
-        }
-
-        private void ProcessPendingNotifications()
-        {
-            RemovalNotification<K, V> notification;
-            while(removalNotificationQueue_.TryTake(out notification))
-            {
-                try
-                {
-                    removalListener_.Invoke(notification);
-                }
-                catch(Exception)
-                {
-                    // Ignore lol, go away
-                }
-            }
-        }
-
-        private void RecordRead(K key, long nowTicks)
-        {
-            StampedAccessEntry<K> stampedReadAccess = NewStampedAccessEntry(key, nowTicks);
-            bool success = accessQueue_.TryAdd(stampedReadAccess);
-            // Validate success?
-        }
-
-        private void RecordWrite(K key, long nowTicks)
-        {
-            StampedAccessEntry<K> stampedWriteAccess = NewStampedAccessEntry(key, nowTicks);
-            bool success = writeQueue_.TryAdd(stampedWriteAccess);
-            // Validate success?
-        }
-
-        private StampedAccessEntry<K> NewStampedAccessEntry(K key, long nowTicks)
-        {
-            return new StampedAccessEntry<K>(key, AccessExpiryTimeTick(nowTicks), WriteExpiryTimeTick(nowTicks));
-        }
-
-        private void RunLockedCleanup(long nowTick)
-        {
-            ExpireEntries(nowTick);
-            Interlocked.Exchange(ref readCount_, 0);
-        }
-
-        private void RunUnlockedCleanup()
-        {
-            ProcessPendingNotifications();
-        }
-
-        private void TryExpireEntries(long nowTicks)
-        {
-            ExpireEntries(nowTicks);
-        }
-
-        private long WriteExpiryTimeTick(long nowTicks)
-        {
-            return ExpiresAfterWrite ? ExpireAfterWriteTicks + nowTicks : long.MaxValue;
-        }
-    }
-
-    /**
-        The "secret sauce" Key augmentation. Provides per-element locking for our own management
-    */
-
-    internal sealed class StampedAndLockedValue<V>
-    {
-        public long AccessExpiry { get; set; }
-        public ReaderWriterLockSlim Lock { get; } = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-        public V Value { get; set; }
-        public long WriteExpiry { get; set; }
-
-        public StampedAndLockedValue(V value, long accessExpiration, long writeExpiration)
-        {
-            Value = value;
-            AccessExpiry = accessExpiration;
-            WriteExpiry = writeExpiration;
-        }
-
-        public bool IsExpired(long nowTick)
-        {
-            return (AccessExpiry < nowTick) || (WriteExpiry < nowTick);
-        }
-    }
-
-    /**
-        Records an Access snapshot for a given key. These entries are shoved onto a respective read / write queue. Once in awhile, the queues are flushed. 
-        We're able to guarantee that an entry should be expired IFF:
-
-        * The key exists in the cache
-        * The access tickstamp is the same as this access entry
-        * The write tickstamp is the same as this access entry
-
-        Due to the following reasons: 
-        * If a key->value mapping is overwritten, it will have a different write stamp.
-        * If a key->value is accessed, it will have a different access stamp
-        * If a key->value was removed, it will not exist in the cache
-
-        Combined with the fact that we do not record StampedAccessEntries for operations that we don't care about (ie, configured, via a DiscardingQueue), 
-        this allows us to use these to compare against values stored within the queue, making the final decision on whether or not to expire entries
-        by comparing stored values with access entries.
-    */
-
-    internal sealed class StampedAccessEntry<K>
-    {
-        public K Key { get; }
-        public long AccessExpiry { get; }
-        public long WriteExpiry { get; }
-
-        public StampedAccessEntry(K key, long accessExpireTick, long writeExpireTick)
-        {
-            Key = key;
-            AccessExpiry = accessExpireTick;
-            WriteExpiry = writeExpireTick;
-        }
-
-        public bool IsExpired(long nowTick)
-        {
-            return (AccessExpiry < nowTick) || (WriteExpiry < nowTick);
         }
     }
 }

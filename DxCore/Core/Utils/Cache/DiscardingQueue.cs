@@ -4,22 +4,32 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace DxCore.Core.Utils.Cache
 {
     /**
-        This queue simply discards whatever is thrown into it. It's a stateless, fast, immutable, empty list.
+        <summary>
+            This queue simply discards whatever is thrown into it. It's a stateless, fast, immutable, empty list. 
+            Also threadsafe.
 
-        Extremely useful for when you NEED a queue but don't want one that actually does anything
+            Extremely useful for when you NEED a queue but don't want one that actually does anything.
+
+            Extremely useful. All the time. Use it always.
+        </summary>
+
+        Why aren't you using it?
     */
-    public class DiscardingQueue<T> : IProducerConsumerCollection<T>
+    [Serializable]
+    [DataContract]
+    public sealed class DiscardingQueue<T> : IProducerConsumerCollection<T>
     {
-        private static readonly Lazy<DiscardingQueue<T>> INSTANCE =
+        private static readonly Lazy<DiscardingQueue<T>> Singleton =
             new Lazy<DiscardingQueue<T>>(() => new DiscardingQueue<T>());
 
         private readonly ReadOnlyCollection<T> absolutelyNothing_ = new ReadOnlyCollection<T>(new List<T>(0));
 
-        public static DiscardingQueue<T> Instance => INSTANCE.Value;
+        public static DiscardingQueue<T> Instance => Singleton.Value;
 
         private DiscardingQueue() {}
 
@@ -35,16 +45,16 @@ namespace DxCore.Core.Utils.Cache
 
         public void CopyTo(Array array, int index)
         {
-            // This page intentionally left blank
+            // Fastest copy implementation in the west
         }
 
         public int Count => 0;
         public object SyncRoot => absolutelyNothing_;
-        public bool IsSynchronized => false;
+        public bool IsSynchronized => true;
 
         public void CopyTo(T[] array, int index)
         {
-            // This page intentionally left blank
+            // Second-fastest copy implementation in the west
         }
 
         public bool TryAdd(T item)

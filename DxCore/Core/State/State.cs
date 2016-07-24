@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.DataStructures;
 using DxCore.Core.Messaging;
@@ -20,7 +21,7 @@ namespace DxCore.Core.State
 
     [Serializable]
     [DataContract]
-    public sealed class State : IProcessable, IIdentifiable
+    public sealed class State : IIdentifiable
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -52,15 +53,15 @@ namespace DxCore.Core.State
         /* Action that should only be performed once, on state entrance. Can be null. */
 
         [DataMember]
-        private Action<DxGameTime> OnEnter { get; }
+        private Action<StateUpdateConfig> OnEnter { get; }
 
         /* Action that should only be performed once, on state exit. Can be null. */
 
         [DataMember]
-        private Action<DxGameTime> OnExit { get; }
+        private Action<StateUpdateConfig> OnExit { get; }
 
         private State(ICollection<Transition> transitions, string name, Action<List<Message>, DxGameTime> action,
-            Action<DxGameTime> onEnter, Action<DxGameTime> onExit)
+            Action<StateUpdateConfig> onEnter, Action<StateUpdateConfig> onExit)
         {
             Name = name;
             messageBuffer_ = new List<Message>();
@@ -115,8 +116,8 @@ namespace DxCore.Core.State
             private readonly List<Transition> transitions_ = new List<Transition>();
             private Action<List<Message>, DxGameTime> action_;
             private string name_;
-            private Action<DxGameTime> onEnter_;
-            private Action<DxGameTime> onExit_;
+            private Action<StateUpdateConfig> onEnter_;
+            private Action<StateUpdateConfig> onExit_;
 
             public State Build()
             {
@@ -135,13 +136,13 @@ namespace DxCore.Core.State
                 return new State(transitions_, name_, action_, onEnter_, onExit_);
             }
 
-            public StateBuilder WithEntrance(Action<DxGameTime> onEnter)
+            public StateBuilder WithEntrance(Action<StateUpdateConfig> onEnter)
             {
                 onEnter_ = onEnter;
                 return this;
             }
 
-            public StateBuilder WithExit(Action<DxGameTime> onExit)
+            public StateBuilder WithExit(Action<StateUpdateConfig> onExit)
             {
                 onExit_ = onExit;
                 return this;
@@ -168,16 +169,16 @@ namespace DxCore.Core.State
             }
         }
 
-        public void Enter(DxGameTime gameTime)
+        public void Enter(StateUpdateConfig updateConfig)
         {
             Reset();
-            OnEnter?.Invoke(gameTime);
+            OnEnter?.Invoke(updateConfig);
         }
 
-        public void Exit(DxGameTime gameTime)
+        public void Exit(StateUpdateConfig updateConfig)
         {
             Reset();
-            OnExit?.Invoke(gameTime);
+            OnExit?.Invoke(updateConfig);
         }
 
         public bool Transition(out State nextState)
@@ -186,13 +187,28 @@ namespace DxCore.Core.State
             return !ReferenceEquals(transition_, null);
         }
 
-        public void Process(DxGameTime gameTime)
+        public void Process(StateUpdateConfig updateConfig)
         {
             List<Message> lastFrameMessages = SwapBuffers();
-            PrepTransition(lastFrameMessages, gameTime);
+            if(updateConfig.LoggingEnabled)
+            {
+                Logger.Debug("Processing {0} with {1}", Name, string.Join(",", lastFrameMessages.Select(_ =>
+                {
+                    try
+                    {
+                        return _.ToJson();
+                    }
+                    catch
+                    {
+                        return _.ToString();
+                    }
+                }).ToArray()));
+            }
+
+            PrepTransition(lastFrameMessages, updateConfig.GameTime);
             if(ReferenceEquals(transition_, null) || ReferenceEquals(transition_, this))
             {
-                Action.Invoke(lastFrameMessages, gameTime);
+                Action.Invoke(lastFrameMessages, updateConfig.GameTime);
             }
         }
 

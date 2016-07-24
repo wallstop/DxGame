@@ -316,10 +316,10 @@
     <Compile Include="Core\Settings\Scale.cs" />
     <Compile Include="Core\Skills\ChargedSkill.cs" />
     <Compile Include="Core\Skills\Skill.cs" />
-    <Compile Include="Core\State\Presentation.cs" />
     <Compile Include="Core\State\State.cs" />
     <Compile Include="Core\State\StateMachine.cs" />
     <Compile Include="Core\State\StateMachineFactory.cs" />
+    <Compile Include="Core\State\StateUpdateConfig.cs" />
     <Compile Include="Core\State\Transition.cs" />
     <Compile Include="Core\Team.cs" />
     <Compile Include="Core\UniqueId.cs" />

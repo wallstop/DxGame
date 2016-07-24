@@ -77,7 +77,8 @@ namespace Babel.Generators
                 teamComponent, entityLevelComponent, basicAttackListener, itemManager, playerNameComponent);
             GameObject playerObject = playerBuilder.Build();
 
-            StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(playerObject, "Poison");
+            const bool loggingEnabled = false;
+            StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(playerObject, "Poison", loggingEnabled);
             return playerObject;
         }
 

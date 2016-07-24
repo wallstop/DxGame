@@ -12,6 +12,7 @@ using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils.Distance;
 using DxCore.Core.Utils.Validate;
+using NLog;
 
 namespace DxCore.Core.State
 {
@@ -45,7 +46,7 @@ namespace DxCore.Core.State
             </summary>
         */
 
-        public static void BuildAndAttachBasicMovementStateMachineAndAnimations(GameObject entity, string entityName)
+        public static void BuildAndAttachBasicMovementStateMachineAndAnimations(GameObject entity, string entityName, bool loggingEnabled = false)
         {
             Validate.Hard.IsNotNull(entity,
                 () => $"Cannot make a {typeof(StateMachine)} for a null {typeof(GameObject)}");
@@ -128,7 +129,8 @@ namespace DxCore.Core.State
             jumpState.WithTransition(returnToNormalJumpTransition);
             jumpState.WithTransition(jumpToIdleTransition);
 
-            StateMachine stateMachine = stateMachineBuilder.WithInitialState(idleState).Build();
+            StateMachine stateMachine =
+                stateMachineBuilder.WithInitialState(idleState).WithLogging(loggingEnabled).Build();
             entity.AttachComponent(stateMachine);
             AnimatedComponent animationComponent = animationBuilder.WithStateMachine(stateMachine).Build();
             entity.AttachComponent(animationComponent);
@@ -199,6 +201,8 @@ namespace DxCore.Core.State
         [DataContract]
         internal sealed class MovementRegulator
         {
+            private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
             [DataMember]
             private UniqueId EntityId { get; set; }
 
@@ -352,8 +356,12 @@ namespace DxCore.Core.State
                 HorizontalForce = 0;
             }
 
-            public void StopJumping(DxGameTime gameTime)
+            public void StopJumping(StateUpdateConfig updateConfig)
             {
+                if(updateConfig.LoggingEnabled)
+                {
+                    Logger.Debug("Ceasing the jump movement, I promise");
+                }
                 VerticalForce = 0;
             }
         }

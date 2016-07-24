@@ -57,8 +57,10 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
                 }
                 readers.ForEach(reader => reader.Wait());
 
+                Assert.AreEqual(cache.Count, 1);
                 string foundValue;
                 bool found = cache.GetIfPresent(key, out foundValue);
+
                 Assert.True(found);
                 Assert.AreEqual(originalSeed + 1, seed);
                 Assert.AreEqual(foundValue, (originalSeed + 1).ToString());

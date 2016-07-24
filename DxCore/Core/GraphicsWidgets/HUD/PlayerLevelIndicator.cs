@@ -2,8 +2,8 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced.Entities;
 using DxCore.Core.Components.Basic;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -26,7 +26,7 @@ namespace DxCore.Core.GraphicsWidgets.HUD
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            Player activePlayer = DxGame.Instance.Model<PlayerModel>().ActivePlayer;
+            Player activePlayer = DxGame.Instance.Service<PlayerService>().ActivePlayer;
             EntityLevelComponent entityLevelComponent = activePlayer.EntityLevel;
 
             double percentThroughLevel = entityLevelComponent.Progress;

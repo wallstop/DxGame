@@ -5,9 +5,9 @@ using DxCore.Core.Components.Advanced.Command;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Sprite;
 using DxCore.Core.Messaging;
-using DxCore.Core.Models;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Dynamics.Joints;
 using FarseerPhysics.Factories;
@@ -83,8 +83,8 @@ namespace Pong.Core.Generators
 
             public void PostPaddleLeftInitialize(Body paddleBody, Fixture paddleFixture, PhysicsComponent paddlePhysics)
             {
-                WorldModel worldModel = DxGame.Instance.Model<WorldModel>();
-                World world = worldModel.World;
+                WorldService worldService = DxGame.Instance.Service<WorldService>();
+                World world = worldService.World;
 
                 Func<WorldEdge> edgeProducer;
                 Vector2 offset;
@@ -92,14 +92,14 @@ namespace Pong.Core.Generators
                 {
                     case Edge.Left:
                     {
-                        edgeProducer = () => worldModel.Left;
-                        offset = new Vector2(5 * WorldModel.DxToFarseerScale, 0);
+                        edgeProducer = () => worldService.Left;
+                        offset = new Vector2(5 * WorldService.DxToFarseerScale, 0);
                         break;
                     }
                     case Edge.Right:
                     {
-                        edgeProducer = () => worldModel.Right;
-                        offset = new Vector2((-5 - paddlePhysics.Width) * WorldModel.DxToFarseerScale, 0);
+                        edgeProducer = () => worldService.Right;
+                        offset = new Vector2((-5 - paddlePhysics.Width) * WorldService.DxToFarseerScale, 0);
                         break;
                     }
                     default:

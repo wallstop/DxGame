@@ -5,8 +5,8 @@ using System.Linq;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Input;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
@@ -100,7 +100,7 @@ namespace DxCore.Core.GraphicsWidgets
             // Only update if we have focus
             if(InFocus)
             {
-                var inputModel = DxGame.Instance.Model<InputModel>();
+                var inputModel = DxGame.Instance.Service<InputService>();
                 IEnumerable<KeyboardEvent> finishedKeys =
                     inputModel.InputHandler.FinishedKeyboardEvents.Where(key => ValidKeys.Contains(key.Source));
                 HandleKeyboardEvents(finishedKeys);

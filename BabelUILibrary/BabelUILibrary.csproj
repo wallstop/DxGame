@@ -117,7 +117,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\RootController.cs" />
-    <Compile Include="Core\Models\UiModel.cs" />
+    <Compile Include="Core\Services\UiService.cs" />
     <Compile Include="GeneratedUI\ResourceBindings.xaml.cs" />
     <Compile Include="GeneratedUI\Root.xaml.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

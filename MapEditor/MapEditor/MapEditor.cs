@@ -1,7 +1,7 @@
 ﻿using System;
 using DxCore;
 using DxCore.Core;
-using DxCore.Core.Models;
+using DxCore.Core.Services;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
 using MapEditorLibrary.Core.Components;
@@ -49,8 +49,8 @@ namespace MapEditor
             // TODO: Clean up init
 
             base.Initialize();
-            RootUiModel rootUiModel = new RootUiModel(new Root());
-            rootUiModel.Create();
+            RootUiService rootUiService = new RootUiService(new Root());
+            rootUiService.Create();
 
             MapGridComponent mapGrid = new MapGridComponent(50, 50, 100, 100);
             GameObject mapGridObject = GameObject.From(mapGrid);
@@ -63,8 +63,8 @@ namespace MapEditor
             mapCreator.Create();
             mapGridObject.AttachComponent(mapCreator);
 
-            DeveloperModel devModel = new DeveloperModel();
-            devModel.Create();
+            DeveloperService devService = new DeveloperService();
+            devService.Create();
         }
 
         protected override void LoadContent()

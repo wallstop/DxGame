@@ -1,10 +1,9 @@
 ﻿using System;
 using BabelUILibrary.Core.Models;
-using DxCore.Core.Models;
+using DxCore.Core.Services;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace DxGame
 {
@@ -28,31 +27,20 @@ namespace DxGame
 
         private void HandlePreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs eventArgs)
         {
-            NativeScreenWidth = Graphics.PreferredBackBufferWidth;
-            NativeScreenHeight = Graphics.PreferredBackBufferHeight;
-
-            Graphics.PreferredBackBufferWidth = 1280;
-            Graphics.PreferredBackBufferHeight = 720;
-            Graphics.PreferMultiSampling = true;
-            Graphics.GraphicsProfile = GraphicsProfile.HiDef;
-            Graphics.SynchronizeWithVerticalRetrace = false;
-            Graphics.PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8;
-            eventArgs.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 16;
+            NativeScreenWidth = eventArgs.GraphicsDeviceInformation.PresentationParameters.BackBufferWidth;
+            NativeScreenHeight = eventArgs.GraphicsDeviceInformation.PresentationParameters.BackBufferHeight;
         }
 
         protected override void Initialize()
         {
             base.Initialize();
-            UiModel uiModel = new UiModel(new Root());
-            uiModel.Create();
+            UiService uiService = new UiService(new Root());
+            uiService.Create();
 
-            FrameModel frameModel = new FrameModel();
-            frameModel.Create();
+            NetworkService netService = new NetworkService();
+            netService.Create();
 
-            NetworkModel netModel = new NetworkModel();
-            netModel.Create();
-
-            new DeveloperModel().Create();
+            new DeveloperService().Create();
         }
 
         protected override void LoadContent()

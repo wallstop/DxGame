@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
-using DxCore.Core.Models;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 using FarseerPhysics.Collision.Shapes;
@@ -31,12 +31,12 @@ namespace DxCore.Core.Components.Advanced.Map
 
         public override void Initialize()
         {
-            WorldModel worldModel = DxGame.Instance.Model<WorldModel>();
-            MapGeometryBody = BodyFactory.CreateBody(worldModel.World, userData:this);
+            WorldService worldService = DxGame.Instance.Service<WorldService>();
+            MapGeometryBody = BodyFactory.CreateBody(worldService.World, userData:this);
             foreach(DxLineSegment edge in MapGeometry)
             {
-                EdgeShape edgeShape = new EdgeShape(edge.Start.Vector2 * WorldModel.DxToFarseerScale,
-                    edge.End.Vector2 * WorldModel.DxToFarseerScale);
+                EdgeShape edgeShape = new EdgeShape(edge.Start.Vector2 * WorldService.DxToFarseerScale,
+                    edge.End.Vector2 * WorldService.DxToFarseerScale);
                 MapGeometryBody.CreateFixture(edgeShape, this);
             }
 
@@ -52,8 +52,8 @@ namespace DxCore.Core.Components.Advanced.Map
 
         public override void Remove()
         {
-            WorldModel worldModel = DxGame.Instance.Model<WorldModel>();
-            worldModel.World.RemoveBody(MapGeometryBody);
+            WorldService worldService = DxGame.Instance.Service<WorldService>();
+            worldService.World.RemoveBody(MapGeometryBody);
             MapGeometryBody = null;
             base.Remove();
         }

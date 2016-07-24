@@ -6,9 +6,9 @@ using DxCore.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DxCore.Core.Models
+namespace DxCore.Core.Services
 {
-    public class CameraModel : Model
+    public class CameraService : Service
     {
         private Func<DxVector2> NoOpTarget => () => Position;
 
@@ -21,8 +21,6 @@ namespace DxCore.Core.Models
         private DxVector2 position_;
         private DxRectangle bounds_;
         private float zoomAmount_;
-
-        public DxVector2 OffsetFromOrigin => Position - DxGame.Instance.Graphics.Bounds().Center;
 
         /**
             Where the Camera is looking (Point target, center of screen)
@@ -52,9 +50,10 @@ namespace DxCore.Core.Models
 
         private Func<DxVector2> Target { get; set; }
 
-        public CameraModel()
+        public CameraService()
         {
-            Bounds = DxGame.Instance.Screen;
+            DxVector2 screenDimensions = DxGame.Instance.GameSettings.VideoSettings.ScreenDimensions;
+            Bounds = new DxRectangle(0, 0, screenDimensions.X, screenDimensions.Y);
             DrawPriority = DrawPriority.InitSpritebatch;
             // TODO:  Grab from sprite batch init?
             zoomAmount_ = 1.0f;
@@ -96,7 +95,7 @@ namespace DxCore.Core.Models
 
         public void FollowActivePlayer()
         {
-            Follow(() => DxGame.Instance.Model<PlayerModel>()?.ActivePlayer?.Position.Center ?? Position);
+            Follow(() => DxGame.Instance.Service<PlayerService>()?.ActivePlayer?.Position.Center ?? Position);
         }
 
         /* TODO: Make this delegate serializable? */

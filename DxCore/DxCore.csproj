@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -191,7 +191,7 @@
     <Compile Include="Core\Messaging\UpdateCameraBounds.cs" />
     <Compile Include="Core\Messaging\AudioMessage.cs" />
     <Compile Include="Core\Messaging\UpdateWorldBounds.cs" />
-    <Compile Include="Core\Models\AudioModel.cs" />
+    <Compile Include="Core\Services\AudioService.cs" />
     <Compile Include="Core\Network\Port.cs" />
     <Compile Include="Core\Components\Utils\DxRectangleAreaComparer.cs" />
     <Compile Include="Core\Components\Utils\RectangleAreaComparer.cs" />
@@ -206,7 +206,6 @@
     <Compile Include="Core\GameObject.cs" />
     <Compile Include="Core\GraphicsWidgets\BlinkingCursor.cs" />
     <Compile Include="Core\GraphicsWidgets\Graph.cs" />
-    <Compile Include="Core\GraphicsWidgets\HUD\AbilityBar.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\BuffBar.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\FpsTracker.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\FPSWidget.cs" />
@@ -269,20 +268,19 @@
     <Compile Include="Core\Messaging\Network\UpdateActivePlayer.cs" />
     <Compile Include="Core\Messaging\PathFindingRequest.cs" />
     <Compile Include="Core\Messaging\PhysicsMessage.cs" />
-    <Compile Include="Core\Models\BehaviorModel.cs" />
-    <Compile Include="Core\Models\CameraModel.cs" />
-    <Compile Include="Core\Models\WorldModel.cs" />
-    <Compile Include="Core\Models\DeveloperModel.cs" />
-    <Compile Include="Core\Models\EnvironmentModel.cs" />
-    <Compile Include="Core\Models\ExperienceModel.cs" />
-    <Compile Include="Core\Models\FrameModel.cs" />
-    <Compile Include="Core\Models\HudModel.cs" />
-    <Compile Include="Core\Models\InputModel.cs" />
-    <Compile Include="Core\Models\MapModel.cs" />
-    <Compile Include="Core\Models\Model.cs" />
-    <Compile Include="Core\Models\NetworkModel.cs" />
-    <Compile Include="Core\Models\PathfindingModel.cs" />
-    <Compile Include="Core\Models\PlayerModel.cs" />
+    <Compile Include="Core\Services\BehaviorService.cs" />
+    <Compile Include="Core\Services\CameraService.cs" />
+    <Compile Include="Core\Services\SettingsService.cs" />
+    <Compile Include="Core\Services\WorldService.cs" />
+    <Compile Include="Core\Services\DeveloperService.cs" />
+    <Compile Include="Core\Services\EnvironmentService.cs" />
+    <Compile Include="Core\Services\ExperienceService.cs" />
+    <Compile Include="Core\Services\InputService.cs" />
+    <Compile Include="Core\Services\MapService.cs" />
+    <Compile Include="Core\Services\Service.cs" />
+    <Compile Include="Core\Services\NetworkService.cs" />
+    <Compile Include="Core\Services\PathfindingService.cs" />
+    <Compile Include="Core\Services\PlayerService.cs" />
     <Compile Include="Core\Network\ClientEventTracker.cs" />
     <Compile Include="Core\Network\DxVectorLerpMessage.cs" />
     <Compile Include="Core\Network\NetworkMessage.cs" />
@@ -311,9 +309,12 @@
     <Compile Include="Core\Service\ServiceProvider.cs" />
     <Compile Include="Core\Service\IService.cs" />
     <Compile Include="Core\Settings\AbstractSettings.cs" />
+    <Compile Include="Core\Settings\Amount.cs" />
     <Compile Include="Core\Settings\Controls.cs" />
     <Compile Include="Core\Settings\GameSettings.cs" />
     <Compile Include="Core\Settings\Scale.cs" />
+    <Compile Include="Core\Settings\VideoSettings.cs" />
+    <Compile Include="Core\Settings\WindowMode.cs" />
     <Compile Include="Core\Skills\ChargedSkill.cs" />
     <Compile Include="Core\Skills\Skill.cs" />
     <Compile Include="Core\State\State.cs" />

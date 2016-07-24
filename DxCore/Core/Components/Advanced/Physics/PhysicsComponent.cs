@@ -6,9 +6,9 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Physics;
-using DxCore.Core.Models;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
 using DxCore.Core.Utils.Validate;
@@ -74,7 +74,7 @@ namespace DxCore.Core.Components.Advanced.Physics
         [IgnoreDataMember]
         public DxVector2 Position
         {
-            get { return Body?.Position * WorldModel.FarseerToDxScale ?? DxVector2.EmptyVector; }
+            get { return Body?.Position * WorldService.FarseerToDxScale ?? DxVector2.EmptyVector; }
             set
             {
                 if(directPositionAccess_)
@@ -86,7 +86,7 @@ namespace DxCore.Core.Components.Advanced.Physics
                     }
                     else
                     {
-                        Body.Position = value.Vector2 * WorldModel.DxToFarseerScale;
+                        Body.Position = value.Vector2 * WorldService.DxToFarseerScale;
                     }
                 }
                 else
@@ -182,8 +182,8 @@ namespace DxCore.Core.Components.Advanced.Physics
 
         public override void Remove()
         {
-            WorldModel worldModel = DxGame.Instance.Model<WorldModel>();
-            worldModel.World.RemoveBody(Body);
+            WorldService worldService = DxGame.Instance.Service<WorldService>();
+            worldService.World.RemoveBody(Body);
             Body = null;
             base.Remove();
         }
@@ -225,15 +225,15 @@ namespace DxCore.Core.Components.Advanced.Physics
 
         public override void Initialize()
         {
-            World gameWorld = DxGame.Instance.Model<WorldModel>().World;
+            World gameWorld = DxGame.Instance.Service<WorldService>().World;
 
             PolygonShape bounds =
                 new PolygonShape(
                     new DxRectangle(0, 0, Width, Height).Vertices()
-                        .Select(vertex => vertex * WorldModel.DxToFarseerScale)
+                        .Select(vertex => vertex * WorldService.DxToFarseerScale)
                         .ToVertices(), Density);
 
-            Body = new Body(gameWorld, origin_.Vector2 * WorldModel.DxToFarseerScale, 0, userdata: this)
+            Body = new Body(gameWorld, origin_.Vector2 * WorldService.DxToFarseerScale, 0, userdata: this)
             {
                 BodyType = ResolveCollisionType(PhysicsType),
                 FixedRotation = true

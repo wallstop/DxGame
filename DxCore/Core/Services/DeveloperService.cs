@@ -2,15 +2,13 @@
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Components.Developer;
 using DxCore.Core.GraphicsWidgets.HUD;
-using DxCore.Core.Map;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Distance;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DxCore.Core.Models
+namespace DxCore.Core.Services
 {
     /**
         For debug purposes only :^)
@@ -18,14 +16,14 @@ namespace DxCore.Core.Models
         <summary> Simple debug-type Model used to display useful information in-game. Should not be used in production. </summary>
     */
 
-    public class DeveloperModel : Model
+    public class DeveloperService : Service
     {
         private readonly GameElementCollection components_ = new GameElementCollection();
         private readonly DeveloperSwitch devSwitch_;
 
         public DeveloperMode DeveloperMode => devSwitch_.DeveloperMode;
 
-        public DeveloperModel()
+        public DeveloperService()
         {
             DrawPriority = DrawPriority.HudLayer;
             var fpsTracker = new FpsWidget();

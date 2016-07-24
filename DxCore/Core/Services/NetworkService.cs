@@ -5,9 +5,9 @@ using DxCore.Core.Components.Network;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils.Validate;
 
-namespace DxCore.Core.Models
+namespace DxCore.Core.Services
 {
-    public class NetworkModel : Model
+    public class NetworkService : Service
     {
         private readonly List<NetworkComponent> connections_ = new List<NetworkComponent>();
         // TODO: Empty checks
@@ -16,16 +16,16 @@ namespace DxCore.Core.Models
         public IEnumerable<AbstractNetworkServer> Servers => connections_.OfType<AbstractNetworkServer>();
 
         // TODO: Get outta here
-        public NetworkModel WithClient(AbstractNetworkClient client)
+        public NetworkService WithClient(AbstractNetworkClient client)
         {
             AddNetworkComponent(client);
             return this;
         }
 
-        public NetworkModel WithServer(AbstractNetworkServer server)
+        public NetworkService WithServer(AbstractNetworkServer server)
         {
             // Really? Why not more?
-            Validate.Hard.IsEmpty(Servers, $"Cannot add {server}. Can only add one server to a NetworkModel");
+            Validate.Hard.IsEmpty(Servers, () => $"Cannot add {server}. Can only add one server to a NetworkModel");
             AddNetworkComponent(server);
             return this;
         }
@@ -50,9 +50,10 @@ namespace DxCore.Core.Models
 
         protected void AddNetworkComponent(NetworkComponent netComponent)
         {
-            Validate.Hard.IsNotNullOrDefault(netComponent, $"Cannot add a null/default NetworkComponent to {GetType()}");
-            Validate.Hard.IsTrue(!connections_.Contains(netComponent),
-                $"Cannot add NetworkComponent {netComponent}. This component already exists in {connections_}");
+            Validate.Hard.IsNotNullOrDefault(netComponent,
+                () => $"Cannot add a null/default NetworkComponent to {GetType()}");
+            Validate.Hard.IsNotElementOf(connections_, netComponent,
+                () => $"Cannot add NetworkComponent {netComponent}. This component already exists in {connections_}");
             connections_.Add(netComponent);
         }
 

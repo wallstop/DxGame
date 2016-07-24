@@ -4,8 +4,8 @@ using DxCore.Core;
 using DxCore.Core.Components.Advanced.Command;
 using DxCore.Core.Components.Network;
 using DxCore.Core.Messaging.Network;
-using DxCore.Core.Models;
 using DxCore.Core.Network;
+using DxCore.Core.Services;
 using DxCore.Core.Utils.Validate;
 using Lidgren.Network;
 
@@ -67,9 +67,9 @@ namespace Babel.Network
 
             ServerEventTracker eventTracker = new ServerEventTracker(baseEventTracker_);
 
-            MapModel mapModel = DxGame.Instance.Model<MapModel>();
+            MapService mapService = DxGame.Instance.Service<MapService>();
             BabelPlayerGenerator playerGenerator =
-                new BabelPlayerGenerator(mapModel.RandomSpawnLocation.Center);
+                new BabelPlayerGenerator(mapService.RandomSpawnLocation.Center);
 
             SimpleRelayingCommandComponent networkPlayerCommand = new SimpleRelayingCommandComponent(TickRate);
 

@@ -13,7 +13,7 @@ using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
 using NLog;
 
-namespace DxCore.Core.Models
+namespace DxCore.Core.Services
 {
     public struct WorldEdge
     {
@@ -32,7 +32,7 @@ namespace DxCore.Core.Models
         }
     }
 
-    public sealed class WorldModel : Model, IWorldCollidable
+    public sealed class WorldService : Services.Service, IWorldCollidable
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -47,7 +47,7 @@ namespace DxCore.Core.Models
         public const float DxToFarseerScale = 1 / 50.0f;
         public const float FarseerToDxScale = 1 / DxToFarseerScale;
 
-        static WorldModel()
+        static WorldService()
         {
             // TODO: If we ever want to use ConvertUnits, here we go!
             ConvertUnits.SetDisplayUnitToSimUnitRatio(DxToFarseerScale);
@@ -72,7 +72,7 @@ namespace DxCore.Core.Models
 
         public WorldEdge Bottom { get; private set; }
 
-        public WorldModel()
+        public WorldService()
         {
             World = new World(new Vector2(0, 20f));
             WorldBounds = new List<PhysicsComponent>(4);

@@ -6,7 +6,7 @@ using Babel.Level;
 using DxCore;
 using DxCore.Core;
 using DxCore.Core.Level;
-using DxCore.Core.Models;
+using DxCore.Core.Services;
 
 namespace Babel.Models
 {
@@ -19,12 +19,12 @@ namespace Babel.Models
     [Serializable]
     [DataContract]
     [Obsolete("Pls find a better way of injecting behavior into the game")]
-    public class GameModel : Model
+    public class GameService : Service
     {
         [DataMember]
         public float GameSpeed { get; set; }
 
-        private MapModel mapModel_;
+        private MapService mapService_;
 
         public override void DeSerialize()
         {
@@ -36,12 +36,12 @@ namespace Babel.Models
             ILevelProgressionStrategy levelProgression = new SimpleRotatingLevelProgression();
             levelProgression.Init();
 
-            mapModel_ = new MapModel(levelProgression);
-            mapModel_.Create();
-            new EnvironmentModel().Create();
-            new PathfindingModel().Create();
-            new ExperienceModel().Create();
-            new PlayerModel().Create();
+            mapService_ = new MapService(levelProgression);
+            mapService_.Create();
+            new EnvironmentService().Create();
+            new PathfindingService().Create();
+            new ExperienceService().Create();
+            new PlayerService().Create();
 
             if(DxGame.Instance.UpdateMode == UpdateMode.Active)
             {
@@ -52,7 +52,7 @@ namespace Babel.Models
 
         public void InitializePlayer()
         {
-            BabelPlayerGenerator playerGenerator = new BabelPlayerGenerator(mapModel_.PlayerSpawn);
+            BabelPlayerGenerator playerGenerator = new BabelPlayerGenerator(mapService_.PlayerSpawn);
             List<GameObject> generatedObjects = playerGenerator.Generate();
 
             // TODO: We need to throw this away if we're doing a network game

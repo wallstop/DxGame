@@ -1,9 +1,9 @@
 ﻿using DxCore.Core.Input;
 using DxCore.Core.Primitives;
 
-namespace DxCore.Core.Models
+namespace DxCore.Core.Services
 {
-    public class InputModel : Model
+    public class InputService : Service
     {
         public InputHandler InputHandler { get; private set; }
 

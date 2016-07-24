@@ -75,7 +75,7 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
                 cache.Put(i, value);
 
                 /* This should make it so that the first elements in the cache are the warmest, always, and will never be removed */
-                for(int j = 0; j < i && j < (maxElements - 1); ++j)
+                for(int j = 0; j < i && j < maxElements - 1; ++j)
                 {
                     string doesntMatter;
                     bool exists = cache.GetIfPresent(j, out doesntMatter);
@@ -87,6 +87,40 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
                     string shouldntExist;
                     bool itExistedOhNo = cache.GetIfPresent(j, out shouldntExist);
                     Assert.False(itExistedOhNo);
+                }
+            }
+        }
+
+        [Test]
+        public void LruCacheHandlesDuplicateKeysCorrectly()
+        {
+            const int maxElements = 10;
+            ICache<int, string> cache = CacheBuilder<int, string>.NewBuilder().WithMaxElements(maxElements).Build();
+
+            const string value = "SingleThreadRandomAccessLruExpirationValue";
+            const string overriddenValue = "SingleThreadRandomAccessLruExpirationValue2";
+
+            for(int i = 0; i < maxElements * 10; ++i)
+            {
+                cache.Put(i, value);
+                cache.Put(i, overriddenValue);
+
+                /* Cache eviction */
+                for(int j = 0; j < i - maxElements && 0 <= j; ++j)
+                {
+                    string shouldNotExist;
+                    bool exists = cache.GetIfPresent(j, out shouldNotExist);
+                    Assert.False(exists);
+                }
+
+                int minKey = i - maxElements + 1;
+                /* Overridden values */
+                for(int j = minKey; 0 <= j && j <= i; ++j)
+                {
+                    string shouldExist;
+                    bool exists = cache.GetIfPresent(j, out shouldExist);
+                    Assert.True(exists);
+                    Assert.AreEqual(shouldExist, overriddenValue);
                 }
             }
         }

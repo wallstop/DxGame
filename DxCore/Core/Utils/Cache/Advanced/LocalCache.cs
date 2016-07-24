@@ -230,9 +230,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
             }
             if(replaced)
             {
-                RemovalNotification<K, V> removalNotification = new RemovalNotification<K, V>(key, existingValue,
-                    RemovalCause.Replaced);
-                RemovalListener(removalNotification);
+                InternalNotifyOfRemoval(ref key, ref existingValue, RemovalCause.Replaced);
             }
         }
 
@@ -314,9 +312,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
 
                 if(removed)
                 {
-                    RemovalNotification<K, V> removalNotification = new RemovalNotification<K, V>(key, removedValue,
-                        removalCause);
-                    RemovalListener(removalNotification);
+                    InternalNotifyOfRemoval(ref key, ref removedValue, removalCause);
                 }
             }
         }
@@ -420,13 +416,17 @@ namespace DxCore.Core.Utils.Cache.Advanced
                 Timers.Remove(key);
             }
 
+            InternalNotifyOfRemoval(ref key, ref temp.Data, RemovalCause.Evicted);
+        }
+
+        private void InternalNotifyOfRemoval(ref K key, ref V value, RemovalCause cause)
+        {
             if(!HasRemovalListener)
             {
                 return;
             }
 
-            RemovalNotification<K, V> removalNotification = new RemovalNotification<K, V>(key, temp.Data,
-                RemovalCause.Evicted);
+            RemovalNotification<K, V> removalNotification = new RemovalNotification<K, V>(key, value, cause);
             RemovalListener(removalNotification);
         }
 

@@ -310,18 +310,18 @@ namespace DxCore.Core.Components.Advanced.Physics
                 }
                 if(collisionDirection == Direction.East || collisionDirection == Direction.West)
                 {
-                    mapCollisionSensor.OnSeparation += (self, maybeMapTile) =>
+                    mapCollisionSensor.OnCollision += (self, maybeMapTile, contact) =>
                     {
                         IWorldCollidable worldCollidable = maybeMapTile.UserData as IWorldCollidable;
                         if(ReferenceEquals(worldCollidable, null))
                         {
-                            return;
+                            return false;
                         }
                         CollisionMessage worldCollision = new CollisionMessage();
                         worldCollision.WithDirectionAndSource(collisionDirection, worldCollidable);
                         worldCollision.Target = Parent.Id;
                         worldCollision.Emit();
-                        return;
+                        return false;
                     };
                 }
             }

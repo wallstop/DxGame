@@ -206,7 +206,8 @@ namespace DxCore.Core.Utils.Cache.Advanced
                 if(IsCapped)
                 {
                     Node<K, V> valueWrapper;
-                    replaced = LruCache.TryGetValue(key, out valueWrapper) && !Objects.Equals(valueWrapper.Data, value);
+                    bool existed = false;
+                    replaced = LruCache.TryGetValue(key, out valueWrapper) && !(existed = Objects.Equals(valueWrapper.Data, value));
                     if(replaced)
                     {
                         existingValue = valueWrapper.Data;
@@ -217,7 +218,10 @@ namespace DxCore.Core.Utils.Cache.Advanced
                     {
                         existingValue = default(V);
                         valueWrapper = new Node<K, V> {Key = key, Data = value};
-                        LruCache.Add(key, valueWrapper);
+                        if (!existed)
+                        {
+                            LruCache.Add(key, valueWrapper);
+                        }
                         AddNode(valueWrapper);
                         LruEvict();
                     }

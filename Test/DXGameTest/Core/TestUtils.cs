@@ -9,13 +9,13 @@ namespace DXGameTest.Core
             return rGen.NextDouble() * (max - min) + min;
         }
 
-        public static void RunMultipleTimes(Action function)
+        public static void RunMultipleTimes(this Action function)
         {
             const int numRunTimes = 10000;
-            RunMultipleTimes(numRunTimes, function);
+            RunMultipleTimes(function, numRunTimes);
         }
 
-        public static void RunMultipleTimes(int numRunTimes, Action function)
+        public static void RunMultipleTimes(this Action function, int numRunTimes)
         {
             for(int i = 0; i < numRunTimes; ++i)
             {

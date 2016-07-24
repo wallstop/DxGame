@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using DxCore.Core.Utils;
@@ -15,12 +16,12 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
         [Test]
         public void ConcurrentAccessDoesntLockUp()
         {
-            TestUtils.RunMultipleTimes(NumRuntimes, () =>
+            Action testFunction = () =>
             {
                 ICache<int, string> cache = CacheBuilder<int, string>.NewBuilder().Build();
 
                 List<Task> readers = new List<Task>(MaxThreads);
-                for(int i = 0; i < MaxThreads; ++i)
+                for (int i = 0; i < MaxThreads; ++i)
                 {
                     int initialKey = i;
                     Task reader = new Task(() => cache.Get(initialKey, key => key.ToString()));
@@ -28,20 +29,21 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
                     reader.Start();
                 }
                 readers.ForEach(reader => reader.Wait());
-                for(int i = 0; i < MaxThreads; ++i)
+                for (int i = 0; i < MaxThreads; ++i)
                 {
                     string foundValue;
                     bool found = cache.GetIfPresent(i, out foundValue);
                     Assert.True(found, "Didn't find " + i);
                     Assert.AreEqual(i.ToString(), foundValue);
                 }
-            });
+            };
+            testFunction.RunMultipleTimes(NumRuntimes);
         }
 
         [Test]
         public void NoDataRaceOnKeyCollision()
         {
-            TestUtils.RunMultipleTimes(NumRuntimes, () =>
+            Action testFunction = () =>
             {
                 ICache<int, string> cache = CacheBuilder<int, string>.NewBuilder().Build();
                 int seed = ThreadLocalRandom.Current.Next(10, 500);
@@ -49,7 +51,7 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
                 int key = ThreadLocalRandom.Current.Next();
 
                 List<Task> readers = new List<Task>(MaxThreads);
-                for(int i = 0; i < MaxThreads; ++i)
+                for (int i = 0; i < MaxThreads; ++i)
                 {
                     Task reader = new Task(() => cache.Get(key, _ => Interlocked.Add(ref seed, 1).ToString()));
                     readers.Add(reader);
@@ -64,7 +66,8 @@ namespace DXGameTest.Core.Utils.Cache.Advanced
                 Assert.True(found);
                 Assert.AreEqual(originalSeed + 1, seed);
                 Assert.AreEqual(foundValue, (originalSeed + 1).ToString());
-            });
+            };
+            testFunction.RunMultipleTimes(NumRuntimes);
         }
     }
 }

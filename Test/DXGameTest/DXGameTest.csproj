@@ -156,6 +156,7 @@
     <Compile Include="Core\Utils\MathUtilsTest.cs" />
     <Compile Include="Core\Utils\SpringFunctionTest.cs" />
     <Compile Include="Core\Utils\ThreadLocalRandomTest.cs" />
+    <Compile Include="Core\Utils\Validation\ValidatorTest.cs" />
     <Compile Include="Core\Utils\VectorUtilsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

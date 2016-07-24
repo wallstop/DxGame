@@ -2,8 +2,8 @@
 using DxCore;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Input;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -31,7 +31,7 @@ namespace MapEditorLibrary.Core.Components
         {
             bool previouslyEnabled = Enabled;
             Enabled =
-                DxGame.Instance.Model<InputModel>()
+                DxGame.Instance.Service<InputService>()
                     .InputHandler.CurrentMouseEvents.Any(mouseEvent => mouseEvent.Source == Enabler);
             if(Enabled && !previouslyEnabled)
             {
@@ -51,7 +51,7 @@ namespace MapEditorLibrary.Core.Components
             DxVector2 delta = currentPosition - LastPosition;
             LastPosition = currentPosition;
 
-            CameraModel camera = DxGame.Instance.Model<CameraModel>();
+            CameraService camera = DxGame.Instance.Service<CameraService>();
             camera.MoveBy(delta.Inverse);
         }
     }

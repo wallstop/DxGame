@@ -5,8 +5,8 @@ using DxCore;
 using DxCore.Core.Components.Advanced.Command;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Messaging;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 
@@ -37,8 +37,8 @@ namespace Babel.Components
         {
             timeSinceLastMovementRequest_ += gameTime.ElapsedGameTime;
             // Extract player model, players; handle limitations on AI
-            PlayerModel playerModel = DxGame.Instance.Model<PlayerModel>();
-            DxCore.Core.Player player = playerModel.Players.First();
+            PlayerService playerService = DxGame.Instance.Service<PlayerService>();
+            DxCore.Core.Player player = playerService.Players.First();
 
             var closeEnough = Math.Abs(player.Position.Position.X - Positional.WorldCoordinates.X) < PERSONAL_SPACE &&
                               Math.Abs(player.Position.Position.Y - Positional.WorldCoordinates.Y) < PERSONAL_SPACE;

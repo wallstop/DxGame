@@ -8,11 +8,11 @@ using DxCore.Core.Utils;
 using FarseerPhysics.Collision;
 using FarseerPhysics.Dynamics;
 
-namespace DxCore.Core.Models
+namespace DxCore.Core.Services
 {
     [Serializable]
     [DataContract]
-    public class EnvironmentModel : Model
+    public class EnvironmentService : Service
     {
         public override void OnAttach()
         {
@@ -25,7 +25,7 @@ namespace DxCore.Core.Models
         private void HandleEnvironmentInteractionMessage(EnvironmentInteractionMessage message)
         {
             AABB bounds = message.Source.ComponentOfType<PhysicsComponent>().Space.ToAabb();
-            foreach(Fixture fixture in DxGame.Instance.Model<WorldModel>().World.QueryAABB(ref bounds))
+            foreach(Fixture fixture in DxGame.Instance.Service<WorldService>().World.QueryAABB(ref bounds))
             {
                 // TODO: Refactor / come up with better solution
                 EnvironmentInteractionMessage targetedMessage = new EnvironmentInteractionMessage

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using DxCore.Core.Components.Basic;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using DxCore.Core.Utils;
 using Microsoft.Xna.Framework.Input;
 
@@ -27,8 +27,8 @@ namespace DxCore.Core.Components.Developer
 
         protected override void Update(DxGameTime gameTime)
         {
-            InputModel inputModel = DxGame.Instance.Model<InputModel>();
-            if (inputModel?.InputHandler.FinishedKeyboardEvents?.Any(inputEvent => inputEvent.Source == DEV_KEY) ?? false)
+            InputService inputService = DxGame.Instance.Service<InputService>();
+            if (inputService?.InputHandler.FinishedKeyboardEvents?.Any(inputEvent => inputEvent.Source == DEV_KEY) ?? false)
             {
                 DeveloperMode = DeveloperMode.Rotate();
             }

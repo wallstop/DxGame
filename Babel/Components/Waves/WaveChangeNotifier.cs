@@ -72,8 +72,8 @@ namespace Babel.Components.Waves
 
             Vector2 textSize = spriteFont_.MeasureString(WaveText.Text);
 
-            Rectangle baseScreenSize = DxGame.Instance.Screen;
-            Point center = baseScreenSize.Center;
+            DxVector2 screenDimensions = DxGame.Instance.GameSettings.VideoSettings.ScreenDimensions;
+            Point center = screenDimensions / 2;
             DxVector2 drawTarget = new DxVector2(center.X - textSize.X / 2, center.Y - textSize.Y / 2);
             Offset = drawTarget;
         }

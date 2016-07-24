@@ -3,9 +3,9 @@ using DxCore.Core;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Physics;
-using DxCore.Core.Models;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Dynamics.Contacts;
 using Pong.Core.Generators;
@@ -37,8 +37,8 @@ namespace Pong
             new UpdateWorldBounds(defaultBounds).Emit();
             new UpdateCameraBounds(defaultBounds).Emit();
 
-            DeveloperModel devModel = new DeveloperModel();
-            devModel.Create();
+            DeveloperService devService = new DeveloperService();
+            devService.Create();
             GameObject playerPaddle = PaddleFactory.PlayerPaddle(new DxVector2(5, 10));
             playerPaddle.Create();
 

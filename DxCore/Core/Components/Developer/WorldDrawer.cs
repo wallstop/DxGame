@@ -1,7 +1,7 @@
 ﻿using DxCore.Core.Components.Basic;
 using DxCore.Core.Components.Developer.Farseer;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using FarseerPhysics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -24,8 +24,8 @@ namespace DxCore.Core.Components.Developer
 
         public override void LoadContent()
         {
-            WorldModel worldModel = DxGame.Instance.Model<WorldModel>();
-            DebugView = new DebugViewXNA(worldModel.World)
+            WorldService worldService = DxGame.Instance.Service<WorldService>();
+            DebugView = new DebugViewXNA(worldService.World)
             {
                 DefaultShapeColor = Color.Blue,
                 StaticShapeColor = Color.Blue
@@ -36,8 +36,8 @@ namespace DxCore.Core.Components.Developer
 
         protected override void Update(DxGameTime gameTime)
         {
-            DeveloperModel devModel = DxGame.Instance.Model<DeveloperModel>();
-            if(devModel?.DeveloperMode != DeveloperMode.FullOn)
+            DeveloperService devService = DxGame.Instance.Service<DeveloperService>();
+            if(devService?.DeveloperMode != DeveloperMode.FullOn)
             {
                 DebugView.RemoveFlags(DebugFlags);
             }
@@ -49,18 +49,18 @@ namespace DxCore.Core.Components.Developer
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            DeveloperModel devModel = DxGame.Instance.Model<DeveloperModel>();
-            if(devModel?.DeveloperMode == DeveloperMode.NotSoOn)
+            DeveloperService devService = DxGame.Instance.Service<DeveloperService>();
+            if(devService?.DeveloperMode == DeveloperMode.NotSoOn)
             {
                 return;
             }
             DxRectangle screen = DxGame.Instance.ScreenRegion;
-            CameraModel cameraModel = DxGame.Instance.Model<CameraModel>();
+            CameraService cameraService = DxGame.Instance.Service<CameraService>();
 
             // TODO: Fix
-            Matrix transform = Matrix.CreateOrthographicOffCenter(-screen.X * WorldModel.DxToFarseerScale,
-                WorldModel.DxToFarseerScale * (1280 - screen.X), WorldModel.DxToFarseerScale * (720 - screen.Y),
-                -screen.Y * WorldModel.DxToFarseerScale, 0, 1f);
+            Matrix transform = Matrix.CreateOrthographicOffCenter(-screen.X * WorldService.DxToFarseerScale,
+                WorldService.DxToFarseerScale * (1280 - screen.X), WorldService.DxToFarseerScale * (720 - screen.Y),
+                -screen.Y * WorldService.DxToFarseerScale, 0, 1f);
             DebugView.RenderDebugData(ref transform);
         }
     }

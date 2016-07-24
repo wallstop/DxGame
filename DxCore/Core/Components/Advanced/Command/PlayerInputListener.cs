@@ -5,8 +5,8 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using DxCore.Core.Input;
 using DxCore.Core.Messaging;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 
@@ -88,8 +88,8 @@ namespace DxCore.Core.Components.Advanced.Command
 
         public static List<KeyboardEvent> RipEventsFromLocalInputModel()
         {
-            InputModel inputModel = DxGame.Instance.Model<InputModel>();
-            List<KeyboardEvent> inputEvents = inputModel.InputHandler.CurrentKeyboardEvents.ToList();
+            InputService inputService = DxGame.Instance.Service<InputService>();
+            List<KeyboardEvent> inputEvents = inputService.InputHandler.CurrentKeyboardEvents.ToList();
             return inputEvents;
         }
 

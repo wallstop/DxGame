@@ -39,7 +39,7 @@ namespace BabelUILibrary.Controls
         private void OnPlay(object context)
         {
             RootVisible = false;
-            new GameModel().Create();
+            new GameService().Create();
         }
 
         private void OnQuit(object context)

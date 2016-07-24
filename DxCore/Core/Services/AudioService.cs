@@ -4,9 +4,9 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
 using NLog;
 
-namespace DxCore.Core.Models
+namespace DxCore.Core.Services
 {
-    public class AudioModel : Model
+    public class AudioService : Service
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 

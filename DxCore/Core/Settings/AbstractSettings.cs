@@ -7,11 +7,13 @@ using NLog;
 
 namespace DxCore.Core.Settings
 {
+
     [DataContract]
     [Serializable]
     public abstract class AbstractSettings<T> : IPersistable<T> where T : IPersistable<T>
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public abstract string Path { get; }
         public abstract T DefaultSettings { get; }
         public abstract T CurrentSettings { get; }
@@ -27,7 +29,7 @@ namespace DxCore.Core.Settings
             }
             catch(Exception e)
             {
-                LOG.Error(e, $"Caught unexpected exception while loading settings file for {typeof(T)} at {Path}");
+                Logger.Error(e, $"Caught unexpected exception while loading settings file for {typeof(T)} at {Path}");
                 loadedSettings = DefaultSettings;
                 DefaultSettings.Save(fileName);
             }
@@ -44,7 +46,7 @@ namespace DxCore.Core.Settings
             }
             catch(Exception e)
             {
-                LOG.Error(e, $"Caught unexpected exception while saving {typeof(T)} {this} at {Path}");
+                Logger.Error(e, $"Caught unexpected exception while saving {typeof(T)} {this} at {Path}");
             }
         }
 
@@ -60,7 +62,7 @@ namespace DxCore.Core.Settings
 
         protected virtual void CopySettings(T other)
         {
-            Validate.Hard.IsNotNull(other, $"Cannot copy Settings for a null {GetType()}");
+            Validate.Hard.IsNotNull(other, () => $"Cannot copy Settings for a null {GetType()}");
             this.MapAllFieldsFrom(other);
         }
     }

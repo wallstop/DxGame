@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 
 namespace DxCore.Core.Components.Advanced.Entities
 {
@@ -20,8 +20,8 @@ namespace DxCore.Core.Components.Advanced.Entities
         {
             get
             {
-                MapModel mapModel = DxGame.Instance.Model<MapModel>();
-                return mapModel.RandomSpawnLocation;
+                MapService mapService = DxGame.Instance.Service<MapService>();
+                return mapService.RandomSpawnLocation;
             }
         }
 

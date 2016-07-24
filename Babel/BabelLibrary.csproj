@@ -150,7 +150,7 @@
     <Compile Include="Items\VisibleItemComponent.cs" />
     <Compile Include="Level\SimpleRotatingLevelProgression.cs" />
     <Compile Include="Messaging\NewWaveMessage.cs" />
-    <Compile Include="Models\GameModel.cs" />
+    <Compile Include="Services\GameService.cs" />
     <Compile Include="Network\BabelNetworkClient.cs" />
     <Compile Include="Network\BabelNetworkConfig.cs" />
     <Compile Include="Network\BabelNetworkServer.cs" />

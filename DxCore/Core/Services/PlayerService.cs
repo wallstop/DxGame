@@ -6,11 +6,11 @@ using DxCore.Core.Primitives;
 using DxCore.Core.Utils.Validate;
 using NLog;
 
-namespace DxCore.Core.Models
+namespace DxCore.Core.Services
 {
     [DataContract]
     [Serializable]
-    public class PlayerModel : Model
+    public class PlayerService : Service
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -30,7 +30,7 @@ namespace DxCore.Core.Models
             Do we need this distinction?
         */
 
-        public PlayerModel WithActivePlayer(Player player)
+        public PlayerService WithActivePlayer(Player player)
         {
             Validate.Hard.IsNotNull(player, $"Cannot initialize {GetType()} with a null/default ActivePlayer ({player})");
             if(Validate.Check.IsNotNullOrDefault(ActivePlayer))
@@ -44,7 +44,7 @@ namespace DxCore.Core.Models
             return this;
         }
 
-        public PlayerModel WithPlayers(Player[] players)
+        public PlayerService WithPlayers(Player[] players)
         {
             Validate.Hard.IsNotNull(players, $"Cannot initialize {GetType()} with null/default {nameof(players)})");
 
@@ -59,8 +59,8 @@ namespace DxCore.Core.Models
 
         private void HandleMapRotationNotification(MapRotationNotification mapRotationNotification)
         {
-            MapModel mapModel = DxGame.Instance.Model<MapModel>();
-            DxVector2 playerSpawn = mapModel.PlayerSpawn;
+            MapService mapService = DxGame.Instance.Service<MapService>();
+            DxVector2 playerSpawn = mapService.PlayerSpawn;
             foreach(Player player in Players)
             {
                 player.Position.Position = playerSpawn;

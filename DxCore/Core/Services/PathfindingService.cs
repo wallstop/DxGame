@@ -7,9 +7,9 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils.Cache.Advanced;
 
-namespace DxCore.Core.Models
+namespace DxCore.Core.Services
 {
-    public sealed class PathfindingModel : Model
+    public sealed class PathfindingService : Service
     {
         private ILoadingCache<MapDescriptor, NavigableMesh> NavigableMeshCache { get; }
 
@@ -17,7 +17,7 @@ namespace DxCore.Core.Models
 
         private readonly ConcurrentQueue<PathfindingResponse> finishedResponses_;
 
-        public PathfindingModel()
+        public PathfindingService()
         {
             NavigableMeshCache =
                 CacheBuilder<MapDescriptor, NavigableMesh>.NewBuilder()
@@ -34,9 +34,9 @@ namespace DxCore.Core.Models
 
         protected override void Update(DxGameTime gameTime)
         {
-            MapModel mapModel = DxGame.Instance.Model<MapModel>();
+            MapService mapService = DxGame.Instance.Service<MapService>();
 
-            MapDescriptor currentDescriptor = mapModel?.Map?.MapDescriptor ?? null;
+            MapDescriptor currentDescriptor = mapService?.Map?.MapDescriptor ?? null;
             if(!ReferenceEquals(currentDescriptor, null))
             {
                 CurrentMesh = NavigableMeshCache.Get(currentDescriptor);

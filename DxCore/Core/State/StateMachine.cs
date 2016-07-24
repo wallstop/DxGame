@@ -95,7 +95,7 @@ namespace DxCore.Core.State
             public StateMachine Build()
             {
                 Validate.Hard.IsNotNullOrDefault(initialState_, () => this.GetFormattedNullOrDefaultMessage(nameof(initialState_)));
-                return new StateMachine(initialState_, uniqueStates_, logging_);
+                return new StateMachine(initialState_, uniqueStates_.ToDictionary(), logging_);
             }
 
             public StateMachineBuilder WithState(State state)

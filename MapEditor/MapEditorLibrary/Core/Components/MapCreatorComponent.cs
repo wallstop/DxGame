@@ -4,8 +4,8 @@ using DxCore;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Map;
 using DxCore.Core.Messaging;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using DxCore.Core.Utils.Cache.Advanced;
 using DxCore.Core.Utils.Validate;
 using MapEditorLibrary.Controls;
@@ -131,14 +131,14 @@ namespace MapEditorLibrary.Core.Components
             {
                 return;
             }
-            Tile currentTile = DxGame.Instance.Model<RootUiModel>().SelectedTile;
+            Tile currentTile = DxGame.Instance.Service<RootUiService>().SelectedTile;
             if(ReferenceEquals(currentTile, null))
             {
                 Logger.Debug("Ignoring {0} for {1}, no selected tile found", typeof(AddTileToMapRequest), tilePosition);
                 return;
             }
 
-            TileModel currentTileModel = DxGame.Instance.Model<RootUiModel>().SelectedTileModel;
+            TileModel currentTileModel = DxGame.Instance.Service<RootUiService>().SelectedTileModel;
             tileTextureCache_.Put(currentTile, currentTileModel.Texture);
             MapBuilder.WithTile(tilePosition.Value, currentTile);
             MapDescriptorCache.Invalidate();
@@ -149,8 +149,8 @@ namespace MapEditorLibrary.Core.Components
             get
             {
                 DxVector2 mousePosition = Mouse.GetState().Position;
-                CameraModel cameraModel = DxGame.Instance.Model<CameraModel>();
-                DxVector2 worldSpacePosition = cameraModel.Invert(mousePosition);
+                CameraService cameraService = DxGame.Instance.Service<CameraService>();
+                DxVector2 worldSpacePosition = cameraService.Invert(mousePosition);
 
                 TilePosition tilePosition;
                 if(MapGrid.PositionForPoint(worldSpacePosition, out tilePosition))

@@ -4,13 +4,13 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DxCore.Core.Models
+namespace DxCore.Core.Services
 {
     [Serializable]
     [DataContract]
-    public abstract class Model : DrawableComponent
+    public abstract class Service : DrawableComponent
     {
-        protected Model()
+        protected Service()
         {
         }
 
@@ -23,7 +23,7 @@ namespace DxCore.Core.Models
         {
             GameObject model = GameObject.From(this);
             model.Create();
-            DxGame.Instance.AttachModel(this);
+            DxGame.Instance.AttachService(this);
         }
     }
 }

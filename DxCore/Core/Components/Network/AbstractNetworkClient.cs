@@ -9,9 +9,9 @@ using DxCore.Core.Lerp;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Game;
 using DxCore.Core.Messaging.Network;
-using DxCore.Core.Models;
 using DxCore.Core.Network;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Lerp;
 using DxCore.Core.Utils.Validate;
@@ -151,8 +151,8 @@ namespace DxCore.Core.Components.Network
                     if(Objects.Equals(maybePlayer.Id, playerId_))
                     {
                         Player clientSideActivePlayer = Player.PlayerFrom(maybePlayer, "Bartholomew");
-                        PlayerModel playerModel = DxGame.Instance.Model<PlayerModel>();
-                        playerModel.WithActivePlayer(clientSideActivePlayer);
+                        PlayerService playerService = DxGame.Instance.Service<PlayerService>();
+                        playerService.WithActivePlayer(clientSideActivePlayer);
                         playerId_ = null;
                         break;
                     }

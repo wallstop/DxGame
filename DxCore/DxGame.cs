@@ -7,8 +7,8 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Messaging.Game;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using DxCore.Core.Settings;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
@@ -16,7 +16,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using NLog;
-using Model = DxCore.Core.Models.Model;
 
 namespace DxCore
 {
@@ -66,7 +65,6 @@ namespace DxCore
 
         public Scale Scale { get; private set; } = Scale.Medium;
 
-        public Rectangle Screen { get; protected set; }
         public SpriteBatch SpriteBatch { get; protected set; }
         public GraphicsDeviceManager Graphics { get; set; }
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
@@ -89,7 +87,7 @@ namespace DxCore
         public UpdateMode UpdateMode { get; set; } = UpdateMode.Active;
 
         /* TODO: Remove public access to this, this was made public for network testing */
-        public List<Model> Models { get; } = new List<Model>();
+        public new List<Service> Services { get; } = new List<Service>();
 
         protected TimeSpan lastFrameTick_;
         protected TimeSpan compensatedGameTime_;
@@ -106,30 +104,31 @@ namespace DxCore
         {
             get
             {
-                CameraModel cameraModel = Model<CameraModel>();
-                if(ReferenceEquals(cameraModel, null))
+                CameraService cameraService = Service<CameraService>();
+                DxVector2 screenDimensions = GameSettings.VideoSettings.ScreenDimensions;
+                if(ReferenceEquals(cameraService, null))
                 {
-                    return new DxRectangle(Screen);
+                    return new DxRectangle(0, 0, screenDimensions.X, screenDimensions.Y);
                 }
 
-                float x = Screen.Width / 2.0f - cameraModel.Position.X;
-                float y = Screen.Height / 2.0f - cameraModel.Position.Y;
+                float x = screenDimensions.X / 2.0f - cameraService.Position.X;
+                float y = screenDimensions.Y / 2.0f - cameraService.Position.Y;
 
                 // Attempt to bind by map rules
                 // TODO: Shove this shit in the camera model
-                MapModel mapModel = Model<MapModel>();
-                if(!ReferenceEquals(mapModel, null))
+                MapService mapService = Service<MapService>();
+                if(!ReferenceEquals(mapService, null))
                 {
                     x = MathHelper.Clamp(x,
-                        Math.Max(float.MinValue, -(mapModel.MapBounds.X + mapModel.MapBounds.Width - Screen.Width)),
-                        mapModel.MapBounds.X);
+                        Math.Max(float.MinValue, -(mapService.MapBounds.X + mapService.MapBounds.Width - screenDimensions.X)),
+                        mapService.MapBounds.X);
 
                     y = MathHelper.Clamp(y,
-                        Math.Max(float.MinValue, -(mapModel.MapBounds.Y + mapModel.MapBounds.Height - Screen.Height)),
-                        mapModel.MapBounds.Y);
+                        Math.Max(float.MinValue, -(mapService.MapBounds.Y + mapService.MapBounds.Height - screenDimensions.Y)),
+                        mapService.MapBounds.Y);
                 }
 
-                return new DxRectangle(x, y, Screen.Width, Screen.Height);
+                return new DxRectangle(x, y, screenDimensions.X, screenDimensions.Y);
             }
         }
 
@@ -145,19 +144,16 @@ namespace DxCore
                 singleton_ = this;
             }
 
+            Graphics = new GraphicsDeviceManager(this);
+
             // TODO: See what parts of this can be offloaded to initialize
             GameSettings = new GameSettings();
             GameSettings.Load();
 
+            Graphics.PreparingDeviceSettings += GameSettings.VideoSettings.HandlePreparingDeviceSettings;
+
             Controls = new Controls();
             Controls.Load();
-
-            Screen = new Rectangle(0, 0, GameSettings.ScreenWidth, GameSettings.ScreenHeight);
-            Graphics = new GraphicsDeviceManager(this)
-            {
-                PreferredBackBufferHeight = Screen.Height,
-                PreferredBackBufferWidth = Screen.Width
-            };
 
             TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0 / TargetFps);
             IsFixedTimeStep = false;
@@ -215,21 +211,21 @@ namespace DxCore
             GlobalMessageBus.TypedBroadcast(message);
         }
 
-        public T Model<T>() where T : Model
+        public T Service<T>() where T : Service
         {
-            return Models.OfType<T>().FirstOrDefault();
+            return Services.OfType<T>().FirstOrDefault();
         }
 
-        public bool AttachModel(Model model)
+        public bool AttachService(Service service)
         {
-            bool alreadyExists = Models.Contains(model);
+            bool alreadyExists = Services.Contains(service);
             if(!alreadyExists)
             {
-                Models.Add(model);
+                Services.Add(service);
             }
             else
             {
-                Logger.Error($"{nameof(AttachModel)} failed. Model {model} already exists in {Models}");
+                Logger.Error($"{nameof(AttachService)} failed. Model {service} already exists in {Services}");
             }
 
             return !alreadyExists;
@@ -310,10 +306,10 @@ namespace DxCore
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             GameObject.From(SpriteBatchEnder.Instance).Create();
             
-            new InputModel().Create();
-            new CameraModel().Create();
-            new WorldModel().Create();
-            new AudioModel().Create();
+            new InputService().Create();
+            new CameraService().Create();
+            new WorldService().Create();
+            new AudioService().Create();
 
             base.Initialize();
         }
@@ -429,26 +425,26 @@ namespace DxCore
 
         protected void PassiveUpdate(DxGameTime gameTime)
         {
-            NetworkModel networkModel = Model<NetworkModel>();
-            networkModel?.ReceiveData(gameTime);
-            networkModel?.SendData(gameTime);
+            NetworkService networkService = Service<NetworkService>();
+            networkService?.ReceiveData(gameTime);
+            networkService?.SendData(gameTime);
         }
 
         protected void CooperativeUpdate(DxGameTime gameTime)
         {
-            NetworkModel networkModel = Model<NetworkModel>();
-            InputModel inputModel = Model<InputModel>();
-            inputModel?.Process(gameTime);
+            NetworkService networkService = Service<NetworkService>();
+            InputService inputService = Service<InputService>();
+            inputService?.Process(gameTime);
 
-            networkModel?.ReceiveData(gameTime);
-            networkModel?.Process(gameTime);
+            networkService?.ReceiveData(gameTime);
+            networkService?.Process(gameTime);
 
             // TODO: Move this out of here
-            DeveloperModel developerModel = Model<DeveloperModel>();
-            developerModel.Process(gameTime);
+            DeveloperService developerService = Service<DeveloperService>();
+            developerService.Process(gameTime);
 
             UpdateElements();
-            networkModel?.SendData(gameTime);
+            networkService?.SendData(gameTime);
         }
 
         protected void ActiveUpdate(DxGameTime gameTime)
@@ -461,7 +457,7 @@ namespace DxCore
                 I'd like, we need to have a dedicated InputSystem that is capable of short-polling (on the order of 1/10th of a millisecond) the keyboard/gamepad/mouse state, 
                 diffing the previous state, and publishing events if there is a change. Then it's a matter of hooking up subscribers to these events.
             */
-            var networkModel = Model<NetworkModel>();
+            var networkModel = Service<NetworkService>();
 
             // Should probably thread this... but wait until we have perf testing :)
             networkModel?.ReceiveData(gameTime);
@@ -496,7 +492,7 @@ namespace DxCore
 
         protected override void Dispose(bool disposing)
         {
-            var networkModel = Model<NetworkModel>();
+            var networkModel = Service<NetworkService>();
             networkModel?.ShutDown();
             base.Dispose(disposing);
         }

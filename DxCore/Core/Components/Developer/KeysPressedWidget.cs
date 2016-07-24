@@ -2,8 +2,8 @@
 using System.Linq;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Input;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using DxCore.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -31,14 +31,14 @@ namespace DxCore.Core.Components.Developer
 
         protected override void Update(DxGameTime gameTime)
         {
-            InputModel inputModel = DxGame.Instance.Model<InputModel>();
-            currentEvents_ = inputModel.InputHandler.CurrentKeyboardEvents.ToList();
+            InputService inputService = DxGame.Instance.Service<InputService>();
+            currentEvents_ = inputService.InputHandler.CurrentKeyboardEvents.ToList();
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
 
-            CameraModel camera = DxGame.Instance.Model<CameraModel>();
+            CameraService camera = DxGame.Instance.Service<CameraService>();
             if(ReferenceEquals(camera, null))
             {
                 

@@ -6,11 +6,11 @@ using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
 
-namespace DxCore.Core.Models
+namespace DxCore.Core.Services
 {
     /* TODO: Rename to be LevelModel? */
 
-    public class MapModel : Model
+    public class MapService : Service
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
@@ -26,7 +26,7 @@ namespace DxCore.Core.Models
             private set
             {
                 Validate.Hard.IsNotNullOrDefault(value,
-                    () => $"Cannot assign a null {typeof(Level.Level)} to a {typeof(MapModel)}");
+                    () => $"Cannot assign a null {typeof(Level.Level)} to a {typeof(MapService)}");
                 level_ = value;
                 new UpdateWorldBounds(level_.Map.MapDescriptor.Bounds).Emit();
                 new UpdateCameraBounds(level_.Map.MapDescriptor.Bounds).Emit();
@@ -37,7 +37,7 @@ namespace DxCore.Core.Models
 
         private ILevelProgressionStrategy LevelProgressionStrategy { get; }
 
-        public MapModel(ILevelProgressionStrategy levelProgressionStrategy)
+        public MapService(ILevelProgressionStrategy levelProgressionStrategy)
         {
             Validate.Hard.IsNotNullOrDefault(levelProgressionStrategy,
                 this.GetFormattedNullOrDefaultMessage(levelProgressionStrategy));

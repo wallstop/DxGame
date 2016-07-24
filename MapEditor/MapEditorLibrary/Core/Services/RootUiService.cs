@@ -1,28 +1,38 @@
-﻿using BabelUILibrary.Controls;
+﻿using System;
+using System.Collections.Generic;
 using DxCore;
 using DxCore.Core;
+using DxCore.Core.Map;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using DxCore.Core.Utils.Validate;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
+using MapEditorLibrary.Controls;
 using Microsoft.Xna.Framework.Graphics;
-using Model = DxCore.Core.Models.Model;
 
-namespace BabelUILibrary.Core.Models
+namespace MapEditorLibrary.Core.Models
 {
-    public class UiModel : Model
+    public class RootUiService : Service
     {
         public Root UI { get; }
 
-        private RootController RootController { get; }
+        private AssetManagerView AssetManagerView { get; }
 
-        public UiModel(Root rootUi)
+        public Tile SelectedTile => AssetManagerView.SelectedTile;
+        public TileModel SelectedTileModel => AssetManagerView.SelectedTileModel;
+
+        public RootUiService(Root rootUi)
         {
             Validate.Hard.IsNotNullOrDefault(rootUi);
             DrawPriority = DrawPriority.MenuLayer;
             UI = rootUi;
-            RootController = new RootController();
-            rootUi.DataContext = RootController;
+            AssetManagerView = new AssetManagerView();
+            UI.DataContext = AssetManagerView;
+            foreach(KeyValuePair<RoutedEvent, Delegate> eventAndHandler in AssetManagerView.Handlers)
+            {
+                UI.AddHandler(eventAndHandler.Key, eventAndHandler.Value);
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
@@ -37,10 +47,12 @@ namespace BabelUILibrary.Core.Models
 
         public override void LoadContent()
         {
-            SpriteFont font = DxGame.Instance.Content.Load<SpriteFont>("Fonts/visitor_tt1_brk_26_regular");
+            SpriteFont font = DxGame.Instance.Content.Load<SpriteFont>("Fonts/visitor_tt1_brk_15_Regular");
             FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
-            FontManager.Instance.LoadFonts(DxGame.Instance.Content);
-            ImageManager.Instance.LoadImages(DxGame.Instance.Content);
+
+            // I guess we bind controls here?
+
+            // TODO: We don't really want drag-drop. What we really want is double click to select
         }
 
         protected override void Update(DxGameTime gameTime)

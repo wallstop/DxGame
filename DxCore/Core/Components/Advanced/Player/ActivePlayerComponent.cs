@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 
 namespace DxCore.Core.Components.Advanced.Player
 {
@@ -35,8 +35,8 @@ namespace DxCore.Core.Components.Advanced.Player
                 string playerName = playerNameComponent.Name;
 
                 DxCore.Core.Player activePlayer = DxCore.Core.Player.PlayerFrom(Parent, playerName);
-                PlayerModel playerModel = DxGame.Instance.Model<PlayerModel>();
-                playerModel.WithActivePlayer(activePlayer);
+                PlayerService playerService = DxGame.Instance.Service<PlayerService>();
+                playerService.WithActivePlayer(activePlayer);
                 Activated = true;
             }
             catch(Exception)

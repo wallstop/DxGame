@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 
@@ -256,8 +256,8 @@ namespace DxCore.Core.Components.Advanced.Position
 
         private static DxVector2 GetWorldPosition(DxVector2 uiOffset)
         {
-            CameraModel cameraModel = DxGame.Instance.Model<CameraModel>();
-            return cameraModel.Invert(uiOffset);
+            CameraService cameraService = DxGame.Instance.Service<CameraService>();
+            return cameraService.Invert(uiOffset);
         }
     }
 }

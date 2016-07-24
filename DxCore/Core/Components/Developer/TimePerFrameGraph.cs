@@ -4,8 +4,8 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.GraphicsWidgets;
-using DxCore.Core.Models;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using DxCore.Core.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,7 +18,7 @@ namespace DxCore.Core.Components.Developer
     {
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            var developerModel = DxGame.Instance.Model<DeveloperModel>();
+            var developerModel = DxGame.Instance.Service<DeveloperService>();
             if(developerModel?.DeveloperMode == DeveloperMode.FullOn)
             {
                 var screenRegion = DxGame.Instance.ScreenRegion;
@@ -63,7 +63,7 @@ namespace DxCore.Core.Components.Developer
 
         protected override void Update(DxGameTime gameTime)
         {
-            var developerModel = DxGame.Instance.Model<DeveloperModel>();
+            var developerModel = DxGame.Instance.Service<DeveloperService>();
             if(developerModel?.DeveloperMode == DeveloperMode.FullOn)
             {
 
@@ -72,7 +72,7 @@ namespace DxCore.Core.Components.Developer
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            var developerModel = DxGame.Instance.Model<DeveloperModel>();
+            var developerModel = DxGame.Instance.Service<DeveloperService>();
             if(developerModel?.DeveloperMode == DeveloperMode.FullOn)
             {
                 GameTimes.AddLast(gameTime);

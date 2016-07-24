@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 
-namespace DxCore.Core.Models
+namespace DxCore.Core.Services
 {
     /**
         The Sun Tzu of his time.
@@ -13,11 +13,11 @@ namespace DxCore.Core.Models
     */
     [Serializable]
     [DataContract]
-    public class BehaviorModel : Model
+    public class BehaviorService : Service
     {
         //private Dictionary<BehaviorComponent, > 
 
-        public BehaviorModel()
+        public BehaviorService()
         {
         }
 

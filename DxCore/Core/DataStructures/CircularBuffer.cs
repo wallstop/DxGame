@@ -11,6 +11,13 @@ namespace DxCore.Core.DataStructures
         <summary>
             Simple FIFO based circular buffer. Overwrites old values.
         </summary>
+
+        <code>
+            // Indexing is done backwards-like. ie:
+            var buffer = new CircularBuffer<int>(50);
+            buffer.Add(13); // [13, 0, 0, 0, ...]
+            buffer.Add(14); // [14, 13, 0, 0, ...]
+        </code>
     */
 
     [DataContract]
@@ -22,8 +29,9 @@ namespace DxCore.Core.DataStructures
         [DataMember] private int position_;
 
         [DataMember]
-        public int Capacity { get; }
+        public int Capacity { get; private set; }
 
+        [DataMember]
         public int Count { get; private set; }
 
         public bool IsReadOnly => false;
@@ -42,17 +50,28 @@ namespace DxCore.Core.DataStructures
             }
         }
 
-        public T Peek()
+        public bool Peek(out T value)
         {
-            return this[Count - 1];
+            if(InBounds(0))
+            {
+                value = this[0];
+                return true;
+            }
+            value = default(T);
+            return false;
         }
 
         private void BoundsCheck(int index)
         {
-            if(Count < index || index < 0)
+            if(!InBounds(index))
             {
                 throw new IndexOutOfRangeException($"{index} is outside of bounds [0, {Count})");
             }
+        }
+
+        private bool InBounds(int index)
+        {
+            return !(Count <= index || index < 0);
         }
 
         public CircularBuffer(int capacity)

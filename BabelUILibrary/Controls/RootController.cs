@@ -1,4 +1,5 @@
-﻿using Babel.Models;
+﻿using System;
+using Babel.Models;
 using DxCore;
 using EmptyKeys.UserInterface.Input;
 using EmptyKeys.UserInterface.Mvvm;
@@ -22,34 +23,27 @@ namespace BabelUILibrary.Controls
             set { SetProperty(ref rootVisible_, value); }
         }
 
+        private Predicate<object> CanExecute { get; }
+
         public ICommand SettingsCommand { get; }
 
         public RootController()
         {
-            PlayCommand = new RelayCommand(OnPlay);
-            SettingsCommand = new RelayCommand(OnSettings);
-            QuitCommand = new RelayCommand(OnQuit);
+            CanExecute = _ => RootVisible;
+            PlayCommand = new RelayCommand(OnPlay, CanExecute);
+            SettingsCommand = new RelayCommand(OnSettings, CanExecute);
+            QuitCommand = new RelayCommand(OnQuit, CanExecute);
             rootVisible_ = true;
         }
 
         private void OnPlay(object context)
         {
-            if(!RootVisible)
-            {
-                return;
-            }
-
             RootVisible = false;
             new GameModel().Create();
         }
 
         private void OnQuit(object context)
         {
-            if(!RootVisible)
-            {
-                return;
-            }
-
             RootVisible = false;
             Logger.Info("Exiting, seeya");
             DxGame.Instance.Exit();
@@ -57,11 +51,6 @@ namespace BabelUILibrary.Controls
 
         private void OnSettings(object context)
         {
-            if(!RootVisible)
-            {
-                return;
-            }
-
             IMessageBoxService messageBoxService = GetService<IMessageBoxService>();
             if(ReferenceEquals(messageBoxService, null))
             {

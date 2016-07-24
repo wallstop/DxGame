@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading;
 
 namespace DxCore.Core.Utils.Cache.Advanced
@@ -38,12 +39,16 @@ namespace DxCore.Core.Utils.Cache.Advanced
         Write
     }
 
+    [Serializable]
+    [DataContract]
     internal class Node<K, V>
     {
-        public K Key;
-        public V Data;
-        public Node<K, V> Next;
-        public Node<K, V> Previous;
+        [DataMember] public K Key;
+        [DataMember] public V Data;
+        [DataMember] public Node<K, V> Next;
+        [DataMember] public Node<K, V> Previous;
+
+        public override string ToString() => this.ToJson();
     }
 
     public class LocalCache<K, V> : ICache<K, V>
@@ -75,20 +80,26 @@ namespace DxCore.Core.Utils.Cache.Advanced
 
             const int invalid = -1;
 
+            ExpireAfterAccessMilliseconds = cacheBuilder.ExpireAfterAccessMilliseconds.GetValueOrDefault(invalid);
+            ExpireAfterWriteMilliseconds = cacheBuilder.ExpireAfterWriteMilliseconds.GetValueOrDefault(invalid);
+            MaxElements = cacheBuilder.MaxElements.GetValueOrDefault(invalid);
+
             Lock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-            Cache = new Dictionary<K, V>();
-            LruCache = new Dictionary<K, Node<K, V>>();
+            if(IsCapped)
+            {
+                LruCache = new Dictionary<K, Node<K, V>>();
+            }
+            else
+            {
+                Cache = new Dictionary<K, V>();
+            }
+
             Timers = new Dictionary<K, FatTimer>();
 
             Head = new Node<K, V>();
             Tail = new Node<K, V>();
             Head.Next = Tail;
             Tail.Previous = Head;
-
-            /* Our input ticks are of the form "Timespan Ticks". We need to transform them to "Stopwatch" ticks */
-            ExpireAfterAccessMilliseconds = cacheBuilder.ExpireAfterAccessMilliseconds.GetValueOrDefault(invalid);
-            ExpireAfterWriteMilliseconds = cacheBuilder.ExpireAfterWriteMilliseconds.GetValueOrDefault(invalid);
-            MaxElements = cacheBuilder.MaxElements.GetValueOrDefault(invalid);
 
             RemovalListener = cacheBuilder.RemovalListener;
         }
@@ -100,9 +111,13 @@ namespace DxCore.Core.Utils.Cache.Advanced
                 CheckTimer(key, CacheAction.Read);
                 if(IsCapped)
                 {
-                    Node<K, V> valueNode;
-                    bool present = LruCache.TryGetValue(key, out valueNode);
-                    ExtractValue(valueNode, present, out value);
+                    Node<K, V> valueWrapper;
+                    bool present = LruCache.TryGetValue(key, out valueWrapper);
+                    ExtractValue(valueWrapper, present, out value);
+                    if(present)
+                    {
+                        AddNode(valueWrapper);
+                    }
                     return present;
                 }
                 return Cache.TryGetValue(key, out value);
@@ -111,7 +126,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
 
         private void ExtractValue(Node<K, V> valueNode, bool present, out V value)
         {
-            value = !present ? valueNode.Data : default(V);
+            value = present ? valueNode.Data : default(V);
         }
 
         public V Get(K key, Func<K, V> valueLoader)
@@ -127,6 +142,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
                     {
                         V existingValue;
                         ExtractValue(valueWrapper, true, out existingValue);
+                        AddNode(valueWrapper);
                         return existingValue;
                     }
                 }
@@ -195,8 +211,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
                     {
                         existingValue = valueWrapper.Data;
                         valueWrapper.Data = value;
-                        valueWrapper.Previous.Next = valueWrapper.Next;
-                        valueWrapper.Next.Previous = valueWrapper.Previous;
+                        AddNode(valueWrapper);
                     }
                     else
                     {
@@ -280,6 +295,8 @@ namespace DxCore.Core.Utils.Cache.Advanced
                     if(removed = LruCache.TryGetValue(key, out removedValueWrapper))
                     {
                         removedValue = removedValueWrapper.Data;
+                        removedValueWrapper.Previous.Next = removedValueWrapper.Next;
+                        removedValueWrapper.Next.Previous = removedValueWrapper.Previous;
                         LruCache.Remove(key);
                     }
                     else
@@ -365,6 +382,17 @@ namespace DxCore.Core.Utils.Cache.Advanced
             {
                 return;
             }
+
+            /* Already a member of our list? We need some maintenance! */
+            if(!ReferenceEquals(valueWrapper.Next, null) && !ReferenceEquals(valueWrapper.Previous, null))
+            {
+                valueWrapper.Previous.Next = valueWrapper.Next;
+                valueWrapper.Next.Previous = valueWrapper.Previous;
+                /* Sanity's sake */
+                valueWrapper.Next = null;
+                valueWrapper.Previous = null;
+            }
+
             Tail.Previous.Next = valueWrapper;
             valueWrapper.Previous = Tail.Previous;
             Tail.Previous = valueWrapper;
@@ -402,7 +430,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
             RemovalListener(removalNotification);
         }
 
-        public long Size
+        public long Count
         {
             get
             {

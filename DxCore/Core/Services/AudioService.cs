@@ -6,14 +6,13 @@ using NLog;
 
 namespace DxCore.Core.Services
 {
-    public class AudioService : Service
+    public sealed class AudioService : DxService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public override void OnAttach()
+        protected override void OnCreate()
         {
-            RegisterMessageHandler<AudioMessage>(HandleAudioMessage);
-            base.OnAttach();
+            Self.MessageHandler.RegisterMessageHandler<AudioMessage>(HandleAudioMessage);
         }
 
         private void HandleAudioMessage(AudioMessage audioMessage)

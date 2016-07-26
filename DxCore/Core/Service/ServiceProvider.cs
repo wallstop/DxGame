@@ -134,6 +134,14 @@ namespace DxCore.Core.Service
             }
         }
 
+        public void Register(Type serviceType, object service)
+        {
+            object existingService = ServiceForType(serviceType);
+            Validate.Hard.IsNull(existingService, () => $"Cannot re-register a service of type {serviceType}");
+            Type serviceOfType = typeof(Service<>).MakeGenericType(serviceType);
+            serviceOfType.GetProperty("Instance").SetValue(null, service);
+        }
+
         /**
             <summary>
                 Attempts to retrieve a registered service for the provided type. 

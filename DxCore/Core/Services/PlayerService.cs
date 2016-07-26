@@ -10,7 +10,7 @@ namespace DxCore.Core.Services
 {
     [DataContract]
     [Serializable]
-    public class PlayerService : Service
+    public class PlayerService : DxService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -20,10 +20,9 @@ namespace DxCore.Core.Services
         [DataMember]
         public ICollection<Player> Players { get; private set; } = new List<Player>();
 
-        public override void OnAttach()
+        protected override void OnCreate()
         {
-            RegisterMessageHandler<MapRotationNotification>(HandleMapRotationNotification);
-            base.OnAttach();
+            Self.MessageHandler.RegisterMessageHandler<MapRotationNotification>(HandleMapRotationNotification);
         }
 
         /* 
@@ -40,17 +39,26 @@ namespace DxCore.Core.Services
 
             Logger.Debug($"Assigning {player} to be ActivePlayer");
             ActivePlayer = player;
-            Players.Add(player);
+            if(!Players.Contains(player))
+            {
+                new NewPlayerNotification(player).Emit();
+                Players.Add(player);
+            }
             return this;
         }
 
         public PlayerService WithPlayers(Player[] players)
         {
-            Validate.Hard.IsNotNull(players, $"Cannot initialize {GetType()} with null/default {nameof(players)})");
+            Validate.Hard.IsNotNull(players, () => $"Cannot initialize {GetType()} with null/default {nameof(players)})");
 
             Logger.Info("Initialized ");
             Players = players;
-            if(Validate.Check.IsNotNullOrDefault(ActivePlayer))
+            foreach(Player player in Players)
+            {
+                new NewPlayerNotification(player).Emit();
+            }
+
+            if(Validate.Check.IsNotNullOrDefault(ActivePlayer) && !Players.Contains(ActivePlayer))
             {
                 Players.Add(ActivePlayer);
             }

@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using DxCore;
-using DxCore.Core;
 using DxCore.Core.Map;
-using DxCore.Core.Primitives;
 using DxCore.Core.Services;
 using DxCore.Core.Utils.Validate;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
 using MapEditorLibrary.Controls;
-using Microsoft.Xna.Framework.Graphics;
+using MapEditorLibrary.Core.Services.Components;
 
-namespace MapEditorLibrary.Core.Models
+namespace MapEditorLibrary.Core.Services
 {
-    public class RootUiService : Service
+    public class RootUiService : DxService
     {
         public Root UI { get; }
 
@@ -22,10 +19,11 @@ namespace MapEditorLibrary.Core.Models
         public Tile SelectedTile => AssetManagerView.SelectedTile;
         public TileModel SelectedTileModel => AssetManagerView.SelectedTileModel;
 
+        private UiDrawer UiDrawer { get; set; }
+
         public RootUiService(Root rootUi)
         {
             Validate.Hard.IsNotNullOrDefault(rootUi);
-            DrawPriority = DrawPriority.MenuLayer;
             UI = rootUi;
             AssetManagerView = new AssetManagerView();
             UI.DataContext = AssetManagerView;
@@ -35,31 +33,13 @@ namespace MapEditorLibrary.Core.Models
             }
         }
 
-        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
+        protected override void OnCreate()
         {
-            UI.Draw(EmptyKeysGameTime(gameTime));
-        }
-
-        public static double EmptyKeysGameTime(DxGameTime gameTime)
-        {
-            return gameTime.ElapsedGameTime.TotalMilliseconds;
-        }
-
-        public override void LoadContent()
-        {
-            SpriteFont font = DxGame.Instance.Content.Load<SpriteFont>("Fonts/visitor_tt1_brk_15_Regular");
-            FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
-
-            // I guess we bind controls here?
-
-            // TODO: We don't really want drag-drop. What we really want is double click to select
-        }
-
-        protected override void Update(DxGameTime gameTime)
-        {
-            UI.UpdateInput(EmptyKeysGameTime(gameTime));
-            UI.UpdateLayout(EmptyKeysGameTime(gameTime));
-            base.Update(gameTime);
+            if(Validate.Check.IsNull(UiDrawer))
+            {
+                UiDrawer = new UiDrawer(UI);
+                Self.AttachComponent(UiDrawer);
+            }
         }
     }
 }

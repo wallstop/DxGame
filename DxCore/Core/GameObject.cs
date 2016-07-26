@@ -28,7 +28,7 @@ namespace DxCore.Core
     [DataContract]
     public sealed class GameObject : IIdentifiable, IEquatable<GameObject>, IProcessable, ICreatable, IRemovable
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         // DataMembers can't be readonly :(
         [DataMember] private List<Component> components_;
@@ -43,12 +43,13 @@ namespace DxCore.Core
         public IEnumerable<Component> Components => components_;
 
         [DataMember]
-        public MessageHandler MessageHandler { get; set; }
+        public MessageHandler MessageHandler { get; private set; }
 
         private GameObject(List<Component> components)
         {
             components_ = new List<Component>();
             MessageHandler = new MessageHandler(Id);
+            MessageHandler.Active = false;
             foreach(Component component in components)
             {
                 AttachComponent(component);
@@ -80,13 +81,13 @@ namespace DxCore.Core
 
             if(ReferenceEquals(component, null))
             {
-                LOG.Info("Ignoring null component attach");
+                Logger.Info("Ignoring null component attach");
                 return;
             }
 
             if(components_.Contains(component))
             {
-                LOG.Info("Ignoring attach of {0} that already exists on {1}", typeof(Component), this);
+                Logger.Info("Ignoring attach of {0} that already exists on {1}", typeof(Component), this);
                 return;
             }
 
@@ -217,6 +218,20 @@ namespace DxCore.Core
                 MessageHandler.Deregister();
             }
             Removed = true;
+        }
+
+        public void Reset()
+        {
+            Remove();
+            Removed = false;
+            Created = false;
+            MessageHandler.Active = false;
+            foreach(Component component in components_)
+            {
+                component.OnDetach();
+                component.Parent = this;
+                component.OnAttach();
+            }
         }
 
         public void Create()

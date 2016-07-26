@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
-using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using FarseerPhysics.Collision;
 using FarseerPhysics.Dynamics;
@@ -12,15 +11,12 @@ namespace DxCore.Core.Services
 {
     [Serializable]
     [DataContract]
-    public class EnvironmentService : Service
+    public sealed class EnvironmentService : DxService
     {
-        public override void OnAttach()
+        protected override void OnCreate()
         {
-            RegisterMessageHandler<EnvironmentInteractionMessage>(HandleEnvironmentInteractionMessage);
-            base.OnAttach();
+            Self.MessageHandler.RegisterMessageHandler<EnvironmentInteractionMessage>(HandleEnvironmentInteractionMessage);
         }
-
-        protected override void Update(DxGameTime gameTime) {}
 
         private void HandleEnvironmentInteractionMessage(EnvironmentInteractionMessage message)
         {

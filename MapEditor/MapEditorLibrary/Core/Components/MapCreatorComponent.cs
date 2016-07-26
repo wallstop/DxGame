@@ -10,7 +10,7 @@ using DxCore.Core.Utils.Cache.Advanced;
 using DxCore.Core.Utils.Validate;
 using MapEditorLibrary.Controls;
 using MapEditorLibrary.Core.Messaging;
-using MapEditorLibrary.Core.Models;
+using MapEditorLibrary.Core.Services;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;

@@ -8,6 +8,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Messaging.Game;
 using DxCore.Core.Primitives;
+using DxCore.Core.Service;
 using DxCore.Core.Services;
 using DxCore.Core.Settings;
 using DxCore.Core.Utils;
@@ -87,7 +88,9 @@ namespace DxCore
         public UpdateMode UpdateMode { get; set; } = UpdateMode.Active;
 
         /* TODO: Remove public access to this, this was made public for network testing */
-        public new List<Service> Services { get; } = new List<Service>();
+        public new List<DxService> Services { get; } = new List<DxService>();
+
+        public ServiceProvider ServiceProvider { get; } = ServiceProvider.Instance;
 
         protected TimeSpan lastFrameTick_;
         protected TimeSpan compensatedGameTime_;
@@ -167,7 +170,7 @@ namespace DxCore
             GameId = new UniqueId();
             GameGuid = new GameId();
 
-            MessageHandler = new MessageHandler(GameId);
+            MessageHandler = new MessageHandler(GameId) {Active = true};
             MessageHandler.RegisterMessageHandler<EntityCreatedMessage>(HandleEntityCreatedMessage);
             MessageHandler.RegisterMessageHandler<EntityRemovedMessage>(HandleEntityRemovedMessage);
             MessageHandler.RegisterMessageHandler<TimeSkewRequest>(HandleTimeSkewRequest);
@@ -211,25 +214,7 @@ namespace DxCore
             GlobalMessageBus.TypedBroadcast(message);
         }
 
-        public T Service<T>() where T : Service
-        {
-            return Services.OfType<T>().FirstOrDefault();
-        }
-
-        public bool AttachService(Service service)
-        {
-            bool alreadyExists = Services.Contains(service);
-            if(!alreadyExists)
-            {
-                Services.Add(service);
-            }
-            else
-            {
-                Logger.Error($"{nameof(AttachService)} failed. Model {service} already exists in {Services}");
-            }
-
-            return !alreadyExists;
-        }
+        public T Service<T>() where T : DxService => ServiceProvider.GetService<T>();
 
         // TODO: Figure out a better way to attach shit to the game
         protected void AddAndInitializeComponent(Component component)
@@ -283,6 +268,7 @@ namespace DxCore
             {
                 AddAndInitializeComponent(component);
             }
+            gameObject.MessageHandler.Active = true;
             NewGameElements.Add(gameObject);
         }
 

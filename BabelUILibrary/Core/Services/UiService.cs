@@ -1,53 +1,34 @@
 ﻿using BabelUILibrary.Controls;
-using DxCore;
-using DxCore.Core;
-using DxCore.Core.Primitives;
+using BabelUILibrary.Core.Services.Components;
 using DxCore.Core.Services;
 using DxCore.Core.Utils.Validate;
-using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
-using Microsoft.Xna.Framework.Graphics;
 
-namespace BabelUILibrary.Core.Models
+namespace BabelUILibrary.Core.Services
 {
-    public class UiService : Service
+    public class UiService : DxService
     {
         public Root UI { get; }
 
         private RootController RootController { get; }
 
+        private UiDrawer UiDrawer { get; set; }
+
         public UiService(Root rootUi)
         {
             Validate.Hard.IsNotNullOrDefault(rootUi);
-            DrawPriority = DrawPriority.MenuLayer;
             UI = rootUi;
             RootController = new RootController();
             rootUi.DataContext = RootController;
         }
 
-        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
+        protected override void OnCreate()
         {
-            UI.Draw(EmptyKeysGameTime(gameTime));
-        }
-
-        public static double EmptyKeysGameTime(DxGameTime gameTime)
-        {
-            return gameTime.ElapsedGameTime.TotalMilliseconds;
-        }
-
-        public override void LoadContent()
-        {
-            SpriteFont font = DxGame.Instance.Content.Load<SpriteFont>("Fonts/visitor_tt1_brk_26_regular");
-            FontManager.DefaultFont = Engine.Instance.Renderer.CreateFont(font);
-            FontManager.Instance.LoadFonts(DxGame.Instance.Content);
-            ImageManager.Instance.LoadImages(DxGame.Instance.Content);
-        }
-
-        protected override void Update(DxGameTime gameTime)
-        {
-            UI.UpdateInput(EmptyKeysGameTime(gameTime));
-            UI.UpdateLayout(EmptyKeysGameTime(gameTime));
-            base.Update(gameTime);
+            if(Validate.Check.IsNull(UiDrawer))
+            {
+                UiDrawer = new UiDrawer(UI);
+                Self.AttachComponent(UiDrawer);
+            }
         }
     }
 }

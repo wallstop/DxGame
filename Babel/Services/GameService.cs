@@ -8,7 +8,7 @@ using DxCore.Core;
 using DxCore.Core.Level;
 using DxCore.Core.Services;
 
-namespace Babel.Models
+namespace Babel.Services
 {
     public enum GameState
     {
@@ -19,27 +19,25 @@ namespace Babel.Models
     [Serializable]
     [DataContract]
     [Obsolete("Pls find a better way of injecting behavior into the game")]
-    public class GameService : Service
+    public class GameService : DxService
     {
         [DataMember]
         public float GameSpeed { get; set; }
 
         private MapService mapService_;
 
-        public override void DeSerialize()
+        protected override void OnCreate()
         {
-            // Do nothing with this, this Initialize will do all kinds of bad things (re-trigger map model spawning, for example)
-        }
+            /* Since we're throwing this away, don't make it clean. Make it suck. */
 
-        public override void Initialize()
-        {
+            /* ... this sucks */
             ILevelProgressionStrategy levelProgression = new SimpleRotatingLevelProgression();
             levelProgression.Init();
-
+            new PathfindingService().Create();
             mapService_ = new MapService(levelProgression);
             mapService_.Create();
             new EnvironmentService().Create();
-            new PathfindingService().Create();
+
             new ExperienceService().Create();
             new PlayerService().Create();
 
@@ -47,7 +45,6 @@ namespace Babel.Models
             {
                 InitializePlayer();
             }
-            base.Initialize();
         }
 
         public void InitializePlayer()

@@ -5,6 +5,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
+using NLog;
 
 namespace DxCore.Core.Services
 {
@@ -19,8 +20,10 @@ namespace DxCore.Core.Services
 
     public delegate float ExperienceFunction(int numberOfEntitiesKilled);
 
-    public class ExperienceService : Service
+    public sealed class ExperienceService : DxService
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private readonly Dictionary<Player, int> entitiesContributingToExperienceByPlayer_;
 
         public ExperienceFunction ExperienceFunction { get; }
@@ -35,13 +38,13 @@ namespace DxCore.Core.Services
             ExperienceFunction = experienceFunction;
         }
 
-        public override void OnAttach()
+        protected override void OnCreate()
         {
-            RegisterMessageHandler<ExperienceDroppedMessage>(HandleExperienceDroppedMessage);
-            base.OnAttach();
+            Self.MessageHandler.RegisterMessageHandler<ExperienceDroppedMessage>(HandleExperienceDroppedMessage);
+            Self.MessageHandler.RegisterMessageHandler<NewPlayerNotification>(HandleNewPlayer);
         }
 
-        protected static float SimpleExponentialEaseInOut(int x)
+        private static float SimpleExponentialEaseInOut(int x)
         {
             /* Just make use of our already-populated Spring Functions */
             const int maxEntities = 100;
@@ -55,20 +58,15 @@ namespace DxCore.Core.Services
             return scalar;
         }
 
-        protected override void Update(DxGameTime gameTime)
+        private void HandleNewPlayer(NewPlayerNotification newPlayerNotification)
         {
-            /* Make sure we know about all of the players */
-            PlayerService playerService = DxGame.Instance.Service<PlayerService>();
-            foreach(Player player in playerService.Players)
+            Player player = newPlayerNotification.Player;
+            if(entitiesContributingToExperienceByPlayer_.ContainsKey(player))
             {
-                if(entitiesContributingToExperienceByPlayer_.ContainsKey(player))
-                {
-                    continue;
-                }
-                entitiesContributingToExperienceByPlayer_[player] = 0;
+                Logger.Warn("Received double registration of {0}: {1}", typeof(Player), player);
+                return;
             }
-
-            base.Update(gameTime);
+            entitiesContributingToExperienceByPlayer_[player] = 0;
         }
 
         private void HandleExperienceDroppedMessage(ExperienceDroppedMessage experienceDropped)

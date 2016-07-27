@@ -32,7 +32,7 @@ namespace DxGame
         }
 
         protected override void Initialize()
-        {
+        { 
             base.Initialize();
             UiService uiService = new UiService(new Root());
             uiService.Create();

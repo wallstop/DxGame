@@ -140,7 +140,7 @@ namespace DxCore.Core.Messaging
             if(!newRegistration)
             {
                 Logger.Debug("Received double registration of {0} for {1}", typeof(T), handlerOwnerId);
-            } 
+            }
 
             return new SerializableDeregistration<T>(handlerOwnerId).Deregister;
         }

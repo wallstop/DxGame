@@ -74,7 +74,7 @@ namespace DxCore.Core.Services
             MapRotationNotification mapRotationNotification = new MapRotationNotification(Level.Map);
             mapRotationNotification.Emit();
         }
-
+ 
         private void HandleMapFinishedLoading(MapRotationNotification mapRotationNotification)
         {
             Level.Create();

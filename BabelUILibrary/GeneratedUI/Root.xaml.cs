@@ -34,11 +34,7 @@ namespace EmptyKeys.UserInterface.Generated {
         
         private Grid e_3;
         
-        private Button e_4;
-        
-        private Button e_5;
-        
-        private Button e_6;
+        private MainMenu e_4;
         
         public Root() : 
                 base() {
@@ -74,6 +70,15 @@ namespace EmptyKeys.UserInterface.Generated {
             RowDefinition row_e_0_2 = new RowDefinition();
             row_e_0_2.Height = new GridLength(1F, GridUnitType.Star);
             this.e_0.RowDefinitions.Add(row_e_0_2);
+            RowDefinition row_e_0_3 = new RowDefinition();
+            row_e_0_3.Height = new GridLength(1F, GridUnitType.Star);
+            this.e_0.RowDefinitions.Add(row_e_0_3);
+            RowDefinition row_e_0_4 = new RowDefinition();
+            row_e_0_4.Height = new GridLength(1F, GridUnitType.Star);
+            this.e_0.RowDefinitions.Add(row_e_0_4);
+            RowDefinition row_e_0_5 = new RowDefinition();
+            row_e_0_5.Height = new GridLength(1F, GridUnitType.Star);
+            this.e_0.RowDefinitions.Add(row_e_0_5);
             ColumnDefinition col_e_0_0 = new ColumnDefinition();
             col_e_0_0.Width = new GridLength(3F, GridUnitType.Star);
             this.e_0.ColumnDefinitions.Add(col_e_0_0);
@@ -102,7 +107,7 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_1.Name = "e_1";
             this.e_1.Opacity = 0.7F;
             Grid.SetColumnSpan(this.e_1, 6);
-            Grid.SetRowSpan(this.e_1, 3);
+            Grid.SetRowSpan(this.e_1, 6);
             this.e_1.SetResourceReference(Image.SourceProperty, "BackgroundMainMenu");
             // e_2 element
             this.e_2 = new TextBlock();
@@ -117,68 +122,23 @@ namespace EmptyKeys.UserInterface.Generated {
             Grid.SetColumn(this.e_2, 1);
             Grid.SetRow(this.e_2, 0);
             Grid.SetColumnSpan(this.e_2, 4);
+            Grid.SetRowSpan(this.e_2, 2);
             this.e_2.SetResourceReference(TextBlock.FontFamilyProperty, "VisitorFont");
             // e_3 element
             this.e_3 = new Grid();
             this.e_0.Children.Add(this.e_3);
             this.e_3.Name = "e_3";
-            RowDefinition row_e_3_0 = new RowDefinition();
-            row_e_3_0.Height = new GridLength(4F, GridUnitType.Star);
-            this.e_3.RowDefinitions.Add(row_e_3_0);
-            RowDefinition row_e_3_1 = new RowDefinition();
-            row_e_3_1.Height = new GridLength(1F, GridUnitType.Star);
-            this.e_3.RowDefinitions.Add(row_e_3_1);
-            RowDefinition row_e_3_2 = new RowDefinition();
-            row_e_3_2.Height = new GridLength(1F, GridUnitType.Star);
-            this.e_3.RowDefinitions.Add(row_e_3_2);
-            RowDefinition row_e_3_3 = new RowDefinition();
-            row_e_3_3.Height = new GridLength(1F, GridUnitType.Star);
-            this.e_3.RowDefinitions.Add(row_e_3_3);
-            RowDefinition row_e_3_4 = new RowDefinition();
-            row_e_3_4.Height = new GridLength(4F, GridUnitType.Star);
-            this.e_3.RowDefinitions.Add(row_e_3_4);
-            Grid.SetColumn(this.e_3, 2);
-            Grid.SetRow(this.e_3, 0);
-            Grid.SetColumnSpan(this.e_3, 2);
-            Grid.SetRowSpan(this.e_3, 3);
+            Grid.SetColumn(this.e_3, 1);
+            Grid.SetRow(this.e_3, 1);
+            Grid.SetColumnSpan(this.e_3, 4);
+            Grid.SetRowSpan(this.e_3, 4);
             // e_4 element
-            this.e_4 = new Button();
+            this.e_4 = new MainMenu();
             this.e_3.Children.Add(this.e_4);
             this.e_4.Name = "e_4";
-            this.e_4.Foreground = new SolidColorBrush(new ColorW(0, 0, 139, 255));
-            this.e_4.TabIndex = 0;
-            this.e_4.Content = "Play";
-            Grid.SetRow(this.e_4, 1);
-            Binding binding_e_4_Command = new Binding("PlayCommand");
-            this.e_4.SetBinding(Button.CommandProperty, binding_e_4_Command);
-            this.e_4.SetResourceReference(Button.FontFamilyProperty, "VisitorFont");
-            this.e_4.SetResourceReference(Button.StyleProperty, "ButtonStyle");
-            // e_5 element
-            this.e_5 = new Button();
-            this.e_3.Children.Add(this.e_5);
-            this.e_5.Name = "e_5";
-            this.e_5.Foreground = new SolidColorBrush(new ColorW(0, 0, 139, 255));
-            this.e_5.TabIndex = 1;
-            this.e_5.Content = "Settings";
-            Grid.SetRow(this.e_5, 2);
-            Binding binding_e_5_Command = new Binding("SettingsCommand");
-            this.e_5.SetBinding(Button.CommandProperty, binding_e_5_Command);
-            this.e_5.SetResourceReference(Button.FontFamilyProperty, "VisitorFont");
-            this.e_5.SetResourceReference(Button.StyleProperty, "ButtonStyle");
-            // e_6 element
-            this.e_6 = new Button();
-            this.e_3.Children.Add(this.e_6);
-            this.e_6.Name = "e_6";
-            this.e_6.Foreground = new SolidColorBrush(new ColorW(0, 0, 139, 255));
-            this.e_6.TabIndex = 2;
-            this.e_6.Content = "Quit";
-            Grid.SetRow(this.e_6, 3);
-            Binding binding_e_6_Command = new Binding("QuitCommand");
-            this.e_6.SetBinding(Button.CommandProperty, binding_e_6_Command);
-            this.e_6.SetResourceReference(Button.FontFamilyProperty, "VisitorFont");
-            this.e_6.SetResourceReference(Button.StyleProperty, "ButtonStyle");
+            Binding binding_e_4_Visibility = new Binding("MainMenuVisible");
+            this.e_4.SetBinding(MainMenu.VisibilityProperty, binding_e_4_Visibility);
             FontManager.Instance.AddFont("Fonts/visitor_tt1_brk", 100F, FontStyle.Regular, "Fonts/visitor_tt1_brk_75_Regular");
-            FontManager.Instance.AddFont("Fonts/visitor_tt1_brk", 34.66667F, FontStyle.Regular, "Fonts/visitor_tt1_brk_26_Regular");
         }
         
         private static void InitializeElementResources(UIElement elem) {

@@ -3,6 +3,7 @@ using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Messaging;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services.Components;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
 using FarseerPhysics;
@@ -32,7 +33,7 @@ namespace DxCore.Core.Services
         }
     }
 
-    public sealed class WorldService : Services.Service, IWorldCollidable
+    public sealed class WorldService : DxService, IWorldCollidable
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -72,31 +73,23 @@ namespace DxCore.Core.Services
 
         public WorldEdge Bottom { get; private set; }
 
+        private WorldPhysicsUpdater PhysicsUpdater { get; set; }
+
         public WorldService()
         {
             World = new World(new Vector2(0, 20f));
             WorldBounds = new List<PhysicsComponent>(4);
         }
 
-        public override void OnAttach()
+        protected override void OnCreate()
         {
-            RegisterMessageHandler<PhysicsMessage>(HandlePhysicsMessage);
-            RegisterMessageHandler<UpdateWorldBounds>(HandleUpdateWorldBounds);
-        }
-
-        public override void Initialize()
-        {
-            base.Initialize();
-        }
-
-        protected override void Update(DxGameTime gameTime)
-        {
-            FullThrottleUpdate(gameTime);
-        }
-
-        private void FullThrottleUpdate(DxGameTime gameTime)
-        {
-            World.Step((float) gameTime.ElapsedGameTime.TotalSeconds);
+            if(Validate.Check.IsNull(PhysicsUpdater))
+            {
+                PhysicsUpdater = new WorldPhysicsUpdater(World);
+                Self.AttachComponent(PhysicsUpdater);
+            }
+            Self.MessageHandler.RegisterMessageHandler<PhysicsMessage>(HandlePhysicsMessage);
+            Self.MessageHandler.RegisterMessageHandler<UpdateWorldBounds>(HandleUpdateWorldBounds);
         }
 
         private void HandlePhysicsMessage(PhysicsMessage message)
@@ -165,7 +158,7 @@ namespace DxCore.Core.Services
             {
                 DxLineSegment edgeAsLineSegment = borders[i];
                 Vector2 edgePosition = edgeAsLineSegment.Start.Vector2 * DxToFarseerScale;
-                Body worldBody = BodyFactory.CreateBody(world, bodyPositions[i], 0, userData:this);
+                Body worldBody = BodyFactory.CreateBody(world, bodyPositions[i], 0, this);
                 Fixture fixture = FixtureFactory.AttachEdge(edgePosition,
                     edgeAsLineSegment.End.Vector2 * DxToFarseerScale, worldBody, this);
 

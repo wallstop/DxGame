@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace DxCore.Core.Services
 {
-    public sealed class SettingsService : Service
+    // TODO
+    public sealed class SettingsService : DxService
     {
     }
 }

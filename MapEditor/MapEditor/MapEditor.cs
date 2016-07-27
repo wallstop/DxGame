@@ -5,7 +5,7 @@ using DxCore.Core.Services;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
 using MapEditorLibrary.Core.Components;
-using MapEditorLibrary.Core.Models;
+using MapEditorLibrary.Core.Services;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

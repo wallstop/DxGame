@@ -1,18 +1,18 @@
 ﻿using DxCore.Core.Level;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services.Components;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Validate;
-using Microsoft.Xna.Framework.Graphics;
 using NLog;
 
 namespace DxCore.Core.Services
 {
     /* TODO: Rename to be LevelModel? */
 
-    public class MapService : Service
+    public sealed class MapService : DxService
     {
-        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public DxRectangle RandomSpawnLocation => Map.RandomSpawnLocation;
         public DxVector2 PlayerSpawn => Map.PlayerSpawn;
@@ -35,56 +35,49 @@ namespace DxCore.Core.Services
 
         public Map.Map Map => Level.Map;
 
+        private MapDrawer MapDrawer { get; set; }
+
         private ILevelProgressionStrategy LevelProgressionStrategy { get; }
 
         public MapService(ILevelProgressionStrategy levelProgressionStrategy)
         {
             Validate.Hard.IsNotNullOrDefault(levelProgressionStrategy,
                 this.GetFormattedNullOrDefaultMessage(levelProgressionStrategy));
-            DrawPriority = DrawPriority.Map;
+
             LevelProgressionStrategy = levelProgressionStrategy;
 
             Level = LevelProgressionStrategy.InitialLevel;
         }
 
-        public override void OnAttach()
+        protected override void OnCreate()
         {
-            RegisterMessageHandler<MapRotationRequest>(HandleMapRotationRequest);
-            RegisterMessageHandler<MapRotationNotification>(HandleMapFinishedLoading);
-            base.OnAttach();
-        }
-
-        public void HandleMapRotationRequest(MapRotationRequest mapRotationRequest)
-        {
-            if(ReferenceEquals(mapRotationRequest, null))
+            if(Validate.Check.IsNull(MapDrawer))
             {
-                LOG.Info($"Received null {typeof(MapRotationRequest)}, not rotating map.");
-                return;
+                MapDrawer = new MapDrawer(() => Level);
+                Self.AttachComponent(MapDrawer);
             }
 
+            /* First time's the charm */
+            MapRotationNotification mapRotationNotification = new MapRotationNotification(Level.Map);
+            mapRotationNotification.Emit();
+
+            Self.MessageHandler.RegisterMessageHandler<MapRotationRequest>(HandleMapRotationRequest);
+            Self.MessageHandler.RegisterMessageHandler<MapRotationNotification>(HandleMapFinishedLoading);
+        }
+
+        private void HandleMapRotationRequest(MapRotationRequest mapRotationRequest)
+        {
             Level.Level nextLevel = LevelProgressionStrategy.DetermineNextLevel(Level);
             Level.Remove();
 
             Level = nextLevel;
-            MapRotationNotification mapRotationNotification = new MapRotationNotification();
+            MapRotationNotification mapRotationNotification = new MapRotationNotification(Level.Map);
             mapRotationNotification.Emit();
-            
         }
 
-        public void HandleMapFinishedLoading(MapRotationNotification mapRotationNotification)
+        private void HandleMapFinishedLoading(MapRotationNotification mapRotationNotification)
         {
             Level.Create();
-        }
-
-        public override void Initialize()
-        {
-            Level.Create();
-            base.Initialize();
-        }
-
-        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
-        {
-            Map.Draw(spriteBatch, gameTime);
         }
     }
 }

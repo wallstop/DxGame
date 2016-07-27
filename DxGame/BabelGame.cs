@@ -1,5 +1,5 @@
 ﻿using System;
-using BabelUILibrary.Core.Models;
+using BabelUILibrary.Core.Services;
 using DxCore.Core.Services;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;

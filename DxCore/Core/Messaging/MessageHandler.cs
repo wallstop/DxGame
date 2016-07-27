@@ -23,6 +23,9 @@ namespace DxCore.Core.Messaging
         [DataMember]
         public bool RegisterGlobally { get; set; } = true;
 
+        [DataMember]
+        public bool Active { get; set; }
+
         [DataContract]
         [Serializable]
         internal class TypedHandler<T> where T : Message
@@ -180,6 +183,10 @@ namespace DxCore.Core.Messaging
 
         public void HandleTypedMessage<T>(T message) where T : Message
         {
+            if(!Active)
+            {
+                return;
+            }
             if(!ShouldPropagate(message))
             {
                 wrongGameRejectionFunction_.Invoke(message);
@@ -191,6 +198,10 @@ namespace DxCore.Core.Messaging
 
         public void HandleUntypedMessage(Message message)
         {
+            if(!Active)
+            {
+                return;
+            }
             if(!ShouldPropagate(message))
             {
                 wrongGameRejectionFunction_.Invoke(message);

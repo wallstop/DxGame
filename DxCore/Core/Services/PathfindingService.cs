@@ -4,18 +4,24 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DxCore.Core.Map;
 using DxCore.Core.Messaging;
-using DxCore.Core.Primitives;
+using DxCore.Core.Services.Components;
 using DxCore.Core.Utils.Cache.Advanced;
+using DxCore.Core.Utils.Validate;
+using NLog;
 
 namespace DxCore.Core.Services
 {
-    public sealed class PathfindingService : Service
+    public sealed class PathfindingService : DxService
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private ILoadingCache<MapDescriptor, NavigableMesh> NavigableMeshCache { get; }
 
         private NavigableMesh CurrentMesh { get; set; }
 
-        private readonly ConcurrentQueue<PathfindingResponse> finishedResponses_;
+        private ConcurrentQueue<PathfindingResponse> FinishedResponses { get; }
+
+        private PathfindingResponseDispatcher ResponseDispatcher { get; set; }
 
         public PathfindingService()
         {
@@ -23,39 +29,42 @@ namespace DxCore.Core.Services
                 CacheBuilder<MapDescriptor, NavigableMesh>.NewBuilder()
                     .WithExpireAfterAccess(TimeSpan.FromMinutes(1))
                     .Build(descriptor => new NavigableMesh(descriptor));
-            finishedResponses_ = new ConcurrentQueue<PathfindingResponse>();
+            FinishedResponses = new ConcurrentQueue<PathfindingResponse>();
         }
 
-        public override void OnAttach()
+        protected override void OnCreate()
         {
-            RegisterMessageHandler<PathFindingRequest>(HandlePathfindingRequest);
-            base.OnAttach();
-        }
-
-        protected override void Update(DxGameTime gameTime)
-        {
-            MapService mapService = DxGame.Instance.Service<MapService>();
-
-            MapDescriptor currentDescriptor = mapService?.Map?.MapDescriptor ?? null;
-            if(!ReferenceEquals(currentDescriptor, null))
+            if(Validate.Check.IsNull(ResponseDispatcher))
             {
-                CurrentMesh = NavigableMeshCache.Get(currentDescriptor);
+                ResponseDispatcher = new PathfindingResponseDispatcher(FinishedResponses);
+                Self.AttachComponent(ResponseDispatcher);
+            }
+
+            Self.MessageHandler.RegisterMessageHandler<PathFindingRequest>(HandlePathfindingRequest);
+            Self.MessageHandler.RegisterMessageHandler<MapRotationNotification>(HandleMapRotationNotification);
+        }
+
+        private void HandleMapRotationNotification(MapRotationNotification mapRotation)
+        {
+            Map.Map map = mapRotation.Map;
+            if(!ReferenceEquals(map?.MapDescriptor, null))
+            {
+                CurrentMesh = NavigableMeshCache.Get(map.MapDescriptor);
             }
             else
             {
                 CurrentMesh = null;
             }
-
-            PathfindingResponse completedPathfinding;
-            while(finishedResponses_.TryDequeue(out completedPathfinding))
-            {
-                completedPathfinding.Emit();
-            }
         }
 
         private void HandlePathfindingRequest(PathFindingRequest pathFindingRequest)
         {
-            RequestPathfinding(CurrentMesh, pathFindingRequest, finishedResponses_);
+            if(Validate.Check.IsNull(CurrentMesh))
+            {
+                Logger.Debug("Ignoring {0}; null mesh :(", pathFindingRequest);
+                return;
+            }
+            RequestPathfinding(CurrentMesh, pathFindingRequest, FinishedResponses);
         }
 
         private static void RequestPathfinding(NavigableMesh mesh, PathFindingRequest request,

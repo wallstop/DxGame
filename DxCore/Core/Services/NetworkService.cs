@@ -3,17 +3,20 @@ using System.Linq;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Components.Network;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services.Components;
 using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Services
 {
-    public class NetworkService : Service
+    public class NetworkService : DxService
     {
         private readonly List<NetworkComponent> connections_ = new List<NetworkComponent>();
         // TODO: Empty checks
         public IEnumerable<AbstractNetworkClient> Clients => connections_.OfType<AbstractNetworkClient>();
 
         public IEnumerable<AbstractNetworkServer> Servers => connections_.OfType<AbstractNetworkServer>();
+
+        private NetworkProcessor NetworkProcessor { get; set; }
 
         // TODO: Get outta here
         public NetworkService WithClient(AbstractNetworkClient client)
@@ -30,6 +33,15 @@ namespace DxCore.Core.Services
             return this;
         }
 
+        protected override void OnCreate()
+        {
+            if(Validate.Check.IsNull(NetworkProcessor))
+            {
+                NetworkProcessor = new NetworkProcessor(connections_);
+                Self.AttachComponent(NetworkProcessor);
+            }
+        }
+
         public void AttachServer(AbstractNetworkServer server)
         {
             WithServer(server);
@@ -38,14 +50,6 @@ namespace DxCore.Core.Services
         public void AttachClient(AbstractNetworkClient client)
         {
             WithClient(client);
-        }
-
-        protected override void Update(DxGameTime gameTime)
-        {
-            foreach(NetworkComponent networkComponent in connections_)
-            {
-                networkComponent.Process(gameTime);
-            }
         }
 
         protected void AddNetworkComponent(NetworkComponent netComponent)

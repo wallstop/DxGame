@@ -108,6 +108,7 @@
     <Compile Include="Core\Messaging\RemoveTileFromMapRequest.cs" />
     <Compile Include="Core\Messaging\ResetMapRequest.cs" />
     <Compile Include="Core\Messaging\SaveMapRequest.cs" />
+    <Compile Include="Core\Services\Components\UiDrawer.cs" />
     <Compile Include="Core\Services\RootUiService.cs" />
     <Compile Include="Input\MouseBindings.cs" />
     <Compile Include="Core\Components\MapGridComponent.cs" />

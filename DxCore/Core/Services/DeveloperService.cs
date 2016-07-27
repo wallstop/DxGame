@@ -1,12 +1,10 @@
-﻿using System.Linq;
-using DxCore.Core.Components.Basic;
-using DxCore.Core.Components.Developer;
+﻿using DxCore.Core.Components.Developer;
 using DxCore.Core.GraphicsWidgets.HUD;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
-using DxCore.Core.Primitives;
+using DxCore.Core.Services.Components;
 using DxCore.Core.Utils;
-using Microsoft.Xna.Framework.Graphics;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Services
 {
@@ -16,16 +14,17 @@ namespace DxCore.Core.Services
         <summary> Simple debug-type Model used to display useful information in-game. Should not be used in production. </summary>
     */
 
-    public class DeveloperService : Service
+    public class DeveloperService : DxService
     {
         private readonly GameElementCollection components_ = new GameElementCollection();
         private readonly DeveloperSwitch devSwitch_;
+
+        private DeveloperComponentHandler DevComponentHandler { get; set; }
 
         public DeveloperMode DeveloperMode => devSwitch_.DeveloperMode;
 
         public DeveloperService()
         {
-            DrawPriority = DrawPriority.HudLayer;
             var fpsTracker = new FpsWidget();
             components_.Add(fpsTracker);
             devSwitch_ = new DeveloperSwitch();
@@ -45,49 +44,13 @@ namespace DxCore.Core.Services
             components_.Add(healthAdjustor);
         }
 
-        public override void Initialize()
+        protected override void OnCreate()
         {
-            foreach(var component in from object element in components_ select element as Component)
+            if(Validate.Check.IsNull(DevComponentHandler))
             {
-                component?.Initialize();
+                DevComponentHandler = new DeveloperComponentHandler(components_, devSwitch_);
+                Self.AttachComponent(DevComponentHandler);
             }
-            devSwitch_.Initialize();
-            base.Initialize();
-        }
-
-        public override void LoadContent()
-        {
-            foreach(var component in from object element in components_ select element as Component)
-            {
-                component?.LoadContent();
-            }
-            devSwitch_.LoadContent();
-            base.LoadContent();
-        }
-
-        protected override void Update(DxGameTime gameTime)
-        {
-            devSwitch_.Process(gameTime);
-            if(devSwitch_.DeveloperMode != DeveloperMode.NotSoOn)
-            {
-                foreach(var updateable in components_.Processables)
-                {
-                    updateable.Process(gameTime);
-                }
-            }
-            base.Update(gameTime);
-        }
-
-        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
-        {
-            if(devSwitch_.DeveloperMode != DeveloperMode.NotSoOn)
-            {
-                foreach(var drawable in components_.Drawables)
-                {
-                    drawable.Draw(spriteBatch, gameTime);
-                }
-            }
-            base.Draw(spriteBatch, gameTime);
         }
     }
 }

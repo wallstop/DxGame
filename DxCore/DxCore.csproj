@@ -150,6 +150,7 @@
     <Compile Include="Core\Components\Advanced\Position\MouseTrackingComponent.cs" />
     <Compile Include="Core\Components\Advanced\Particle\Particle.cs" />
     <Compile Include="Core\Components\Advanced\Physics\PhysicsComponent.cs" />
+    <Compile Include="Core\Messaging\NewPlayerNotification.cs" />
     <Compile Include="Core\Messaging\PathfindingResponse.cs" />
     <Compile Include="Core\Map\NavigableMesh.cs" />
     <Compile Include="Core\Physics\SensorFactory.cs" />
@@ -268,8 +269,13 @@
     <Compile Include="Core\Messaging\Network\UpdateActivePlayer.cs" />
     <Compile Include="Core\Messaging\PathFindingRequest.cs" />
     <Compile Include="Core\Messaging\PhysicsMessage.cs" />
-    <Compile Include="Core\Services\BehaviorService.cs" />
     <Compile Include="Core\Services\CameraService.cs" />
+    <Compile Include="Core\Services\Components\CameraDrawer.cs" />
+    <Compile Include="Core\Services\Components\DeveloperComponentHandler.cs" />
+    <Compile Include="Core\Services\Components\MapDrawer.cs" />
+    <Compile Include="Core\Services\Components\NetworkProcessor.cs" />
+    <Compile Include="Core\Services\Components\PathfindingResponseDispatcher.cs" />
+    <Compile Include="Core\Services\Components\WorldPhysicsUpdater.cs" />
     <Compile Include="Core\Services\SettingsService.cs" />
     <Compile Include="Core\Services\WorldService.cs" />
     <Compile Include="Core\Services\DeveloperService.cs" />
@@ -277,7 +283,7 @@
     <Compile Include="Core\Services\ExperienceService.cs" />
     <Compile Include="Core\Services\InputService.cs" />
     <Compile Include="Core\Services\MapService.cs" />
-    <Compile Include="Core\Services\Service.cs" />
+    <Compile Include="Core\Services\DxService.cs" />
     <Compile Include="Core\Services\NetworkService.cs" />
     <Compile Include="Core\Services\PathfindingService.cs" />
     <Compile Include="Core\Services\PlayerService.cs" />

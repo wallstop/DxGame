@@ -1,25 +1,19 @@
 ﻿using DxCore.Core.Input;
-using DxCore.Core.Primitives;
+using DxCore.Core.Utils.Validate;
 
 namespace DxCore.Core.Services
 {
-    public class InputService : Service
+    public sealed class InputService : DxService
     {
         public InputHandler InputHandler { get; private set; }
 
-        public override void Initialize()
+        protected override void OnCreate()
         {
-            InputHandler = new InputHandler();
-        }
-
-        public void HighSpeedUpdate(DxGameTime gameTime)
-        {
-            // TODO
-        }
-
-        protected override void Update(DxGameTime gameTime)
-        {
-            InputHandler.Process(gameTime);
+            if(Validate.Check.IsNull(InputHandler))
+            {
+                InputHandler = new InputHandler();
+                Self.AttachComponent(InputHandler);
+            }
         }
     }
 }

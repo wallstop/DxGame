@@ -214,6 +214,7 @@ namespace DxCore
             GlobalMessageBus.TypedBroadcast(message);
         }
 
+        [Obsolete("Please use ServiceProvider API instead")]
         public T Service<T>() where T : DxService => ServiceProvider.GetService<T>();
 
         // TODO: Figure out a better way to attach shit to the game

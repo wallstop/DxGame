@@ -88,7 +88,7 @@ namespace Babel.Enemies
             public SimpleSmallBoxWaveSpawnFunction()
             {
                 Id = new UniqueId();
-                MessageHandler = new MessageHandler(Id);
+                MessageHandler = new MessageHandler(Id) {Active = true};
                 MessageHandler.RegisterMessageHandler<NewWaveMessage>(HandleNewWaveMessage);
                 numBoxesSpawnedInWave_ = 0;
             }

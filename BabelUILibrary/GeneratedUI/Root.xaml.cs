@@ -36,6 +36,8 @@ namespace EmptyKeys.UserInterface.Generated {
         
         private MainMenu e_4;
         
+        private Settings e_5;
+        
         public Root() : 
                 base() {
             this.Initialize();
@@ -138,6 +140,14 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_4.Name = "e_4";
             Binding binding_e_4_Visibility = new Binding("MainMenuVisible");
             this.e_4.SetBinding(MainMenu.VisibilityProperty, binding_e_4_Visibility);
+            // e_5 element
+            this.e_5 = new Settings();
+            this.e_3.Children.Add(this.e_5);
+            this.e_5.Name = "e_5";
+            Binding binding_e_5_DataContext = new Binding("SettingsController");
+            this.e_5.SetBinding(Settings.DataContextProperty, binding_e_5_DataContext);
+            Binding binding_e_5_Visibility = new Binding("SettingsMenuVisible");
+            this.e_5.SetBinding(Settings.VisibilityProperty, binding_e_5_Visibility);
             FontManager.Instance.AddFont("Fonts/visitor_tt1_brk", 100F, FontStyle.Regular, "Fonts/visitor_tt1_brk_75_Regular");
         }
         

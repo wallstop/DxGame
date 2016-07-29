@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
+using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
@@ -12,7 +13,7 @@ namespace DxCore.Core.Settings
 {
     [Serializable]
     [DataContract]
-    public class VideoSettings
+    public sealed class VideoSettings
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -27,6 +28,9 @@ namespace DxCore.Core.Settings
                 };
 
         // TODO: We need a way of pub/sub listeners for properties
+
+        [IgnoreDataMember]
+        private List<WeakReference<Action>> SettingsUpdatedListeners { get; set; }
 
         [IgnoreDataMember]
         public DxVector2 ScreenDimensions => new DxVector2(ScreenWidth, ScreenHeight);
@@ -46,7 +50,9 @@ namespace DxCore.Core.Settings
                 }
                 LogPropertyChange(nameof(ScreenHeight), value, screenHeight_);
                 screenHeight_ = value;
+
                 DxGame.Instance.Graphics.PreferredBackBufferHeight = screenHeight_;
+                DxGame.Instance.Graphics.ApplyChanges();
             }
         }
 
@@ -66,6 +72,7 @@ namespace DxCore.Core.Settings
                 LogPropertyChange(nameof(ScreenWidth), value, screenWidth_);
                 screenWidth_ = value;
                 DxGame.Instance.Graphics.PreferredBackBufferWidth = screenWidth_;
+                DxGame.Instance.Graphics.ApplyChanges();
             }
         }
 
@@ -109,6 +116,7 @@ namespace DxCore.Core.Settings
                         throw new InvalidEnumArgumentException($"Unknown {typeof(WindowMode)}: {value}");
                     }
                 }
+                DxGame.Instance.Graphics.ApplyChanges();
             }
         }
 
@@ -147,6 +155,7 @@ namespace DxCore.Core.Settings
                 {
                     DxGame.Instance.Graphics.SynchronizeWithVerticalRetrace = true;
                 }
+                DxGame.Instance.Graphics.ApplyChanges();
             }
         }
 
@@ -162,14 +171,26 @@ namespace DxCore.Core.Settings
         [IgnoreDataMember]
         public IEnumerable<DisplayMode> DisplayModes => displayModes_.ToList();
 
-        private static void LogPropertyNoOp<T>(string propertyName, T value)
+        public VideoSettings()
+        {
+            Initialize();
+        }
+
+        public void RegisterPropertyChangeListener(Action listener)
+        {
+            Validate.Hard.IsNotNull(listener);
+            SettingsUpdatedListeners.Add(new WeakReference<Action>(listener));
+        }
+
+        private void LogPropertyNoOp<T>(string propertyName, T value)
         {
             Logger.Debug("Ignoring no-op setting of {0} ({1})", propertyName, value);
         }
 
-        private static void LogPropertyChange<T>(string propertyName, T newValue, T previous)
+        private void LogPropertyChange<T>(string propertyName, T newValue, T previous)
         {
             Logger.Info("Changing {0} to {1} from {2}", propertyName, newValue, previous);
+            NotifyListenersOfPropertyChange();
         }
 
         public void HandlePreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs eventArgs)
@@ -180,6 +201,34 @@ namespace DxCore.Core.Settings
             */
             displayModes_ = eventArgs.GraphicsDeviceInformation.Adapter.SupportedDisplayModes.ToList();
             Logger.Info("Found supported display modes: {0}", string.Join(",", displayModes_.Select(_ => _.ToString())));
+            NotifyListenersOfPropertyChange();
+        }
+
+        private void NotifyListenersOfPropertyChange()
+        {
+            foreach(WeakReference<Action> maybeListener in SettingsUpdatedListeners.ToArray())
+            {
+                Action listener;
+                if(maybeListener.TryGetTarget(out listener))
+                {
+                    listener();
+                }
+                else
+                {
+                    SettingsUpdatedListeners.Remove(maybeListener);
+                }
+            }
+        }
+
+        [OnDeserializing]
+        private void OnDeserialize(StreamingContext context)
+        {
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            SettingsUpdatedListeners = new List<WeakReference<Action>>();
         }
     }
 }

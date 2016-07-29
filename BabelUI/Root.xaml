@@ -58,6 +58,7 @@
               Grid.Column="1"
               Grid.ColumnSpan="4">
             <BabelUIComponents:MainMenu Visibility="{Binding MainMenuVisible}" />
+            <BabelUIComponents:Settings DataContext="{Binding SettingsController}" Visibility="{Binding SettingsMenuVisible}" />
         </Grid>
     </Grid>
 </ek:UIRoot>

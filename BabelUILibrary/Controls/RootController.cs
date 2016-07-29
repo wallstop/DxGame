@@ -67,12 +67,15 @@ namespace BabelUILibrary.Controls
         private void NotifyMenuTypeChanged()
         {
             bool doesntMatter = !RootVisible;
+            /* Trust me I know what I'm doing */
             SetProperty(ref doesntMatter, RootVisible, nameof(RootVisible));
             doesntMatter = !MainMenuVisible;
             SetProperty(ref doesntMatter, MainMenuVisible, nameof(MainMenuVisible));
             doesntMatter = !SettingsMenuVisible;
             SetProperty(ref doesntMatter, SettingsMenuVisible, nameof(SettingsMenuVisible));
         }
+
+        public SettingsController SettingsController { get; }
 
         private Predicate<object> MainMenuCanExecute { get; }
         private Predicate<object> SettingsCanExecute { get; }
@@ -88,6 +91,8 @@ namespace BabelUILibrary.Controls
             SettingsCommand = new RelayCommand(OnSettings, MainMenuCanExecute);
             QuitCommand = new RelayCommand(OnQuit, MainMenuCanExecute);
             RootVisible = true;
+
+            SettingsController = new SettingsController();
         }
 
         private void OnPlay(object context)
@@ -105,14 +110,8 @@ namespace BabelUILibrary.Controls
 
         private void OnSettings(object context)
         {
-            IMessageBoxService messageBoxService = GetService<IMessageBoxService>();
-            if(ReferenceEquals(messageBoxService, null))
-            {
-                Logger.Warn("Could not find an {0}", typeof(IMessageBoxService));
-                return;
-            }
-
-            messageBoxService.Show("Settings currently not implemented :'(", null, false);
+            SettingsMenuVisible = true;
+            NotifyMenuTypeChanged();
         }
     }
 }

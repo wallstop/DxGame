@@ -179,7 +179,7 @@ namespace DxCore.Core.Settings
         public void RegisterPropertyChangeListener(Action listener)
         {
             Validate.Hard.IsNotNull(listener);
-            SettingsUpdatedListeners.Add(new WeakReference<Action>(listener));
+            SettingsUpdatedListeners.Add(new WeakReference<Action>(listener, true));
         }
 
         private void LogPropertyNoOp<T>(string propertyName, T value)

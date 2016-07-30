@@ -7,28 +7,30 @@ using Microsoft.Xna.Framework;
 
 namespace DxGame
 {
-    public class BabelGame : DxCore.DxGame
+    public sealed class BabelGame : DxCore.DxGame
     {
-        private int NativeScreenWidth { get; set; }
-        private int NativeScreenHeight { get; set; }
+        private int OriginalScreenHeight { get; set; }
+        private int OriginalScreenWidth { get; set; }
 
         public BabelGame()
         {
-            Graphics.DeviceCreated += HandleDeviceCreated;
-            Graphics.PreparingDeviceSettings += HandlePreparingDeviceSettings;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            /* One time setup here */
+            Graphics.DeviceCreated += HandleDeviceCreated;
+            Graphics.PreparingDeviceSettings += HandlePreparingDeviceSettings;
         }
 
         private void HandleDeviceCreated(object sender, EventArgs eventArgs)
         {
-            Engine engine = new MonoGameEngine(GraphicsDevice, NativeScreenWidth, NativeScreenHeight);
+            new MonoGameEngine(GraphicsDevice, OriginalScreenWidth, OriginalScreenHeight);
         }
 
         private void HandlePreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs eventArgs)
         {
-            NativeScreenWidth = eventArgs.GraphicsDeviceInformation.PresentationParameters.BackBufferWidth;
-            NativeScreenHeight = eventArgs.GraphicsDeviceInformation.PresentationParameters.BackBufferHeight;
+            OriginalScreenWidth = Graphics.PreferredBackBufferWidth;
+            OriginalScreenHeight = Graphics.PreferredBackBufferHeight;
         }
 
         protected override void Initialize()

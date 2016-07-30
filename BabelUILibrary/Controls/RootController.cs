@@ -15,7 +15,7 @@ namespace BabelUILibrary.Controls
         Settings
     }
 
-    public class RootController : ViewModelBase
+    public sealed class RootController : ViewModelBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -78,7 +78,6 @@ namespace BabelUILibrary.Controls
         public SettingsController SettingsController { get; }
 
         private Predicate<object> MainMenuCanExecute { get; }
-        private Predicate<object> SettingsCanExecute { get; }
 
         public ICommand SettingsCommand { get; }
 
@@ -86,13 +85,22 @@ namespace BabelUILibrary.Controls
         {
             CurrentMenu = MenuType.MainMenu;
             MainMenuCanExecute = _ => CurrentMenu == MenuType.MainMenu;
-            SettingsCanExecute = _ => CurrentMenu == MenuType.Settings;
             PlayCommand = new RelayCommand(OnPlay, MainMenuCanExecute);
             SettingsCommand = new RelayCommand(OnSettings, MainMenuCanExecute);
             QuitCommand = new RelayCommand(OnQuit, MainMenuCanExecute);
             RootVisible = true;
 
-            SettingsController = new SettingsController();
+            SettingsController = new SettingsController(settingsEnabled =>
+            {
+                if(settingsEnabled)
+                {
+                    SettingsMenuVisible = true;
+                }
+                else
+                {
+                    MainMenuVisible = true;
+                }
+            });
         }
 
         private void OnPlay(object context)

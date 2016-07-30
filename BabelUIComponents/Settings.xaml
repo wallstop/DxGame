@@ -8,8 +8,65 @@
              d:DesignWidth="300"
              mc:Ignorable="d">
     <Grid>
-        <ComboBox Name="Resolution"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock VerticalAlignment="Center" Text="Resolution" />
+        <ComboBox Grid.Row="0"
+                  Grid.Column="1"
+                  Grid.ColumnSpan="2"
+                  Margin="2"
+                  VerticalAlignment="Center"
                   ItemsSource="{Binding AvailableResolutions}"
                   SelectedIndex="{Binding SelectedResolutionIndex}" />
+        <TextBlock Grid.Row="0"
+                   Grid.Column="3"
+                   VerticalAlignment="Center"
+                   Text="VSync" />
+        <CheckBox Grid.Row="0"
+                  Grid.Column="4"
+                  VerticalAlignment="Center"
+                  IsChecked="{Binding VSync}" />
+
+        <TextBlock Grid.Row="1"
+                   Grid.Column="0"
+                   VerticalAlignment="Center"
+                   Text="WindowMode" />
+        <ComboBox Grid.Row="1"
+                  Grid.Column="1"
+                  Grid.ColumnSpan="2"
+                  Margin="2"
+                  VerticalAlignment="Center"
+                  ItemsSource="{Binding AvailableWindowModes}"
+                  SelectedIndex="{Binding SelectedWindowModeIndex}" />
+
+        <Button Grid.Row="5"
+                Grid.Column="2"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Command="{Binding SaveCommand}"
+                Content="Apply" />
+
+        <Button Grid.Row="5"
+                Grid.Column="3"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Command="{Binding BackCommand}"
+                Content="Back" />
+
     </Grid>
 </UserControl>

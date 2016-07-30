@@ -161,9 +161,6 @@ namespace DxCore
             TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0 / TargetFps);
             IsFixedTimeStep = false;
 
-            // LOL VSYNC
-            Graphics.SynchronizeWithVerticalRetrace = false;
-
             DxGameElements = new GameElementCollection();
             Content.RootDirectory = "Content";
 

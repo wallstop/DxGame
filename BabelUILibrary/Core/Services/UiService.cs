@@ -6,7 +6,7 @@ using EmptyKeys.UserInterface.Generated;
 
 namespace BabelUILibrary.Core.Services
 {
-    public class UiService : DxService
+    public sealed class UiService : DxService
     {
         public Root UI { get; }
 

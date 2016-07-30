@@ -23,7 +23,8 @@ namespace DxCore.Core.Services
 
         public void Create()
         {
-            DxGame.Instance.ServiceProvider.Register(GetType(), this);
+            dynamic serviceInstance = this;
+            DxGame.Instance.ServiceProvider.Register(serviceInstance);
             OnCreate();
             Self.Create();
         }
@@ -32,7 +33,8 @@ namespace DxCore.Core.Services
 
         public void Remove()
         {
-            DxGame.Instance.ServiceProvider.Deregister(this);
+            dynamic serviceInstance = this;
+            DxGame.Instance.ServiceProvider.Deregister(serviceInstance);
             OnRemove();
             Self.Remove();
         }

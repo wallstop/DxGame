@@ -108,6 +108,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -117,10 +118,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\RootController.cs" />
+    <Compile Include="Controls\SettingsController.cs" />
+    <Compile Include="Core\Resolution.cs" />
     <Compile Include="Core\Services\Components\UiDrawer.cs" />
     <Compile Include="Core\Services\UiService.cs" />
+    <Compile Include="GeneratedUI\MainMenu.xaml.cs" />
     <Compile Include="GeneratedUI\ResourceBindings.xaml.cs" />
     <Compile Include="GeneratedUI\Root.xaml.cs" />
+    <Compile Include="GeneratedUI\Settings.xaml.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

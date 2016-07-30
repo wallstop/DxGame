@@ -43,18 +43,22 @@ namespace BabelUILibrary.Core.Services.Components
             {
                 RefreshEngine = false;
                 Logger.Debug(DxGame.Instance.GraphicsDevice.Adapter.CurrentDisplayMode);
-                if(DxGame.Instance.GameSettings.VideoSettings.WindowMode == WindowMode.Fullscreen)
+                int width;
+                int height;
+                int uiWidth = DxGame.Instance.GameSettings.VideoSettings.ScreenWidth;
+                int uiHeight = DxGame.Instance.GameSettings.VideoSettings.ScreenHeight;
+                if(DxGame.Instance.GameSettings.VideoSettings.WindowMode == WindowMode.Fullscreen || DxGame.Instance.GameSettings.VideoSettings.WindowMode == WindowMode.Borderless)
                 {
-                    new MonoGameEngine(DxGame.Instance.GraphicsDevice,
-                        DxGame.Instance.GraphicsDevice.Adapter.CurrentDisplayMode.Width,
-                        DxGame.Instance.GraphicsDevice.Adapter.CurrentDisplayMode.Height);
+                    width = DxGame.Instance.GraphicsDevice.Adapter.CurrentDisplayMode.Width;
+                    height = DxGame.Instance.GraphicsDevice.Adapter.CurrentDisplayMode.Height;
                 }
                 else
                 {
-                    new MonoGameEngine(DxGame.Instance.GraphicsDevice,
-                        DxGame.Instance.GameSettings.VideoSettings.ScreenWidth,
-                        DxGame.Instance.GameSettings.VideoSettings.ScreenHeight);
+                    width = uiWidth;
+                    height = uiHeight;
                 }
+                new MonoGameEngine(DxGame.Instance.GraphicsDevice, width, height);
+                UI.Resize(uiWidth, uiHeight);
             }
             UI.Draw(EmptyKeysGameTime(gameTime));
         }

@@ -96,7 +96,7 @@ namespace DxCore.Core.Settings
                     case WindowMode.Borderless:
                     {
                         DxGame.Instance.Window.IsBorderless = true;
-                        DxGame.Instance.Graphics.IsFullScreen = false;
+                        DxGame.Instance.Graphics.IsFullScreen = true;
                         break;
                     }
                     case WindowMode.Fullscreen:

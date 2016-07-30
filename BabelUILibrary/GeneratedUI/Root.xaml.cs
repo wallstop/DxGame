@@ -108,6 +108,7 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_0.Children.Add(this.e_1);
             this.e_1.Name = "e_1";
             this.e_1.Opacity = 0.7F;
+            this.e_1.Stretch = Stretch.Uniform;
             Grid.SetColumnSpan(this.e_1, 6);
             Grid.SetRowSpan(this.e_1, 6);
             this.e_1.SetResourceReference(Image.SourceProperty, "BackgroundMainMenu");

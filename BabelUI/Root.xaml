@@ -38,10 +38,13 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+
         <Image Grid.RowSpan="6"
                Grid.ColumnSpan="6"
                Opacity="0.7"
-               Source="{DynamicResource BackgroundMainMenu}" />
+               Source="{DynamicResource BackgroundMainMenu}"
+               Stretch="Uniform"
+               StretchDirection="Both" />
         <TextBlock Grid.Row="0"
                    Grid.RowSpan="2"
                    Grid.Column="1"

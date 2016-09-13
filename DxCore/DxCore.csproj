@@ -120,8 +120,19 @@
     <Compile Include="Core\Animation\AnimationFactory.cs" />
     <Compile Include="Core\Animation\AnimationFrameOffset.cs" />
     <Compile Include="Core\Animation\FrameDescriptor.cs" />
+    <Compile Include="Core\Behaviors\Development\NaiveChaseAnyPlayerBehavior.cs" />
+    <Compile Include="Core\Behaviors\Automatic\NullBehavior.cs" />
+    <Compile Include="Core\Behaviors\Behavior.cs" />
+    <Compile Include="Core\Behaviors\Goals\DoNothingGoal.cs" />
+    <Compile Include="Core\Behaviors\Goals\GoalStatus.cs" />
+    <Compile Include="Core\Behaviors\Goals\Goal.cs" />
+    <Compile Include="Core\Behaviors\Goals\MoveToPositionGoal.cs" />
+    <Compile Include="Core\Behaviors\Score.cs" />
     <Compile Include="Core\Components\Advanced\Animation\AnimatedComponent.cs" />
-    <Compile Include="Core\Components\Advanced\Behavior\BehaviorComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Behaviors\AffinityComponent.cs" />
+    <Compile Include="Core\Behaviors\Attributes.cs" />
+    <Compile Include="Core\Components\Advanced\Behaviors\BehaviorComponent.cs" />
+    <Compile Include="Core\Services\Components\GoalAssigner.cs" />
     <Compile Include="Core\Components\Advanced\Collision\CollisionDestructibleComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\AbstractCommandComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\EntityMovementCommandResponder.cs" />
@@ -269,6 +280,7 @@
     <Compile Include="Core\Messaging\Network\UpdateActivePlayer.cs" />
     <Compile Include="Core\Messaging\PathFindingRequest.cs" />
     <Compile Include="Core\Messaging\PhysicsMessage.cs" />
+    <Compile Include="Core\Services\BehaviorService.cs" />
     <Compile Include="Core\Services\CameraService.cs" />
     <Compile Include="Core\Services\Components\CameraDrawer.cs" />
     <Compile Include="Core\Services\Components\DeveloperComponentHandler.cs" />
@@ -330,6 +342,7 @@
     <Compile Include="Core\State\Transition.cs" />
     <Compile Include="Core\Team.cs" />
     <Compile Include="Core\UniqueId.cs" />
+    <Compile Include="Core\Utils\BehaviorUtils.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\CacheBuilder.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\FastCacheKey.cs" />
     <Compile Include="Core\Utils\Cache\Advanced\ICache.cs" />

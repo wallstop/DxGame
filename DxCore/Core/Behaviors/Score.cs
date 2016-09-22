@@ -26,7 +26,7 @@ namespace DXGame.Core.Behaviors
         public static Score Max => MAX;
 
         [DataMember]
-        private float Value { get; }
+        private float Value { get; set; }
 
         public Score(float score)
         {

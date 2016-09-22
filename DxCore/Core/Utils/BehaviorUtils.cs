@@ -2,9 +2,9 @@
 
 namespace DxCore.Core.Utils
 {
-    public class BehaviorUtils
+    public static class BehaviorUtils
     {
-        public static AffinityComponent GetAffinityComponent(BehaviorComponent behaver)
+        public static AffinityComponent AffinityComponent(this BehaviorComponent behaver)
         {
             AffinityComponent affinityComponent = behaver.Parent?.ComponentOfType<AffinityComponent>();
             Validate.Validate.Hard.IsNotNull(affinityComponent, $"Could not acquire an affinity component for {behaver}!");

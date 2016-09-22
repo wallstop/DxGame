@@ -40,7 +40,7 @@ namespace DxCore.Core.Services
                 Self.AttachComponent(ResponseDispatcher);
             }
 
-            Self.MessageHandler.RegisterMessageHandler<PathFindingRequest>(HandlePathfindingRequest);
+            Self.MessageHandler.RegisterMessageHandler<PathfindingRequest>(HandlePathfindingRequest);
             Self.MessageHandler.RegisterMessageHandler<MapRotationNotification>(HandleMapRotationNotification);
         }
 
@@ -57,7 +57,7 @@ namespace DxCore.Core.Services
             }
         }
 
-        private void HandlePathfindingRequest(PathFindingRequest pathFindingRequest)
+        private void HandlePathfindingRequest(PathfindingRequest pathFindingRequest)
         {
             if(Validate.Check.IsNull(CurrentMesh))
             {
@@ -67,7 +67,7 @@ namespace DxCore.Core.Services
             RequestPathfinding(CurrentMesh, pathFindingRequest, FinishedResponses);
         }
 
-        private static void RequestPathfinding(NavigableMesh mesh, PathFindingRequest request,
+        private static void RequestPathfinding(NavigableMesh mesh, PathfindingRequest request,
             ConcurrentQueue<PathfindingResponse> finishedResponses)
         {
             Task<List<NavigableMeshNode>> futurePathfinding =

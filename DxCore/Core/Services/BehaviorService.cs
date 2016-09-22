@@ -1,5 +1,6 @@
 ﻿using DxCore.Core.Components.Advanced.Behaviors;
 using DXGame.Core.Behaviors;
+using DXGame.Core.Behaviors.Development;
 using NLog;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,11 @@ namespace DxCore.Core.Services
             IEnumerable<Behavior> automaticBehaviors = InitializeFromNamespace<Behavior>(AUTOMATIC_BEHAVIOR_NAMESPACE);
             // TODO: This printout is nonsense; expose the class names of the behaviors loaded plox? 
             Logger.Info($"Automatically considering the following {automaticBehaviors.Count()} behaviors: {automaticBehaviors}");
-            Self.AttachComponent(new GoalAssigner(automaticBehaviors));
+
+            // TODO: Fix this
+            IEnumerable<Behavior> manualBehaviors = new List<Behavior> { new NaiveChaseAnyPlayerBehavior() };
+            Logger.Info($"Just kidding; considering the following {manualBehaviors.Count()} behaviors: {manualBehaviors}");
+            Self.AttachComponent(new GoalAssigner(manualBehaviors));
         }
 
         //? Useful utility elsewhere? 

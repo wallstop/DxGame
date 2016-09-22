@@ -1,20 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DXGame.Core.Behaviors.Goals;
 using DXGame.Core.Components.Advanced.Behaviors;
 using DxCore.Core.Utils;
 using DxCore.Core.Messaging;
-/*
+using DxCore;
+using System.Linq;
+using DxCore.Core.Services;
+using DxCore.Core;
+
 namespace DXGame.Core.Behaviors.Development
 {
     class NaiveChaseAnyPlayerBehavior : Behavior
     {
-        public override Score GetFitnessFor(BehaviorComponent behaver, Dictionary<BehaviorComponent, Behavior> currentAssignments)
+        public Score FitnessFor(BehaviorComponent behaver, Dictionary<BehaviorComponent, Behavior> currentAssignments)
         {
             // Fitness scales directly with movement speed
-            AffinityComponent affinityComponent = BehaviorUtils.GetAffinityComponent(behaver);
+            AffinityComponent affinityComponent = behaver.AffinityComponent();
             //? 'Movement' vs. Move + cardinal directions? 
-            Optional<Score> maybeMovementSpeedScore = affinityComponent.AffinityFor(Messaging.Commandment.Movement, Attribute.Speed);
+            Optional<Score> maybeMovementSpeedScore = affinityComponent.AffinityFor(Commandment.Movement, Attribute.Speed);
             return maybeMovementSpeedScore.HasValue ? maybeMovementSpeedScore.Value : Score.Min;
         }
 
@@ -24,9 +27,9 @@ namespace DXGame.Core.Behaviors.Development
         /// <param name="behaver"></param>
         /// <param name="currentAssignments"></param>
         /// <returns></returns>
-        public override bool IsSatisfiedFor(BehaviorComponent behaver, Dictionary<BehaviorComponent, Behavior> currentAssignments)
+        public bool SatisfiedFor(BehaviorComponent behaver, Dictionary<BehaviorComponent, Behavior> currentAssignments)
         {
-            AffinityComponent affinityComponent = BehaviorUtils.GetAffinityComponent(behaver);
+            AffinityComponent affinityComponent = behaver.AffinityComponent();
             Optional<Score> maybeMovementSpeedScore = affinityComponent.AffinityFor(Commandment.Movement, Attribute.Speed);
             if (maybeMovementSpeedScore.HasValue)
             {
@@ -38,11 +41,19 @@ namespace DXGame.Core.Behaviors.Development
             }
         }
 
-        public override Goal ResolveGoalFor(BehaviorComponent behaver)
+        public Goal ResolveGoalFor(BehaviorComponent behaver)
         {
-            // TODO: Get player component, return a MoveToPositionGoal with the player position
-            throw new NotImplementedException();
+            // TODO: Obsolete; how does 'PlayerService' work? 
+            PlayerService playerService = DxGame.Instance.Service<PlayerService>();
+            // Chase *any* player, hence the name
+            Player player = playerService.Players.First();
+
+            return new MoveToPositionGoal(player.Position.Center);
+        }
+
+        public override string ToString()
+        {
+            return "NaiveChaseAnyPlayerBehavior";
         }
     }
 }
-*/

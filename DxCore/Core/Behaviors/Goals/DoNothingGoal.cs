@@ -10,8 +10,9 @@ namespace DxCore.Core.Behaviors.Goals
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public DoNothingGoal() : base()
+        public DoNothingGoal()
         {
+            // You did it!  Immediately complete this goal so it can be replaced
             Status = GoalStatus.Successful;
         }
 

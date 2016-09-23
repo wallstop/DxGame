@@ -128,6 +128,11 @@ namespace DxCore.Core.Utils
         {
             return (float)(Math.Sign(value) * Math.Sqrt(Math.Abs(value)));
         }
+
+        public static float Delta(float x, float y)
+        {
+            return Math.Abs(x - y);
+        }
     }
 }
  

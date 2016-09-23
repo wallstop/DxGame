@@ -7,7 +7,7 @@ namespace DxCore.Core.Messaging
 {
     [Serializable]
     [DataContract]
-    public sealed class PathFindingRequest : Message
+    public sealed class PathfindingRequest : Message
     {
         [DataMember]
         public DxVector2 Start { get; private set; }
@@ -18,7 +18,7 @@ namespace DxCore.Core.Messaging
         [DataMember]
         public UniqueId Requester { get; private set; }
 
-        public PathFindingRequest(DxVector2 start, DxVector2 goal, UniqueId requester)
+        public PathfindingRequest(DxVector2 start, DxVector2 goal, UniqueId requester)
         {
             Start = start;
             Goal = goal;

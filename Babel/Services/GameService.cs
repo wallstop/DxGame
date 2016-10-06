@@ -40,6 +40,7 @@ namespace Babel.Services
 
             new ExperienceService().Create();
             new PlayerService().Create();
+            new BehaviorService().Create();
 
             if(DxGame.Instance.UpdateMode == UpdateMode.Active)
             {

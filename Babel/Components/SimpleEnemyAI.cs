@@ -54,7 +54,7 @@ namespace Babel.Components
 
 
 
-            PathFindingRequest pathfindingRequest = new PathFindingRequest(Positional.WorldCoordinates, player.Position.Center, Parent?.Id);
+            PathfindingRequest pathfindingRequest = new PathfindingRequest(Positional.WorldCoordinates, player.Position.Center, Parent?.Id);
             pathfindingRequest.Emit();
             timeSinceLastMovementRequest_ = TimeSpan.Zero;
         }

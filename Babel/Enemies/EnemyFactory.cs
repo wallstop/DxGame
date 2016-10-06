@@ -15,6 +15,9 @@ using DxCore.Core.Experience;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.State;
+using DXGame.Core.Components.Advanced.Behaviors;
+using DxCore.Core.Messaging;
+using DXGame.Core.Behaviors;
 
 namespace Babel.Enemies
 {
@@ -64,17 +67,18 @@ namespace Babel.Enemies
 
             var deathExploder = new DeathEffectComponent(DeathEffectComponent.SimpleEnemyBloodParticles);
 
+            var affinityComponent = AffinityComponent.Builder().WithAffinity(Commandment.Movement, Attribute.Speed, 0.75f).Build();
+
+            var behaviorComponent = new BehaviorComponent();
+
             var enemyObject =
                 GameObject.Builder()
                     .WithComponents(enemyPhysics, enemyProperties, floatingHealthBar, deathExploder, damageComponent,
-                        teamComponent, pathfinding, platformDropper, entityTypeComponent, experienceDropper, itemDropper)
+                        teamComponent, pathfinding, platformDropper, entityTypeComponent, experienceDropper, 
+                        itemDropper, affinityComponent, behaviorComponent)
                     .Build();
             // Create a state machine for the enemy in question
-            // Horrifically complex; weep, gnash teeth
             StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(enemyObject, entityName);
-            // Build and attach AI
-            var simpleAi = SimpleEnemyAI.Builder().WithPositional(enemyPhysics).Build();
-            enemyObject.AttachComponent(simpleAi);
 
             return enemyObject;
         }
@@ -110,17 +114,19 @@ namespace Babel.Enemies
 
             var deathExploder = new DeathEffectComponent(DeathEffectComponent.SimpleEnemyBloodParticles);
 
+            var affinityComponent = AffinityComponent.Builder().WithAffinity(Commandment.Movement, Attribute.Speed, 0.25f).Build();
+
+            var behaviorComponent = new BehaviorComponent();
+
             var enemyObject =
                 GameObject.Builder()
                     .WithComponents(enemyPhysics, enemyProperties, floatingHealthBar, deathExploder, damageComponent,
-                        teamComponent, pathfinding, platformDropper, entityTypeComponent, experienceDropper)
+                        teamComponent, pathfinding, platformDropper, entityTypeComponent, experienceDropper,
+                        affinityComponent, behaviorComponent)
                     .Build();
             // Create a state machine for the enemy in question
             // Horrifically complex; weep, gnash teeth
             StateMachineFactory.BuildAndAttachBasicMovementStateMachineAndAnimations(enemyObject, entityName);
-            // Build and attach AI
-            var simpleAi = SimpleEnemyAI.Builder().WithPositional(enemyPhysics).Build();
-            enemyObject.AttachComponent(simpleAi);
 
             return enemyObject;
         }

@@ -200,6 +200,7 @@ namespace DxCore.Core.Settings
                 Otherwise, we have to rely on the properties above.
             */
             displayModes_ = eventArgs.GraphicsDeviceInformation.Adapter.SupportedDisplayModes.ToList();
+            /* TODO: Inject initialization of properties here */
             Logger.Info("Found supported display modes: {0}", string.Join(",", displayModes_.Select(_ => _.ToString())));
             NotifyListenersOfPropertyChange();
         }

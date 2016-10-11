@@ -27,9 +27,10 @@ namespace BabelUILibrary.Core.Services.Components
             DrawPriority = DrawPriority.MenuLayer;
             Validate.Hard.IsNotNull(ui);
             UI = ui;
-            
+
             GraphicsUpdatedDelegate = RegisterMonogameEngine;
             DxGame.Instance.GameSettings.VideoSettings.RegisterPropertyChangeListener(GraphicsUpdatedDelegate);
+            RefreshEngine = true;
         }
 
         private void RegisterMonogameEngine()
@@ -47,7 +48,8 @@ namespace BabelUILibrary.Core.Services.Components
                 int height;
                 int uiWidth = DxGame.Instance.GameSettings.VideoSettings.ScreenWidth;
                 int uiHeight = DxGame.Instance.GameSettings.VideoSettings.ScreenHeight;
-                if(DxGame.Instance.GameSettings.VideoSettings.WindowMode == WindowMode.Fullscreen || DxGame.Instance.GameSettings.VideoSettings.WindowMode == WindowMode.Borderless)
+                if(DxGame.Instance.GameSettings.VideoSettings.WindowMode == WindowMode.Fullscreen ||
+                   DxGame.Instance.GameSettings.VideoSettings.WindowMode == WindowMode.Borderless)
                 {
                     width = DxGame.Instance.GraphicsDevice.Adapter.CurrentDisplayMode.Width;
                     height = DxGame.Instance.GraphicsDevice.Adapter.CurrentDisplayMode.Height;

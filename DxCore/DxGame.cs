@@ -154,6 +154,7 @@ namespace DxCore
             GameSettings.Load();
 
             Graphics.PreparingDeviceSettings += GameSettings.VideoSettings.HandlePreparingDeviceSettings;
+            Graphics.DeviceCreated += GameSettings.VideoSettings.HandleDeviceCreated;
 
             Controls = new Controls();
             Controls.Load();

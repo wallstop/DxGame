@@ -96,19 +96,39 @@ namespace DxCore.Core.Settings
                     case WindowMode.Borderless:
                     {
                         DxGame.Instance.Window.IsBorderless = true;
-                        DxGame.Instance.Graphics.IsFullScreen = true;
+                        DxGame.Instance.Graphics.IsFullScreen = false;
+                        if (DxGame.Instance.GraphicsDevice != null)
+                        {
+                            DxGame.Instance.Graphics.PreferredBackBufferWidth = DxGame.Instance.GraphicsDevice.DisplayMode.Width;
+                            DxGame.Instance.Graphics.PreferredBackBufferHeight = DxGame.Instance.GraphicsDevice.DisplayMode.Height;
+                        }
+                        DxGame.Instance.Graphics.ApplyChanges();
+                        DxGame.Instance.Window.Position = Point.Zero;
                         break;
                     }
                     case WindowMode.Fullscreen:
                     {
                         DxGame.Instance.Window.IsBorderless = false;
                         DxGame.Instance.Graphics.IsFullScreen = true;
+                        DxGame.Instance.Graphics.ApplyChanges();
                         break;
                     }
                     case WindowMode.Windowed:
                     {
                         DxGame.Instance.Window.IsBorderless = false;
                         DxGame.Instance.Graphics.IsFullScreen = false;
+                        Point position = DxGame.Instance.Window.Position;
+                        if (DxGame.Instance.GraphicsDevice != null)
+                        {
+                            //Intended to "center" the window after reverting from fullscreen or borderless, but unfortunately doesn't take the Windows
+                            //menu bar into account so the height will be x pixels too low where x is the menu bar height.
+                            position.X = (DxGame.Instance.GraphicsDevice.DisplayMode.Width - ScreenWidth) / 2;
+                            position.Y = (DxGame.Instance.GraphicsDevice.DisplayMode.Height - ScreenHeight) / 2;
+                            DxGame.Instance.Graphics.PreferredBackBufferWidth = ScreenWidth;
+                            DxGame.Instance.Graphics.PreferredBackBufferHeight = ScreenHeight;
+                        }
+                        DxGame.Instance.Graphics.ApplyChanges();
+                        DxGame.Instance.Window.Position = position;
                         break;
                     }
                     default:
@@ -116,7 +136,8 @@ namespace DxCore.Core.Settings
                         throw new InvalidEnumArgumentException($"Unknown {typeof(WindowMode)}: {value}");
                     }
                 }
-                DxGame.Instance.Graphics.ApplyChanges();
+                //DxGame.Instance.Graphics.ApplyChanges();
+                LogPropertyNoOp(nameof(DxGame.Instance.Window.Position), DxGame.Instance.Window.Position);
             }
         }
 
@@ -191,6 +212,17 @@ namespace DxCore.Core.Settings
         {
             Logger.Info("Changing {0} to {1} from {2}", propertyName, newValue, previous);
             NotifyListenersOfPropertyChange();
+        }
+
+        public void HandleDeviceCreated(object sender, EventArgs eventArgs)
+        {
+            if (windowMode_ == WindowMode.Borderless)
+            {
+                DxGame.Instance.Graphics.PreferredBackBufferWidth = DxGame.Instance.GraphicsDevice.DisplayMode.Width;
+                DxGame.Instance.Graphics.PreferredBackBufferHeight = DxGame.Instance.GraphicsDevice.DisplayMode.Height;
+                DxGame.Instance.Graphics.ApplyChanges();
+                DxGame.Instance.Window.Position = Point.Zero;
+            }
         }
 
         public void HandlePreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs eventArgs)

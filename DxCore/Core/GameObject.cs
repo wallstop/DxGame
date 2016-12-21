@@ -34,31 +34,40 @@ namespace DxCore.Core
         [DataMember] private List<Component> components_;
         [DataMember] private UniqueId id_ = new UniqueId();
 
+        public IEnumerable<Component> Components => components_;
+
         [DataMember]
         public bool Created { get; private set; }
 
         [DataMember]
-        public bool Removed { get; private set; }
-
-        public IEnumerable<Component> Components => components_;
+        public MessageHandler MessageHandler { get; private set; }
 
         [DataMember]
-        public MessageHandler MessageHandler { get; private set; }
+        public bool Removed { get; private set; }
 
         private GameObject(List<Component> components)
         {
             components_ = new List<Component>();
-            MessageHandler = new MessageHandler(Id);
-            MessageHandler.Active = false;
+            MessageHandler = new MessageHandler(Id) {Active = false};
             foreach(Component component in components)
             {
                 AttachComponent(component);
             }
         }
 
+        public void Create()
+        {
+            if(!Created)
+            {
+                EntityCreatedMessage entityCreated = new EntityCreatedMessage(this);
+                entityCreated.Emit();
+            }
+            Created = true;
+        }
+
         public bool Equals(GameObject other)
         {
-            return components_.Count == other.components_.Count &&
+            return (components_.Count == other?.components_.Count) &&
                    new HashSet<Component>(components_).SetEquals(other.components_);
         }
 
@@ -70,6 +79,23 @@ namespace DxCore.Core
         public int CompareTo(IProcessable other)
         {
             return Processable.DefaultComparer.Compare(this, other);
+        }
+
+        public void Remove()
+        {
+            if(!Removed)
+            {
+                foreach(Component component in components_)
+                {
+                    EntityRemovedMessage componentRemoved = new EntityRemovedMessage(component);
+                    componentRemoved.Emit();
+                }
+
+                EntityRemovedMessage gameObjectRemoved = new EntityRemovedMessage(this);
+                gameObjectRemoved.Emit();
+                MessageHandler.Deregister();
+            }
+            Removed = true;
         }
 
         public void AttachComponent(Component component)
@@ -97,27 +123,14 @@ namespace DxCore.Core
             components_.Add(component);
         }
 
-        /**
-            <summary>
-                Removes all Components of the provided Type. 
-
-                This is particularly useful for simulation purposes in pathfinding where you'd like to copy and 
-                simulate the object, but not have the copy itself attempt to pathfind and simulate.
-            </summary>
-        */
-
-        public void RemoveComponents<T>() where T : Component
+        public static GameObjectBuilder Builder()
         {
-            components_.RemoveAll(component => component is T);
+            return new GameObjectBuilder();
         }
 
-        public void RemoveComponents(Component component)
+        public T ComponentOfType<T>() where T : Component
         {
-            if(components_.Contains(component))
-            {
-                components_.Remove(component);
-                component.Parent = null;
-            }
+            return ComponentsOfType<T>().FirstOrDefault();
         }
 
         /**
@@ -137,19 +150,55 @@ namespace DxCore.Core
             return components_.OfType<T>();
         }
 
-        public T ComponentOfType<T>() where T : Component
-        {
-            return ComponentsOfType<T>().FirstOrDefault();
-        }
-
-        public static GameObjectBuilder Builder()
-        {
-            return new GameObjectBuilder();
-        }
-
         public static GameObject From(Component component)
         {
             return Builder().WithComponent(component).Build();
+        }
+
+        /**
+            <summary>
+                Removes all Components of the provided Type. 
+
+                This is particularly useful for simulation purposes in pathfinding where you'd like to copy and 
+                simulate the object, but not have the copy itself attempt to pathfind and simulate.
+            </summary>
+        */
+
+        public void RemoveComponents<T>() where T : Component
+        {
+            components_.RemoveAll(component => component is T);
+        }
+
+        public void RemoveComponents(Component component)
+        {
+            bool removalSuccess = components_.Remove(component);
+            if(removalSuccess)
+            {
+                component.Parent = null;
+            }
+        }
+
+        public void Reset()
+        {
+            Remove();
+            Removed = false;
+            Created = false;
+            MessageHandler.Active = false;
+            foreach(Component component in components_)
+            {
+                component.OnDetach();
+                component.Parent = this;
+                component.OnAttach();
+            }
+        }
+
+        [OnDeserialized]
+        private void InitializeComponents(StreamingContext streamingContext)
+        {
+            foreach(Component component in components_)
+            {
+                component.DeSerialize();
+            }
         }
 
         public class GameObjectBuilder : IBuilder<GameObject>
@@ -168,6 +217,15 @@ namespace DxCore.Core
                 return createdObject;
             }
 
+            public GameObjectBuilder WithComponent(Component component)
+            {
+                Validate.Hard.IsNotNullOrDefault(component, () => this.GetFormattedNullOrDefaultMessage(component));
+                Validate.Hard.IsFalse(components_.Contains(component),
+                    () => $"Cannot create a {GetType()} with the same component {component} more than once");
+                components_.Add(component);
+                return this;
+            }
+
             public GameObjectBuilder WithComponents(params Component[] components)
             {
                 return WithComponents(components.ToList());
@@ -183,65 +241,6 @@ namespace DxCore.Core
                 }
                 return this;
             }
-
-            public GameObjectBuilder WithComponent(Component component)
-            {
-                Validate.Hard.IsNotNullOrDefault(component, () => this.GetFormattedNullOrDefaultMessage(component));
-                Validate.Hard.IsFalse(components_.Contains(component),
-                    () => $"Cannot create a {GetType()} with the same component {component} more than once");
-                components_.Add(component);
-                return this;
-            }
-        }
-
-        [OnDeserialized]
-        private void InitializeComponents(StreamingContext streamingContext)
-        {
-            foreach(Component component in components_)
-            {
-                component.DeSerialize();
-            }
-        }
-
-        public void Remove()
-        {
-            if(!Removed)
-            {
-                foreach(Component component in components_)
-                {
-                    EntityRemovedMessage componentRemoved = new EntityRemovedMessage(component);
-                    componentRemoved.Emit();
-                }
-
-                EntityRemovedMessage gameObjectRemoved = new EntityRemovedMessage(this);
-                gameObjectRemoved.Emit();
-                MessageHandler.Deregister();
-            }
-            Removed = true;
-        }
-
-        public void Reset()
-        {
-            Remove();
-            Removed = false;
-            Created = false;
-            MessageHandler.Active = false;
-            foreach(Component component in components_)
-            {
-                component.OnDetach();
-                component.Parent = this;
-                component.OnAttach();
-            }
-        }
-
-        public void Create()
-        {
-            if(!Created)
-            {
-                EntityCreatedMessage entityCreated = new EntityCreatedMessage(this);
-                entityCreated.Emit();
-            }
-            Created = true;
         }
     }
 }

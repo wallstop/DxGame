@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace DxCore.Core.Utils.Cache.Advanced
 {
-    internal class FatTimer : IDisposable
+    internal sealed class FatTimer : IDisposable
     {
         public Timer ReadTimer;
         public Timer WriteTimer;
@@ -41,10 +41,10 @@ namespace DxCore.Core.Utils.Cache.Advanced
 
     [Serializable]
     [DataContract]
-    internal class Node<K, V>
+    internal sealed class Node<K, V>
     {
-        [DataMember] public K Key;
         [DataMember] public V Data;
+        [DataMember] public K Key;
         [DataMember] public Node<K, V> Next;
         [DataMember] public Node<K, V> Previous;
 
@@ -53,25 +53,24 @@ namespace DxCore.Core.Utils.Cache.Advanced
 
     public class LocalCache<K, V> : ICache<K, V>
     {
-        private ReaderWriterLockSlim Lock { get; }
-
-        private Dictionary<K, Node<K, V>> LruCache { get; }
-        private Dictionary<K, V> Cache { get; }
-        private Dictionary<K, FatTimer> Timers { get; }
-        private Action<RemovalNotification<K, V>> RemovalListener { get; }
-
-        public bool HasRemovalListener => !ReferenceEquals(RemovalListener, null);
-
-        private Node<K, V> Head { get; }
-        private Node<K, V> Tail { get; }
-
         public long ExpireAfterAccessMilliseconds { get; }
         public long ExpireAfterWriteMilliseconds { get; }
-        public long MaxElements { get; }
 
         public bool ExpiresAfterAccess => ExpireAfterAccessMilliseconds > 0;
         public bool ExpiresAfterWrite => ExpireAfterWriteMilliseconds > 0;
+
+        public bool HasRemovalListener => !ReferenceEquals(RemovalListener, null);
         public bool IsCapped => MaxElements > 0;
+        public long MaxElements { get; }
+        private Dictionary<K, V> Cache { get; }
+
+        private Node<K, V> Head { get; }
+        private ReaderWriterLockSlim Lock { get; }
+
+        private Dictionary<K, Node<K, V>> LruCache { get; }
+        private Action<RemovalNotification<K, V>> RemovalListener { get; }
+        private Node<K, V> Tail { get; }
+        private Dictionary<K, FatTimer> Timers { get; }
 
         public LocalCache(CacheBuilder<K, V> cacheBuilder)
         {
@@ -122,11 +121,6 @@ namespace DxCore.Core.Utils.Cache.Advanced
                 }
                 return Cache.TryGetValue(key, out value);
             }
-        }
-
-        private void ExtractValue(Node<K, V> valueNode, bool present, out V value)
-        {
-            value = present ? valueNode.Data : default(V);
         }
 
         public V Get(K key, Func<K, V> valueLoader)
@@ -207,7 +201,8 @@ namespace DxCore.Core.Utils.Cache.Advanced
                 {
                     Node<K, V> valueWrapper;
                     bool existed = false;
-                    replaced = LruCache.TryGetValue(key, out valueWrapper) && !(existed = Objects.Equals(valueWrapper.Data, value));
+                    replaced = LruCache.TryGetValue(key, out valueWrapper) &&
+                               !(existed = Objects.Equals(valueWrapper.Data, value));
                     if(replaced)
                     {
                         existingValue = valueWrapper.Data;
@@ -218,7 +213,7 @@ namespace DxCore.Core.Utils.Cache.Advanced
                     {
                         existingValue = default(V);
                         valueWrapper = new Node<K, V> {Key = key, Data = value};
-                        if (!existed)
+                        if(!existed)
                         {
                             LruCache.Add(key, valueWrapper);
                         }
@@ -241,6 +236,135 @@ namespace DxCore.Core.Utils.Cache.Advanced
         public void Invalidate(K key)
         {
             Removal(key, () => false, RemovalCause.Explicit);
+        }
+
+        public void InvalidateAll()
+        {
+            K[] cacheKeys;
+            using(new CriticalRegion(Lock, CriticalRegion.LockType.Read))
+            {
+                cacheKeys = IsCapped ? LruCache.Keys.ToArray() : Cache.Keys.ToArray();
+            }
+            foreach(K cacheKey in cacheKeys)
+            {
+                Removal(cacheKey, () => false, RemovalCause.Explicit);
+            }
+        }
+
+        public long Count
+        {
+            get
+            {
+                using(new CriticalRegion(Lock, CriticalRegion.LockType.Read))
+                {
+                    return IsCapped ? LruCache.Count : Cache.Count;
+                }
+            }
+        }
+
+        private void AddNode(Node<K, V> valueWrapper)
+        {
+            if(valueWrapper == Tail.Previous)
+            {
+                return;
+            }
+
+            /* Already a member of our list? We need some maintenance! */
+            if(!ReferenceEquals(valueWrapper.Next, null) && !ReferenceEquals(valueWrapper.Previous, null))
+            {
+                valueWrapper.Previous.Next = valueWrapper.Next;
+                valueWrapper.Next.Previous = valueWrapper.Previous;
+                /* Sanity's sake */
+                valueWrapper.Next = null;
+                valueWrapper.Previous = null;
+            }
+
+            Tail.Previous.Next = valueWrapper;
+            valueWrapper.Previous = Tail.Previous;
+            Tail.Previous = valueWrapper;
+            valueWrapper.Next = Tail;
+        }
+
+        private void CheckTimer(K key, CacheAction cacheAction, bool forceCreation = false)
+        {
+            FatTimer existingTimer;
+            if(!Timers.TryGetValue(key, out existingTimer))
+            {
+                if(forceCreation)
+                {
+                    existingTimer = NewFatTimer(key);
+                    Timers.Add(key, existingTimer);
+                }
+                else
+                {
+                    return;
+                }
+            }
+            switch(cacheAction)
+            {
+                case CacheAction.Read:
+                {
+                    if(!ExpiresAfterAccess)
+                    {
+                        return;
+                    }
+                    existingTimer.ReadTimer.Change(ExpireAfterAccessMilliseconds, Timeout.Infinite);
+                    break;
+                }
+                case CacheAction.Write:
+                {
+                    if(!ExpiresAfterWrite)
+                    {
+                        return;
+                    }
+                    existingTimer.WriteTimer.Change(ExpireAfterWriteMilliseconds, Timeout.Infinite);
+                    break;
+                }
+                default:
+                {
+                    throw new InvalidEnumArgumentException($"Unexpected {typeof(CacheAction)} {cacheAction}");
+                }
+            }
+        }
+
+        private void ExtractValue(Node<K, V> valueNode, bool present, out V value)
+        {
+            value = present ? valueNode.Data : default(V);
+        }
+
+        private void InternalNotifyOfRemoval(ref K key, ref V value, RemovalCause cause)
+        {
+            if(!HasRemovalListener)
+            {
+                return;
+            }
+
+            RemovalNotification<K, V> removalNotification = new RemovalNotification<K, V>(key, value, cause);
+            RemovalListener(removalNotification);
+        }
+
+        private void LruEvict()
+        {
+            Validate.Validate.Hard.IsTrue(IsCapped);
+            if(LruCache.Count <= MaxElements)
+            {
+                return;
+            }
+
+            Node<K, V> temp = Head.Next;
+            Head.Next = temp.Next;
+            temp.Next.Previous = Head;
+
+            K key = temp.Key;
+            LruCache.Remove(key);
+            FatTimer existingTimer;
+            if(Timers.TryGetValue(key, out existingTimer))
+            {
+                existingTimer.Dispose();
+                Timers.Remove(key);
+            }
+
+            InternalNotifyOfRemoval(ref key, ref temp.Data, RemovalCause.Evicted);
         }
 
         private FatTimer NewFatTimer(K key)
@@ -317,130 +441,6 @@ namespace DxCore.Core.Utils.Cache.Advanced
                 if(removed)
                 {
                     InternalNotifyOfRemoval(ref key, ref removedValue, removalCause);
-                }
-            }
-        }
-
-        private void CheckTimer(K key, CacheAction cacheAction, bool forceCreation = false)
-        {
-            FatTimer existingTimer;
-            if(!Timers.TryGetValue(key, out existingTimer))
-            {
-                if(forceCreation)
-                {
-                    existingTimer = NewFatTimer(key);
-                    Timers.Add(key, existingTimer);
-                }
-                else
-                {
-                    return;
-                }
-            }
-            switch(cacheAction)
-            {
-                case CacheAction.Read:
-                {
-                    if(!ExpiresAfterAccess)
-                    {
-                        return;
-                    }
-                    existingTimer.ReadTimer.Change(ExpireAfterAccessMilliseconds, Timeout.Infinite);
-                    break;
-                }
-                case CacheAction.Write:
-                {
-                    if(!ExpiresAfterWrite)
-                    {
-                        return;
-                    }
-                    existingTimer.WriteTimer.Change(ExpireAfterWriteMilliseconds, Timeout.Infinite);
-                    break;
-                }
-                default:
-                {
-                    throw new InvalidEnumArgumentException($"Unexpected {typeof(CacheAction)} {cacheAction}");
-                }
-            }
-        }
-
-        public void InvalidateAll()
-        {
-            K[] cacheKeys;
-            using(new CriticalRegion(Lock, CriticalRegion.LockType.Read))
-            {
-                cacheKeys = IsCapped ? LruCache.Keys.ToArray() : Cache.Keys.ToArray();
-            }
-            foreach(K cacheKey in cacheKeys)
-            {
-                Removal(cacheKey, () => false, RemovalCause.Explicit);
-            }
-        }
-
-        private void AddNode(Node<K, V> valueWrapper)
-        {
-            if(valueWrapper == Tail.Previous)
-            {
-                return;
-            }
-
-            /* Already a member of our list? We need some maintenance! */
-            if(!ReferenceEquals(valueWrapper.Next, null) && !ReferenceEquals(valueWrapper.Previous, null))
-            {
-                valueWrapper.Previous.Next = valueWrapper.Next;
-                valueWrapper.Next.Previous = valueWrapper.Previous;
-                /* Sanity's sake */
-                valueWrapper.Next = null;
-                valueWrapper.Previous = null;
-            }
-
-            Tail.Previous.Next = valueWrapper;
-            valueWrapper.Previous = Tail.Previous;
-            Tail.Previous = valueWrapper;
-            valueWrapper.Next = Tail;
-        }
-
-        private void LruEvict()
-        {
-            Validate.Validate.Hard.IsTrue(IsCapped);
-            if(LruCache.Count <= MaxElements)
-            {
-                return;
-            }
-
-            Node<K, V> temp = Head.Next;
-            Head.Next = temp.Next;
-            temp.Next.Previous = Head;
-
-            K key = temp.Key;
-            LruCache.Remove(key);
-            FatTimer existingTimer;
-            if(Timers.TryGetValue(key, out existingTimer))
-            {
-                existingTimer.Dispose();
-                Timers.Remove(key);
-            }
-
-            InternalNotifyOfRemoval(ref key, ref temp.Data, RemovalCause.Evicted);
-        }
-
-        private void InternalNotifyOfRemoval(ref K key, ref V value, RemovalCause cause)
-        {
-            if(!HasRemovalListener)
-            {
-                return;
-            }
-
-            RemovalNotification<K, V> removalNotification = new RemovalNotification<K, V>(key, value, cause);
-            RemovalListener(removalNotification);
-        }
-
-        public long Count
-        {
-            get
-            {
-                using(new CriticalRegion(Lock, CriticalRegion.LockType.Read))
-                {
-                    return IsCapped ? LruCache.Count : Cache.Count;
                 }
             }
         }

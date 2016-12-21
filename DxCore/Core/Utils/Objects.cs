@@ -49,7 +49,7 @@ namespace DxCore.Core.Utils
             {
                 return true;
             }
-            return (type.IsValueType & type.IsPrimitive);
+            return (type.IsValueType && type.IsPrimitive);
         }
 
         public static object Copy(this object originalObject)

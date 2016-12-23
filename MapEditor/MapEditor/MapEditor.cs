@@ -13,8 +13,8 @@ namespace MapEditor
 {
     public class MapEditor : DxGame
     {
-        private int NativeScreenWidth { get; set; }
         private int NativeScreenHeight { get; set; }
+        private int NativeScreenWidth { get; set; }
 
         public MapEditor()
         {
@@ -22,26 +22,6 @@ namespace MapEditor
             Graphics.PreparingDeviceSettings += HandlePreparingDeviceSettings;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-        }
-
-        private void HandleDeviceCreated(object sender, EventArgs eventArgs)
-        {
-            // What does this even do?
-            Engine engine = new MonoGameEngine(GraphicsDevice, NativeScreenWidth, NativeScreenHeight);
-        }
-
-        private void HandlePreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs eventArgs)
-        {
-            NativeScreenWidth = Graphics.PreferredBackBufferWidth;
-            NativeScreenHeight = Graphics.PreferredBackBufferHeight;
-
-            Graphics.PreferredBackBufferWidth = 1280;
-            Graphics.PreferredBackBufferHeight = 720;
-            Graphics.PreferMultiSampling = true;
-            Graphics.GraphicsProfile = GraphicsProfile.HiDef;
-            Graphics.SynchronizeWithVerticalRetrace = false;
-            Graphics.PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8;
-            eventArgs.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 16;
         }
 
         protected override void Initialize()
@@ -76,6 +56,25 @@ namespace MapEditor
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
+        }
+
+        private void HandleDeviceCreated(object sender, EventArgs eventArgs)
+        {
+            new MonoGameEngine(GraphicsDevice, NativeScreenWidth, NativeScreenHeight);
+        }
+
+        private void HandlePreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs eventArgs)
+        {
+            NativeScreenWidth = Graphics.PreferredBackBufferWidth;
+            NativeScreenHeight = Graphics.PreferredBackBufferHeight;
+
+            Graphics.PreferredBackBufferWidth = 1280;
+            Graphics.PreferredBackBufferHeight = 720;
+            Graphics.PreferMultiSampling = true;
+            Graphics.GraphicsProfile = GraphicsProfile.HiDef;
+            Graphics.SynchronizeWithVerticalRetrace = false;
+            Graphics.PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8;
+            eventArgs.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 16;
         }
     }
 }

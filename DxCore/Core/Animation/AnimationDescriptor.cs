@@ -14,8 +14,6 @@ namespace DxCore.Core.Animation
     public class AnimationDescriptor : JsonPersistable<AnimationDescriptor>
     {
         public static string AnimationExtension = ".adtr";
-        public override string Extension => AnimationExtension;
-        public override AnimationDescriptor Item => this;
 
         [DataMember]
         public string Asset { get; set; }
@@ -23,19 +21,23 @@ namespace DxCore.Core.Animation
         [DataMember]
         public DxRectangle BoundingBox { get; set; } = new DxRectangle(0, 0, 50, 50);
 
-        [DataMember]
-        public AnimationFrameOffset FrameOffsets { get; set; } = AnimationFrameOffset.Instance;
+        public override string Extension => AnimationExtension;
 
         [DataMember]
         public int FrameCount { get; set; }
 
         [DataMember]
-        public int FramesPerSecond { get; set; } = 60;
+        public AnimationFrameOffset FrameOffsets { get; set; } = AnimationFrameOffset.Empty;
 
         [DataMember]
-        public double Scale { get; set; } = 1.0;
+        public int FramesPerSecond { get; set; } = 60;
+
+        public override AnimationDescriptor Item => this;
 
         [DataMember]
         public Direction Orientation { get; set; } = Direction.East;
+
+        [DataMember]
+        public double Scale { get; set; } = 1.0;
     }
 }

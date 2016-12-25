@@ -39,5 +39,10 @@ namespace DxCore.Core.Animation
 
         [DataMember]
         public double Scale { get; set; } = 1.0;
+
+        public static AnimationDescriptor Empty()
+        {
+            return new AnimationDescriptor();
+        }
     }
 }

@@ -24,10 +24,12 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
                 <MenuItem Command="New" />
+                <MenuItem Header="_Load" Command="" />
                 <MenuItem Command="Save" />
                 <Separator />
                 <MenuItem Command="Close" />
             </MenuItem>
+            <MenuItem Command="{Binding SetContentDirectory}" Header="_Set Content Directory" />
         </Menu>
         <Grid>
             <Grid.RowDefinitions>
@@ -129,7 +131,9 @@
                                     ValueChanged="HandleFpsChanged"
                                     Value="0" />
             </Grid>
-            <ScrollViewer Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" />
+            <ScrollViewer Grid.Row="2"
+                          Grid.Column="0"
+                          Grid.ColumnSpan="2" />
         </Grid>
 
     </DockPanel>

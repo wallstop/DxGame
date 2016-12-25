@@ -1,14 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using AnimationEditor.Core;
 using AnimationEditor.Extension;
 using DxCore.Core.Animation;
-using Microsoft.Win32;
+using MessageBox = System.Windows.MessageBox;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace AnimationEditor
 {
@@ -17,7 +25,50 @@ namespace AnimationEditor
         private readonly Thread animationRunner_;
 
         private Transform animationTransform_;
-        private AnimationDescriptor AnimationDescriptor { get; set; } = new AnimationDescriptor();
+
+        public ObservableCollection<Image> Frames { get; }
+
+        public ICommand LoadCommand
+        {
+            get
+            {
+                return new RelayCommand(_ =>
+                {
+                    // TODO: Need to figure out how to find the asset without a file extension
+                });
+            }
+        }
+
+        public ICommand SetContentDirectory
+        {
+            // Could cache this, but who cares
+            get
+            {
+                return new RelayCommand(_ =>
+                {
+                    FolderBrowserDialog chooseContentDirectory = new FolderBrowserDialog
+                    {
+                        Description = @"Select the DxGame Content directory to use"
+                    };
+                    DialogResult result = chooseContentDirectory.ShowDialog(this.GetIWin32Window());
+                    switch(result)
+                    {
+                        case System.Windows.Forms.DialogResult.OK:
+                        {
+                            ContentDirectory = chooseContentDirectory.SelectedPath;
+                            break;
+                        }
+                        // TODO: Handle other cases, don't care enough right now
+                        default:
+                        {
+                            break;
+                        }
+                    }
+                });
+            }
+        }
+
+        private AnimationDescriptor AnimationDescriptor { get; set; }
 
         private Transform AnimationTransform
         {
@@ -29,7 +80,13 @@ namespace AnimationEditor
             }
         }
 
+        private string ContentDirectory { get; set; }
+
+        private bool ContentDirectorySet => !string.IsNullOrWhiteSpace(ContentDirectory);
+
         private AnimationFrameOffset.AnimationFrameOffsetBuilder FrameOffsetBuilder { get; }
+
+        private List<Transform> FrameTransforms { get; }
 
         public MainWindow()
         {
@@ -38,6 +95,12 @@ namespace AnimationEditor
 
             animationRunner_ = new Thread(AnimationPreview);
             animationRunner_.Start();
+
+            AnimationDescriptor = AnimationDescriptor.Empty();
+            FrameTransforms = new List<Transform>();
+            Frames = new ObservableCollection<Image>();
+
+            DataContext = this;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -49,12 +112,17 @@ namespace AnimationEditor
 
         private void AnimationPreview()
         {
-            // while(true)
-            // {
-            // TODO: Hot-sleep for correct amount of time
-            //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-            //    new Action(() => { animationTransform_ = new MatrixTransform(); }));
-            // }
+            /*
+            while(true)
+            {
+                // TODO: Hot-sleep for correct amount of time
+                Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                {
+                    animationTransform_ = new MatrixTransform();
+                    GC.Collect();
+                }));
+            }
+            */
         }
 
         private void CheckClose(object sender, CanExecuteRoutedEventArgs eventArgs)
@@ -70,6 +138,13 @@ namespace AnimationEditor
         private void CheckSave(object sender, CanExecuteRoutedEventArgs eventArgs)
         {
             eventArgs.CanExecute = true;
+        }
+
+        private void Clear()
+        {
+            AnimationDescriptor = new AnimationDescriptor();
+            FrameTransforms.Clear();
+            Frames.Clear();
         }
 
         private void HandleClose(object sender, ExecutedRoutedEventArgs eventArgs)
@@ -123,26 +198,53 @@ namespace AnimationEditor
             AnimationDescriptor.FrameOffsets = FrameOffsetBuilder.Build();
         }
 
+        private void HandleLoad(object sender, ExecutedRoutedEventArgs eventArgs)
+        {
+            // TODO
+            Clear();
+        }
+
         private void HandleNew(object sender, ExecutedRoutedEventArgs eventArgs)
         {
+            if(!ContentDirectorySet)
+            {
+                MessageBox.Show(this, "Content Directory required before assets can be loaded");
+                return;
+            }
+
             OpenFileDialog openFile = new OpenFileDialog
             {
                 DefaultExt = ".png",
-                Filter = "Image Files|*.jpeg;*.png;*.jpg;*.gif|All Files|*.*"
+                Filter = "Image Files|*.jpeg;*.png;*.jpg;*.gif|All Files|*.*",
+                InitialDirectory = ContentDirectory
             };
 
             bool? result = openFile.ShowDialog();
             if(result == true)
             {
                 string fileName = openFile.FileName;
+                Uri selectedFile = new Uri(fileName);
+                Uri contentDirectory = new Uri(ContentDirectory + "/");
+                if(!contentDirectory.IsBaseOf(selectedFile))
+                {
+                    MessageBox.Show(this, $"{fileName} is not in the content directory - please try again");
+                    return;
+                }
+
                 try
                 {
+                    Uri relativeAssetPath = contentDirectory.MakeRelativeUri(selectedFile);
+                    string assetWithoutExtension = Path.ChangeExtension(relativeAssetPath.OriginalString, null);
+
                     BitmapImage sourceImage = new BitmapImage();
                     sourceImage.BeginInit();
                     sourceImage.UriSource = new Uri(fileName);
                     sourceImage.EndInit();
 
                     Source.Source = sourceImage;
+                    // Clear out any preconceptions
+                    Clear();
+                    AnimationDescriptor.Asset = assetWithoutExtension;
                 }
                 catch
                 {
@@ -160,17 +262,19 @@ namespace AnimationEditor
             };
 
             bool? result = saveFile.ShowDialog();
-            if(result == true)
+            if(result == false)
             {
-                string fileName = saveFile.FileName;
-                try
-                {
-                    AnimationDescriptor.Save(fileName);
-                }
-                catch
-                {
-                    MessageBox.Show(this, $"Error saving {fileName}");
-                }
+                return;
+            }
+
+            string fileName = saveFile.FileName;
+            try
+            {
+                AnimationDescriptor.Save(fileName);
+            }
+            catch
+            {
+                MessageBox.Show(this, $"Error saving {fileName}");
             }
         }
 

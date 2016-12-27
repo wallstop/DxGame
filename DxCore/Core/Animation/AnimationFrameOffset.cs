@@ -106,7 +106,7 @@ namespace DxCore.Core.Animation
 
             public AnimationFrameOffsetBuilder WithFrameOffset(int frameNumber, FrameDescriptor descriptor)
             {
-                Validate.Hard.IsPositive(frameNumber);
+                Validate.Hard.IsNotNegative(frameNumber);
                 offsetsByFrame_[frameNumber] = descriptor;
                 return this;
             }

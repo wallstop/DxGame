@@ -24,7 +24,7 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
                 <MenuItem Command="New" />
-                <MenuItem Header="_Load" Command="" />
+                <MenuItem Command="" Header="_Load" />
                 <MenuItem Command="Save" />
                 <Separator />
                 <MenuItem Command="Close" />
@@ -133,7 +133,11 @@
             </Grid>
             <ScrollViewer Grid.Row="2"
                           Grid.Column="0"
-                          Grid.ColumnSpan="2" />
+                          Grid.ColumnSpan="2"
+                          HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Hidden">
+                <ListBox ItemsSource="{Binding Frames}" SelectedIndex="{Binding FrameIndex, Mode=OneWayToSource}" />
+            </ScrollViewer>
         </Grid>
 
     </DockPanel>

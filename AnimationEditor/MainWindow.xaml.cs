@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -24,7 +23,7 @@ namespace AnimationEditor
     {
         private readonly Thread animationRunner_;
 
-        private Transform animationTransform_;
+        public int FrameIndex { get; set; }
 
         public ObservableCollection<Image> Frames { get; }
 
@@ -70,23 +69,14 @@ namespace AnimationEditor
 
         private AnimationDescriptor AnimationDescriptor { get; set; }
 
-        private Transform AnimationTransform
-        {
-            get { return animationTransform_; }
-            set
-            {
-                animationTransform_ = value;
-                OnPropertyChanged();
-            }
-        }
-
         private string ContentDirectory { get; set; }
 
         private bool ContentDirectorySet => !string.IsNullOrWhiteSpace(ContentDirectory);
 
         private AnimationFrameOffset.AnimationFrameOffsetBuilder FrameOffsetBuilder { get; }
 
-        private List<Transform> FrameTransforms { get; }
+        private Size FrameSize
+            => new Size(AnimationDescriptor.BoundingBox.Width, AnimationDescriptor.BoundingBox.Height);
 
         public MainWindow()
         {
@@ -97,9 +87,7 @@ namespace AnimationEditor
             animationRunner_.Start();
 
             AnimationDescriptor = AnimationDescriptor.Empty();
-            FrameTransforms = new List<Transform>();
             Frames = new ObservableCollection<Image>();
-
             DataContext = this;
         }
 
@@ -142,8 +130,7 @@ namespace AnimationEditor
 
         private void Clear()
         {
-            AnimationDescriptor = new AnimationDescriptor();
-            FrameTransforms.Clear();
+            AnimationDescriptor = new AnimationDescriptor(); // Easiest way to reset
             Frames.Clear();
         }
 
@@ -163,6 +150,7 @@ namespace AnimationEditor
             }
 
             AnimationDescriptor.FramesPerSecond = newValue;
+            // TODO: Handle synch with animation preview?
         }
 
         private void HandleFrameCountChanged(object sender, RoutedPropertyChangedEventArgs<object> eventArgs)
@@ -174,13 +162,35 @@ namespace AnimationEditor
                 return;
             }
 
+            /* We baleeted some frames, we need to remove them */
             if(newValue < oldValue)
             {
                 for(int i = newValue; i < oldValue; ++i)
                 {
                     FrameOffsetBuilder.WithoutFrameOffset(i);
+                    Frames.RemoveAt(i);
                 }
             }
+            else
+            {
+                for(int i = oldValue; i < newValue; ++i)
+                {
+                    FrameOffsetBuilder.WithFrameOffset(i, AnimationDescriptor.NewFrameDescriptor);
+                    try
+                    {
+                        Point frameOrigin = new Point(0, 0);
+                        Rect frameBounds = new Rect(frameOrigin, FrameSize);
+                        RectangleGeometry boundary = new RectangleGeometry(frameBounds);
+                        Image newFrame = new Image {Source = Source.Source, Clip = boundary};
+                        Frames.Add(newFrame);
+                    }
+                    catch
+                    {
+                        // Ignore
+                    }
+                }
+            }
+
             AnimationDescriptor.FrameCount = newValue;
             AnimationDescriptor.FrameOffsets = FrameOffsetBuilder.Build();
         }
@@ -194,13 +204,20 @@ namespace AnimationEditor
                 return;
             }
 
+            foreach(Image frame in Frames)
+            {
+                RectangleGeometry existingGeometry = (RectangleGeometry) frame.Clip;
+                Size updatedSize = new Size(existingGeometry.Rect.Width, newValue);
+                existingGeometry.Rect = new Rect(existingGeometry.Rect.Location, updatedSize);
+            }
+
             FrameOffsetBuilder.WithHeight(newValue);
             AnimationDescriptor.FrameOffsets = FrameOffsetBuilder.Build();
         }
 
         private void HandleLoad(object sender, ExecutedRoutedEventArgs eventArgs)
         {
-            // TODO
+            // TODO: Load .adtr file into state
             Clear();
         }
 
@@ -220,36 +237,38 @@ namespace AnimationEditor
             };
 
             bool? result = openFile.ShowDialog();
-            if(result == true)
+            if(result != true)
             {
-                string fileName = openFile.FileName;
-                Uri selectedFile = new Uri(fileName);
-                Uri contentDirectory = new Uri(ContentDirectory + "/");
-                if(!contentDirectory.IsBaseOf(selectedFile))
-                {
-                    MessageBox.Show(this, $"{fileName} is not in the content directory - please try again");
-                    return;
-                }
+                return;
+            }
 
-                try
-                {
-                    Uri relativeAssetPath = contentDirectory.MakeRelativeUri(selectedFile);
-                    string assetWithoutExtension = Path.ChangeExtension(relativeAssetPath.OriginalString, null);
+            string fileName = openFile.FileName;
+            Uri selectedFile = new Uri(fileName);
+            Uri contentDirectory = new Uri(ContentDirectory + "/");
+            if(!contentDirectory.IsBaseOf(selectedFile))
+            {
+                MessageBox.Show(this, $"{fileName} is not in the content directory - please try again");
+                return;
+            }
 
-                    BitmapImage sourceImage = new BitmapImage();
-                    sourceImage.BeginInit();
-                    sourceImage.UriSource = new Uri(fileName);
-                    sourceImage.EndInit();
+            try
+            {
+                Uri relativeAssetPath = contentDirectory.MakeRelativeUri(selectedFile);
+                string assetWithoutExtension = Path.ChangeExtension(relativeAssetPath.OriginalString, null);
 
-                    Source.Source = sourceImage;
-                    // Clear out any preconceptions
-                    Clear();
-                    AnimationDescriptor.Asset = assetWithoutExtension;
-                }
-                catch
-                {
-                    MessageBox.Show(this, $"Error opening {fileName}");
-                }
+                BitmapImage sourceImage = new BitmapImage();
+                sourceImage.BeginInit();
+                sourceImage.UriSource = new Uri(fileName);
+                sourceImage.EndInit();
+
+                Source.Source = sourceImage;
+                // Clear out any preconceptions
+                Clear();
+                AnimationDescriptor.Asset = assetWithoutExtension;
+            }
+            catch
+            {
+                MessageBox.Show(this, $"Error opening {fileName}");
             }
         }
 
@@ -285,6 +304,13 @@ namespace AnimationEditor
             if(oldValue == newValue)
             {
                 return;
+            }
+
+            foreach(Image frame in Frames)
+            {
+                RectangleGeometry existingGeometry = (RectangleGeometry) frame.Clip;
+                Size updatedSize = new Size(newValue, existingGeometry.Rect.Height);
+                existingGeometry.Rect = new Rect(existingGeometry.Rect.Location, updatedSize);
             }
 
             FrameOffsetBuilder.WithWidth(newValue);

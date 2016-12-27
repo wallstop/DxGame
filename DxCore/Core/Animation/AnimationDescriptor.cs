@@ -34,6 +34,9 @@ namespace DxCore.Core.Animation
 
         public override AnimationDescriptor Item => this;
 
+        [IgnoreDataMember]
+        public FrameDescriptor NewFrameDescriptor => new FrameDescriptor {BoundingBox = BoundingBox};
+
         [DataMember]
         public Direction Orientation { get; set; } = Direction.East;
 

@@ -23,6 +23,8 @@ namespace AnimationEditor
     {
         private readonly Thread animationRunner_;
 
+        public string ContentDirectory => AnimationSettings.ContentDirectory;
+
         public int FrameIndex { get; set; }
 
         public ObservableCollection<Image> Frames { get; }
@@ -54,7 +56,7 @@ namespace AnimationEditor
                     {
                         case System.Windows.Forms.DialogResult.OK:
                         {
-                            ContentDirectory = chooseContentDirectory.SelectedPath;
+                            AnimationSettings.ContentDirectory = chooseContentDirectory.SelectedPath;
                             break;
                         }
                         // TODO: Handle other cases, don't care enough right now
@@ -69,9 +71,11 @@ namespace AnimationEditor
 
         private AnimationDescriptor AnimationDescriptor { get; set; }
 
-        private string ContentDirectory { get; set; }
+        private AnimationSettings AnimationSettings { get; set; }
 
-        private bool ContentDirectorySet => !string.IsNullOrWhiteSpace(ContentDirectory);
+        private static string AnimationSettingsFile { get; } = "AnimationSettings";
+
+        private bool ContentDirectorySet => !string.IsNullOrWhiteSpace(AnimationSettings.ContentDirectory);
 
         private AnimationFrameOffset.AnimationFrameOffsetBuilder FrameOffsetBuilder { get; }
 
@@ -86,9 +90,20 @@ namespace AnimationEditor
             animationRunner_ = new Thread(AnimationPreview);
             animationRunner_.Start();
 
+            try
+            {
+                AnimationSettings =
+                    AnimationSettings.StaticLoad(AnimationSettingsFile + AnimationSettings.SettingsExtension);
+            }
+            catch
+            {
+                AnimationSettings = new AnimationSettings();
+            }
+
             AnimationDescriptor = AnimationDescriptor.Empty();
             Frames = new ObservableCollection<Image>();
             DataContext = this;
+            Closing += OnExit;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -233,7 +248,7 @@ namespace AnimationEditor
             {
                 DefaultExt = ".png",
                 Filter = "Image Files|*.jpeg;*.png;*.jpg;*.gif|All Files|*.*",
-                InitialDirectory = ContentDirectory
+                InitialDirectory = AnimationSettings.ContentDirectory
             };
 
             bool? result = openFile.ShowDialog();
@@ -244,7 +259,7 @@ namespace AnimationEditor
 
             string fileName = openFile.FileName;
             Uri selectedFile = new Uri(fileName);
-            Uri contentDirectory = new Uri(ContentDirectory + "/");
+            Uri contentDirectory = new Uri(AnimationSettings.ContentDirectory + "/");
             if(!contentDirectory.IsBaseOf(selectedFile))
             {
                 MessageBox.Show(this, $"{fileName} is not in the content directory - please try again");
@@ -315,6 +330,18 @@ namespace AnimationEditor
 
             FrameOffsetBuilder.WithWidth(newValue);
             AnimationDescriptor.FrameOffsets = FrameOffsetBuilder.Build();
+        }
+
+        private void OnExit(object sender, CancelEventArgs eventArgs)
+        {
+            try
+            {
+                AnimationSettings.Save(AnimationSettingsFile + AnimationSettings.SettingsExtension);
+            }
+            catch
+            {
+                // LOL ignore
+            }
         }
 
         private void ValidateNumericInput(object sender, TextCompositionEventArgs eventArgs)

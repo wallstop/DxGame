@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -10,9 +11,12 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using AnimationEditor.Core;
 using AnimationEditor.Extension;
 using DxCore.Core.Animation;
+using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
@@ -23,11 +27,18 @@ namespace AnimationEditor
     {
         private readonly Thread animationRunner_;
 
+        public AnimationDescriptor AnimationDescriptor { get; }
+
         public string ContentDirectory => AnimationSettings.ContentDirectory;
+        public int Fps => AnimationDescriptor?.FramesPerSecond ?? 0;
+        public int FrameCount => AnimationDescriptor?.FrameCount ?? 0;
+        public int FrameHeight => (int) AnimationDescriptor.BoundingBox.Height;
 
         public int FrameIndex { get; set; }
 
         public ObservableCollection<Image> Frames { get; }
+
+        public int FrameWidth => (int) AnimationDescriptor.BoundingBox.Width;
 
         public ICommand LoadCommand
         {
@@ -57,6 +68,7 @@ namespace AnimationEditor
                         case System.Windows.Forms.DialogResult.OK:
                         {
                             AnimationSettings.ContentDirectory = chooseContentDirectory.SelectedPath;
+                            OnPropertyChanged(nameof(ContentDirectory));
                             break;
                         }
                         // TODO: Handle other cases, don't care enough right now
@@ -69,11 +81,7 @@ namespace AnimationEditor
             }
         }
 
-        private AnimationDescriptor AnimationDescriptor { get; set; }
-
         private AnimationSettings AnimationSettings { get; set; }
-
-        private static string AnimationSettingsFile { get; } = "AnimationSettings";
 
         private bool ContentDirectorySet => !string.IsNullOrWhiteSpace(AnimationSettings.ContentDirectory);
 
@@ -90,15 +98,8 @@ namespace AnimationEditor
             animationRunner_ = new Thread(AnimationPreview);
             animationRunner_.Start();
 
-            try
-            {
-                AnimationSettings =
-                    AnimationSettings.StaticLoad(AnimationSettingsFile + AnimationSettings.SettingsExtension);
-            }
-            catch
-            {
-                AnimationSettings = new AnimationSettings();
-            }
+            AnimationSettings = new AnimationSettings();
+            AnimationSettings.Load();
 
             AnimationDescriptor = AnimationDescriptor.Empty();
             Frames = new ObservableCollection<Image>();
@@ -115,17 +116,31 @@ namespace AnimationEditor
 
         private void AnimationPreview()
         {
-            /*
+            Stopwatch animationTimer = Stopwatch.StartNew();
+            int frame = 0;
             while(true)
             {
+                TimeSpan tick = animationTimer.Elapsed;
                 // TODO: Hot-sleep for correct amount of time
                 Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
                 {
-                    animationTransform_ = new MatrixTransform();
-                    GC.Collect();
+                    DxVector2 drawOffset;
+                    DxVector2 frameOffset;
+                    DxRectangle boundingBox;
+                    if(AnimationDescriptor.FrameOffsets.OffsetForFrame(frame, out frameOffset, out drawOffset,
+                        out boundingBox))
+                    {
+                        Animation.Source = Source.Source;
+                        TranslateTransform translation = new TranslateTransform(frameOffset.X, frameOffset.Y);
+                        Animation.RenderTransform = translation;
+                    }
                 }));
+                while(animationTimer.Elapsed - tick < TimeSpan.FromMilliseconds(1000 * (1.0 / Math.Max(1.0, Fps))))
+                {
+                    // Hot sleep, newing a Timespan every time to get the most accurate values :)
+                }
+                frame.WrappedAdd(1, FrameCount == 0 ? 1 : FrameCount);
             }
-            */
         }
 
         private void CheckClose(object sender, CanExecuteRoutedEventArgs eventArgs)
@@ -145,8 +160,12 @@ namespace AnimationEditor
 
         private void Clear()
         {
-            AnimationDescriptor = new AnimationDescriptor(); // Easiest way to reset
+            AnimationDescriptor.ResetToBase();
             Frames.Clear();
+            OnPropertyChanged(nameof(Fps));
+            OnPropertyChanged(nameof(FrameWidth));
+            OnPropertyChanged(nameof(FrameHeight));
+            OnPropertyChanged(nameof(FrameCount));
         }
 
         private void HandleClose(object sender, ExecutedRoutedEventArgs eventArgs)
@@ -195,8 +214,18 @@ namespace AnimationEditor
                     {
                         Point frameOrigin = new Point(0, 0);
                         Rect frameBounds = new Rect(frameOrigin, FrameSize);
+
                         RectangleGeometry boundary = new RectangleGeometry(frameBounds);
-                        Image newFrame = new Image {Source = Source.Source, Clip = boundary};
+                        Image newFrame = new Image
+                        {
+                            Source = Source.Source,
+                            Clip = boundary,
+                            ClipToBounds = true,
+                            Stretch = Stretch.None,
+                            ToolTip = (i + 1).ToString()
+                            // Fake a good image by sliding it backwards so we just see our tiny little dooderoo
+                        };
+
                         Frames.Add(newFrame);
                     }
                     catch
@@ -224,6 +253,7 @@ namespace AnimationEditor
                 RectangleGeometry existingGeometry = (RectangleGeometry) frame.Clip;
                 Size updatedSize = new Size(existingGeometry.Rect.Width, newValue);
                 existingGeometry.Rect = new Rect(existingGeometry.Rect.Location, updatedSize);
+                frame.RenderSize = updatedSize;
             }
 
             FrameOffsetBuilder.WithHeight(newValue);
@@ -326,6 +356,7 @@ namespace AnimationEditor
                 RectangleGeometry existingGeometry = (RectangleGeometry) frame.Clip;
                 Size updatedSize = new Size(newValue, existingGeometry.Rect.Height);
                 existingGeometry.Rect = new Rect(existingGeometry.Rect.Location, updatedSize);
+                frame.RenderSize = updatedSize;
             }
 
             FrameOffsetBuilder.WithWidth(newValue);
@@ -336,12 +367,17 @@ namespace AnimationEditor
         {
             try
             {
-                AnimationSettings.Save(AnimationSettingsFile + AnimationSettings.SettingsExtension);
+                AnimationSettings.Save();
             }
             catch
             {
                 // LOL ignore
             }
+        }
+
+        private void UpdateProperties()
+        {
+            // TODO LOL
         }
 
         private void ValidateNumericInput(object sender, TextCompositionEventArgs eventArgs)

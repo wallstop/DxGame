@@ -5,7 +5,6 @@
         xmlns:local="clr-namespace:AnimationEditor"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        
         Title="AnimationEditor"
         Width="525"
         Height="350"
@@ -32,7 +31,8 @@
             </MenuItem>
             <MenuItem Command="{Binding SetContentDirectory}"
                       Header="_Set Content Directory"
-                      ToolTip="{Binding ContentDirectory}" />
+                      ToolTip="{Binding ContentDirectory,
+                                        Mode=OneWay}" />
         </Menu>
         <Grid>
             <Grid.RowDefinitions>
@@ -48,7 +48,8 @@
                    Grid.Row="0"
                    Grid.Column="0"
                    Margin="5"
-                   RenderTransform="{Binding AnimationTransform}" />
+                   RenderTransform="{Binding AnimationTransform,
+                                             Mode=OneWay}" />
             <Image Name="Source"
                    Grid.Row="0"
                    Grid.RowSpan="2"
@@ -87,7 +88,8 @@
                                     Minimum="0"
                                     PreviewTextInput="ValidateNumericInput"
                                     ValueChanged="HandleFrameCountChanged"
-                                    Value="0" />
+                                    Value="{Binding FrameCount,
+                                                    Mode=OneWay}" />
                 <TextBlock Grid.Row="1"
                            Grid.Column="0"
                            Margin="5"
@@ -102,7 +104,8 @@
                                     Minimum="0"
                                     PreviewTextInput="ValidateNumericInput"
                                     ValueChanged="HandleWidthChanged"
-                                    Value="0" />
+                                    Value="{Binding FrameWidth,
+                                                    Mode=OneWay}" />
                 <TextBlock Grid.Row="2"
                            Grid.Column="0"
                            Margin="5"
@@ -117,7 +120,8 @@
                                     Minimum="0"
                                     PreviewTextInput="ValidateNumericInput"
                                     ValueChanged="HandleHeightChanged"
-                                    Value="0" />
+                                    Value="{Binding FrameHeight,
+                                                    Mode=OneWay}" />
                 <TextBlock Grid.Row="3"
                            Grid.Column="0"
                            Margin="5"
@@ -132,12 +136,14 @@
                                     Minimum="0"
                                     PreviewTextInput="ValidateNumericInput"
                                     ValueChanged="HandleFpsChanged"
-                                    Value="0" />
+                                    Value="{Binding Fps,
+                                                    Mode=OneWay}" />
             </Grid>
             <ListBox Grid.Row="2"
                      Grid.Column="0"
                      Grid.ColumnSpan="2"
-                     ItemsSource="{Binding Frames}"
+                     ItemsSource="{Binding Frames,
+                                           Mode=OneWay}"
                      SelectedIndex="{Binding FrameIndex,
                                              Mode=OneWayToSource}">
                 <ListBox.ItemsPanel>

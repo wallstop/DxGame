@@ -18,6 +18,7 @@ using DxCore.Core.Animation;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using MessageBox = System.Windows.MessageBox;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
@@ -90,6 +91,8 @@ namespace AnimationEditor
         private Size FrameSize
             => new Size(AnimationDescriptor.BoundingBox.Width, AnimationDescriptor.BoundingBox.Height);
 
+        private Point? LastDragLocation { get; set; }
+
         public MainWindow()
         {
             FrameOffsetBuilder = new AnimationFrameOffset.AnimationFrameOffsetBuilder();
@@ -105,6 +108,12 @@ namespace AnimationEditor
             Frames = new ObservableCollection<Image>();
             DataContext = this;
             Closing += OnExit;
+
+            SourceCanvas.MouseEnter += HandleMouseEnterImage;
+            SourceCanvas.MouseLeave += HandleMouseLeaveImage;
+            SourceCanvas.MouseMove += HandleMouseMoveImage;
+            SourceCanvas.MouseLeftButtonDown += HandleMouseDownImage;
+            SourceCanvas.MouseLeftButtonUp += HandleMouseUpImage;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -122,7 +131,7 @@ namespace AnimationEditor
             {
                 TimeSpan tick = animationTimer.Elapsed;
                 // TODO: Hot-sleep for correct amount of time
-                Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                Dispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
                 {
                     DxVector2 drawOffset;
                     DxVector2 frameOffset;
@@ -131,15 +140,21 @@ namespace AnimationEditor
                         out boundingBox))
                     {
                         Animation.Source = Source.Source;
-                        TranslateTransform translation = new TranslateTransform(frameOffset.X, frameOffset.Y);
-                        Animation.RenderTransform = translation;
+                        Rect crop = new Rect
+                        {
+                            X = frameOffset.X,
+                            Y = frameOffset.Y,
+                            Width = boundingBox.Width,
+                            Height = boundingBox.Height
+                        };
+                        Animation.Clip = new RectangleGeometry(crop);
                     }
                 }));
-                while(animationTimer.Elapsed - tick < TimeSpan.FromMilliseconds(1000 * (1.0 / Math.Max(1.0, Fps))))
+                while(animationTimer.Elapsed - tick < TimeSpan.FromMilliseconds(1000.0 / Math.Max(1.0, Fps)))
                 {
                     // Hot sleep, newing a Timespan every time to get the most accurate values :)
                 }
-                frame.WrappedAdd(1, FrameCount == 0 ? 1 : FrameCount);
+                frame = frame.WrappedAdd(1, FrameCount == 0 ? 1 : FrameCount);
             }
         }
 
@@ -233,6 +248,11 @@ namespace AnimationEditor
                         // Ignore
                     }
                 }
+                if(FrameIndex <= 0)
+                {
+                    FrameIndex = 0;
+                    OnPropertyChanged(nameof(FrameIndex));
+                }
             }
 
             AnimationDescriptor.FrameCount = newValue;
@@ -256,6 +276,8 @@ namespace AnimationEditor
                 frame.RenderSize = updatedSize;
             }
 
+            FrameOutline.Height = newValue;
+
             FrameOffsetBuilder.WithHeight(newValue);
             AnimationDescriptor.FrameOffsets = FrameOffsetBuilder.Build();
         }
@@ -264,6 +286,55 @@ namespace AnimationEditor
         {
             // TODO: Load .adtr file into state
             Clear();
+        }
+
+        private void HandleMouseDownImage(object sender, MouseButtonEventArgs eventArgs)
+        {
+            LastDragLocation = eventArgs.GetPosition(Source);
+        }
+
+        private void HandleMouseEnterImage(object sender, MouseEventArgs eventArgs)
+        {
+            // TODO, don't care right now
+        }
+
+        private void HandleMouseLeaveImage(object sender, MouseEventArgs eventArgs)
+        {
+            LastDragLocation = null;
+        }
+
+        private void HandleMouseMoveImage(object sender, MouseEventArgs eventArgs)
+        {
+            if(!LastDragLocation.HasValue)
+            {
+                return;
+            }
+            Point oldLocation = LastDragLocation.Value;
+            Point newLocation = eventArgs.GetPosition(Source);
+            LastDragLocation = newLocation;
+
+            Vector offset = newLocation - oldLocation;
+
+            RectangleGeometry frameBounds = (RectangleGeometry) Frames[FrameIndex].Clip;
+            Rect oldBounds = frameBounds.Rect;
+            oldBounds.X += offset.X;
+            oldBounds.Y += offset.Y;
+            frameBounds.Rect = oldBounds;
+
+            TranslateTransform translation = new TranslateTransform {X = oldBounds.X, Y = oldBounds.Y};
+            FrameDescriptor currentFrameDescriptor = AnimationDescriptor.FrameOffsets.Offsets[FrameIndex];
+
+            currentFrameDescriptor.FrameOffset = new DxVector2(oldBounds.X, oldBounds.Y);
+            FrameOffsetBuilder.WithFrameOffset(FrameIndex, currentFrameDescriptor);
+
+            AnimationDescriptor.FrameOffsets = FrameOffsetBuilder.Build();
+
+            FrameOutline.RenderTransform = translation;
+        }
+
+        private void HandleMouseUpImage(object sender, MouseButtonEventArgs eventArgs)
+        {
+            LastDragLocation = null;
         }
 
         private void HandleNew(object sender, ExecutedRoutedEventArgs eventArgs)
@@ -359,6 +430,7 @@ namespace AnimationEditor
                 frame.RenderSize = updatedSize;
             }
 
+            FrameOutline.Width = newValue;
             FrameOffsetBuilder.WithWidth(newValue);
             AnimationDescriptor.FrameOffsets = FrameOffsetBuilder.Build();
         }
@@ -373,11 +445,6 @@ namespace AnimationEditor
             {
                 // LOL ignore
             }
-        }
-
-        private void UpdateProperties()
-        {
-            // TODO LOL
         }
 
         private void ValidateNumericInput(object sender, TextCompositionEventArgs eventArgs)

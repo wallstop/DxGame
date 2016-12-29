@@ -50,11 +50,19 @@
                    Margin="5"
                    RenderTransform="{Binding AnimationTransform,
                                              Mode=OneWay}" />
-            <Image Name="Source"
-                   Grid.Row="0"
-                   Grid.RowSpan="2"
-                   Grid.Column="1"
-                   Margin="5" />
+            <Canvas Name="SourceCanvas"
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Grid.Column="1"
+                    Margin="5">
+                <Image Name="Source" />
+                <Rectangle Name="FrameOutline">
+                    <Rectangle.Fill>
+                        <SolidColorBrush Opacity="0.3" Color="Green" />
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Canvas>
+
             <Grid Grid.Row="1"
                   Grid.Column="0"
                   HorizontalAlignment="Left"

@@ -21,6 +21,11 @@ namespace DxCore.Core.Utils
             return (T) Copy((object) original);
         }
 
+        public static void CopyFrom<T>(this T original, T value)
+        {
+            original.MapAllFieldsFrom(value);
+        }
+
         public static bool Equals<T, U>(T first, U second)
         {
             if(ReferenceEquals(first, second))
@@ -106,8 +111,7 @@ namespace DxCore.Core.Utils
 
         public static void ResetToBase<T>(this T original)
         {
-            T baseInstance = Activator.CreateInstance<T>();
-            original.MapAllFieldsFrom(baseInstance);
+            CopyFrom(original, Activator.CreateInstance<T>());
         }
 
         private static void CopyFields(object originalObject, IDictionary<object, object> visited, object cloneObject,

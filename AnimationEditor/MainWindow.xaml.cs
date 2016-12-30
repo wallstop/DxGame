@@ -28,6 +28,8 @@ namespace AnimationEditor
     {
         private readonly Thread animationRunner_;
 
+        private int frameIndex_;
+
         public AnimationDescriptor AnimationDescriptor { get; }
 
         public string ContentDirectory => AnimationSettings.ContentDirectory;
@@ -35,7 +37,23 @@ namespace AnimationEditor
         public int FrameCount => AnimationDescriptor?.FrameCount ?? 0;
         public int FrameHeight => (int) AnimationDescriptor.BoundingBox.Height;
 
-        public int FrameIndex { get; set; }
+        public int FrameIndex
+        {
+            get { return frameIndex_; }
+            set
+            {
+                frameIndex_ = value;
+                DxVector2 drawOffset;
+                DxVector2 frameOffset;
+                DxRectangle boundingBox;
+                if(AnimationDescriptor.FrameOffsets.OffsetForFrame(frameIndex_, out frameOffset, out drawOffset,
+                    out boundingBox))
+                {
+                    TranslateTransform translation = new TranslateTransform(frameOffset.X, frameOffset.Y);
+                    FrameOutline.RenderTransform = translation;
+                }
+            }
+        }
 
         public ObservableCollection<Image> Frames { get; }
 
@@ -93,6 +111,8 @@ namespace AnimationEditor
 
         private Point? LastDragLocation { get; set; }
 
+        private bool Running { get; set; }
+
         public MainWindow()
         {
             FrameOffsetBuilder = new AnimationFrameOffset.AnimationFrameOffsetBuilder();
@@ -108,6 +128,7 @@ namespace AnimationEditor
             Frames = new ObservableCollection<Image>();
             DataContext = this;
             Closing += OnExit;
+            Running = true;
 
             SourceCanvas.MouseEnter += HandleMouseEnterImage;
             SourceCanvas.MouseLeave += HandleMouseLeaveImage;
@@ -127,7 +148,7 @@ namespace AnimationEditor
         {
             Stopwatch animationTimer = Stopwatch.StartNew();
             int frame = 0;
-            while(true)
+            while(Running)
             {
                 TimeSpan tick = animationTimer.Elapsed;
                 // TODO: Hot-sleep for correct amount of time
@@ -147,6 +168,8 @@ namespace AnimationEditor
                             Width = boundingBox.Width,
                             Height = boundingBox.Height
                         };
+                        TranslateTransform offset = new TranslateTransform(drawOffset.X, drawOffset.Y);
+                        Animation.RenderTransform = offset;
                         Animation.Clip = new RectangleGeometry(crop);
                     }
                 }));
@@ -185,7 +208,9 @@ namespace AnimationEditor
 
         private void HandleClose(object sender, ExecutedRoutedEventArgs eventArgs)
         {
+            Running = false;
             animationRunner_.Abort();
+            animationRunner_.Join();
             Close();
         }
 
@@ -237,7 +262,9 @@ namespace AnimationEditor
                             Clip = boundary,
                             ClipToBounds = true,
                             Stretch = Stretch.None,
-                            ToolTip = (i + 1).ToString()
+                            ToolTip = (i + 1).ToString(),
+                            MaxHeight = FrameHeight,
+                            MaxWidth = FrameWidth
                             // Fake a good image by sliding it backwards so we just see our tiny little dooderoo
                         };
 
@@ -270,6 +297,7 @@ namespace AnimationEditor
 
             foreach(Image frame in Frames)
             {
+                frame.MaxHeight = newValue;
                 RectangleGeometry existingGeometry = (RectangleGeometry) frame.Clip;
                 Size updatedSize = new Size(existingGeometry.Rect.Width, newValue);
                 existingGeometry.Rect = new Rect(existingGeometry.Rect.Location, updatedSize);
@@ -309,6 +337,12 @@ namespace AnimationEditor
             {
                 return;
             }
+            if(FrameIndex < 0)
+            {
+                MessageBox.Show(this, "I don't have any frames!");
+                return;
+            }
+
             Point oldLocation = LastDragLocation.Value;
             Point newLocation = eventArgs.GetPosition(Source);
             LastDragLocation = newLocation;
@@ -321,7 +355,7 @@ namespace AnimationEditor
             oldBounds.Y += offset.Y;
             frameBounds.Rect = oldBounds;
 
-            TranslateTransform translation = new TranslateTransform {X = oldBounds.X, Y = oldBounds.Y};
+            TranslateTransform translation = new TranslateTransform(oldBounds.X, oldBounds.Y);
             FrameDescriptor currentFrameDescriptor = AnimationDescriptor.FrameOffsets.Offsets[FrameIndex];
 
             currentFrameDescriptor.FrameOffset = new DxVector2(oldBounds.X, oldBounds.Y);
@@ -330,6 +364,7 @@ namespace AnimationEditor
             AnimationDescriptor.FrameOffsets = FrameOffsetBuilder.Build();
 
             FrameOutline.RenderTransform = translation;
+            //Frames[FrameIndex].Trans = translation;
         }
 
         private void HandleMouseUpImage(object sender, MouseButtonEventArgs eventArgs)
@@ -424,6 +459,7 @@ namespace AnimationEditor
 
             foreach(Image frame in Frames)
             {
+                frame.MaxWidth = newValue;
                 RectangleGeometry existingGeometry = (RectangleGeometry) frame.Clip;
                 Size updatedSize = new Size(newValue, existingGeometry.Rect.Height);
                 existingGeometry.Rect = new Rect(existingGeometry.Rect.Location, updatedSize);

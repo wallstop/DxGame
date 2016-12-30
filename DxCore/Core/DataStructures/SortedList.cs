@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.DataStructures
 {
@@ -14,6 +14,10 @@ namespace DxCore.Core.DataStructures
     {
         [DataMember] private readonly IComparer<T> comparer_;
         [DataMember] private readonly List<T> list_;
+
+        public T Max => list_[list_.Count - 1];
+
+        public T Min => list_[0];
 
         public SortedList()
         {
@@ -100,18 +104,9 @@ namespace DxCore.Core.DataStructures
             Add(item);
         }
 
-        public T Min => list_[0];
-
-        public T Max => list_[list_.Count - 1];
-
         public void RemoveAt(int index)
         {
             list_.RemoveAt(index);
-        }
-
-        public void RemoveAll(Predicate<T> match)
-        {
-            list_.RemoveAll(match);
         }
 
         public T this[int index]
@@ -120,19 +115,24 @@ namespace DxCore.Core.DataStructures
             set { throw new ArgumentException($"Cannot call set on access operator of {GetType()}"); }
         }
 
-        public void RemoveBelow(T item)
+        public void RemoveAbove(T item)
         {
-            while(Count > 0 && comparer_.Compare(list_[0], item) < 0)
+            while((Count > 0) && (comparer_.Compare(list_[Count - 1], item) > 0))
             {
-                RemoveAt(0);
+                RemoveAt(Count - 1);
             }
         }
 
-        public void RemoveAbove(T item)
+        public void RemoveAll(Predicate<T> match)
         {
-            while(Count > 0 && comparer_.Compare(list_[Count - 1], item) > 0)
+            list_.RemoveAll(match);
+        }
+
+        public void RemoveBelow(T item)
+        {
+            while((Count > 0) && (comparer_.Compare(list_[0], item) < 0))
             {
-                RemoveAt(Count - 1);
+                RemoveAt(0);
             }
         }
     }

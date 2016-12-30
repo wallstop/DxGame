@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Messaging
 {
@@ -14,13 +14,13 @@ namespace DxCore.Core.Messaging
     [DataContract]
     public class Message
     {
-        [DataMember]
-        public TimeSpan TimeStamp { get; private set; }
+        public static Message EmptyMessage { get; } = new Message(TimeSpan.Zero, GameId.Empty);
 
         [DataMember]
         public GameId GameId { get; private set; }
 
-        public static Message EmptyMessage { get; } = new Message(TimeSpan.Zero, GameId.Empty);
+        [DataMember]
+        public TimeSpan TimeStamp { get; private set; }
 
         protected Message() : this(DxGame.Instance.CurrentUpdateTime.TotalGameTime, DxGame.Instance.GameGuid) {}
 
@@ -47,7 +47,7 @@ namespace DxCore.Core.Messaging
         {
             Validate.Assert.IsTrue(typeof(T) != typeof(Message),
                 () =>
-                    $"Please use {nameof(Message.EmitUntyped)} if you don't know the type of the message. ({nameof(Emit)} called with a base {typeof(Message)}");
+                        $"Please use {nameof(Message.EmitUntyped)} if you don't know the type of the message. ({nameof(Emit)} called with a base {typeof(Message)}");
             Message.EmitTyped(message);
         }
     }

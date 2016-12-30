@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
-using DXGame.Core.Utils;
+using WallNetCore;
 
 namespace DxCore.Core.Utils.Cache.Simple
 {
@@ -12,15 +12,16 @@ namespace DxCore.Core.Utils.Cache.Simple
     [DataContract]
     public class AbstractSimpleCache<U, T> : ISimpleCache<U, T>
     {
+        [DataMember] protected readonly Dictionary<U, T> cache_ = new Dictionary<U, T>();
+
         protected readonly ReaderWriterLockSlim globalLock_ = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-        [DataMember]
-        protected readonly Dictionary<U, T> cache_ = new Dictionary<U, T>();
 
         /**
             <summary>
                 Returns all Elements (values) that are currently stored in the cache
             </summary>
         */
+
         public virtual IReadOnlyCollection<T> Elements
         {
             get
@@ -37,6 +38,7 @@ namespace DxCore.Core.Utils.Cache.Simple
                 Returns the full mapping of Keys -> Values that are currently stored in this cache
             </summary>
         */
+
         public virtual IReadOnlyDictionary<U, T> KeyedElements
         {
             get

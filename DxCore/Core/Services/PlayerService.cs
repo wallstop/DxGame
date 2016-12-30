@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils.Validate;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Services
 {
@@ -19,11 +19,6 @@ namespace DxCore.Core.Services
 
         [DataMember]
         public ICollection<Player> Players { get; private set; } = new List<Player>();
-
-        protected override void OnCreate()
-        {
-            Self.MessageHandler.RegisterMessageHandler<MapRotationNotification>(HandleMapRotationNotification);
-        }
 
         /* 
             Do we need this distinction?
@@ -63,6 +58,11 @@ namespace DxCore.Core.Services
                 Players.Add(ActivePlayer);
             }
             return this;
+        }
+
+        protected override void OnCreate()
+        {
+            Self.MessageHandler.RegisterMessageHandler<MapRotationNotification>(HandleMapRotationNotification);
         }
 
         private void HandleMapRotationNotification(MapRotationNotification mapRotationNotification)

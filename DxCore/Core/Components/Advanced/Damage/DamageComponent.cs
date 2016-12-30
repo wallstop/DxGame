@@ -4,7 +4,7 @@ using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Damage
 {
@@ -26,6 +26,11 @@ namespace DxCore.Core.Components.Advanced.Damage
         protected DamageComponent(EntityPropertiesComponent entityProperties)
         {
             EntityProperties = entityProperties;
+        }
+
+        public static DamageComponentBuilder Builder()
+        {
+            return new DamageComponentBuilder();
         }
 
         public override void OnAttach()
@@ -50,11 +55,6 @@ namespace DxCore.Core.Components.Advanced.Damage
             var damageAmount = damageReceived.Item2;
             /* Othwerise, directly modify health */
             EntityProperties.EntityProperties.Health.BaseValue -= (int) Math.Ceiling(damageAmount);
-        }
-
-        public static DamageComponentBuilder Builder()
-        {
-            return new DamageComponentBuilder();
         }
 
         public class DamageComponentBuilder : IBuilder<DamageComponent>

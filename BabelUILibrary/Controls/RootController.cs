@@ -1,10 +1,10 @@
 ﻿using System;
 using Babel.Services;
 using DxCore;
-using DxCore.Core.Utils.Validate;
 using EmptyKeys.UserInterface.Input;
 using EmptyKeys.UserInterface.Mvvm;
 using NLog;
+using WallNetCore.Validate;
 
 namespace BabelUILibrary.Controls
 {
@@ -19,8 +19,16 @@ namespace BabelUILibrary.Controls
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        /* TODO: Switch to enum of all types of menus / screens */
-        private MenuType CurrentMenu { get; set; }
+        public bool MainMenuVisible
+        {
+            get { return CurrentMenu == MenuType.MainMenu; }
+            set
+            {
+                Validate.Hard.IsTrue(value);
+                CurrentMenu = MenuType.MainMenu;
+                NotifyMenuTypeChanged();
+            }
+        }
 
         public ICommand PlayCommand { get; }
         public ICommand QuitCommand { get; }
@@ -42,16 +50,9 @@ namespace BabelUILibrary.Controls
             }
         }
 
-        public bool MainMenuVisible
-        {
-            get { return CurrentMenu == MenuType.MainMenu; }
-            set
-            {
-                Validate.Hard.IsTrue(value);
-                CurrentMenu = MenuType.MainMenu;
-                NotifyMenuTypeChanged();
-            }
-        }
+        public ICommand SettingsCommand { get; }
+
+        public SettingsController SettingsController { get; }
 
         public bool SettingsMenuVisible
         {
@@ -64,22 +65,10 @@ namespace BabelUILibrary.Controls
             }
         }
 
-        private void NotifyMenuTypeChanged()
-        {
-            bool doesntMatter = !RootVisible;
-            /* Trust me I know what I'm doing */
-            SetProperty(ref doesntMatter, RootVisible, nameof(RootVisible));
-            doesntMatter = !MainMenuVisible;
-            SetProperty(ref doesntMatter, MainMenuVisible, nameof(MainMenuVisible));
-            doesntMatter = !SettingsMenuVisible;
-            SetProperty(ref doesntMatter, SettingsMenuVisible, nameof(SettingsMenuVisible));
-        }
-
-        public SettingsController SettingsController { get; }
+        /* TODO: Switch to enum of all types of menus / screens */
+        private MenuType CurrentMenu { get; set; }
 
         private Predicate<object> MainMenuCanExecute { get; }
-
-        public ICommand SettingsCommand { get; }
 
         public RootController()
         {
@@ -101,6 +90,17 @@ namespace BabelUILibrary.Controls
                     MainMenuVisible = true;
                 }
             });
+        }
+
+        private void NotifyMenuTypeChanged()
+        {
+            bool doesntMatter = !RootVisible;
+            /* Trust me I know what I'm doing */
+            SetProperty(ref doesntMatter, RootVisible, nameof(RootVisible));
+            doesntMatter = !MainMenuVisible;
+            SetProperty(ref doesntMatter, MainMenuVisible, nameof(MainMenuVisible));
+            doesntMatter = !SettingsMenuVisible;
+            SetProperty(ref doesntMatter, SettingsMenuVisible, nameof(SettingsMenuVisible));
         }
 
         private void OnPlay(object context)

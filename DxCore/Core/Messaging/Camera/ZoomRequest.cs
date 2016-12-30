@@ -1,4 +1,4 @@
-﻿using DxCore.Core.Utils.Validate;
+﻿using WallNetCore.Validate;
 
 namespace DxCore.Core.Messaging.Camera
 {

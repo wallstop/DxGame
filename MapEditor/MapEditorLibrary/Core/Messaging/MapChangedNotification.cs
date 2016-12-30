@@ -1,6 +1,6 @@
 ﻿using DxCore.Core.Map;
 using DxCore.Core.Messaging;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace MapEditorLibrary.Core.Messaging
 {

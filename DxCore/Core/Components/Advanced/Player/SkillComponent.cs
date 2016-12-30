@@ -8,7 +8,8 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Skills;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Extension;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Player
 {
@@ -22,10 +23,10 @@ namespace DxCore.Core.Components.Advanced.Player
     [DataContract]
     public class SkillComponent : Component
     {
+        [DataMember] private readonly List<CommandMessage> commandMessages_;
+
         [DataMember]
         public ReadOnlyDictionary<Commandment, Skill> Skills { get; }
-
-        [DataMember] private readonly List<CommandMessage> commandMessages_;
 
         public SkillComponent(params Skill[] skills) : this(skills.ToList()) {}
 
@@ -41,15 +42,6 @@ namespace DxCore.Core.Components.Advanced.Player
         public override void OnAttach()
         {
             RegisterMessageHandler<CommandMessage>(HandleCommandMessage);
-        }
-
-        private void HandleCommandMessage(CommandMessage commandMessage)
-        {
-            if(!Equals(commandMessage.Target, Parent.Id))
-            {
-                return;
-            }
-            commandMessages_.Add(commandMessage);
         }
 
         /**
@@ -76,6 +68,15 @@ namespace DxCore.Core.Components.Advanced.Player
                     skillEntry.Value.Activate(Parent, gameTime);
                 }
             }
+        }
+
+        private void HandleCommandMessage(CommandMessage commandMessage)
+        {
+            if(!Equals(commandMessage.Target, Parent.Id))
+            {
+                return;
+            }
+            commandMessages_.Add(commandMessage);
         }
     }
 }

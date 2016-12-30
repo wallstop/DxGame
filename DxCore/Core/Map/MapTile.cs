@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Map
 {
@@ -10,13 +10,10 @@ namespace DxCore.Core.Map
     public class MapTile : IIdentifiable
     {
         [DataMember]
-        public UniqueId Id { get; private set; }
+        public DxRectangle Space { get; private set; }
 
         [DataMember]
         public Tile Tile { get; private set; }
-
-        [DataMember]
-        public DxRectangle Space { get; private set; }
 
         public MapTile(Tile tile, DxRectangle space)
         {
@@ -26,5 +23,8 @@ namespace DxCore.Core.Map
             Tile = tile;
             Space = space;
         }
+
+        [DataMember]
+        public UniqueId Id { get; private set; }
     }
 }

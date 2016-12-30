@@ -2,21 +2,20 @@
 using System.IO;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Settings
 {
-
     [DataContract]
     [Serializable]
     public abstract class AbstractSettings<T> : IPersistable<T> where T : IPersistable<T>
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        public abstract T CurrentSettings { get; }
+        public abstract T DefaultSettings { get; }
 
         public abstract string Path { get; }
-        public abstract T DefaultSettings { get; }
-        public abstract T CurrentSettings { get; }
 
         public T Load(string fileName)
         {
@@ -50,14 +49,14 @@ namespace DxCore.Core.Settings
             }
         }
 
-        public void Save()
-        {
-            Save(Path);
-        }
-
         public T Load()
         {
             return Load(Path);
+        }
+
+        public void Save()
+        {
+            Save(Path);
         }
 
         protected virtual void CopySettings(T other)

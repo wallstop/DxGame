@@ -4,7 +4,7 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Map
 {
@@ -22,7 +22,8 @@ namespace DxCore.Core.Components.Advanced.Map
 
         public MapRotationTriggerComponent(MapRotationTrigger mapRotationTrigger, bool triggered = false)
         {
-            Validate.Hard.IsNotNull(mapRotationTrigger, this.GetFormattedNullOrDefaultMessage(nameof(mapRotationTrigger)));
+            Validate.Hard.IsNotNull(mapRotationTrigger,
+                this.GetFormattedNullOrDefaultMessage(nameof(mapRotationTrigger)));
             Trigger = mapRotationTrigger;
             Triggered = triggered;
         }

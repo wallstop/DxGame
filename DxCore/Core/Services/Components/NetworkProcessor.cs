@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Services.Components
 {

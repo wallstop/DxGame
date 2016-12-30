@@ -6,8 +6,6 @@ using DxCore.Core.Map;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Services;
-using DxCore.Core.Utils.Cache.Advanced;
-using DxCore.Core.Utils.Validate;
 using MapEditorLibrary.Controls;
 using MapEditorLibrary.Core.Messaging;
 using MapEditorLibrary.Core.Services;
@@ -15,6 +13,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using NLog;
+using WallNetCore.Cache.Advanced;
+using WallNetCore.Validate;
 
 namespace MapEditorLibrary.Core.Components
 {

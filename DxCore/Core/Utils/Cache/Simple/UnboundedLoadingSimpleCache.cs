@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DXGame.Core.Utils;
+using WallNetCore;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Utils.Cache.Simple
 {
@@ -10,18 +11,16 @@ namespace DxCore.Core.Utils.Cache.Simple
             Useful if you want to store a lot of stuff in a dictionary-style format, but threadsafe and automatically loading!
         </summary>
     */
+
     [Serializable]
     [DataContract]
     public class UnboundedLoadingSimpleCache<U, T> : AbstractSimpleCache<U, T>
     {
-        private Func<U, T> Producer
-        {
-            get;
-        }
+        private Func<U, T> Producer { get; }
 
         public UnboundedLoadingSimpleCache(Func<U, T> producer)
         {
-            Validate.Validate.Hard.IsNotNull(producer, () => this.GetFormattedNullOrDefaultMessage("producer"));
+            Validate.Hard.IsNotNull(producer, () => this.GetFormattedNullOrDefaultMessage("producer"));
             Producer = producer;
         }
 

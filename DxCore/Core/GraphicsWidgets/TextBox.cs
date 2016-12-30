@@ -8,10 +8,10 @@ using DxCore.Core.Input;
 using DxCore.Core.Primitives;
 using DxCore.Core.Services;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.GraphicsWidgets
 {
@@ -19,8 +19,8 @@ namespace DxCore.Core.GraphicsWidgets
     {
         private int cursorPosition_;
         private ImmutableHashSet<Keys> validKeys_ = ImmutableHashSet<Keys>.Empty;
-        public string Text { get; protected set; }
         public ISpatial SpatialComponent { get; }
+        public string Text { get; protected set; }
 
         public IEnumerable<Keys> ValidKeys
         {
@@ -31,6 +31,10 @@ namespace DxCore.Core.GraphicsWidgets
                 validKeys_ = value.Concat(new[] {Keys.Back, Keys.Delete, Keys.Left, Keys.Right}).ToImmutableHashSet();
             }
         }
+
+        protected Texture2D Background { get; }
+
+        protected BlinkingCursor BlinkingCursor { get; }
 
         protected int CursorPosition
         {
@@ -46,12 +50,6 @@ namespace DxCore.Core.GraphicsWidgets
             }
         }
 
-        protected BlinkingCursor BlinkingCursor { get; }
-        protected SpriteFont SpriteFont { get; }
-        protected Texture2D Background { get; }
-        protected Color TextColor { get; }
-        protected int MaxLength { get; }
-
         protected bool InFocus
         {
             get
@@ -61,6 +59,10 @@ namespace DxCore.Core.GraphicsWidgets
                 return SpatialComponent.Space.Contains(mousePosition);
             }
         }
+
+        protected int MaxLength { get; }
+        protected SpriteFont SpriteFont { get; }
+        protected Color TextColor { get; }
 
         private TextBox(BlinkingCursor blinkingCursor, List<Keys> validKeys, Texture2D background, Color textColor,
             ISpatial spatial, SpriteFont spriteFont, int maxLength)
@@ -91,37 +93,6 @@ namespace DxCore.Core.GraphicsWidgets
             {
                 BlinkingCursor.Draw(spriteBatch, gameTime);
             }
-        }
-
-        protected override void Update(DxGameTime gameTime)
-        {
-            // TODO: Have this linked to some cursor object instead of directly reading the mouse state
-
-            // Only update if we have focus
-            if(InFocus)
-            {
-                var inputModel = DxGame.Instance.Service<InputService>();
-                IEnumerable<KeyboardEvent> finishedKeys =
-                    inputModel.InputHandler.FinishedKeyboardEvents.Where(key => ValidKeys.Contains(key.Source));
-                HandleKeyboardEvents(finishedKeys);
-                IEnumerable<KeyboardEvent> longPressedKeys =
-                    inputModel.InputHandler.CurrentKeyboardEvents.Where(
-                        key => key.HeldDown && ValidKeys.Contains(key.Source));
-                HandleKeyboardEvents(longPressedKeys);
-            }
-
-            var textSubstring = Text.Substring(0, CursorPosition);
-            var cursorPosition = BlinkingCursor.Space;
-
-            var textDimensions = SpriteFont.MeasureString(textSubstring);
-
-            cursorPosition.X = SpatialComponent.WorldCoordinates.X + textDimensions.X;
-            /* TODO: Find a better way of doing this than hard-coding "a" */
-            cursorPosition.Y = SpatialComponent.WorldCoordinates.Y +
-                               (textDimensions.Y == 0 ? SpriteFont.MeasureString("a").Y : textDimensions.Y);
-            BlinkingCursor.Space = cursorPosition;
-            BlinkingCursor.Process(gameTime);
-            base.Update(gameTime);
         }
 
         /*
@@ -174,7 +145,7 @@ namespace DxCore.Core.GraphicsWidgets
             }
 
             Text = preCursor + typedText + postCursor;
-            if(IsMaxLengthSet() && MaxLength < Text.Length)
+            if(IsMaxLengthSet() && (MaxLength < Text.Length))
             {
                 Text = Text.Substring(0, MaxLength);
             }
@@ -183,6 +154,37 @@ namespace DxCore.Core.GraphicsWidgets
         protected bool IsMaxLengthSet()
         {
             return MaxLength != 0;
+        }
+
+        protected override void Update(DxGameTime gameTime)
+        {
+            // TODO: Have this linked to some cursor object instead of directly reading the mouse state
+
+            // Only update if we have focus
+            if(InFocus)
+            {
+                var inputModel = DxGame.Instance.Service<InputService>();
+                IEnumerable<KeyboardEvent> finishedKeys =
+                    inputModel.InputHandler.FinishedKeyboardEvents.Where(key => ValidKeys.Contains(key.Source));
+                HandleKeyboardEvents(finishedKeys);
+                IEnumerable<KeyboardEvent> longPressedKeys =
+                    inputModel.InputHandler.CurrentKeyboardEvents.Where(
+                        key => key.HeldDown && ValidKeys.Contains(key.Source));
+                HandleKeyboardEvents(longPressedKeys);
+            }
+
+            var textSubstring = Text.Substring(0, CursorPosition);
+            var cursorPosition = BlinkingCursor.Space;
+
+            var textDimensions = SpriteFont.MeasureString(textSubstring);
+
+            cursorPosition.X = SpatialComponent.WorldCoordinates.X + textDimensions.X;
+            /* TODO: Find a better way of doing this than hard-coding "a" */
+            cursorPosition.Y = SpatialComponent.WorldCoordinates.Y +
+                               (textDimensions.Y == 0 ? SpriteFont.MeasureString("a").Y : textDimensions.Y);
+            BlinkingCursor.Space = cursorPosition;
+            BlinkingCursor.Process(gameTime);
+            base.Update(gameTime);
         }
 
         public class TextBoxBuilder : IBuilder<TextBox>
@@ -211,15 +213,9 @@ namespace DxCore.Core.GraphicsWidgets
                     maxLength_);
             }
 
-            public TextBoxBuilder WithValidKeys(IEnumerable<Keys> validKeys)
+            public TextBoxBuilder WithBackgroundColor(Color color)
             {
-                validKeys_ = new List<Keys>(validKeys);
-                return this;
-            }
-
-            public TextBoxBuilder WithCursorColor(Color color)
-            {
-                cursorColor_ = color;
+                backgroundTexture_ = TextureFactory.TextureForColor(color);
                 return this;
             }
 
@@ -229,15 +225,15 @@ namespace DxCore.Core.GraphicsWidgets
                 return this;
             }
 
-            public TextBoxBuilder WithBackgroundColor(Color color)
+            public TextBoxBuilder WithCursorColor(Color color)
             {
-                backgroundTexture_ = TextureFactory.TextureForColor(color);
+                cursorColor_ = color;
                 return this;
             }
 
-            public TextBoxBuilder WithTextColor(Color color)
+            public TextBoxBuilder WithMaxLength(int maxLength)
             {
-                textColor_ = color;
+                maxLength_ = maxLength;
                 return this;
             }
 
@@ -253,9 +249,15 @@ namespace DxCore.Core.GraphicsWidgets
                 return this;
             }
 
-            public TextBoxBuilder WithMaxLength(int maxLength)
+            public TextBoxBuilder WithTextColor(Color color)
             {
-                maxLength_ = maxLength;
+                textColor_ = color;
+                return this;
+            }
+
+            public TextBoxBuilder WithValidKeys(IEnumerable<Keys> validKeys)
+            {
+                validKeys_ = new List<Keys>(validKeys);
                 return this;
             }
         }

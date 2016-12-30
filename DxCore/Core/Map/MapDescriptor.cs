@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Extension;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Map
 {
@@ -19,43 +20,43 @@ namespace DxCore.Core.Map
     [DataContract]
     public class MapDescriptor : JsonPersistable<MapDescriptor>
     {
-        public static string MapExtension => ".mdtr";
+        [IgnoreDataMember]
+        // TODO: Figure out units, pls. This is pretty urgent.
+        public DxRectangle Bounds => MapLayout.Bounds;
 
         [IgnoreDataMember]
         public override string Extension => MapExtension;
-
-        [IgnoreDataMember]
-        public override MapDescriptor Item => this;
-
-        [DataMember]
-        public MapLayout MapLayout { get; private set; }
-
-        /* In indices */
-
-        [IgnoreDataMember]
-        public int Width => MapLayout.Width;
 
         /* In indices */
 
         [IgnoreDataMember]
         public int Height => MapLayout.Height;
 
-        /* In units */
-
         [IgnoreDataMember]
-        public int TileWidth => MapLayout.TileWidth;
+        public override MapDescriptor Item => this;
+
+        public static string MapExtension => ".mdtr";
+
+        [DataMember]
+        public MapLayout MapLayout { get; private set; }
 
         /* In units */
 
         [IgnoreDataMember]
         public int TileHeight => MapLayout.TileHeight;
 
-        [IgnoreDataMember]
-        // TODO: Figure out units, pls. This is pretty urgent.
-        public DxRectangle Bounds => MapLayout.Bounds;
-
         [DataMember]
         public Dictionary<TilePosition, Tile> Tiles { get; private set; }
+
+        /* In units */
+
+        [IgnoreDataMember]
+        public int TileWidth => MapLayout.TileWidth;
+
+        /* In indices */
+
+        [IgnoreDataMember]
+        public int Width => MapLayout.Width;
 
         private MapDescriptor(Dictionary<TilePosition, Tile> tiles, MapLayout mapLayout)
         {
@@ -76,9 +77,33 @@ namespace DxCore.Core.Map
 
             public Dictionary<TilePosition, Tile> Tiles => tiles_.ToDictionary();
 
-            public MapDescriptorBuilder WithoutTiles()
+            public MapDescriptor Build()
             {
+                MapLayout mapLayout = mapLayoutBuilder_.Build();
+                return new MapDescriptor(tiles_.ToDictionary(), mapLayout);
+            }
+
+            public MapDescriptorBuilder WithHeight(int height)
+            {
+                mapLayoutBuilder_.WithHeight(height);
+                return this;
+            }
+
+            public MapDescriptorBuilder WithMapDescriptor(MapDescriptor existingMap)
+            {
+                Validate.Hard.IsNotNull(existingMap);
                 tiles_.Clear();
+                foreach(KeyValuePair<TilePosition, Tile> tileAndPosition in existingMap.Tiles)
+                {
+                    tiles_.Add(tileAndPosition.Key, tileAndPosition.Value);
+                }
+                mapLayoutBuilder_.WithMapLayout(existingMap.MapLayout);
+                return this;
+            }
+
+            public MapDescriptorBuilder WithMapLayout(MapLayout mapLayout)
+            {
+                mapLayoutBuilder_.WithMapLayout(mapLayout);
                 return this;
             }
 
@@ -86,6 +111,12 @@ namespace DxCore.Core.Map
             {
                 Validate.Hard.IsNotNull(tilePosition);
                 tiles_.Remove(tilePosition);
+                return this;
+            }
+
+            public MapDescriptorBuilder WithoutTiles()
+            {
+                tiles_.Clear();
                 return this;
             }
 
@@ -103,15 +134,9 @@ namespace DxCore.Core.Map
                 return WithTile(new TilePosition(x, y), tile);
             }
 
-            public MapDescriptorBuilder WithWidth(int width)
+            public MapDescriptorBuilder WithTileHeight(int tileHeight)
             {
-                mapLayoutBuilder_.WithWidth(width);
-                return this;
-            }
-
-            public MapDescriptorBuilder WithHeight(int height)
-            {
-                mapLayoutBuilder_.WithHeight(height);
+                mapLayoutBuilder_.WithTileHeight(tileHeight);
                 return this;
             }
 
@@ -121,34 +146,10 @@ namespace DxCore.Core.Map
                 return this;
             }
 
-            public MapDescriptorBuilder WithTileHeight(int tileHeight)
+            public MapDescriptorBuilder WithWidth(int width)
             {
-                mapLayoutBuilder_.WithTileHeight(tileHeight);
+                mapLayoutBuilder_.WithWidth(width);
                 return this;
-            }
-
-            public MapDescriptorBuilder WithMapLayout(MapLayout mapLayout)
-            {
-                mapLayoutBuilder_.WithMapLayout(mapLayout);
-                return this;
-            }
-
-            public MapDescriptorBuilder WithMapDescriptor(MapDescriptor existingMap)
-            {
-                Validate.Hard.IsNotNull(existingMap);
-                tiles_.Clear();
-                foreach(KeyValuePair<TilePosition, Tile> tileAndPosition in existingMap.Tiles)
-                {
-                    tiles_.Add(tileAndPosition.Key, tileAndPosition.Value);
-                }
-                mapLayoutBuilder_.WithMapLayout(existingMap.MapLayout);
-                return this;
-            }
-
-            public MapDescriptor Build()
-            {
-                MapLayout mapLayout = mapLayoutBuilder_.Build();
-                return new MapDescriptor(tiles_.ToDictionary(), mapLayout);
             }
         }
     }

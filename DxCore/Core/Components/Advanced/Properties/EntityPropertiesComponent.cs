@@ -5,13 +5,11 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
-using DxCore.Core.Messaging.Physics;
-using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Properties;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Properties
 {
@@ -39,6 +37,9 @@ namespace DxCore.Core.Components.Advanced.Properties
         */
 
         [IgnoreDataMember] private List<IProperty> properties_;
+
+        [DataMember]
+        public EntityProperties EntityProperties { get; }
 
         /* TODO: Move into EntityProperties */
 
@@ -68,13 +69,10 @@ namespace DxCore.Core.Components.Advanced.Properties
             }
         }
 
-        [DataMember]
-        public EntityProperties EntityProperties { get; }
+        protected virtual DxVector2 InitialJumpAcceleration => DxVector2.EmptyVector;
 
         [DataMember]
         protected LevelUpResponse LevelUpResponse { get; }
-
-        protected virtual DxVector2 InitialJumpAcceleration => DxVector2.EmptyVector;
 
         public EntityPropertiesComponent(EntityProperties entityProperties, LevelUpResponse levelUpResponse)
         {
@@ -84,15 +82,31 @@ namespace DxCore.Core.Components.Advanced.Properties
             LevelUpResponse = levelUpResponse;
         }
 
+        public override void Initialize()
+        {
+            /* Assume child class has dealt with actually creating the Properties */
+            EntityProperties.Health.AttachListener(EntityDeathListener);
+        }
+
+        /* Takes your sweet properties and the level up notification and does absolutely nothing with them. */
+
+        public static void NullLevelUpResponse(EntityProperties entityProperties, LeveledUpMessage levelUpMessage) {}
+
         public override void OnAttach()
         {
             RegisterMessageHandler<LeveledUpMessage>(HandleLevelUp);
         }
 
-        public override void Initialize()
+        protected virtual void EntityDeathListener(int previousHealth, int currentHealth)
         {
-            /* Assume child class has dealt with actually creating the Properties */
-            EntityProperties.Health.AttachListener(EntityDeathListener);
+            /* Have we received lethal damage? */
+            if((currentHealth <= 0) && (previousHealth > 0))
+            {
+                /* If so, tell everyone that we've died. */
+                EntityDeathMessage entityDeathMessage = new EntityDeathMessage {Entity = Parent};
+                /* The world deserves to know. We were important. */
+                entityDeathMessage.Emit();
+            }
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -110,28 +124,12 @@ namespace DxCore.Core.Components.Advanced.Properties
             }
         }
 
-        /* Takes your sweet properties and the level up notification and does absolutely nothing with them. */
-
-        public static void NullLevelUpResponse(EntityProperties entityProperties, LeveledUpMessage levelUpMessage) {}
-
         private void HandleLevelUp(LeveledUpMessage levelUp)
         {
             var leveledUpEntity = levelUp.Entity;
             if(Objects.Equals(Parent, leveledUpEntity))
             {
                 LevelUpResponse(EntityProperties, levelUp);
-            }
-        }
-
-        protected virtual void EntityDeathListener(int previousHealth, int currentHealth)
-        {
-            /* Have we received lethal damage? */
-            if(currentHealth <= 0 && previousHealth > 0)
-            {
-                /* If so, tell everyone that we've died. */
-                EntityDeathMessage entityDeathMessage = new EntityDeathMessage {Entity = Parent};
-                /* The world deserves to know. We were important. */
-                entityDeathMessage.Emit();
             }
         }
     }

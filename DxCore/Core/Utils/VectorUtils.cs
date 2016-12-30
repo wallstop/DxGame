@@ -2,6 +2,7 @@
 using DxCore.Core.Primitives;
 using Microsoft.Xna.Framework;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Utils
 {
@@ -67,16 +68,15 @@ namespace DxCore.Core.Utils
 
         public static DxRectangle RectangleFrom(DxVector2 position, DxVector2 dimensions)
         {
-            Validate.Validate.Hard.IsTrue(dimensions.X >= 0);
-            Validate.Validate.Hard.IsTrue(dimensions.Y >= 0);
-            return new DxRectangle(
-                /*
+            Validate.Hard.IsTrue(dimensions.X >= 0);
+            Validate.Hard.IsTrue(dimensions.Y >= 0);
+            return new DxRectangle( /*
                     The position may be anywhere, so if it's -.05, we actually want it to wrap to -1. Similarly, 
                     if the position is 0.5, we want it to wrap to 1.0
                 */
                 (float) Math.Ceiling(Math.Abs(position.X)) * Math.Sign(position.X),
-                (float) Math.Ceiling(Math.Abs(position.Y)) * Math.Sign(position.Y),
-                (float) Math.Ceiling(dimensions.X), // Assume dimensions are always positive
+                (float) Math.Ceiling(Math.Abs(position.Y)) * Math.Sign(position.Y), (float) Math.Ceiling(dimensions.X),
+                // Assume dimensions are always positive
                 (float) Math.Ceiling(dimensions.Y));
         }
     }

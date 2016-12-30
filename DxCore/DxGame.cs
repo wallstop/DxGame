@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using DxCore.Core;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
@@ -12,11 +11,11 @@ using DxCore.Core.Service;
 using DxCore.Core.Services;
 using DxCore.Core.Settings;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore
 {
@@ -42,64 +41,37 @@ namespace DxCore
 
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        protected UniqueId GameId { get; }
-
-        protected MessageHandler MessageHandler { get; }
-
-        private static DxGame singleton_;
-
-        protected static T ApplyToSingleton<T>(Func<DxGame, T> singletonFunction) 
-        {
-            lock(GameLock)
-            {
-                return singletonFunction.Invoke(singleton_);
-            }
-        }
-
-        protected static void ApplyToSingleton<T>(Action<DxGame> singletonFunction)
-        {
-            lock(GameLock)
-            {
-                singletonFunction?.Invoke(singleton_);
-            }
-        }
-
-        public Scale Scale { get; private set; } = Scale.Medium;
-
-        public SpriteBatch SpriteBatch { get; protected set; }
-        public GraphicsDeviceManager Graphics { get; set; }
-        // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
-        public GameElementCollection DxGameElements { get; protected set; }
-        // TODO: Thread safety? Move this to some kind of Context static class?
-        public static DxGame Instance => singleton_;
-        // TODO: What is the difference? :^?
-        public virtual double PhysicsUpdateFrequency => 1 / 60.0;
-        public virtual double TargetFps => 60.0;
         protected static readonly TimeSpan MinimumFramerate = TimeSpan.FromMilliseconds(1 / 10.0);
-        public GameElementCollection NewGameElements { get; } = new GameElementCollection();
-        public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
-
-        public GameId GameGuid { get; protected set; }
-
-        public DxGameTime CurrentUpdateTime { get; protected set; } = new DxGameTime();
-
-        public DxGameTime CurrentDrawTime { get; protected set; } = new DxGameTime();
-
-        public UpdateMode UpdateMode { get; set; } = UpdateMode.Active;
-
-        /* TODO: Remove public access to this, this was made public for network testing */
-        public new List<DxService> Services { get; } = new List<DxService>();
-
-        public ServiceProvider ServiceProvider { get; } = ServiceProvider.Instance;
+        protected TimeSpan compensatedGameTime_;
 
         protected TimeSpan lastFrameTick_;
-        protected TimeSpan compensatedGameTime_;
 
         protected TimeSpan lastUpdated_;
 
         protected double timeSkewMilliseconds_;
+        public Controls Controls { get; }
+
+        public DxGameTime CurrentDrawTime { get; protected set; } = new DxGameTime();
+
+        public DxGameTime CurrentUpdateTime { get; protected set; } = new DxGameTime();
+        // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
+        public GameElementCollection DxGameElements { get; protected set; }
+
+        public GameId GameGuid { get; protected set; }
+
+        public GameSettings GameSettings { get; }
 
         public Stopwatch GameTimer { get; }
+        public GraphicsDeviceManager Graphics { get; set; }
+        // TODO: Thread safety? Move this to some kind of Context static class?
+        public static DxGame Instance { get; private set; }
+
+        public GameElementCollection NewGameElements { get; } = new GameElementCollection();
+        // TODO: What is the difference? :^?
+        public virtual double PhysicsUpdateFrequency => 1 / 60.0;
+        public GameElementCollection RemovedGameElements { get; } = new GameElementCollection();
+
+        public Scale Scale { get; private set; } = Scale.Medium;
 
         // TODO: Move all this crap out somehow
 
@@ -123,11 +95,13 @@ namespace DxCore
                 if(!ReferenceEquals(mapService, null))
                 {
                     x = MathHelper.Clamp(x,
-                        Math.Max(float.MinValue, -(mapService.MapBounds.X + mapService.MapBounds.Width - screenDimensions.X)),
+                        Math.Max(float.MinValue,
+                            -(mapService.MapBounds.X + mapService.MapBounds.Width - screenDimensions.X)),
                         mapService.MapBounds.X);
 
                     y = MathHelper.Clamp(y,
-                        Math.Max(float.MinValue, -(mapService.MapBounds.Y + mapService.MapBounds.Height - screenDimensions.Y)),
+                        Math.Max(float.MinValue,
+                            -(mapService.MapBounds.Y + mapService.MapBounds.Height - screenDimensions.Y)),
                         mapService.MapBounds.Y);
                 }
 
@@ -135,16 +109,26 @@ namespace DxCore
             }
         }
 
-        public GameSettings GameSettings { get; }
-        public Controls Controls { get; }
+        public ServiceProvider ServiceProvider { get; } = ServiceProvider.Instance;
+
+        /* TODO: Remove public access to this, this was made public for network testing */
+        public new List<DxService> Services { get; } = new List<DxService>();
+
+        public SpriteBatch SpriteBatch { get; protected set; }
+        public virtual double TargetFps => 60.0;
+
+        public UpdateMode UpdateMode { get; set; } = UpdateMode.Active;
+
+        protected UniqueId GameId { get; }
+
+        protected MessageHandler MessageHandler { get; }
 
         protected DxGame()
         {
             lock(GameLock)
             {
-                Validate.Hard.IsNull(singleton_,
-                    "There can only be one instance of the game running in a single process");
-                singleton_ = this;
+                Validate.Hard.IsNull(Instance, "There can only be one instance of the game running in a single process");
+                Instance = this;
             }
 
             Graphics = new GraphicsDeviceManager(this);
@@ -194,6 +178,11 @@ namespace DxCore
             return drawLocation;
         }
 
+        public void ProcessTypedMessage<T>(T message) where T : Message
+        {
+            GlobalMessageBus.TypedBroadcast(message);
+        }
+
         /**
 
             <summary>
@@ -207,13 +196,42 @@ namespace DxCore
             ProcessTypedMessage(typedMessage);
         }
 
-        public void ProcessTypedMessage<T>(T message) where T : Message
-        {
-            GlobalMessageBus.TypedBroadcast(message);
-        }
-
         [Obsolete("Please use ServiceProvider API instead")]
         public T Service<T>() where T : DxService => ServiceProvider.GetService<T>();
+
+        protected void ActiveUpdate(DxGameTime gameTime)
+        {
+            // TODO: Fix update & draw lockstep so they're de-synced. Sync Update() to 60/30/whatever FPS, Draw() unlocked (or locked to player preference)
+
+            // TODO (Short term): Have a dedicated InputSystem 
+            /*
+                TODO (Long term): XNA/Monogame only supports polling-based input. In order to get this to the level of granularity that
+                I'd like, we need to have a dedicated InputSystem that is capable of short-polling (on the order of 1/10th of a millisecond) the keyboard/gamepad/mouse state, 
+                diffing the previous state, and publishing events if there is a change. Then it's a matter of hooking up subscribers to these events.
+            */
+            var networkModel = Service<NetworkService>();
+
+            // Should probably thread this... but wait until we have perf testing :)
+            networkModel?.ReceiveData(gameTime);
+            /* We may end up modifying these as we iterate over them, so take an immutable copy */
+            TimeSpan physicsTarget = TimeSpan.FromMilliseconds(PhysicsUpdateFrequency * 1000.0);
+            if(lastUpdated_ + physicsTarget < gameTime.TotalGameTime)
+            {
+                DxGameTime fakedGameTime = new DxGameTime(gameTime.TotalGameTime, gameTime.TotalGameTime - lastUpdated_,
+                    gameTime.IsRunningSlowly);
+                /* Rewrite */
+                CurrentUpdateTime = fakedGameTime;
+                foreach(var processable in DxGameElements.Processables)
+                {
+                    processable.Process(fakedGameTime);
+                }
+                lastUpdated_ = gameTime.TotalGameTime;
+            }
+            networkModel?.SendData(gameTime);
+            UpdateElements();
+
+            base.Update(gameTime.ToGameTime());
+        }
 
         // TODO: Figure out a better way to attach shit to the game
         protected void AddAndInitializeComponent(Component component)
@@ -221,44 +239,6 @@ namespace DxCore
             component.LoadContent();
             component.Initialize();
             NewGameElements.Add(component);
-        }
-
-        private void HandleEntityCreatedMessage(EntityCreatedMessage entityCreated)
-        {
-            Component createdComponent;
-            if(entityCreated.TryGetCreatedEntity(out createdComponent))
-            {
-                AddAndInitializeComponent(createdComponent);
-                return;
-            }
-
-            GameObject createdGameObject;
-            if(entityCreated.TryGetCreatedEntity(out createdGameObject))
-            {
-                // TODO: Subtle bug. What about components that are attached to the game state already? IGNORE IGNORE TOO ANNOYING RIGHT NOW
-                AddAndInitializeGameObject(createdGameObject);
-            }
-        }
-
-        protected void HandleEntityRemovedMessage(EntityRemovedMessage entityRemoved)
-        {
-            Component removedComponent;
-            if(entityRemoved.TryGetRemovedEntity(out removedComponent))
-            {
-                RemoveComponent(removedComponent);
-                return;
-            }
-
-            GameObject removedGameObject;
-            if(entityRemoved.TryGetRemovedEntity(out removedGameObject))
-            {
-                RemoveGameObject(removedGameObject);
-            }
-        }
-
-        protected void HandleTimeSkewRequest(TimeSkewRequest timeSkewRequest)
-        {
-            timeSkewMilliseconds_ = timeSkewRequest.OffsetMilliseconds;
         }
 
         protected void AddAndInitializeGameObject(GameObject gameObject)
@@ -271,105 +251,37 @@ namespace DxCore
             NewGameElements.Add(gameObject);
         }
 
-        protected void RemoveGameObject(GameObject gameObject)
+        protected static T ApplyToSingleton<T>(Func<DxGame, T> singletonFunction)
         {
-            if(ReferenceEquals(gameObject, null))
+            lock(GameLock)
             {
-                Logger.Warn($"{nameof(RemoveGameObject)} called with null {typeof(GameObject)}");
-                return;
+                return singletonFunction.Invoke(Instance);
             }
-            RemovedGameElements.Add(gameObject);
         }
 
-        protected void RemoveComponent(Component component)
+        protected static void ApplyToSingleton<T>(Action<DxGame> singletonFunction)
         {
-            RemovedGameElements.Add(component);
-        }
-
-        protected override void Initialize()
-        {
-            SpriteBatch = new SpriteBatch(GraphicsDevice);
-            GameObject.From(SpriteBatchEnder.Instance).Create();
-            
-            new InputService().Create();
-            new CameraService().Create();
-            new WorldService().Create();
-            new AudioService().Create();
-
-            base.Initialize();
-        }
-
-        protected override void LoadContent()
-        {
-            base.LoadContent();
-        }
-
-        protected override void UnloadContent()
-        {
-            base.UnloadContent();
-        }
-
-        protected void UpdateElements()
-        {
-            foreach(object newGameElement in NewGameElements)
+            lock(GameLock)
             {
-                DxGameElements.Add(newGameElement);
+                singletonFunction?.Invoke(Instance);
             }
-            NewGameElements.Clear();
-            foreach(object removedGameElement in RemovedGameElements)
-            {
-                DxGameElements.Remove(removedGameElement);
-
-                Component maybeComponent = removedGameElement as Component;
-                if(!ReferenceEquals(maybeComponent, null))
-                {
-                    maybeComponent.Parent?.RemoveComponents(maybeComponent);
-                    maybeComponent.Parent = null;
-                    continue;
-                }
-
-                GameObject maybeGameObject = removedGameElement as GameObject;
-                if(!ReferenceEquals(maybeGameObject, null))
-                {
-                    foreach(Component component in maybeGameObject.Components)
-                    {
-                        RemoveComponent(component);
-                    }
-                }
-            }
-            RemovedGameElements.Clear();
         }
 
-        /// <summary>
-        ///     Allows the game to run logic such as updating the world,
-        ///     checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Update(GameTime gameTime)
+        protected void CooperativeUpdate(DxGameTime gameTime)
         {
-            DxGameTime dxGameTime = DetermineGameTime(gameTime);
-            CurrentDrawTime = dxGameTime;
+            NetworkService networkService = Service<NetworkService>();
+            InputService inputService = Service<InputService>();
+            inputService?.Process(gameTime);
 
-            // Querying Gamepad.GetState(...) requires xinput1_3.dll (The xbox 360 controller driver). Interesting fact...
-            if(Keyboard.GetState().IsKeyDown(Keys.Escape))
-            {
-                Exit();
-            }
+            networkService?.ReceiveData(gameTime);
+            networkService?.Process(gameTime);
 
-            switch(UpdateMode)
-            {
-                case UpdateMode.Active:
-                    ActiveUpdate(dxGameTime);
-                    break;
-                case UpdateMode.Cooperative:
-                    CooperativeUpdate(dxGameTime);
-                    break;
-                case UpdateMode.Passive:
-                    PassiveUpdate(dxGameTime);
-                    break;
-                default:
-                    throw new NotImplementedException($"{UpdateMode} currently not implemented");
-            }
+            // TODO: Move this out of here
+            DeveloperService developerService = Service<DeveloperService>();
+            developerService.Process(gameTime);
+
+            UpdateElements();
+            networkService?.SendData(gameTime);
         }
 
         protected DxGameTime DetermineGameTime(GameTime gameTime)
@@ -408,62 +320,11 @@ namespace DxCore
             return dxGameTime;
         }
 
-        protected void PassiveUpdate(DxGameTime gameTime)
+        protected override void Dispose(bool disposing)
         {
-            NetworkService networkService = Service<NetworkService>();
-            networkService?.ReceiveData(gameTime);
-            networkService?.SendData(gameTime);
-        }
-
-        protected void CooperativeUpdate(DxGameTime gameTime)
-        {
-            NetworkService networkService = Service<NetworkService>();
-            InputService inputService = Service<InputService>();
-            inputService?.Process(gameTime);
-
-            networkService?.ReceiveData(gameTime);
-            networkService?.Process(gameTime);
-
-            // TODO: Move this out of here
-            DeveloperService developerService = Service<DeveloperService>();
-            developerService.Process(gameTime);
-
-            UpdateElements();
-            networkService?.SendData(gameTime);
-        }
-
-        protected void ActiveUpdate(DxGameTime gameTime)
-        {
-            // TODO: Fix update & draw lockstep so they're de-synced. Sync Update() to 60/30/whatever FPS, Draw() unlocked (or locked to player preference)
-
-            // TODO (Short term): Have a dedicated InputSystem 
-            /*
-                TODO (Long term): XNA/Monogame only supports polling-based input. In order to get this to the level of granularity that
-                I'd like, we need to have a dedicated InputSystem that is capable of short-polling (on the order of 1/10th of a millisecond) the keyboard/gamepad/mouse state, 
-                diffing the previous state, and publishing events if there is a change. Then it's a matter of hooking up subscribers to these events.
-            */
             var networkModel = Service<NetworkService>();
-
-            // Should probably thread this... but wait until we have perf testing :)
-            networkModel?.ReceiveData(gameTime);
-            /* We may end up modifying these as we iterate over them, so take an immutable copy */
-            TimeSpan physicsTarget = TimeSpan.FromMilliseconds(PhysicsUpdateFrequency * 1000.0);
-            if((lastUpdated_ + physicsTarget) < gameTime.TotalGameTime)
-            {
-                DxGameTime fakedGameTime = new DxGameTime(gameTime.TotalGameTime, gameTime.TotalGameTime - lastUpdated_,
-                    gameTime.IsRunningSlowly);
-                /* Rewrite */
-                CurrentUpdateTime = fakedGameTime;
-                foreach(var processable in DxGameElements.Processables)
-                {
-                    processable.Process(fakedGameTime);
-                }
-                lastUpdated_ = gameTime.TotalGameTime;
-            }
-            networkModel?.SendData(gameTime);
-            UpdateElements();
-
-            base.Update(gameTime.ToGameTime());
+            networkModel?.ShutDown();
+            base.Dispose(disposing);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -475,21 +336,160 @@ namespace DxCore
             }
         }
 
-        protected override void Dispose(bool disposing)
+        protected void HandleEntityRemovedMessage(EntityRemovedMessage entityRemoved)
         {
-            var networkModel = Service<NetworkService>();
-            networkModel?.ShutDown();
-            base.Dispose(disposing);
+            Component removedComponent;
+            if(entityRemoved.TryGetRemovedEntity(out removedComponent))
+            {
+                RemoveComponent(removedComponent);
+                return;
+            }
+
+            GameObject removedGameObject;
+            if(entityRemoved.TryGetRemovedEntity(out removedGameObject))
+            {
+                RemoveGameObject(removedGameObject);
+            }
+        }
+
+        protected void HandleTimeSkewRequest(TimeSkewRequest timeSkewRequest)
+        {
+            timeSkewMilliseconds_ = timeSkewRequest.OffsetMilliseconds;
+        }
+
+        protected override void Initialize()
+        {
+            SpriteBatch = new SpriteBatch(GraphicsDevice);
+            GameObject.From(SpriteBatchEnder.Instance).Create();
+
+            new InputService().Create();
+            new CameraService().Create();
+            new WorldService().Create();
+            new AudioService().Create();
+
+            base.Initialize();
+        }
+
+        protected override void LoadContent()
+        {
+            base.LoadContent();
         }
 
         protected override void OnExiting(object sender, EventArgs args)
         {
             lock(GameLock)
             {
-                Validate.Hard.IsNotNull(singleton_, () => "Cannot exit a null game!");
-                singleton_ = null;
+                Validate.Hard.IsNotNull(Instance, () => "Cannot exit a null game!");
+                Instance = null;
             }
             base.OnExiting(sender, args);
+        }
+
+        protected void PassiveUpdate(DxGameTime gameTime)
+        {
+            NetworkService networkService = Service<NetworkService>();
+            networkService?.ReceiveData(gameTime);
+            networkService?.SendData(gameTime);
+        }
+
+        protected void RemoveComponent(Component component)
+        {
+            RemovedGameElements.Add(component);
+        }
+
+        protected void RemoveGameObject(GameObject gameObject)
+        {
+            if(ReferenceEquals(gameObject, null))
+            {
+                Logger.Warn($"{nameof(RemoveGameObject)} called with null {typeof(GameObject)}");
+                return;
+            }
+            RemovedGameElements.Add(gameObject);
+        }
+
+        protected override void UnloadContent()
+        {
+            base.UnloadContent();
+        }
+
+        /// <summary>
+        ///     Allows the game to run logic such as updating the world,
+        ///     checking for collisions, gathering input, and playing audio.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Update(GameTime gameTime)
+        {
+            DxGameTime dxGameTime = DetermineGameTime(gameTime);
+            CurrentDrawTime = dxGameTime;
+
+            // Querying Gamepad.GetState(...) requires xinput1_3.dll (The xbox 360 controller driver). Interesting fact...
+            if(Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                Exit();
+            }
+
+            switch(UpdateMode)
+            {
+                case UpdateMode.Active:
+                    ActiveUpdate(dxGameTime);
+                    break;
+                case UpdateMode.Cooperative:
+                    CooperativeUpdate(dxGameTime);
+                    break;
+                case UpdateMode.Passive:
+                    PassiveUpdate(dxGameTime);
+                    break;
+                default:
+                    throw new NotImplementedException($"{UpdateMode} currently not implemented");
+            }
+        }
+
+        protected void UpdateElements()
+        {
+            foreach(object newGameElement in NewGameElements)
+            {
+                DxGameElements.Add(newGameElement);
+            }
+            NewGameElements.Clear();
+            foreach(object removedGameElement in RemovedGameElements)
+            {
+                DxGameElements.Remove(removedGameElement);
+
+                Component maybeComponent = removedGameElement as Component;
+                if(!ReferenceEquals(maybeComponent, null))
+                {
+                    maybeComponent.Parent?.RemoveComponents(maybeComponent);
+                    maybeComponent.Parent = null;
+                    continue;
+                }
+
+                GameObject maybeGameObject = removedGameElement as GameObject;
+                if(!ReferenceEquals(maybeGameObject, null))
+                {
+                    foreach(Component component in maybeGameObject.Components)
+                    {
+                        RemoveComponent(component);
+                    }
+                }
+            }
+            RemovedGameElements.Clear();
+        }
+
+        private void HandleEntityCreatedMessage(EntityCreatedMessage entityCreated)
+        {
+            Component createdComponent;
+            if(entityCreated.TryGetCreatedEntity(out createdComponent))
+            {
+                AddAndInitializeComponent(createdComponent);
+                return;
+            }
+
+            GameObject createdGameObject;
+            if(entityCreated.TryGetCreatedEntity(out createdGameObject))
+            {
+                // TODO: Subtle bug. What about components that are attached to the game state already? IGNORE IGNORE TOO ANNOYING RIGHT NOW
+                AddAndInitializeGameObject(createdGameObject);
+            }
         }
     }
 }

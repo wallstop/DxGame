@@ -13,7 +13,7 @@ using DxCore.Core.Map;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace Babel.Level
 {
@@ -53,26 +53,31 @@ namespace Babel.Level
             Initialize();
         }
 
-        private DxCore.Core.Level.Level GenerateLevel()
+        public override void Initialize()
         {
-            if(currentMapIndex_ == maps_.Count)
+            foreach(var map in maps_)
             {
-                return GenerateLastLevel();
+                map.LoadContent();
+                map.Initialize();
             }
-            ++currentMapIndex_;
+            InitialLevel = GenerateLevel();
+            base.Initialize();
+        }
 
-            Spawner levelEndSpawner = GenerateMapTransitionSpawner();
-            Spawner waveBasedBoxSpawner = SpawnerFactory.WaveBasedSmallBoxSpawner();
-            Spawner waveNotifierSpawner = GenerateWaveChangeNotifierSpawner();
-            Spawner waveEmitterSpawner = GenerateWaveEmitterSpawner();
-
-            DxCore.Core.Level.Level generatedLevel =
-                DxCore.Core.Level.Level.Builder()
-                    .WithMap(CurrentMap)
-                    .WithSpawners(levelEndSpawner, waveNotifierSpawner, waveEmitterSpawner, waveBasedBoxSpawner)
-                    .Build();
-
-            return generatedLevel;
+        public override void LoadContent()
+        {
+            maps_.Clear();
+            var maps =
+                Directory.EnumerateFiles(MAP_PATH)
+                    .Where(
+                        path =>
+                            Path.HasExtension(path) &&
+                            (Path.GetExtension(path)?.Equals(MapDescriptor.MapExtension) ?? false))
+                    .Select(MapDescriptor.StaticLoad)
+                    .Select(mapDescriptor => new Map(mapDescriptor));
+            maps_.AddRange(maps);
+            Validate.Hard.IsNotEmpty(maps_, $"Failed to find maps! Check {MAP_PATH} for valid descriptors");
+            base.LoadContent();
         }
 
         private DxCore.Core.Level.Level GenerateLastLevel()
@@ -106,29 +111,26 @@ namespace Babel.Level
             return winningLevel;
         }
 
-        private Spawner GenerateWaveChangeNotifierSpawner()
+        private DxCore.Core.Level.Level GenerateLevel()
         {
-            Spawner.SpawnerBuilder waveNotifierSpawnerBuilder = Spawner.Builder();
+            if(currentMapIndex_ == maps_.Count)
+            {
+                return GenerateLastLevel();
+            }
+            ++currentMapIndex_;
 
-            WaveChangeNotifier waveChangeNotifier = new WaveChangeNotifier();
-            GameObject waveNotifierObject = GameObject.Builder().WithComponent(waveChangeNotifier).Build();
-            WaveNotifierTrigger waveNotifierTrigger = new WaveNotifierTrigger(waveNotifierObject);
-            SpawnTrigger spawnTrigger = waveNotifierTrigger.CheckForInitialSpawn;
+            Spawner levelEndSpawner = GenerateMapTransitionSpawner();
+            Spawner waveBasedBoxSpawner = SpawnerFactory.WaveBasedSmallBoxSpawner();
+            Spawner waveNotifierSpawner = GenerateWaveChangeNotifierSpawner();
+            Spawner waveEmitterSpawner = GenerateWaveEmitterSpawner();
 
-            waveNotifierSpawnerBuilder.WithSpawnTrigger(spawnTrigger);
-            return waveNotifierSpawnerBuilder.Build();
-        }
+            DxCore.Core.Level.Level generatedLevel =
+                DxCore.Core.Level.Level.Builder()
+                    .WithMap(CurrentMap)
+                    .WithSpawners(levelEndSpawner, waveNotifierSpawner, waveEmitterSpawner, waveBasedBoxSpawner)
+                    .Build();
 
-        private Spawner GenerateWaveEmitterSpawner()
-        {
-            Spawner.SpawnerBuilder waveNotifierSpawnerBuilder = Spawner.Builder();
-
-            GameObject waveNotifierObject = WaveEmitter.NewWaveEmitter();
-            WaveNotifierTrigger waveNotifierTrigger = new WaveNotifierTrigger(waveNotifierObject);
-            SpawnTrigger spawnTrigger = waveNotifierTrigger.CheckForInitialSpawn;
-
-            waveNotifierSpawnerBuilder.WithSpawnTrigger(spawnTrigger);
-            return waveNotifierSpawnerBuilder.Build();
+            return generatedLevel;
         }
 
         private Spawner GenerateMapTransitionSpawner()
@@ -157,31 +159,29 @@ namespace Babel.Level
             return levelEndSpawner.Build();
         }
 
-        public override void LoadContent()
+        private Spawner GenerateWaveChangeNotifierSpawner()
         {
-            maps_.Clear();
-            var maps =
-                Directory.EnumerateFiles(MAP_PATH)
-                    .Where(
-                        path =>
-                            Path.HasExtension(path) &&
-                            (Path.GetExtension(path)?.Equals(MapDescriptor.MapExtension) ?? false))
-                    .Select(MapDescriptor.StaticLoad)
-                    .Select(mapDescriptor => new Map(mapDescriptor));
-            maps_.AddRange(maps);
-            Validate.Hard.IsNotEmpty(maps_, $"Failed to find maps! Check {MAP_PATH} for valid descriptors");
-            base.LoadContent();
+            Spawner.SpawnerBuilder waveNotifierSpawnerBuilder = Spawner.Builder();
+
+            WaveChangeNotifier waveChangeNotifier = new WaveChangeNotifier();
+            GameObject waveNotifierObject = GameObject.Builder().WithComponent(waveChangeNotifier).Build();
+            WaveNotifierTrigger waveNotifierTrigger = new WaveNotifierTrigger(waveNotifierObject);
+            SpawnTrigger spawnTrigger = waveNotifierTrigger.CheckForInitialSpawn;
+
+            waveNotifierSpawnerBuilder.WithSpawnTrigger(spawnTrigger);
+            return waveNotifierSpawnerBuilder.Build();
         }
 
-        public override void Initialize()
+        private Spawner GenerateWaveEmitterSpawner()
         {
-            foreach(var map in maps_)
-            {
-                map.LoadContent();
-                map.Initialize();
-            }
-            InitialLevel = GenerateLevel();
-            base.Initialize();
+            Spawner.SpawnerBuilder waveNotifierSpawnerBuilder = Spawner.Builder();
+
+            GameObject waveNotifierObject = WaveEmitter.NewWaveEmitter();
+            WaveNotifierTrigger waveNotifierTrigger = new WaveNotifierTrigger(waveNotifierObject);
+            SpawnTrigger spawnTrigger = waveNotifierTrigger.CheckForInitialSpawn;
+
+            waveNotifierSpawnerBuilder.WithSpawnTrigger(spawnTrigger);
+            return waveNotifierSpawnerBuilder.Build();
         }
     }
 
@@ -201,14 +201,11 @@ namespace Babel.Level
 
         [DataMember] private bool levelEndTriggered_;
 
-        [DataMember] private MessageHandler MessageHandler { get; set; }
+        [DataMember]
+        private UniqueId Id { get; set; }
 
-        [DataMember] private UniqueId Id { get; set; }
-
-        private void HandleLevelEndRequest(LevelEndRequest levelEndRequest)
-        {
-            levelEndTriggered_ = true;
-        }
+        [DataMember]
+        private MessageHandler MessageHandler { get; set; }
 
         public LevelEndTrigger(GameObject mapTransitionObject)
         {
@@ -220,6 +217,11 @@ namespace Babel.Level
             mapTransitionObject_ = mapTransitionObject;
             alreadyTriggered_ = false;
             levelEndTriggered_ = false;
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
 
         public Tuple<bool, GameObject> CheckForLevelEndRequest(DxGameTime gameTime)
@@ -236,9 +238,9 @@ namespace Babel.Level
             return Tuple.Create<bool, GameObject>(false, null);
         }
 
-        public void Dispose()
+        private void HandleLevelEndRequest(LevelEndRequest levelEndRequest)
         {
-            throw new NotImplementedException();
+            levelEndTriggered_ = true;
         }
     }
 

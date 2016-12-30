@@ -4,8 +4,8 @@ using DxCore.Core.Messaging.Camera;
 using DxCore.Core.Primitives;
 using DxCore.Core.Services.Components;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Services
 {
@@ -13,22 +13,10 @@ namespace DxCore.Core.Services
     {
         private const float MinZoom = 1 / 3.0f;
         private const float MaxZoom = 3;
-
-        private Func<DxVector2> NoOpTarget => () => Position;
+        private DxRectangle bounds_;
 
         private DxVector2 position_;
-        private DxRectangle bounds_;
         private float zoomAmount_;
-
-        /**
-            Where the Camera is looking (Point target, center of screen)
-        */
-
-        public DxVector2 Position
-        {
-            get { return position_; }
-            set { position_ = value.ClampTo(Bounds); }
-        }
 
         public DxRectangle Bounds
         {
@@ -44,11 +32,29 @@ namespace DxCore.Core.Services
             }
         }
 
-        public Matrix Transform { get; set; } = Matrix.Identity;
+        /**
+            Where the Camera is looking (Point target, center of screen)
+        */
+
+        public DxVector2 Position
+        {
+            get { return position_; }
+            set { position_ = value.ClampTo(Bounds); }
+        }
 
         public Func<DxVector2> Target { get; set; }
 
+        public Matrix Transform { get; set; } = Matrix.Identity;
+
+        public float ZoomAmount
+        {
+            get { return zoomAmount_; }
+            set { ClampAndSetZoomAmount(value); }
+        }
+
         private CameraDrawer CameraDrawer { get; set; }
+
+        private Func<DxVector2> NoOpTarget => () => Position;
 
         public CameraService()
         {
@@ -59,6 +65,44 @@ namespace DxCore.Core.Services
             bounds_ = new DxRectangle(0, 0, DxGame.Instance.Graphics.PreferredBackBufferWidth,
                 DxGame.Instance.Graphics.PreferredBackBufferHeight);
             FollowActivePlayer();
+        }
+
+        /* TODO: Make this delegate serializable? */
+
+        public void Follow(Func<DxVector2> pointToTrack)
+        {
+            Target = pointToTrack;
+        }
+
+        public void FollowActivePlayer()
+        {
+            Follow(() => DxGame.Instance.Service<PlayerService>()?.ActivePlayer?.Position.Center ?? Position);
+        }
+
+        public DxVector2 Invert(DxVector2 nonScaledUiPoint)
+        {
+            return Vector2.Transform(nonScaledUiPoint.Vector2, Matrix.Invert(Transform));
+        }
+
+        public void MoveBy(DxVector2 translation)
+        {
+            Position += translation;
+        }
+
+        public void MoveTo(DxVector2 target)
+        {
+            Target = () => target;
+        }
+
+        public void SnapTo(DxVector2 target)
+        {
+            Position = target;
+            Target = NoOpTarget;
+        }
+
+        public DxVector2 Transformed(DxVector2 worldCoordinate)
+        {
+            return Vector2.Transform(worldCoordinate.Vector2, Transform);
         }
 
         protected override void OnCreate()
@@ -73,6 +117,11 @@ namespace DxCore.Core.Services
             Self.MessageHandler.RegisterMessageHandler<ZoomRequest>(HandleZoomRequest);
         }
 
+        private void ClampAndSetZoomAmount(float value)
+        {
+            zoomAmount_ = MathHelper.Clamp(value, MinZoom, MaxZoom);
+        }
+
         private void HandleUpdateCameraBounds(UpdateCameraBounds cameraBounds)
         {
             Bounds = cameraBounds.Bounds;
@@ -82,55 +131,6 @@ namespace DxCore.Core.Services
         {
             /* Maybe we weren't the authors - we want to handle that anyways */
             ZoomAmount = zoomRequest.ZoomLevel;
-        }
-
-        private void ClampAndSetZoomAmount(float value)
-        {
-            zoomAmount_ = MathHelper.Clamp(value, MinZoom, MaxZoom);
-        }
-
-        public float ZoomAmount
-        {
-            get { return zoomAmount_; }
-            set { ClampAndSetZoomAmount(value); }
-        }
-
-        public void FollowActivePlayer()
-        {
-            Follow(() => DxGame.Instance.Service<PlayerService>()?.ActivePlayer?.Position.Center ?? Position);
-        }
-
-        /* TODO: Make this delegate serializable? */
-
-        public void Follow(Func<DxVector2> pointToTrack)
-        {
-            Target = pointToTrack;
-        }
-
-        public void MoveTo(DxVector2 target)
-        {
-            Target = () => target;
-        }
-
-        public void MoveBy(DxVector2 translation)
-        {
-            Position += translation;
-        }
-
-        public void SnapTo(DxVector2 target)
-        {
-            Position = target;
-            Target = NoOpTarget;
-        }
-
-        public DxVector2 Transformed(DxVector2 worldCoordinate)
-        {
-            return Vector2.Transform(worldCoordinate.Vector2, Transform);
-        }
-
-        public DxVector2 Invert(DxVector2 nonScaledUiPoint)
-        {
-            return Vector2.Transform(nonScaledUiPoint.Vector2, Matrix.Invert(Transform));
         }
     }
 }

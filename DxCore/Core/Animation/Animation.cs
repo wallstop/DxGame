@@ -3,10 +3,10 @@ using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
-using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Animation
 {
@@ -20,13 +20,17 @@ namespace DxCore.Core.Animation
 
         [NonSerialized] [IgnoreDataMember] private Texture2D spriteSheet_;
 
-        public TimeSpan TimePerFrame => TimeSpan.FromSeconds(1.0f / AnimationDescriptor.FramesPerSecond);
-
         [DataMember]
         public AnimationDescriptor AnimationDescriptor { get; private set; }
 
-        private int TotalFrames => AnimationDescriptor.FrameCount;
+        public DrawPriority DrawPriority => drawPriority_;
+
+        public TimeSpan TimePerFrame => TimeSpan.FromSeconds(1.0f / AnimationDescriptor.FramesPerSecond);
+
+        public UpdatePriority UpdatePriority => UpdatePriority.Normal;
         private float Scale => (float) AnimationDescriptor.Scale;
+
+        private int TotalFrames => AnimationDescriptor.FrameCount;
 
         public Animation(AnimationDescriptor descriptor, DrawPriority drawPriority = DrawPriority.Normal)
         {
@@ -41,7 +45,15 @@ namespace DxCore.Core.Animation
             drawPriority_ = drawPriority;
         }
 
-        public DrawPriority DrawPriority => drawPriority_;
+        public int CompareTo(IDrawable other)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int CompareTo(IProcessable other)
+        {
+            throw new NotImplementedException();
+        }
 
         public void Draw(SpriteBatch spriteBatch, DxGameTime gameTime, DxVector2 position, Direction orientation)
         {
@@ -87,17 +99,11 @@ namespace DxCore.Core.Animation
                 spriteEffects, 0);
         }
 
-        public int CompareTo(IDrawable other)
+        public bool LoadContent(ContentManager contentManager)
         {
-            throw new NotImplementedException();
+            spriteSheet_ = contentManager.Load<Texture2D>(AnimationDescriptor.Asset);
+            return true;
         }
-
-        public int CompareTo(IProcessable other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public UpdatePriority UpdatePriority => UpdatePriority.Normal;
 
         /* TODO: Make proper builders for everything */
 
@@ -106,21 +112,15 @@ namespace DxCore.Core.Animation
             currentFrame_ = 0;
         }
 
-        public bool LoadContent(ContentManager contentManager)
+        protected virtual void DeSerialize()
         {
-            spriteSheet_ = contentManager.Load<Texture2D>(AnimationDescriptor.Asset);
-            return true;
+            LoadContent(DxGame.Instance.Content);
         }
 
         [OnDeserialized]
         private void BaseDeSerialize(StreamingContext context)
         {
             DeSerialize();
-        }
-
-        protected virtual void DeSerialize()
-        {
-            LoadContent(DxGame.Instance.Content);
         }
     }
 }

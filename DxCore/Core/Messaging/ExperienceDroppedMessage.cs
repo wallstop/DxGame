@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Messaging
 {
@@ -17,7 +17,7 @@ namespace DxCore.Core.Messaging
     public class ExperienceDroppedMessage : Message
     {
         [DataMember]
-        private Team SourceTeam { get; set; }
+        public Experience.Experience Experience { get; set; }
 
         [DataMember]
         public DxVector2 Position { get; set; }
@@ -26,7 +26,7 @@ namespace DxCore.Core.Messaging
         public float Radius { get; set; }
 
         [DataMember]
-        public Experience.Experience Experience { get; set; }
+        private Team SourceTeam { get; set; }
 
         public ExperienceDroppedMessage(Team sourceTeam, DxVector2 position, float radius,
             Experience.Experience experience)

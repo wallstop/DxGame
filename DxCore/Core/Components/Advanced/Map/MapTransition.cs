@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Environment;
+using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Map
 {
@@ -20,13 +20,13 @@ namespace DxCore.Core.Components.Advanced.Map
         private static readonly TimeSpan PARTICLE_EMISSION_DELAY = TimeSpan.FromSeconds(0.01);
 
         [DataMember]
+        public bool Active { get; private set; }
+
+        [DataMember]
         private TimeSpan LastParticleEmission { get; set; }
 
         [DataMember]
         private PhysicsComponent PositionalComponent { get; }
-
-        [DataMember]
-        public bool Active { get; private set; }
 
         public MapTransition(PhysicsComponent position)
         {
@@ -35,24 +35,7 @@ namespace DxCore.Core.Components.Advanced.Map
             Active = true;
         }
 
-        public override void OnAttach()
-        {
-            RegisterMessageHandler<EnvironmentInteractionMessage>(HandleEnvironmentInteraction);
-            base.OnAttach();
-        }
-
         public DxVector2 Position => PositionalComponent.Position;
-
-        private void HandleEnvironmentInteraction(EnvironmentInteractionMessage message)
-        {
-            if(!Active)
-            {
-                return;
-            }
-            MapRotationRequest mapRotationRequest = new MapRotationRequest();
-            mapRotationRequest.Emit();
-            Active = false; // Disable once we're done so we don't accidentally double-trigger
-        }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
@@ -65,6 +48,12 @@ namespace DxCore.Core.Components.Advanced.Map
                 EmitParticle();
                 LastParticleEmission = gameTime.TotalGameTime;
             }
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<EnvironmentInteractionMessage>(HandleEnvironmentInteraction);
+            base.OnAttach();
         }
 
         private void EmitParticle()
@@ -88,6 +77,17 @@ namespace DxCore.Core.Components.Advanced.Map
 
             EntityCreatedMessage entityCreated = new EntityCreatedMessage(mapTransitionParticle);
             entityCreated.Emit();
+        }
+
+        private void HandleEnvironmentInteraction(EnvironmentInteractionMessage message)
+        {
+            if(!Active)
+            {
+                return;
+            }
+            MapRotationRequest mapRotationRequest = new MapRotationRequest();
+            mapRotationRequest.Emit();
+            Active = false; // Disable once we're done so we don't accidentally double-trigger
         }
     }
 }

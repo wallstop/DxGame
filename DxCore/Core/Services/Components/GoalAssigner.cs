@@ -1,12 +1,12 @@
-﻿using DxCore.Core.Components.Basic;
+﻿using System.Collections.Generic;
+using System.Linq;
+using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils.Validate;
 using DXGame.Core.Behaviors;
 using DXGame.Core.Behaviors.Goals;
 using DXGame.Core.Components.Advanced.Behaviors;
 using NLog;
-using System.Collections.Generic;
-using System.Linq;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Behaviors
 {
@@ -17,11 +17,14 @@ namespace DxCore.Core.Components.Advanced.Behaviors
             Determines mappings of BehaviorComponent -> Goals
         </summary>
     */
-    class GoalAssigner : Component
+
+    internal class GoalAssigner : Component
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly Dictionary<BehaviorComponent, Behavior> assignments_ = new Dictionary<BehaviorComponent, Behavior>();
+        private readonly Dictionary<BehaviorComponent, Behavior> assignments_ =
+            new Dictionary<BehaviorComponent, Behavior>();
+
         private readonly IEnumerable<Behavior> candidateBehaviors_;
 
         public GoalAssigner(IEnumerable<Behavior> candidateBehaviors)
@@ -44,18 +47,22 @@ namespace DxCore.Core.Components.Advanced.Behaviors
         private void AssignBehaviors()
         {
             // Extract all BehaviorComponents
-            IEnumerable<BehaviorComponent> behaviorComponents = DxGame.Instance.DxGameElements.OfType<BehaviorComponent>().ToList();
+            IEnumerable<BehaviorComponent> behaviorComponents =
+                DxGame.Instance.DxGameElements.OfType<BehaviorComponent>().ToList();
 
             // For each component (presumably 1:1 with entity)...
             // TODO: Currently we only assign new goals when old goals have been met.  Implement more complex logic for 'interruptable' and 'non-interruptable' goals/behaviors
-            foreach (BehaviorComponent behaver in behaviorComponents.Where(behaver => !behaver.CurrentGoal.InProgress()))
+            foreach(BehaviorComponent behaver in behaviorComponents.Where(behaver => !behaver.CurrentGoal.InProgress()))
             {
                 // Filter all behaviors by constraints...
-                IEnumerable<Behavior> satisfiedBehaviors = candidateBehaviors_.Where(behavior => behavior.SatisfiedFor(behaver, assignments_));
-                Validate.Hard.IsNotEmpty(satisfiedBehaviors, $"No behavior satisfied for {behaver}, not even the null behavior!  (This shouldn't ever happen.)");
+                IEnumerable<Behavior> satisfiedBehaviors =
+                    candidateBehaviors_.Where(behavior => behavior.SatisfiedFor(behaver, assignments_));
+                Validate.Hard.IsNotEmpty(satisfiedBehaviors,
+                    $"No behavior satisfied for {behaver}, not even the null behavior!  (This shouldn't ever happen.)");
 
                 // Sort all remaining behaviors by fitness and take the most fit behavior...
-                Behavior bestBehavior = satisfiedBehaviors.OrderByDescending(behavior => behavior.FitnessFor(behaver, assignments_)).First();
+                Behavior bestBehavior =
+                    satisfiedBehaviors.OrderByDescending(behavior => behavior.FitnessFor(behaver, assignments_)).First();
 
                 // Assign, purely to keep track of who is doing what...
                 assignments_[behaver] = bestBehavior;

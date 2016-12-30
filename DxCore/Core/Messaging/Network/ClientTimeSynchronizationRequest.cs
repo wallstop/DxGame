@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Network;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Messaging.Network
 {
@@ -16,7 +16,8 @@ namespace DxCore.Core.Messaging.Network
 
         public ClientTimeSynchronizationRequest(DxGameTime currentGameTime)
         {
-            Validate.Hard.IsNotNullOrDefault(currentGameTime, () => this.GetFormattedNullOrDefaultMessage(nameof(currentGameTime)));
+            Validate.Hard.IsNotNullOrDefault(currentGameTime,
+                () => this.GetFormattedNullOrDefaultMessage(nameof(currentGameTime)));
             ClientSideGameTime = currentGameTime.TotalGameTime;
         }
     }

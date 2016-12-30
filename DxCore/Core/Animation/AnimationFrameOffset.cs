@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Animation
 {

@@ -6,8 +6,8 @@ using DxCore.Core.DataStructures;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.State
 {
@@ -25,25 +25,25 @@ namespace DxCore.Core.State
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public UpdatePriority UpdatePriority => UpdatePriority.Normal;
-
-        [DataMember] private bool triggered_;
-
-        [IgnoreDataMember] private State transition_;
-
         [DataMember] private readonly SortedList<Transition> transitions_;
-
-        [DataMember] private List<Message> messageBuffer_;
 
         [DataMember] private UniqueId id_;
 
-        [IgnoreDataMember]
-        public IEnumerable<Transition> Transitions => transitions_;
+        [DataMember] private List<Message> messageBuffer_;
+
+        [IgnoreDataMember] private State transition_;
+
+        [DataMember] private bool triggered_;
 
         /* Simple descriptor of what the state is. "Jumping", "Moving Right", that kind of thing */
 
         [DataMember]
         public string Name { get; }
+
+        [IgnoreDataMember]
+        public IEnumerable<Transition> Transitions => transitions_;
+
+        public UpdatePriority UpdatePriority => UpdatePriority.Normal;
 
         /* Action that should be performed each and every Update cycle that this State is "current". Should never be null. */
 
@@ -72,16 +72,11 @@ namespace DxCore.Core.State
             id_ = new UniqueId();
         }
 
+        public UniqueId Id => id_;
+
         public void Accept(Message message)
         {
             messageBuffer_.Add(message);
-        }
-
-        public State WithTransition(Transition transition)
-        {
-            Validate.Hard.IsNotNull(transition, () => $"Cannot add a null {nameof(transition)} to a {nameof(State)}");
-            transitions_.Add(transition);
-            return this;
         }
 
         public static StateBuilder Builder()
@@ -89,84 +84,9 @@ namespace DxCore.Core.State
             return new StateBuilder();
         }
 
-        public override bool Equals(object other)
-        {
-            var otherState = other as State;
-            return otherState != null && Name.Equals(otherState.Name) &&
-                   LambdaUtils.DelegateHashCode(Action).Equals(LambdaUtils.DelegateHashCode(otherState.Action));
-        }
-
-        public override int GetHashCode()
-        {
-            return Objects.HashCode(Name, LambdaUtils.DelegateHashCode(Action));
-        }
-
         public int CompareTo(IProcessable other)
         {
             throw new NotImplementedException();
-        }
-
-        public override string ToString()
-        {
-            return Name;
-        }
-
-        public class StateBuilder : IBuilder<State>
-        {
-            private readonly List<Transition> transitions_ = new List<Transition>();
-            private Action<List<Message>, DxGameTime> action_;
-            private string name_;
-            private Action<StateUpdateConfig> onEnter_;
-            private Action<StateUpdateConfig> onExit_;
-
-            public State Build()
-            {
-                Validate.Hard.IsNotNullOrDefault(action_,
-                    () => $"Cannot create a {nameof(State)} with a null/default {nameof(action_)}");
-
-                Validate.Hard.IsNotNullOrDefault(name_,
-                    () => $"Cannot create a {nameof(State)} with a null/default/empty {nameof(name_)}");
-                if(transitions_.Count == 0)
-                {
-                    Logger.Trace($"Creating {nameof(State)} ({name_}) without any transitions");
-                }
-                Validate.Hard.NoNullElements(transitions_,
-                    () => $"Cannot create a {nameof(State)} with null transitions");
-
-                return new State(transitions_, name_, action_, onEnter_, onExit_);
-            }
-
-            public StateBuilder WithEntrance(Action<StateUpdateConfig> onEnter)
-            {
-                onEnter_ = onEnter;
-                return this;
-            }
-
-            public StateBuilder WithExit(Action<StateUpdateConfig> onExit)
-            {
-                onExit_ = onExit;
-                return this;
-            }
-
-            public StateBuilder WithTransition(Transition transition)
-            {
-                transitions_.Add(transition);
-                return this;
-            }
-
-            public StateBuilder WithAction(Action<List<Message>, DxGameTime> action)
-            {
-                Validate.Hard.IsNull(action_,
-                    () => $"Cannot assign a {nameof(action)} to a Builder with an already assigned {nameof(action)}");
-                action_ = action;
-                return this;
-            }
-
-            public StateBuilder WithName(string name)
-            {
-                name_ = name;
-                return this;
-            }
         }
 
         public void Enter(StateUpdateConfig updateConfig)
@@ -175,16 +95,22 @@ namespace DxCore.Core.State
             OnEnter?.Invoke(updateConfig);
         }
 
+        public override bool Equals(object other)
+        {
+            var otherState = other as State;
+            return (otherState != null) && Name.Equals(otherState.Name) &&
+                   LambdaUtils.DelegateHashCode(Action).Equals(LambdaUtils.DelegateHashCode(otherState.Action));
+        }
+
         public void Exit(StateUpdateConfig updateConfig)
         {
             Reset();
             OnExit?.Invoke(updateConfig);
         }
 
-        public bool Transition(out State nextState)
+        public override int GetHashCode()
         {
-            nextState = transition_;
-            return !ReferenceEquals(transition_, null);
+            return Objects.HashCode(Name, LambdaUtils.DelegateHashCode(Action));
         }
 
         public void Process(StateUpdateConfig updateConfig)
@@ -212,11 +138,22 @@ namespace DxCore.Core.State
             }
         }
 
-        private List<Message> SwapBuffers()
+        public override string ToString()
         {
-            List<Message> oldMessages = messageBuffer_;
-            messageBuffer_ = new List<Message>();
-            return oldMessages;
+            return Name;
+        }
+
+        public bool Transition(out State nextState)
+        {
+            nextState = transition_;
+            return !ReferenceEquals(transition_, null);
+        }
+
+        public State WithTransition(Transition transition)
+        {
+            Validate.Hard.IsNotNull(transition, () => $"Cannot add a null {nameof(transition)} to a {nameof(State)}");
+            transitions_.Add(transition);
+            return this;
         }
 
         private void PrepTransition(List<Message> lastFrameMessages, DxGameTime gameTime)
@@ -246,6 +183,69 @@ namespace DxCore.Core.State
             triggered_ = false;
         }
 
-        public UniqueId Id => id_;
+        private List<Message> SwapBuffers()
+        {
+            List<Message> oldMessages = messageBuffer_;
+            messageBuffer_ = new List<Message>();
+            return oldMessages;
+        }
+
+        public class StateBuilder : IBuilder<State>
+        {
+            private readonly List<Transition> transitions_ = new List<Transition>();
+            private Action<List<Message>, DxGameTime> action_;
+            private string name_;
+            private Action<StateUpdateConfig> onEnter_;
+            private Action<StateUpdateConfig> onExit_;
+
+            public State Build()
+            {
+                Validate.Hard.IsNotNullOrDefault(action_,
+                    () => $"Cannot create a {nameof(State)} with a null/default {nameof(action_)}");
+
+                Validate.Hard.IsNotNullOrDefault(name_,
+                    () => $"Cannot create a {nameof(State)} with a null/default/empty {nameof(name_)}");
+                if(transitions_.Count == 0)
+                {
+                    Logger.Trace($"Creating {nameof(State)} ({name_}) without any transitions");
+                }
+                Validate.Hard.NoNullElements(transitions_,
+                    () => $"Cannot create a {nameof(State)} with null transitions");
+
+                return new State(transitions_, name_, action_, onEnter_, onExit_);
+            }
+
+            public StateBuilder WithAction(Action<List<Message>, DxGameTime> action)
+            {
+                Validate.Hard.IsNull(action_,
+                    () => $"Cannot assign a {nameof(action)} to a Builder with an already assigned {nameof(action)}");
+                action_ = action;
+                return this;
+            }
+
+            public StateBuilder WithEntrance(Action<StateUpdateConfig> onEnter)
+            {
+                onEnter_ = onEnter;
+                return this;
+            }
+
+            public StateBuilder WithExit(Action<StateUpdateConfig> onExit)
+            {
+                onExit_ = onExit;
+                return this;
+            }
+
+            public StateBuilder WithName(string name)
+            {
+                name_ = name;
+                return this;
+            }
+
+            public StateBuilder WithTransition(Transition transition)
+            {
+                transitions_.Add(transition);
+                return this;
+            }
+        }
     }
 }

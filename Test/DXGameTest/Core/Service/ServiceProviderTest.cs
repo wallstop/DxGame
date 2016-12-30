@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DxCore.Core.Service;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
+using Assert = NUnit.Framework.Assert;
 
 namespace DXGameTest.Core.Service
 {
@@ -64,11 +67,27 @@ namespace DXGameTest.Core.Service
         }
 
         [Test]
-        [ExpectedException]
+        [ExpectedException(typeof(ArgumentException))]
         public void TestDoubleRegistrationThrows()
         {
             ServiceProvider.Instance.Register(SimpleService);
             ServiceProvider.Instance.Register(SimpleService);
+        }
+
+        [Test]
+        public void TestGetServiceReturnsNullIfNotFound()
+        {
+            MuchMoreComplexService shouldNotBeRegistered = ServiceProvider.Instance.GetService<MuchMoreComplexService>();
+            Assert.Null(shouldNotBeRegistered);
+        }
+
+        [Test]
+        public void TestGetServiceReturnsServiceIfFound()
+        {
+            ServiceProvider.Instance.Register(ComplexService);
+            MuchMoreComplexService shouldBeRegistered = ServiceProvider.Instance.GetService<MuchMoreComplexService>();
+            Assert.NotNull(shouldBeRegistered);
+            Assert.AreEqual(ComplexService, shouldBeRegistered);
         }
 
         [Test]
@@ -99,22 +118,6 @@ namespace DXGameTest.Core.Service
         }
 
         [Test]
-        public void TestGetServiceReturnsNullIfNotFound()
-        {
-            MuchMoreComplexService shouldNotBeRegistered = ServiceProvider.Instance.GetService<MuchMoreComplexService>();
-            Assert.Null(shouldNotBeRegistered);
-        }
-
-        [Test]
-        public void TestGetServiceReturnsServiceIfFound()
-        {
-            ServiceProvider.Instance.Register(ComplexService);
-            MuchMoreComplexService shouldBeRegistered = ServiceProvider.Instance.GetService<MuchMoreComplexService>();
-            Assert.NotNull(shouldBeRegistered);
-            Assert.AreEqual(ComplexService, shouldBeRegistered);
-        }
-
-        [Test]
         public void TestSimpleRegistration()
         {
             ServiceProvider.Instance.Register(SimpleService);
@@ -123,6 +126,16 @@ namespace DXGameTest.Core.Service
             bool serviceFoundOk = ServiceProvider.Instance.TryGet(out retrievedService);
             Assert.True(serviceFoundOk, $"Expected to find a {typeof(SimpleService)}");
             Assert.AreEqual(SimpleService, retrievedService);
+        }
+
+        [Test]
+        public void TestTryGetByTypeValue()
+        {
+            ServiceProvider.Instance.Register(SimpleService);
+            object foundService;
+            bool foundOk = ServiceProvider.Instance.TryGet(typeof(SimpleService), out foundService);
+            Assert.True(foundOk);
+            Assert.AreEqual(SimpleService, foundService);
         }
 
         [Test]
@@ -136,16 +149,6 @@ namespace DXGameTest.Core.Service
             List<IService> registeredServices = ServiceProvider.Instance.GetAll().ToList();
             Assert.Contains(SimpleService, registeredServices);
             Assert.Contains(ComplexService, registeredServices);
-        }
-
-        [Test]
-        public void TestTryGetByTypeValue()
-        {
-            ServiceProvider.Instance.Register(SimpleService);
-            object foundService;
-            bool foundOk = ServiceProvider.Instance.TryGet(typeof(SimpleService), out foundService);
-            Assert.True(foundOk);
-            Assert.AreEqual(SimpleService, foundService);
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Team
 {
@@ -11,9 +11,9 @@ namespace DxCore.Core.Components.Advanced.Team
     public class TeamComponent : Component
     {
         [DataMember]
-        public DxCore.Core.Team Team { get; }
+        public Core.Team Team { get; }
 
-        public TeamComponent(DxCore.Core.Team team)
+        public TeamComponent(Core.Team team)
         {
             Validate.Hard.IsNotNull(team, () => this.GetFormattedNullOrDefaultMessage(team));
             Team = team;

@@ -5,16 +5,16 @@ using System.Linq;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Extension;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Map
 {
     public sealed class NavigableMeshNode
     {
-        public DxRectangle Space { get; private set; }
-
         // TODO: Access control
         public List<NavigableMeshNode> Neighbors { get; private set; }
+        public DxRectangle Space { get; private set; }
 
         public NavigableMeshNode(DxRectangle space)
         {
@@ -116,17 +116,45 @@ namespace DxCore.Core.Map
             return (end.Space.Center - start.Space.Center).MagnitudeSquared;
         }
 
-        private static List<NavigableMeshNode> ReconstructPath(
-            Dictionary<NavigableMeshNode, NavigableMeshNode> cameFrom, NavigableMeshNode current)
+        private static void GenerateInternodeLinks(Dictionary<TilePosition, NavigableMeshNode> meshNodes)
         {
-            List<NavigableMeshNode> path = new List<NavigableMeshNode> {current};
-            while(cameFrom.ContainsKey(current))
+            Queue<KeyValuePair<TilePosition, NavigableMeshNode>> unexploredPositionsAndNodes = meshNodes.ToQueue();
+
+            while(unexploredPositionsAndNodes.Any())
             {
-                current = cameFrom[current];
-                path.Add(current);
+                KeyValuePair<TilePosition, NavigableMeshNode> chosenPositionAndNode =
+                    unexploredPositionsAndNodes.Dequeue();
+                TilePosition position = chosenPositionAndNode.Key;
+                NavigableMeshNode node = chosenPositionAndNode.Value;
+
+                const int numAdjacentTileDirections = 2;
+                List<Direction> adjacentNeighborDirections = new List<Direction>(numAdjacentTileDirections)
+                {
+                    Direction.East,
+                    Direction.West
+                };
+                foreach(Direction direction in adjacentNeighborDirections.ToArray())
+                {
+                    NavigableMeshNode neighbor;
+                    /* We can always move freely east */
+                    TilePosition? adjacent = position.Neighbor(direction);
+                    if(!adjacent.HasValue)
+                    {
+                        continue;
+                    }
+                    if(meshNodes.TryGetValue(adjacent.Value, out neighbor))
+                    {
+                        adjacentNeighborDirections.Remove(direction);
+                        node.Neighbors.Add(neighbor);
+                    }
+                }
+
+                /* ...and within commonly jumpable terrain */
+                SearchJumpableTerrain(meshNodes, position, node);
+                SearchDroppableTerrain(meshNodes, position, node, adjacentNeighborDirections);
+
+                // TODO: Add in support for "dropping" down to lower tiles
             }
-            path.Reverse();
-            return path;
         }
 
         private static Dictionary<TilePosition, NavigableMeshNode> GenerateNavigationPoints(MapDescriptor mapDescriptor)
@@ -167,45 +195,17 @@ namespace DxCore.Core.Map
             return navigationPoints;
         }
 
-        private static void GenerateInternodeLinks(Dictionary<TilePosition, NavigableMeshNode> meshNodes)
+        private static List<NavigableMeshNode> ReconstructPath(
+            Dictionary<NavigableMeshNode, NavigableMeshNode> cameFrom, NavigableMeshNode current)
         {
-            Queue<KeyValuePair<TilePosition, NavigableMeshNode>> unexploredPositionsAndNodes = meshNodes.ToQueue();
-
-            while(unexploredPositionsAndNodes.Any())
+            List<NavigableMeshNode> path = new List<NavigableMeshNode> {current};
+            while(cameFrom.ContainsKey(current))
             {
-                KeyValuePair<TilePosition, NavigableMeshNode> chosenPositionAndNode =
-                    unexploredPositionsAndNodes.Dequeue();
-                TilePosition position = chosenPositionAndNode.Key;
-                NavigableMeshNode node = chosenPositionAndNode.Value;
-
-                const int numAdjacentTileDirections = 2;
-                List<Direction> adjacentNeighborDirections = new List<Direction>(numAdjacentTileDirections)
-                {
-                    Direction.East,
-                    Direction.West
-                };
-                foreach(Direction direction in adjacentNeighborDirections.ToArray())
-                {
-                    NavigableMeshNode neighbor;
-                    /* We can always move freely east */
-                    TilePosition? adjacent = position.Neighbor(direction);
-                    if(!adjacent.HasValue)
-                    {
-                        continue;
-                    }
-                    if(meshNodes.TryGetValue(adjacent.Value, out neighbor))
-                    {
-                        adjacentNeighborDirections.Remove(direction);
-                        node.Neighbors.Add(neighbor);
-                    }
-                }
-
-                /* ...and within commonly jumpable terrain */
-                SearchJumpableTerrain(meshNodes, position, node);
-                SearchDroppableTerrain(meshNodes, position, node, adjacentNeighborDirections);
-
-                // TODO: Add in support for "dropping" down to lower tiles
+                current = cameFrom[current];
+                path.Add(current);
             }
+            path.Reverse();
+            return path;
         }
 
         private static void SearchDroppableTerrain(Dictionary<TilePosition, NavigableMeshNode> meshNodes,

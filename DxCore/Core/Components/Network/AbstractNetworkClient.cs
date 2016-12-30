@@ -14,27 +14,28 @@ using DxCore.Core.Primitives;
 using DxCore.Core.Services;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Lerp;
-using DxCore.Core.Utils.Validate;
 using Lidgren.Network;
 using NLog;
+using WallNetCore;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Network
 {
     public abstract class AbstractNetworkClient : NetworkComponent
     {
         private static readonly TimeSpan TIME_SYNCHRONIZATION_RATE = TimeSpan.FromSeconds(1);
-        private TimeSpan lastSynchronizedTime_ = TimeSpan.Zero;
 
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        protected NetworkClientConfig ClientConfig { get; set; }
-        public NetClient ClientConnection => Connection as NetClient;
 
         private readonly LerpDataCollector<DxVector2> dxVector2LerpData_ = new LerpDataCollector<DxVector2>();
 
         private readonly ReaderWriterLockSlim lock_ = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+        private TimeSpan lastSynchronizedTime_ = TimeSpan.Zero;
         private List<Message> messagesToBroadcast_ = new List<Message>();
 
         private UniqueId playerId_;
+        public NetClient ClientConnection => Connection as NetClient;
+        protected NetworkClientConfig ClientConfig { get; set; }
 
         protected AbstractNetworkClient(NetPeerConfiguration netPeerConfig, NetworkClientConfig clientConfig)
             : base(netPeerConfig)
@@ -70,9 +71,19 @@ namespace DxCore.Core.Components.Network
             }
         }
 
-        protected void ProcessDebugMessage(NetIncomingMessage message)
+        public override void Shutdown()
         {
-            // TODO
+            LOG.Info("Shutting down NetworkClient");
+            ClientConnection.Shutdown("NetworkClient shutting down calmly");
+            base.Shutdown();
+        }
+
+        protected override void InitializeNetworkMessageListeners()
+        {
+            networkMessageHandlers_[typeof(EventStream)] = HandleEventStream;
+            networkMessageHandlers_[typeof(DxVectorLerpMessage)] = HandleDxVectorLerpMessage;
+            networkMessageHandlers_[typeof(ServerTimeUpdate)] = HandleServerTimeUpdate;
+            networkMessageHandlers_[typeof(UpdateActivePlayer)] = HandleUpdateActivePlayer;
         }
 
         protected override void InternalSendData(DxGameTime gameTime)
@@ -85,47 +96,25 @@ namespace DxCore.Core.Components.Network
             SendClientCommandments(gameTime);
         }
 
-        // TODO: Move this stuff out
-
-        private void SendTimeSynchronizationRequest(DxGameTime gameTime)
+        protected override void PostReceiveData(DxGameTime gameTime)
         {
-            if(ReferenceEquals(Connection, null))
+            List<Message> messagesToBroadcast;
+            using(new CriticalRegion(lock_, CriticalRegion.LockType.Write))
             {
-                return;
-            }
-            if(ReferenceEquals(ClientConnection.ServerConnection, null))
-            {
-                return;
+                messagesToBroadcast = messagesToBroadcast_;
+                messagesToBroadcast_ = new List<Message>();
             }
 
-            if(lastSynchronizedTime_ + TIME_SYNCHRONIZATION_RATE < gameTime.TotalGameTime)
+            foreach(Message message in messagesToBroadcast)
             {
-                ClientTimeSynchronizationRequest clientSynchronizationRequest =
-                    new ClientTimeSynchronizationRequest(gameTime);
-                NetOutgoingMessage outgoingSyncronizationRequest =
-                    clientSynchronizationRequest.ToNetOutgoingMessage(Connection);
-                Connection.SendMessage(outgoingSyncronizationRequest, ClientConnection.ServerConnection,
-                    NetDeliveryMethod.Unreliable);
-                lastSynchronizedTime_ = gameTime.TotalGameTime;
+                message.EmitUntyped();
             }
+            base.PostReceiveData(gameTime);
         }
 
-        private void SendClientCommandments(DxGameTime gameTime)
+        protected void ProcessDebugMessage(NetIncomingMessage message)
         {
-            if(ReferenceEquals(Connection, null))
-            {
-                return;
-            }
-
-            List<KeyboardEvent> keyboardEvents = PlayerInputListener.RipEventsFromLocalInputModel();
-            List<Commandment> clientCommandments = PlayerInputListener.DetermineCommandmentsFor(keyboardEvents);
-            if(clientCommandments.Any())
-            {
-                ClientCommands clientCommands = new ClientCommands(clientCommandments);
-                NetOutgoingMessage outgoingClientCommands = clientCommands.ToNetOutgoingMessage(Connection);
-                Connection.SendMessage(outgoingClientCommands, ClientConnection.ServerConnection,
-                    NetDeliveryMethod.ReliableOrdered, PLAYER_INPUT_CHANNEL);
-            }
+            // TODO
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -162,28 +151,11 @@ namespace DxCore.Core.Components.Network
             base.Update(gameTime);
         }
 
-        protected override void PostReceiveData(DxGameTime gameTime)
+        private void HandleDxVectorLerpMessage(NetworkMessage message, NetConnection netConnection)
         {
-            List<Message> messagesToBroadcast;
-            using(new CriticalRegion(lock_, CriticalRegion.LockType.Write))
-            {
-                messagesToBroadcast = messagesToBroadcast_;
-                messagesToBroadcast_ = new List<Message>();
-            }
-
-            foreach(Message message in messagesToBroadcast)
-            {
-                message.EmitUntyped();
-            }
-            base.PostReceiveData(gameTime);
-        }
-
-        protected override void InitializeNetworkMessageListeners()
-        {
-            networkMessageHandlers_[typeof(EventStream)] = HandleEventStream;
-            networkMessageHandlers_[typeof(DxVectorLerpMessage)] = HandleDxVectorLerpMessage;
-            networkMessageHandlers_[typeof(ServerTimeUpdate)] = HandleServerTimeUpdate;
-            networkMessageHandlers_[typeof(UpdateActivePlayer)] = HandleUpdateActivePlayer;
+            DxVectorLerpMessage dxVectorLerpMessage = ConvertMessageType<DxVectorLerpMessage>(message);
+            dxVector2LerpData_.UpdateLerpData(dxVectorLerpMessage.EntityId, dxVectorLerpMessage.CurrentLerpValue,
+                dxVectorLerpMessage.TimeStamp.TotalGameTime);
         }
 
         private void HandleEventStream(NetworkMessage message, NetConnection netConnection)
@@ -232,24 +204,53 @@ namespace DxCore.Core.Components.Network
             timeSkewRequest.Emit();
         }
 
-        private void HandleDxVectorLerpMessage(NetworkMessage message, NetConnection netConnection)
-        {
-            DxVectorLerpMessage dxVectorLerpMessage = ConvertMessageType<DxVectorLerpMessage>(message);
-            dxVector2LerpData_.UpdateLerpData(dxVectorLerpMessage.EntityId, dxVectorLerpMessage.CurrentLerpValue,
-                dxVectorLerpMessage.TimeStamp.TotalGameTime);
-        }
-
         private void HandleUpdateActivePlayer(NetworkMessage message, NetConnection connection)
         {
             UpdateActivePlayer updateActivePlayer = ConvertMessageType<UpdateActivePlayer>(message);
             playerId_ = updateActivePlayer.PlayerId;
         }
 
-        public override void Shutdown()
+        private void SendClientCommandments(DxGameTime gameTime)
         {
-            LOG.Info("Shutting down NetworkClient");
-            ClientConnection.Shutdown("NetworkClient shutting down calmly");
-            base.Shutdown();
+            if(ReferenceEquals(Connection, null))
+            {
+                return;
+            }
+
+            List<KeyboardEvent> keyboardEvents = PlayerInputListener.RipEventsFromLocalInputModel();
+            List<Commandment> clientCommandments = PlayerInputListener.DetermineCommandmentsFor(keyboardEvents);
+            if(clientCommandments.Any())
+            {
+                ClientCommands clientCommands = new ClientCommands(clientCommandments);
+                NetOutgoingMessage outgoingClientCommands = clientCommands.ToNetOutgoingMessage(Connection);
+                Connection.SendMessage(outgoingClientCommands, ClientConnection.ServerConnection,
+                    NetDeliveryMethod.ReliableOrdered, PLAYER_INPUT_CHANNEL);
+            }
+        }
+
+        // TODO: Move this stuff out
+
+        private void SendTimeSynchronizationRequest(DxGameTime gameTime)
+        {
+            if(ReferenceEquals(Connection, null))
+            {
+                return;
+            }
+            if(ReferenceEquals(ClientConnection.ServerConnection, null))
+            {
+                return;
+            }
+
+            if(lastSynchronizedTime_ + TIME_SYNCHRONIZATION_RATE < gameTime.TotalGameTime)
+            {
+                ClientTimeSynchronizationRequest clientSynchronizationRequest =
+                    new ClientTimeSynchronizationRequest(gameTime);
+                NetOutgoingMessage outgoingSyncronizationRequest =
+                    clientSynchronizationRequest.ToNetOutgoingMessage(Connection);
+                Connection.SendMessage(outgoingSyncronizationRequest, ClientConnection.ServerConnection,
+                    NetDeliveryMethod.Unreliable);
+                lastSynchronizedTime_ = gameTime.TotalGameTime;
+            }
         }
     }
 }

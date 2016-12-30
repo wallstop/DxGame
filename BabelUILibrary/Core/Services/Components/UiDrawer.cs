@@ -4,11 +4,11 @@ using DxCore.Core;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Settings;
-using DxCore.Core.Utils.Validate;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
+using WallNetCore.Validate;
 
 namespace BabelUILibrary.Core.Services.Components
 {
@@ -16,11 +16,11 @@ namespace BabelUILibrary.Core.Services.Components
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private Root UI { get; }
-
         private Action GraphicsUpdatedDelegate { get; }
 
         private bool RefreshEngine { get; set; }
+
+        private Root UI { get; }
 
         public UiDrawer(Root ui)
         {
@@ -30,11 +30,6 @@ namespace BabelUILibrary.Core.Services.Components
 
             GraphicsUpdatedDelegate = RegisterMonogameEngine;
             DxGame.Instance.GameSettings.VideoSettings.RegisterPropertyChangeListener(GraphicsUpdatedDelegate);
-            RefreshEngine = true;
-        }
-
-        private void RegisterMonogameEngine()
-        {
             RefreshEngine = true;
         }
 
@@ -48,8 +43,8 @@ namespace BabelUILibrary.Core.Services.Components
                 int height;
                 int uiWidth = DxGame.Instance.GameSettings.VideoSettings.ScreenWidth;
                 int uiHeight = DxGame.Instance.GameSettings.VideoSettings.ScreenHeight;
-                if(DxGame.Instance.GameSettings.VideoSettings.WindowMode == WindowMode.Fullscreen ||
-                   DxGame.Instance.GameSettings.VideoSettings.WindowMode == WindowMode.Borderless)
+                if((DxGame.Instance.GameSettings.VideoSettings.WindowMode == WindowMode.Fullscreen) ||
+                   (DxGame.Instance.GameSettings.VideoSettings.WindowMode == WindowMode.Borderless))
                 {
                     width = DxGame.Instance.GraphicsDevice.Adapter.CurrentDisplayMode.Width;
                     height = DxGame.Instance.GraphicsDevice.Adapter.CurrentDisplayMode.Height;
@@ -83,6 +78,11 @@ namespace BabelUILibrary.Core.Services.Components
             UI.UpdateInput(EmptyKeysGameTime(gameTime));
             UI.UpdateLayout(EmptyKeysGameTime(gameTime));
             base.Update(gameTime);
+        }
+
+        private void RegisterMonogameEngine()
+        {
+            RefreshEngine = true;
         }
     }
 }

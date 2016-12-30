@@ -1,4 +1,6 @@
-﻿using DXGame.Core.Components.Advanced.Behaviors;
+﻿using DxCore.Core.Components.Advanced.Behaviors;
+using DXGame.Core.Components.Advanced.Behaviors;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Utils
 {
@@ -7,7 +9,7 @@ namespace DxCore.Core.Utils
         public static AffinityComponent AffinityComponent(this BehaviorComponent behaver)
         {
             AffinityComponent affinityComponent = behaver.Parent?.ComponentOfType<AffinityComponent>();
-            Validate.Validate.Hard.IsNotNull(affinityComponent, $"Could not acquire an affinity component for {behaver}!");
+            Validate.Hard.IsNotNull(affinityComponent, $"Could not acquire an affinity component for {behaver}!");
             return affinityComponent;
         }
     }

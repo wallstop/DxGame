@@ -4,9 +4,9 @@ using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Sprite
 {
@@ -17,9 +17,6 @@ namespace DxCore.Core.Components.Advanced.Sprite
         [DataMember] protected string assetName_;
         [DataMember] protected ISpatial spatial_;
         [NonSerialized] [IgnoreDataMember] protected Texture2D texture_;
-
-        public DxVector2 WorldCoordinates => spatial_.WorldCoordinates;
-        public DxRectangle Space => spatial_.Space;
 
         [IgnoreDataMember]
         public string AssetName
@@ -34,6 +31,14 @@ namespace DxCore.Core.Components.Advanced.Sprite
             spatial_ = spatial;
         }
 
+        public DxVector2 WorldCoordinates => spatial_.WorldCoordinates;
+        public DxRectangle Space => spatial_.Space;
+
+        public static SimpleSpriteComponentBuilder Builder()
+        {
+            return new SimpleSpriteComponentBuilder();
+        }
+
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             spriteBatch.Draw(texture_, spatial_.Space.Rectangle, Color.White);
@@ -44,11 +49,6 @@ namespace DxCore.Core.Components.Advanced.Sprite
             Validate.Hard.IsNotNull(DxGame.Instance.Content,
                 this.GetFormattedNullOrDefaultMessage(DxGame.Instance.Content));
             texture_ = DxGame.Instance.Content.Load<Texture2D>(assetName_);
-        }
-
-        public static SimpleSpriteComponentBuilder Builder()
-        {
-            return new SimpleSpriteComponentBuilder();
         }
 
         public class SimpleSpriteComponentBuilder : IBuilder<SimpleSpriteComponent>

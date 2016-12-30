@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Cache.Simple;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core
 {
@@ -22,11 +22,12 @@ namespace DxCore.Core
         private static readonly UnboundedLoadingSimpleCache<string, Team> TeamSimpleCache =
             new UnboundedLoadingSimpleCache<string, Team>(name => new Team(name));
 
+        public static Team EnemyTeam { get; } = TeamFor("Enemy");
+
         [DataMember]
         public string Name { get; }
 
         public static Team PlayerTeam { get; } = TeamFor("Player");
-        public static Team EnemyTeam { get; } = TeamFor("Enemy");
 
         public static IReadOnlyCollection<Team> Teams => TeamSimpleCache.Elements;
 
@@ -42,6 +43,19 @@ namespace DxCore.Core
                 return false;
             }
             return ReferenceEquals(this, other) || string.Equals(Name, other.Name);
+        }
+
+        public override bool Equals(object other)
+        {
+            if(ReferenceEquals(null, other))
+            {
+                return false;
+            }
+            if(ReferenceEquals(this, other))
+            {
+                return true;
+            }
+            return other is Team && Equals((Team) other);
         }
 
         public override int GetHashCode()
@@ -62,19 +76,6 @@ namespace DxCore.Core
         {
             Validate.Hard.IsNotEmpty(name, $"Cannot have {typeof(Team)}s with null/empty Names");
             return TeamSimpleCache.Get(name);
-        }
-
-        public override bool Equals(object other)
-        {
-            if(ReferenceEquals(null, other))
-            {
-                return false;
-            }
-            if(ReferenceEquals(this, other))
-            {
-                return true;
-            }
-            return other is Team && Equals((Team) other);
         }
 
         public override string ToString()

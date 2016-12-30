@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.State
 {
@@ -12,6 +12,7 @@ namespace DxCore.Core.State
             (ie, tied to a similar config in a StateMachine)
         </summary>
     */
+
     [Serializable]
     [DataContract]
     public struct StateUpdateConfig

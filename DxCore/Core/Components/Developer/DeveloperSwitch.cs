@@ -2,8 +2,8 @@
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Services;
-using DxCore.Core.Utils;
 using Microsoft.Xna.Framework.Input;
+using WallNetCore.Extension;
 
 namespace DxCore.Core.Components.Developer
 {
@@ -28,7 +28,8 @@ namespace DxCore.Core.Components.Developer
         protected override void Update(DxGameTime gameTime)
         {
             InputService inputService = DxGame.Instance.Service<InputService>();
-            if (inputService?.InputHandler.FinishedKeyboardEvents?.Any(inputEvent => inputEvent.Source == DEV_KEY) ?? false)
+            if(inputService?.InputHandler.FinishedKeyboardEvents?.Any(inputEvent => inputEvent.Source == DEV_KEY) ??
+               false)
             {
                 DeveloperMode = DeveloperMode.Rotate();
             }

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore;
+using WallNetCore.Extension;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Service
 {
@@ -15,9 +16,9 @@ namespace DxCore.Core.Service
     public sealed class ServiceProvider : IServiceProvider
     {
         public static readonly ServiceProvider Instance = new ServiceProvider();
-        private HashSet<IService> ServicePool { get; } = new HashSet<IService>();
 
         private ReaderWriterLockSlim Lock { get; } = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        private HashSet<IService> ServicePool { get; } = new HashSet<IService>();
 
         private ServiceProvider() {}
 
@@ -32,22 +33,6 @@ namespace DxCore.Core.Service
             object service;
             TryGet(serviceType, out service);
             return service;
-        }
-
-        /**
-            <summary>
-                Returns a registered service of the specified type if any exist, null otherwise.
-            </summary>
-        */
-
-        public T GetService<T>() where T : class, IService
-        {
-            T foundService;
-            if(TryGet(out foundService))
-            {
-                return foundService;
-            }
-            return null;
         }
 
         /**
@@ -104,6 +89,7 @@ namespace DxCore.Core.Service
                 Changes to the returned Set will not modify services owned by ServiceProvider.
             </summary>
         */
+
         public HashSet<IService> GetAll()
         {
             using(new CriticalRegion(Lock, CriticalRegion.LockType.Read))
@@ -111,6 +97,22 @@ namespace DxCore.Core.Service
                 /* Serve up a copy to prevent meddling kids */
                 return ServicePool.ToHashSet();
             }
+        }
+
+        /**
+            <summary>
+                Returns a registered service of the specified type if any exist, null otherwise.
+            </summary>
+        */
+
+        public T GetService<T>() where T : class, IService
+        {
+            T foundService;
+            if(TryGet(out foundService))
+            {
+                return foundService;
+            }
+            return null;
         }
 
         /**

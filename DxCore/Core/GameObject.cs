@@ -7,8 +7,8 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore.Core
 {

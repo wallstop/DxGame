@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Utils.Distance
 {
@@ -13,10 +14,10 @@ namespace DxCore.Core.Utils.Distance
         private static readonly int NUM_CHILDREN = 4;
 
         [DataMember]
-        public List<QuadTreeNode<T>> Children { get; }
+        public DxRectangle Boundary { get; }
 
         [DataMember]
-        public DxRectangle Boundary { get; }
+        public List<QuadTreeNode<T>> Children { get; }
 
         [DataMember]
         public List<T> Points { get; }
@@ -64,9 +65,9 @@ namespace DxCore.Core.Utils.Distance
 
         public QuadTree(Coordinate<T> coordinate, DxRectangle boundary, IEnumerable<T> points, int bucketSize)
         {
-            Validate.Validate.Hard.IsPositive(bucketSize,
+            Validate.Hard.IsPositive(bucketSize,
                 () => $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
-            Validate.Validate.Hard.IsNotNull(coordinate, () => this.GetFormattedNullOrDefaultMessage(nameof(coordinate)));
+            Validate.Hard.IsNotNull(coordinate, () => this.GetFormattedNullOrDefaultMessage(nameof(coordinate)));
             coordinate_ = coordinate;
             boundary_ = boundary;
             head_ = new QuadTreeNode<T>(boundary, coordinate_, points.ToList(), bucketSize);
@@ -192,7 +193,7 @@ namespace DxCore.Core.Utils.Distance
                 }
                 currentNode = closestChild;
             }
-            Validate.Validate.Hard.IsTrue(currentNode.Terminal);
+            Validate.Hard.IsTrue(currentNode.Terminal);
 
             /* We need to find all nodes that are above and beyond us (http://gamedev.stackexchange.com/questions/27264/how-do-i-optimize-searching-for-the-nearest-point). IE, two layers out, one layer in. */
             DxRectangle searchBoundary = currentNode.Boundary;

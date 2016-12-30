@@ -2,9 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core.Network;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Messaging.Network
 {
@@ -17,7 +15,7 @@ namespace DxCore.Core.Messaging.Network
 
         public UpdateActivePlayer(UniqueId playerId)
         {
-            Validate.Hard.IsNotNull(playerId, StringUtils.GetFormattedNullOrDefaultMessage(this, nameof(playerId)));
+            Validate.Hard.IsNotNull(playerId, this.GetFormattedNullOrDefaultMessage(nameof(playerId)));
             PlayerId = playerId;
         }
     }

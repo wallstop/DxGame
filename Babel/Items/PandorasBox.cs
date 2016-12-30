@@ -6,8 +6,8 @@ using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Components.Advanced.Triggers;
 using DxCore.Core.Properties;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using NLog;
+using WallNetCore.Validate;
 
 namespace Babel.Items
 {
@@ -81,12 +81,12 @@ namespace Babel.Items
         [DataMember] private TimeSpan? lastTriggered_;
 
         [DataMember]
-        private int StackCount { get; set; } = 1;
-
-        [DataMember]
         public bool Active { get; set; }
 
         private int MaxHealth => playerProperties_.MaxHealth.CurrentValue;
+
+        [DataMember]
+        private int StackCount { get; set; } = 1;
 
         public AttachedPandorasBox(TimeSpan triggerDelay, double triggerThreshold, GameObject source,
             EntityProperties playerProperties)
@@ -105,18 +105,6 @@ namespace Babel.Items
             Active = false;
         }
 
-        public void IncreaseStackCount()
-        {
-            ++StackCount;
-        }
-
-        public void DecreaseStackCount()
-        {
-            Validate.Hard.IsTrue(StackCount > 0,
-                $"Cannot decrease the stack count of a {nameof(AttachedPandorasBox)} below 0!");
-            --StackCount;
-        }
-
         public void CheckForTrigger(int previous, int current)
         {
             /* If the new value doesn't trigger us, nothing to do, bail */
@@ -133,12 +121,24 @@ namespace Babel.Items
             }
 
             TimeSpan currentTime = DxGame.Instance.CurrentUpdateTime.TotalGameTime;
-            if(!lastTriggered_.HasValue || lastTriggered_.Value + triggerDelay_ <= currentTime)
+            if(!lastTriggered_.HasValue || (lastTriggered_.Value + triggerDelay_ <= currentTime))
             {
                 lastTriggered_ = currentTime;
                 Active = true;
                 Trigger();
             }
+        }
+
+        public void DecreaseStackCount()
+        {
+            Validate.Hard.IsTrue(StackCount > 0,
+                $"Cannot decrease the stack count of a {nameof(AttachedPandorasBox)} below 0!");
+            --StackCount;
+        }
+
+        public void IncreaseStackCount()
+        {
+            ++StackCount;
         }
 
         private void Trigger()
@@ -158,8 +158,8 @@ namespace Babel.Items
 
             int amountToHeal =
                 (int)
-                    Math.Round(playerProperties_.MaxHealth.CurrentValue * targetHealthPercentage -
-                               playerProperties_.Health.CurrentValue);
+                Math.Round(playerProperties_.MaxHealth.CurrentValue * targetHealthPercentage -
+                           playerProperties_.Health.CurrentValue);
 
             AttachedHealer attachedHealer = new AttachedHealer(amountToHeal, numTicks);
 
@@ -188,10 +188,10 @@ namespace Babel.Items
         [DataMember]
         private int AmountToHeal { get; }
 
+        private double HealPerTick => AmountToHeal / (1.0 * NumTicks);
+
         [DataMember]
         private int NumTicks { get; }
-
-        private double HealPerTick => AmountToHeal / (1.0 * NumTicks);
 
         public AttachedHealer(int amountToHeal, int numTicks)
         {

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using DxCore.Core.Map;
 using DxCore.Core.Messaging;
 using DxCore.Core.Services.Components;
-using DxCore.Core.Utils.Cache.Advanced;
-using DxCore.Core.Utils.Validate;
 using NLog;
+using WallNetCore.Cache.Advanced;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Services
 {
@@ -15,11 +15,11 @@ namespace DxCore.Core.Services
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private ILoadingCache<MapDescriptor, NavigableMesh> NavigableMeshCache { get; }
-
         private NavigableMesh CurrentMesh { get; set; }
 
         private ConcurrentQueue<PathfindingResponse> FinishedResponses { get; }
+
+        private ILoadingCache<MapDescriptor, NavigableMesh> NavigableMeshCache { get; }
 
         private PathfindingResponseDispatcher ResponseDispatcher { get; set; }
 

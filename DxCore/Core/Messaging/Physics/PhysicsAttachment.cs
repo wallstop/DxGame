@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Physics;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Messaging.Physics
 {
@@ -11,9 +11,6 @@ namespace DxCore.Core.Messaging.Physics
     {
         [DataMember]
         private object PhysicsInteraction { get; set; }
-
-        [DataMember]
-        public UniqueId Target { get; private set; }
 
         private PhysicsAttachment(object interaction, UniqueId target)
         {
@@ -28,6 +25,9 @@ namespace DxCore.Core.Messaging.Physics
         public PhysicsAttachment(Impulse impulse, UniqueId target) : this((object) impulse, target) {}
 
         public PhysicsAttachment(Nullification nullification, UniqueId target) : this((object) nullification, target) {}
+
+        [DataMember]
+        public UniqueId Target { get; private set; }
 
         public Type Extract(out object interactionObject)
         {

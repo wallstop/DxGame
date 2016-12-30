@@ -1,9 +1,9 @@
 ﻿using System;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Services.Components
 {
@@ -19,24 +19,6 @@ namespace DxCore.Core.Services.Components
             DrawPriority = DrawPriority.InitSpritebatch;
             Validate.Hard.IsNotNull(cameraService);
             CameraService = cameraService;
-        }
-
-        private void UpdatePosition(DxGameTime gameTime)
-        {
-            DxVector2 target = CameraService.Target.Invoke();
-
-            DxVector2 displacement = target - CameraService.Position;
-            float magnitude = displacement.Magnitude;
-            // TODO: Scale smoother
-            if(magnitude < IgnoreThreshold)
-            {
-                return;
-            }
-
-            double scalar = magnitude / (DxGame.Instance.TargetFps / 8);
-            scalar = Math.Max(scalar, MinSpeed);
-            DxVector2 adjustment = displacement.UnitVector * scalar * gameTime.ScaleFactor;
-            CameraService.Position += adjustment;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
@@ -67,6 +49,24 @@ namespace DxCore.Core.Services.Components
             */
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null,
                 CameraService.Transform);
+        }
+
+        private void UpdatePosition(DxGameTime gameTime)
+        {
+            DxVector2 target = CameraService.Target.Invoke();
+
+            DxVector2 displacement = target - CameraService.Position;
+            float magnitude = displacement.Magnitude;
+            // TODO: Scale smoother
+            if(magnitude < IgnoreThreshold)
+            {
+                return;
+            }
+
+            double scalar = magnitude / (DxGame.Instance.TargetFps / 8);
+            scalar = Math.Max(scalar, MinSpeed);
+            DxVector2 adjustment = displacement.UnitVector * scalar * gameTime.ScaleFactor;
+            CameraService.Position += adjustment;
         }
     }
 }

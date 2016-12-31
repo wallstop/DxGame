@@ -16,12 +16,67 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-            <ColumnDefinition />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Margin="5"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Text="FrameCount" />
+            <ek:NumericTextBox Grid.Row="0"
+                               Grid.Column="1"
+                               Margin="5"
+                               Minimum="0"
+                               Value="{Binding FrameCount}" />
+            <TextBlock Grid.Row="1"
+                       Grid.Column="0"
+                       Margin="5"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Text="Width" />
+            <ek:NumericTextBox Grid.Row="1"
+                               Grid.Column="1"
+                               Margin="5"
+                               Minimum="0"
+                               Value="{Binding FrameWidth}" />
+            <TextBlock Grid.Row="2"
+                       Grid.Column="0"
+                       Margin="5"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Text="Height" />
+            <ek:NumericTextBox Grid.Row="2"
+                               Grid.Column="1"
+                               Margin="5"
+                               Minimum="0"
+                               Value="{Binding FrameHeight}" />
+            <TextBlock Grid.Row="3"
+                       Grid.Column="0"
+                       Margin="5"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Text="FPS" />
+            <ek:NumericTextBox Grid.Row="3"
+                               Grid.Column="1"
+                               Margin="5"
+                               Minimum="0"
+                               Value="{Binding FPS}" />
+        </Grid>
     </Grid>
-
-
 </ek:UIRoot>
+

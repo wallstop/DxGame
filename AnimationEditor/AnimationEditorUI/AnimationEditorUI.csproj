@@ -65,6 +65,13 @@
     </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>CD "$(SolutionDir)packages\EmptyKeysUI_Generator*\tools"
+
+
+
+ekUIGen.exe -i="$(ProjectDir)\" -o="$(ProjectDir)..\AnimationEditorLibrary\GeneratedUI" -bd="$(TargetDir)\" -rm=MonoGame /generate-bindings</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -99,7 +99,6 @@
     <Compile Include="Controls\AssetManagerView.cs" />
     <Compile Include="Controls\TileModel.cs" />
     <Compile Include="Core\Components\MapCreatorComponent.cs" />
-    <Compile Include="Core\Components\MousePanComponent.cs" />
     <Compile Include="Core\Messaging\AddTileToMapRequest.cs" />
     <Compile Include="Core\Messaging\ErrorNotification.cs" />
     <Compile Include="Core\Messaging\LoadMapRequest.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using DxCore;
 using DxCore.Core;
+using DxCore.Core.Components.Advanced.Camera;
 using DxCore.Core.Services;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;

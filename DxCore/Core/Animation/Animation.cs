@@ -34,25 +34,16 @@ namespace DxCore.Core.Animation
 
         public Animation(AnimationDescriptor descriptor, DrawPriority drawPriority = DrawPriority.Normal)
         {
-            Validate.Hard.IsNotNullOrDefault(descriptor, this.GetFormattedNullOrDefaultMessage(descriptor));
-            Validate.Hard.IsTrue(descriptor.FrameCount > 0,
-                $"Cannot initialize an {nameof(Animation)} with a FrameCount of {descriptor.FrameCount}");
-            Validate.Hard.IsNotNullOrDefault(descriptor.FramesPerSecond > 0,
-                $"Cannot initialize an {nameof(Animation)} with a {nameof(descriptor.FramesPerSecond)} of {descriptor.FramesPerSecond}");
+            Validate.Hard.IsNotNullOrDefault(descriptor, () => this.GetFormattedNullOrDefaultMessage(descriptor));
+            Validate.Hard.IsPositive(descriptor.FrameCount,
+                () => $"Cannot initialize an {nameof(Animation)} with a FrameCount of {descriptor.FrameCount}");
+            Validate.Hard.IsPositive(descriptor.FramesPerSecond,
+                () =>
+                        $"Cannot initialize an {nameof(Animation)} with a {nameof(descriptor.FramesPerSecond)} of {descriptor.FramesPerSecond}");
             Validate.Hard.IsNotNullOrDefault(descriptor.Asset,
-                this.GetFormattedNullOrDefaultMessage(nameof(descriptor.Asset)));
+                () => this.GetFormattedNullOrDefaultMessage(nameof(descriptor.Asset)));
             AnimationDescriptor = descriptor;
             drawPriority_ = drawPriority;
-        }
-
-        public int CompareTo(IDrawable other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int CompareTo(IProcessable other)
-        {
-            throw new NotImplementedException();
         }
 
         public void Draw(SpriteBatch spriteBatch, DxGameTime gameTime, DxVector2 position, Direction orientation)

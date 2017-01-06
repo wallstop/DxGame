@@ -126,7 +126,6 @@
     <Compile Include="Core\Animation\Animation.cs" />
     <Compile Include="Core\Animation\AnimationDescriptor.cs" />
     <Compile Include="Core\Animation\AnimationFactory.cs" />
-    <Compile Include="Core\Animation\AnimationFrameOffset.cs" />
     <Compile Include="Core\Animation\FrameDescriptor.cs" />
     <Compile Include="Core\Behaviors\Development\NaiveChaseAnyPlayerBehavior.cs" />
     <Compile Include="Core\Behaviors\Automatic\NullBehavior.cs" />

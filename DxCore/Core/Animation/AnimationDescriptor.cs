@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
+using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Animation
 {
@@ -11,41 +14,167 @@ namespace DxCore.Core.Animation
 
     [Serializable]
     [DataContract]
-    public class AnimationDescriptor : JsonPersistable<AnimationDescriptor>
+    public sealed class AnimationDescriptor : JsonPersistable<AnimationDescriptor>
     {
-        public static string AnimationExtension = ".adtr";
+        public const float DefaultScale = 1.0f;
+        public const int DefaultFps = 60;
+        public static string AnimationExtension => ".adtr";
 
         [DataMember]
-        public string Asset { get; set; }
-
-        [DataMember]
-        public DxRectangle BoundingBox { get; set; } = new DxRectangle(0, 0, 50, 50);
+        public string Asset { get; private set; }
 
         public override string Extension => AnimationExtension;
 
-        [DataMember]
-        public int FrameCount { get; set; }
+        public int FrameCount => Frames.Length;
 
         [DataMember]
-        public AnimationFrameOffset FrameOffsets { get; set; } = AnimationFrameOffset.Empty;
+        public int FramesPerSecond { get; private set; } = DefaultFps;
 
         [DataMember]
-        public int FramesPerSecond { get; set; } = 60;
+        public int Height { get; private set; }
 
         public override AnimationDescriptor Item => this;
 
-        [IgnoreDataMember]
-        public FrameDescriptor NewFrameDescriptor => new FrameDescriptor {BoundingBox = BoundingBox};
+        public static AnimationDescriptorBuilder NewBuilder => new AnimationDescriptorBuilder();
 
         [DataMember]
-        public Direction Orientation { get; set; } = Direction.East;
+        public Direction Orientation { get; private set; } = Direction.East;
 
         [DataMember]
-        public double Scale { get; set; } = 1.0;
+        public float Scale { get; private set; } = DefaultScale;
+
+        [DataMember]
+        public int Width { get; private set; }
+
+        [DataMember]
+        private FrameDescriptor Fallback { get; set; }
+
+        [DataMember]
+        private FrameDescriptor[] Frames { get; set; }
+
+        private AnimationDescriptor() {}
+
+        private AnimationDescriptor(string asset, int width, int height, Direction orientation, float scale, int fps,
+            FrameDescriptor fallback, List<FrameDescriptor> frames)
+        {
+            Asset = asset;
+            Width = width;
+            Height = height;
+            Orientation = orientation;
+            Scale = scale;
+            Fallback = fallback;
+            Frames = frames.ToArray();
+        }
 
         public static AnimationDescriptor Empty()
         {
             return new AnimationDescriptor();
+        }
+
+        public bool OffsetForFrame(int frameNumber, out DxVector2 frameOffset, out DxVector2 drawOffset, out int width,
+            out int height)
+        {
+            bool validFrame = (frameNumber < FrameCount) && (0 <= frameNumber);
+            FrameDescriptor frameDescriptor = validFrame ? Frames[frameNumber] : Fallback;
+            frameOffset = frameDescriptor.FrameOffset;
+            drawOffset = frameDescriptor.DrawOffset;
+            width = frameDescriptor.Width ?? Width;
+            height = frameDescriptor.Height ?? Height;
+            return validFrame;
+        }
+
+        public sealed class AnimationDescriptorBuilder : IBuilder<AnimationDescriptor>
+        {
+            private string Asset { get; set; }
+            private FrameDescriptor Fallback { get; set; }
+            private int Fps { get; set; } = DefaultFps;
+            private List<FrameDescriptor> Frames { get; } = new List<FrameDescriptor>();
+            private int Height { get; set; }
+            private Direction Orientation { get; set; } = Direction.East;
+            private float Scale { get; set; } = DefaultScale;
+            private int Width { get; set; }
+
+            public AnimationDescriptor Build()
+            {
+                Validate.Hard.IsPositive(Width);
+                Validate.Hard.IsPositive(Height);
+                Validate.Hard.IsNotNull(Asset);
+                Validate.Hard.IsPositive(Scale);
+                Validate.Hard.IsNotEmpty(Frames);
+                return new AnimationDescriptor(Asset, Width, Height, Orientation, Scale, Fps, Fallback, Frames);
+            }
+
+            public AnimationDescriptorBuilder WithAsset(string asset)
+            {
+                Asset = asset;
+                return this;
+            }
+
+            public AnimationDescriptorBuilder WithFallback(FrameDescriptor fallback)
+            {
+                Fallback = fallback;
+                return this;
+            }
+
+            public AnimationDescriptorBuilder WithFps(int fps)
+            {
+                Validate.Hard.IsPositive(fps);
+                Fps = fps;
+                return this;
+            }
+
+            public AnimationDescriptorBuilder WithFrame(int frameNumber, FrameDescriptor descriptor)
+            {
+                Validate.Hard.IsNotNull(descriptor);
+                Validate.Hard.IsPositive(frameNumber);
+                Validate.Hard.IsTrue(frameNumber <= Frames.Count);
+                if(frameNumber == Frames.Count)
+                {
+                    Frames.Add(descriptor);
+                    return this;
+                }
+                Frames[frameNumber] = descriptor;
+                return this;
+            }
+
+            public AnimationDescriptorBuilder WithFrameCount(int frameCount)
+            {
+                Validate.Hard.IsPositive(frameCount);
+                for(int i = frameCount; i < Frames.Count; ++i)
+                {
+                    Frames.RemoveAt(i);
+                }
+
+                for(int i = Frames.Count; i < frameCount; ++i)
+                {
+                    WithFrame(i, FrameDescriptor.NewFrameDescriptor);
+                }
+                return this;
+            }
+
+            public AnimationDescriptorBuilder WithHeight(int height)
+            {
+                Height = height;
+                return this;
+            }
+
+            public AnimationDescriptorBuilder WithOrientation(Direction orientation)
+            {
+                Orientation = orientation;
+                return this;
+            }
+
+            public AnimationDescriptorBuilder WithScale(float scale)
+            {
+                Scale = scale;
+                return this;
+            }
+
+            public AnimationDescriptorBuilder WithWidth(int width)
+            {
+                Width = width;
+                return this;
+            }
         }
     }
 }

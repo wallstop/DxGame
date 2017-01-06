@@ -20,7 +20,8 @@ namespace DxCore.Core.Animation
         {
             FrameOffset = other.FrameOffset;
             DrawOffset = other.DrawOffset;
-            BoundingBox = other.BoundingBox;
+            Width = other.Width;
+            Height = other.Height;
         }
 
         /* Displacement vector for the actual start of the image within a frame */
@@ -33,9 +34,10 @@ namespace DxCore.Core.Animation
         [DataMember]
         public DxVector2 DrawOffset { get; set; }
 
-        /* How big this bad boy is */
+        [DataMember]
+        public int? Width { get; set; }
 
         [DataMember]
-        public DxRectangle BoundingBox { get; set; }
+        public int? Height { get; set; }
     }
 }

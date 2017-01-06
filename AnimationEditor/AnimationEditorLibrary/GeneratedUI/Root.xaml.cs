@@ -47,6 +47,14 @@ namespace EmptyKeys.UserInterface.Generated {
         
         private NumericTextBox e_9;
         
+        private TextBlock e_10;
+        
+        private StackPanel e_11;
+        
+        private RadioButton e_12;
+        
+        private RadioButton e_13;
+        
         public Root() : 
                 base() {
             this.Initialize();
@@ -103,6 +111,9 @@ namespace EmptyKeys.UserInterface.Generated {
             RowDefinition row_e_1_3 = new RowDefinition();
             row_e_1_3.Height = new GridLength(1F, GridUnitType.Star);
             this.e_1.RowDefinitions.Add(row_e_1_3);
+            RowDefinition row_e_1_4 = new RowDefinition();
+            row_e_1_4.Height = new GridLength(1F, GridUnitType.Star);
+            this.e_1.RowDefinitions.Add(row_e_1_4);
             ColumnDefinition col_e_1_0 = new ColumnDefinition();
             col_e_1_0.Width = new GridLength(1F, GridUnitType.Star);
             this.e_1.ColumnDefinitions.Add(col_e_1_0);
@@ -191,6 +202,36 @@ namespace EmptyKeys.UserInterface.Generated {
             Grid.SetRow(this.e_9, 3);
             Binding binding_e_9_Value = new Binding("FPS");
             this.e_9.SetBinding(NumericTextBox.ValueProperty, binding_e_9_Value);
+            // e_10 element
+            this.e_10 = new TextBlock();
+            this.e_1.Children.Add(this.e_10);
+            this.e_10.Name = "e_10";
+            this.e_10.HorizontalAlignment = HorizontalAlignment.Center;
+            this.e_10.VerticalAlignment = VerticalAlignment.Center;
+            this.e_10.Text = "Direction";
+            Grid.SetColumn(this.e_10, 0);
+            Grid.SetRow(this.e_10, 4);
+            // e_11 element
+            this.e_11 = new StackPanel();
+            this.e_1.Children.Add(this.e_11);
+            this.e_11.Name = "e_11";
+            this.e_11.Margin = new Thickness(5F, 5F, 5F, 5F);
+            this.e_11.Orientation = Orientation.Horizontal;
+            Grid.SetColumn(this.e_11, 1);
+            Grid.SetRow(this.e_11, 4);
+            // e_12 element
+            this.e_12 = new RadioButton();
+            this.e_11.Children.Add(this.e_12);
+            this.e_12.Name = "e_12";
+            this.e_12.Content = "Left";
+            this.e_12.IsChecked = true;
+            this.e_12.GroupName = "Direction";
+            // e_13 element
+            this.e_13 = new RadioButton();
+            this.e_11.Children.Add(this.e_13);
+            this.e_13.Name = "e_13";
+            this.e_13.Content = "Right";
+            this.e_13.GroupName = "Direction";
         }
     }
 }

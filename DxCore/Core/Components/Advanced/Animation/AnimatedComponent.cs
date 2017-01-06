@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Animation;
-using DxCore.Core.Components.Advanced.Animated;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;

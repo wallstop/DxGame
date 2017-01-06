@@ -17,7 +17,6 @@ using DxCore.Core.Experience;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.State;
-using DXGame.Core.Components.Advanced.Behaviors;
 using DxCore.Core.Messaging;
 using DXGame.Core.Behaviors;
 

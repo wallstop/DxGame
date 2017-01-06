@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using DXGame.Core.Behaviors.Goals;
-using DXGame.Core.Components.Advanced.Behaviors;
 using DxCore.Core.Utils;
 using DxCore.Core.Messaging;
 using DxCore;

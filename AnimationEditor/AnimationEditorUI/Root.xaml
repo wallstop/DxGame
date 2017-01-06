@@ -27,6 +27,7 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -76,6 +77,22 @@
                                Margin="5"
                                Minimum="0"
                                Value="{Binding FPS}" />
+            <TextBlock Grid.Row="4"
+                       Grid.Column="0"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Text="Direction" />
+            <StackPanel Grid.Row="4"
+                        Grid.Column="1"
+                        Margin="5"
+                        Orientation="Horizontal">
+                <RadioButton Content="Left"
+                             GroupName="Direction"
+                             IsChecked="{Binding FacingLeft}" />
+                <RadioButton Content="Right"
+                             GroupName="Direction"
+                             IsChecked="{Binding FacingRight}" />
+            </StackPanel>
         </Grid>
     </Grid>
 </ek:UIRoot>

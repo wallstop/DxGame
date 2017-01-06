@@ -1,5 +1,4 @@
 ﻿using DxCore.Core.Components.Advanced.Behaviors;
-using DXGame.Core.Components.Advanced.Behaviors;
 using WallNetCore.Validate;
 
 namespace DxCore.Core.Utils

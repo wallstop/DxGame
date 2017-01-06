@@ -1,7 +1,7 @@
 ﻿using AnimationEditorLibrary.Core.Messaging;
 using DxCore.Core.Animation;
 using DxCore.Core.Messaging;
-using DxCore.Core.Primitives;
+using DxCore.Core.Utils.Distance;
 using EmptyKeys.UserInterface.Mvvm;
 using NLog;
 
@@ -11,12 +11,50 @@ namespace AnimationEditorLibrary.Controls
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        private bool facingLeft_;
+        private bool facingRight_;
+
+        // TODO: Unify/simplify?
+        public bool FacingLeft
+        {
+            get { return facingLeft_; }
+            set
+            {
+                if(facingLeft_ == value)
+                {
+                    return;
+                }
+                if(value)
+                {
+                    new OrientationChangedMessage(Direction.East).Emit();
+                }
+                facingLeft_ = value;
+            }
+        }
+
+        public bool FacingRight
+        {
+            get { return facingRight_; }
+            set
+            {
+                if(facingRight_ == value)
+                {
+                    return;
+                }
+                if(value)
+                {
+                    new OrientationChangedMessage(Direction.West).Emit();
+                }
+                facingRight_ = value;
+            }
+        }
+
         public int FPS
         {
             get { return Descriptor.FramesPerSecond; }
             set
             {
-                Descriptor.FramesPerSecond = value;
+                Builder.WithFps(value);
                 NotifyAnimationChanged();
             }
         }
@@ -26,98 +64,43 @@ namespace AnimationEditorLibrary.Controls
             get { return Descriptor.FrameCount; }
             set
             {
-                int oldFrameCount = Descriptor.FrameCount;
-                Descriptor.FrameCount = value;
-                if(oldFrameCount < value)
-                {
-                    for(int i = oldFrameCount; i < value; ++i)
-                    {
-                        Builder.WithFrameOffset(i, FrameDescriptor.NewFrameDescriptor);
-                    }
-                }
-                else
-                {
-                    for(int i = value; i < oldFrameCount; ++i)
-                    {
-                        Builder.WithoutFrameOffset(i);
-                    }
-                }
+                Builder.WithFrameCount(value);
                 NotifyAnimationChanged();
             }
         }
 
         public int Height
         {
-            get { return (int) Descriptor.BoundingBox.Height; }
+            get { return Descriptor.Height; }
             set
             {
-                DxRectangle bounds = Descriptor.BoundingBox;
-                bounds.Height = value;
-
-                Descriptor.BoundingBox = bounds;
-                SyncBoundingBox();
+                Builder.WithHeight(value);
                 NotifyAnimationChanged();
             }
         }
 
         public int Width
         {
-            get { return (int) Descriptor.BoundingBox.Width; }
+            get { return Descriptor.Width; }
             set
             {
-                DxRectangle bounds = Descriptor.BoundingBox;
-                bounds.Width = value;
-
-                Descriptor.BoundingBox = bounds;
-                SyncBoundingBox();
+                Builder.WithWidth(value);
                 NotifyAnimationChanged();
             }
         }
 
-        private AnimationFrameOffset.AnimationFrameOffsetBuilder Builder { get; set; }
-        private AnimationDescriptor Descriptor { get; set; }
+        private AnimationDescriptor.AnimationDescriptorBuilder Builder { get; }
+        private AnimationDescriptor Descriptor => Builder.Build();
 
         public AnimationView()
         {
-            Builder = new AnimationFrameOffset.AnimationFrameOffsetBuilder();
-            Descriptor = AnimationDescriptor.Empty();
+            Builder = AnimationDescriptor.NewBuilder;
+            FacingRight = true;
         }
 
         private void NotifyAnimationChanged()
         {
-            SyncDescriptorWithOffsets();
-            AnimationDescriptor latestDescriptor = Descriptor;
-
-            new AnimationChangedMessage(latestDescriptor).Emit();
-        }
-
-        private void SyncBoundingBox()
-        {
-            for(int i = 0; i < Descriptor.FrameCount; ++i)
-            {
-                DxVector2 drawOffset;
-                DxVector2 frameOffset;
-                DxRectangle frameBounds;
-                if(Descriptor.FrameOffsets.OffsetForFrame(i, out frameOffset, out drawOffset, out frameBounds))
-                {
-                    FrameDescriptor updatedDescriptor = new FrameDescriptor
-                    {
-                        BoundingBox = Descriptor.BoundingBox,
-                        DrawOffset = drawOffset,
-                        FrameOffset = frameOffset
-                    };
-                    Builder.WithFrameOffset(i, updatedDescriptor);
-                }
-                else
-                {
-                    Logger.Error("No {0} found for {1}", nameof(AnimationFrameOffset), i);
-                }
-            }
-        }
-
-        private void SyncDescriptorWithOffsets()
-        {
-            Descriptor.FrameOffsets = Builder.Build();
+            new AnimationChangedMessage(Descriptor).Emit();
         }
     }
 }

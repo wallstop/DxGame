@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using WallNetCore.Helper;
 using WallNetCore.Validate;
 
 namespace DxCore.Core
@@ -14,29 +15,30 @@ namespace DxCore.Core
     [Serializable]
     public class GameId : IEquatable<GameId>
     {
-        [DataMember] private readonly Guid id_;
-
         public static GameId Empty { get; } = new GameId(Guid.Empty);
+
+        [DataMember]
+        private Guid Id { get; set; }
 
         private GameId(Guid guid)
         {
-            id_ = guid;
+            Id = guid;
         }
 
         public GameId()
         {
-            id_ = Guid.NewGuid();
+            Id = Guid.NewGuid();
         }
 
         public GameId(GameId copy)
         {
             Validate.Hard.IsNotNullOrDefault(copy);
-            id_ = copy.id_;
+            Id = copy.Id;
         }
 
         public bool Equals(GameId other)
         {
-            return id_.Equals(other.id_);
+            return Objects.Equals(this, other);
         }
 
         public override bool Equals(object other)
@@ -51,7 +53,8 @@ namespace DxCore.Core
 
         public override int GetHashCode()
         {
-            return id_.GetHashCode();
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
+            return Id.GetHashCode();
         }
     }
 }

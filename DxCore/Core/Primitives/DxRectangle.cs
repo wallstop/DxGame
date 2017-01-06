@@ -55,15 +55,17 @@ namespace DxCore.Core.Primitives
         public DxLineSegment BottomBorder => new DxLineSegment(X, Y + Height, X + Width, Y + Height);
         public DxLineSegment TopBorder => new DxLineSegment(X, Y, X + Width, Y);
 
+        private const int NumEdges = 4;
+
         public Dictionary<Direction, DxLineSegment> Edges
             =>
-                new Dictionary<Direction, DxLineSegment>(4)
-                {
-                    [Direction.East] = RightBorder,
-                    [Direction.West] = LeftBorder,
-                    [Direction.North] = TopBorder,
-                    [Direction.South] = BottomBorder
-                };
+            new Dictionary<Direction, DxLineSegment>(NumEdges)
+            {
+                [Direction.East] = RightBorder,
+                [Direction.West] = LeftBorder,
+                [Direction.North] = TopBorder,
+                [Direction.South] = BottomBorder
+            };
 
         public DxVector2 Position => new DxVector2(X, Y);
 
@@ -71,8 +73,13 @@ namespace DxCore.Core.Primitives
         {
             get
             {
-                const int numLines = 4;
-                var lines = new List<DxLineSegment>(numLines) {TopBorder, BottomBorder, LeftBorder, RightBorder};
+                List<DxLineSegment> lines = new List<DxLineSegment>(NumEdges)
+                {
+                    TopBorder,
+                    BottomBorder,
+                    LeftBorder,
+                    RightBorder
+                };
                 return lines;
             }
         }
@@ -86,10 +93,16 @@ namespace DxCore.Core.Primitives
             Height = lowerRightCorner.Y - upperLeftCorner.Y;
         }
 
-        public DxRectangle(Point upperLeftCorner, Point lowerRightCorner)
-            : this(upperLeftCorner.ToVector2(), lowerRightCorner.ToVector2())
+        public DxRectangle(DxVector2 upperLeftCorner, float width, float height)
         {
+            X = upperLeftCorner.X;
+            Width = width;
+            Y = upperLeftCorner.Y;
+            Height = height;
         }
+
+        public DxRectangle(Point upperLeftCorner, Point lowerRightCorner)
+            : this(upperLeftCorner.ToVector2(), lowerRightCorner.ToVector2()) {}
 
         public DxRectangle(Rectangle rectangle)
         {
@@ -112,7 +125,7 @@ namespace DxCore.Core.Primitives
 
         public bool Equals(DxRectangle rhs)
         {
-            return X == rhs.X && Y == rhs.Y && Width == rhs.Width && Height == rhs.Height;
+            return (X == rhs.X) && (Y == rhs.Y) && (Width == rhs.Width) && (Height == rhs.Height);
         }
 
         public bool Equals(Rectangle other)
@@ -154,9 +167,9 @@ namespace DxCore.Core.Primitives
 
         public static bool operator ==(DxRectangle lhs, DxRectangle rhs)
         {
-            return lhs.X.FuzzyCompare(rhs.X, Tolerance) == 0 && lhs.Y.FuzzyCompare(rhs.Y, Tolerance) == 0 &&
-                   lhs.Width.FuzzyCompare(rhs.Width, Tolerance) == 0 &&
-                   lhs.Height.FuzzyCompare(rhs.Height, Tolerance) == 0;
+            return (lhs.X.FuzzyCompare(rhs.X, Tolerance) == 0) && (lhs.Y.FuzzyCompare(rhs.Y, Tolerance) == 0) &&
+                   (lhs.Width.FuzzyCompare(rhs.Width, Tolerance) == 0) &&
+                   (lhs.Height.FuzzyCompare(rhs.Height, Tolerance) == 0);
         }
 
         public static bool operator !=(DxRectangle lhs, DxRectangle rhs)
@@ -210,12 +223,12 @@ namespace DxCore.Core.Primitives
 
         public bool Contains(float x, float y)
         {
-            return X <= x && x < X + Width && Y <= y && y < Y + Height;
+            return (X <= x) && (x < X + Width) && (Y <= y) && (y < Y + Height);
         }
 
         public bool Contains(DxRectangle rectangle)
         {
-            if(X <= rectangle.X && rectangle.X + rectangle.Width <= X + Width && Y <= rectangle.Y)
+            if((X <= rectangle.X) && (rectangle.X + rectangle.Width <= X + Width) && (Y <= rectangle.Y))
             {
                 return rectangle.Y + rectangle.Height <= Y + Height;
             }
@@ -239,12 +252,14 @@ namespace DxCore.Core.Primitives
 
         public bool Intersects(Rectangle rectangle)
         {
-            return rectangle.Left < Right && Left < rectangle.Right && rectangle.Top < Bottom && Top < rectangle.Bottom;
+            return (rectangle.Left < Right) && (Left < rectangle.Right) && (rectangle.Top < Bottom) &&
+                   (Top < rectangle.Bottom);
         }
 
         public bool Intersects(DxRectangle rectangle)
         {
-            return rectangle.Left < Right && Left < rectangle.Right && rectangle.Top < Bottom && Top < rectangle.Bottom;
+            return (rectangle.Left < Right) && (Left < rectangle.Right) && (rectangle.Top < Bottom) &&
+                   (Top < rectangle.Bottom);
         }
 
         public List<DxRectangle> Divide(float maxWidth, float maxHeight)

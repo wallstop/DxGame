@@ -139,15 +139,14 @@ namespace DxCore.Core.Animation
             pathToAssetFile = StripContentDirectory(pathToAssetFile);
             foreach(StandardAnimationType animationType in Enum.GetValues(typeof(StandardAnimationType)))
             {
-                AnimationDescriptor fakeDescriptor = new AnimationDescriptor
-                {
-                    Asset = pathToAssetFile,
-                    FrameCount = 1,
-                    FramesPerSecond = 60,
-                    Scale = 1.0
-                };
+                AnimationDescriptor.AnimationDescriptorBuilder builder =
+                    AnimationDescriptor.NewBuilder.WithAsset(pathToAssetFile)
+                        .WithFrameCount(1)
+                        .WithWidth(50)
+                        .WithHeight(50);
+                // TODO: Make not terrible
                 string mangledFakePath = ManipulatePathToIncludeAnimationType(pathToAssetFile, animationType);
-                Instance.animationSimpleCache_.PutIfAbsent(mangledFakePath, fakeDescriptor);
+                Instance.animationSimpleCache_.PutIfAbsent(mangledFakePath, builder.Build());
             }
             return true;
         }

@@ -4,7 +4,6 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DXGame.Core.Behaviors;
 using DXGame.Core.Behaviors.Goals;
-using DXGame.Core.Components.Advanced.Behaviors;
 using NLog;
 using WallNetCore.Validate;
 

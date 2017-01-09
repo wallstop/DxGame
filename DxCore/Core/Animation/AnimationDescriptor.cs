@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
+using NLog;
 using WallNetCore.Validate;
 
 namespace DxCore.Core.Animation
@@ -16,6 +17,8 @@ namespace DxCore.Core.Animation
     [DataContract]
     public sealed class AnimationDescriptor : JsonPersistable<AnimationDescriptor>
     {
+        public const int DefaultWidth = 50;
+        public const int DefaultHeight = 50;
         public const float DefaultScale = 1.0f;
         public const int DefaultFps = 60;
         public static string AnimationExtension => ".adtr";
@@ -85,22 +88,30 @@ namespace DxCore.Core.Animation
 
         public sealed class AnimationDescriptorBuilder : IBuilder<AnimationDescriptor>
         {
+            private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
             private string Asset { get; set; }
             private FrameDescriptor Fallback { get; set; }
             private int Fps { get; set; } = DefaultFps;
             private List<FrameDescriptor> Frames { get; } = new List<FrameDescriptor>();
-            private int Height { get; set; }
+            private int Height { get; set; } = DefaultHeight;
             private Direction Orientation { get; set; } = Direction.East;
             private float Scale { get; set; } = DefaultScale;
-            private int Width { get; set; }
+            private int Width { get; set; } = DefaultWidth;
 
             public AnimationDescriptor Build()
             {
                 Validate.Hard.IsPositive(Width);
                 Validate.Hard.IsPositive(Height);
-                Validate.Hard.IsNotNull(Asset);
+                if(Validate.Check.IsNull(Asset))
+                {
+                    Logger.Debug("Creating Animation with null asset");
+                }
                 Validate.Hard.IsPositive(Scale);
-                Validate.Hard.IsNotEmpty(Frames);
+                if(Validate.Check.IsEmpty(Frames))
+                {
+                    Logger.Debug("Creating animation without any frames");
+                }
                 return new AnimationDescriptor(Asset, Width, Height, Orientation, Scale, Fps, Fallback, Frames);
             }
 

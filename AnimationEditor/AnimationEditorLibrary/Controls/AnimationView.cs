@@ -1,52 +1,32 @@
-﻿using AnimationEditorLibrary.Core.Messaging;
+﻿using System;
+using System.Collections.Generic;
+using AnimationEditorLibrary.Core.Messaging;
 using DxCore.Core.Animation;
 using DxCore.Core.Messaging;
 using DxCore.Core.Utils.Distance;
+using EmptyKeys.UserInterface;
+using EmptyKeys.UserInterface.Input;
 using EmptyKeys.UserInterface.Mvvm;
 using NLog;
 
 namespace AnimationEditorLibrary.Controls
 {
-    public sealed class AnimationView : ViewModelBase
+    public class AnimationView : ViewModelBase
     {
+        private const float BaseScrollScale = 1200f;
+
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private bool facingLeft_;
-        private bool facingRight_;
-
-        // TODO: Unify/simplify?
         public bool FacingLeft
         {
-            get { return facingLeft_; }
-            set
-            {
-                if(facingLeft_ == value)
-                {
-                    return;
-                }
-                if(value)
-                {
-                    new OrientationChangedMessage(Direction.East).Emit();
-                }
-                facingLeft_ = value;
-            }
+            get { return Facing == Direction.West; }
+            set { ChangeDirection(value ? Direction.West : Direction.East); }
         }
 
         public bool FacingRight
         {
-            get { return facingRight_; }
-            set
-            {
-                if(facingRight_ == value)
-                {
-                    return;
-                }
-                if(value)
-                {
-                    new OrientationChangedMessage(Direction.West).Emit();
-                }
-                facingRight_ = value;
-            }
+            get { return Facing == Direction.East; }
+            set { ChangeDirection(value ? Direction.East : Direction.West); }
         }
 
         public int FPS
@@ -68,6 +48,13 @@ namespace AnimationEditorLibrary.Controls
                 NotifyAnimationChanged();
             }
         }
+
+        public Dictionary<RoutedEvent, Delegate> Handlers
+            =>
+            new Dictionary<RoutedEvent, Delegate>
+            {
+                [Mouse.MouseWheelEvent] = new MouseWheelEventHandler(HandleMouseScroll)
+            };
 
         public int Height
         {
@@ -92,10 +79,34 @@ namespace AnimationEditorLibrary.Controls
         private AnimationDescriptor.AnimationDescriptorBuilder Builder { get; }
         private AnimationDescriptor Descriptor => Builder.Build();
 
+        private Direction Facing { get; set; }
+
+        private float Scale { get; set; }
+
         public AnimationView()
         {
             Builder = AnimationDescriptor.NewBuilder;
             FacingRight = true;
+        }
+
+        private void ChangeDirection(Direction direction)
+        {
+            if(Facing == direction)
+            {
+                return;
+            }
+            new OrientationChangedMessage(direction).Emit();
+            Facing = direction;
+        }
+
+        private void HandleMouseScroll(object source, MouseWheelEventArgs mouseEventArgs)
+        {
+            float delta = mouseEventArgs.Delta;
+            delta /= BaseScrollScale;
+            Scale += delta;
+            // TODO: Punt to camera model?
+            Builder.WithScale(Scale);
+            NotifyAnimationChanged();
         }
 
         private void NotifyAnimationChanged()

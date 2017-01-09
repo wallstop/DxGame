@@ -86,7 +86,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\AnimationView.cs" />
-    <Compile Include="Controls\CameraEventHandler.cs" />
     <Compile Include="Core\Components\UpdateableSpriteComponent.cs" />
     <Compile Include="Core\Messaging\AnimationChangedMessage.cs" />
     <Compile Include="Core\Messaging\OrientationChangedMessage.cs" />

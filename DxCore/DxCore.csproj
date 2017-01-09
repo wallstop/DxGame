@@ -140,6 +140,7 @@
     <Compile Include="Core\Behaviors\Attributes.cs" />
     <Compile Include="Core\Components\Advanced\Behaviors\BehaviorComponent.cs" />
     <Compile Include="Core\Components\Advanced\Camera\MousePanComponent.cs" />
+    <Compile Include="Core\GraphicsWidgets\HUD\TransparentBackground.cs" />
     <Compile Include="Core\Services\Components\GoalAssigner.cs" />
     <Compile Include="Core\Components\Advanced\Collision\CollisionDestructibleComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\AbstractCommandComponent.cs" />
@@ -357,7 +358,6 @@
     <Compile Include="Core\Utils\Cache\Simple\UnboundedLoadingSimpleCache.cs" />
     <Compile Include="Core\Utils\Cache\Simple\UnboundedSimpleCache.cs" />
     <Compile Include="Core\Utils\ColorFactory.cs" />
-    <Compile Include="Core\Utils\ColorUtils.cs" />
     <Compile Include="Core\Utils\DateTimeConstants.cs" />
     <Compile Include="Core\Utils\Distance\Directions.cs" />
     <Compile Include="Core\Utils\Distance\Distance.cs" />

@@ -49,6 +49,11 @@ namespace DxCore.Core.Animation
 
         public void Draw(SpriteBatch spriteBatch, DxGameTime gameTime, DxVector2 position, Direction orientation)
         {
+            if(Validate.Check.IsNull(AnimationDescriptor.Asset))
+            {
+                return;
+            }
+
             UpdateToCurrentFrame(gameTime);
 
             DxVector2 frameOffset;

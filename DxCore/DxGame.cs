@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using DxCore.Core;
 using DxCore.Core.Components.Basic;
@@ -110,9 +109,6 @@ namespace DxCore
         }
 
         public ServiceProvider ServiceProvider { get; } = ServiceProvider.Instance;
-
-        /* TODO: Remove public access to this, this was made public for network testing */
-        public new List<DxService> Services { get; } = new List<DxService>();
 
         public SpriteBatch SpriteBatch { get; protected set; }
         public virtual double TargetFps => 60.0;

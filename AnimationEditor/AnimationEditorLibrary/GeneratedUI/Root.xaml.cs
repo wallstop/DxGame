@@ -224,14 +224,17 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_11.Children.Add(this.e_12);
             this.e_12.Name = "e_12";
             this.e_12.Content = "Left";
-            this.e_12.IsChecked = true;
             this.e_12.GroupName = "Direction";
+            Binding binding_e_12_IsChecked = new Binding("FacingLeft");
+            this.e_12.SetBinding(RadioButton.IsCheckedProperty, binding_e_12_IsChecked);
             // e_13 element
             this.e_13 = new RadioButton();
             this.e_11.Children.Add(this.e_13);
             this.e_13.Name = "e_13";
             this.e_13.Content = "Right";
             this.e_13.GroupName = "Direction";
+            Binding binding_e_13_IsChecked = new Binding("FacingRight");
+            this.e_13.SetBinding(RadioButton.IsCheckedProperty, binding_e_13_IsChecked);
         }
     }
 }

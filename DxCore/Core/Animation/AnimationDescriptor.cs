@@ -77,7 +77,7 @@ namespace DxCore.Core.Animation
         public bool OffsetForFrame(int frameNumber, out DxVector2 frameOffset, out DxVector2 drawOffset, out int width,
             out int height)
         {
-            bool validFrame = (frameNumber < FrameCount) && (0 <= frameNumber);
+            bool validFrame = frameNumber < FrameCount && 0 <= frameNumber;
             FrameDescriptor frameDescriptor = validFrame ? Frames[frameNumber] : Fallback;
             frameOffset = frameDescriptor.FrameOffset;
             drawOffset = frameDescriptor.DrawOffset;
@@ -137,7 +137,7 @@ namespace DxCore.Core.Animation
             public AnimationDescriptorBuilder WithFrame(int frameNumber, FrameDescriptor descriptor)
             {
                 Validate.Hard.IsNotNull(descriptor);
-                Validate.Hard.IsPositive(frameNumber);
+                Validate.Hard.IsNotNegative(frameNumber);
                 Validate.Hard.IsTrue(frameNumber <= Frames.Count);
                 if(frameNumber == Frames.Count)
                 {
@@ -150,7 +150,7 @@ namespace DxCore.Core.Animation
 
             public AnimationDescriptorBuilder WithFrameCount(int frameCount)
             {
-                Validate.Hard.IsPositive(frameCount);
+                Validate.Hard.IsNotNegative(frameCount);
                 for(int i = frameCount; i < Frames.Count; ++i)
                 {
                     Frames.RemoveAt(i);

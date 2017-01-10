@@ -14,7 +14,7 @@ namespace AnimationEditor
         [STAThread]
         private static void Main()
         {
-            using(var game = new AnimationEditor())
+            using(AnimationEditor game = new AnimationEditor())
             {
                 game.Run();
             }

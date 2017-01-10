@@ -1,13 +1,14 @@
-﻿<ek:UIRoot x:Class="AnimationEditorUI.Root"
-           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-           xmlns:c="clr-namespace:EmptyKeys.UserInterface.Designer.Charts;assembly=EmptyKeys.UserInterface.Designer"
-           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-           xmlns:ek="clr-namespace:EmptyKeys.UserInterface.Designer;assembly=EmptyKeys.UserInterface.Designer"
-           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-           Width="604"
-           Height="350"
-           mc:Ignorable="d">
+﻿<ek:UIRoot
+    x:Class="AnimationEditorUI.Root"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:c="clr-namespace:EmptyKeys.UserInterface.Designer.Charts;assembly=EmptyKeys.UserInterface.Designer"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ek="clr-namespace:EmptyKeys.UserInterface.Designer;assembly=EmptyKeys.UserInterface.Designer"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Width="604"
+    Height="350"
+    mc:Ignorable="d">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -28,72 +29,142 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0"
-                       Grid.Column="0"
-                       Margin="5"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Text="FrameCount" />
-            <ek:NumericTextBox Grid.Row="0"
-                               Grid.Column="1"
-                               Margin="5"
-                               Minimum="0"
-                               Value="{Binding FrameCount}" />
-            <TextBlock Grid.Row="1"
-                       Grid.Column="0"
-                       Margin="5"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Text="Width" />
-            <ek:NumericTextBox Grid.Row="1"
-                               Grid.Column="1"
-                               Margin="5"
-                               Minimum="0"
-                               Value="{Binding FrameWidth}" />
-            <TextBlock Grid.Row="2"
-                       Grid.Column="0"
-                       Margin="5"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Text="Height" />
-            <ek:NumericTextBox Grid.Row="2"
-                               Grid.Column="1"
-                               Margin="5"
-                               Minimum="0"
-                               Value="{Binding FrameHeight}" />
-            <TextBlock Grid.Row="3"
-                       Grid.Column="0"
-                       Margin="5"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Text="FPS" />
-            <ek:NumericTextBox Grid.Row="3"
-                               Grid.Column="1"
-                               Margin="5"
-                               Minimum="0"
-                               Value="{Binding FPS}" />
-            <TextBlock Grid.Row="4"
-                       Grid.Column="0"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Text="Direction" />
-            <StackPanel Grid.Row="4"
-                        Grid.Column="1"
-                        Margin="5"
-                        Orientation="Horizontal">
-                <RadioButton Content="Left"
-                             GroupName="Direction"
-                             IsChecked="{Binding FacingLeft}" />
-                <RadioButton Content="Right"
-                             GroupName="Direction"
-                             IsChecked="{Binding FacingRight}" />
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Text="FrameCount" />
+            <ek:NumericTextBox
+                Grid.Row="0"
+                Grid.Column="1"
+                Margin="5"
+                Minimum="0"
+                Value="{Binding FrameCount}" />
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="0"
+                Margin="5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Text="Width" />
+            <ek:NumericTextBox
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="5"
+                Minimum="1"
+                Value="{Binding Height}" />
+            <TextBlock
+                Grid.Row="2"
+                Grid.Column="0"
+                Margin="5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Text="Height" />
+            <ek:NumericTextBox
+                Grid.Row="2"
+                Grid.Column="1"
+                Margin="5"
+                Minimum="1"
+                Value="{Binding Width}" />
+            <TextBlock
+                Grid.Row="3"
+                Grid.Column="0"
+                Margin="5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Text="FPS" />
+            <ek:NumericTextBox
+                Grid.Row="3"
+                Grid.Column="1"
+                Margin="5"
+                Minimum="0"
+                Value="{Binding FPS}" />
+            <TextBlock
+                Grid.Row="4"
+                Grid.Column="0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Text="Direction" />
+            <StackPanel
+                Grid.Row="4"
+                Grid.Column="1"
+                Margin="5"
+                Orientation="Horizontal">
+                <RadioButton
+                    Content="Left"
+                    GroupName="Direction"
+                    IsChecked="{Binding FacingLeft}" />
+                <RadioButton
+                    Content="Right"
+                    GroupName="Direction"
+                    IsChecked="{Binding FacingRight}" />
             </StackPanel>
+            <Button
+                Grid.Row="5"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Margin="5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Command="{Binding SetContentDirectoryCommand, Mode=OneWay}"
+                ToolTip="{Binding ContentDirectory}">
+                Content Directory
+            </Button>
+            <Grid
+                Grid.Row="6"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Margin="5"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Command="{Binding NewCommand, Mode=OneWay}"
+                    ToolTip="Create a new animation from scratch">
+                    New
+                </Button>
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Command="{Binding LoadCommand, Mode=OneWay}"
+                    ToolTip="Edit an existing animation">
+                    Load
+                </Button>
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Command="{Binding SaveCommand, Mode=OneWay}"
+                    ToolTip="Save the current animation">
+                    Save
+                </Button>
+            </Grid>
         </Grid>
     </Grid>
 </ek:UIRoot>
+
+
 

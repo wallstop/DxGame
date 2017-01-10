@@ -16,7 +16,6 @@ namespace EmptyKeys.UserInterface.Generated {
     using EmptyKeys.UserInterface.Interactions.Core;
     using EmptyKeys.UserInterface.Interactivity;
     using EmptyKeys.UserInterface.Media;
-    using EmptyKeys.UserInterface.Media.Effects;
     using EmptyKeys.UserInterface.Media.Animation;
     using EmptyKeys.UserInterface.Media.Imaging;
     using EmptyKeys.UserInterface.Shapes;
@@ -24,7 +23,7 @@ namespace EmptyKeys.UserInterface.Generated {
     using EmptyKeys.UserInterface.Themes;
     
     
-    [GeneratedCodeAttribute("Empty Keys UI Generator", "2.6.0.0")]
+    [GeneratedCodeAttribute("Empty Keys UI Generator", "2.3.0.0")]
     public partial class Root : UIRoot {
         
         private Grid e_0;
@@ -54,6 +53,16 @@ namespace EmptyKeys.UserInterface.Generated {
         private RadioButton e_12;
         
         private RadioButton e_13;
+        
+        private Button e_14;
+        
+        private Grid e_15;
+        
+        private Button e_16;
+        
+        private Button e_17;
+        
+        private Button e_18;
         
         public Root() : 
                 base() {
@@ -114,6 +123,12 @@ namespace EmptyKeys.UserInterface.Generated {
             RowDefinition row_e_1_4 = new RowDefinition();
             row_e_1_4.Height = new GridLength(1F, GridUnitType.Star);
             this.e_1.RowDefinitions.Add(row_e_1_4);
+            RowDefinition row_e_1_5 = new RowDefinition();
+            row_e_1_5.Height = new GridLength(1F, GridUnitType.Star);
+            this.e_1.RowDefinitions.Add(row_e_1_5);
+            RowDefinition row_e_1_6 = new RowDefinition();
+            row_e_1_6.Height = new GridLength(1F, GridUnitType.Star);
+            this.e_1.RowDefinitions.Add(row_e_1_6);
             ColumnDefinition col_e_1_0 = new ColumnDefinition();
             col_e_1_0.Width = new GridLength(1F, GridUnitType.Star);
             this.e_1.ColumnDefinitions.Add(col_e_1_0);
@@ -157,10 +172,11 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_1.Children.Add(this.e_5);
             this.e_5.Name = "e_5";
             this.e_5.Margin = new Thickness(5F, 5F, 5F, 5F);
-            this.e_5.Minimum = 0F;
+            this.e_5.Text = "1.00";
+            this.e_5.Minimum = 1F;
             Grid.SetColumn(this.e_5, 1);
             Grid.SetRow(this.e_5, 1);
-            Binding binding_e_5_Value = new Binding("FrameWidth");
+            Binding binding_e_5_Value = new Binding("Height");
             this.e_5.SetBinding(NumericTextBox.ValueProperty, binding_e_5_Value);
             // e_6 element
             this.e_6 = new TextBlock();
@@ -177,10 +193,11 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_1.Children.Add(this.e_7);
             this.e_7.Name = "e_7";
             this.e_7.Margin = new Thickness(5F, 5F, 5F, 5F);
-            this.e_7.Minimum = 0F;
+            this.e_7.Text = "1.00";
+            this.e_7.Minimum = 1F;
             Grid.SetColumn(this.e_7, 1);
             Grid.SetRow(this.e_7, 2);
-            Binding binding_e_7_Value = new Binding("FrameHeight");
+            Binding binding_e_7_Value = new Binding("Width");
             this.e_7.SetBinding(NumericTextBox.ValueProperty, binding_e_7_Value);
             // e_8 element
             this.e_8 = new TextBlock();
@@ -235,6 +252,89 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_13.GroupName = "Direction";
             Binding binding_e_13_IsChecked = new Binding("FacingRight");
             this.e_13.SetBinding(RadioButton.IsCheckedProperty, binding_e_13_IsChecked);
+            // e_14 element
+            this.e_14 = new Button();
+            this.e_1.Children.Add(this.e_14);
+            this.e_14.Name = "e_14";
+            this.e_14.Margin = new Thickness(5F, 5F, 5F, 5F);
+            this.e_14.HorizontalAlignment = HorizontalAlignment.Center;
+            this.e_14.VerticalAlignment = VerticalAlignment.Center;
+            this.e_14.Content = "Content Directory";
+            Grid.SetColumn(this.e_14, 0);
+            Grid.SetRow(this.e_14, 5);
+            Grid.SetColumnSpan(this.e_14, 2);
+            Binding binding_e_14_ToolTip = new Binding("ContentDirectory");
+            this.e_14.SetBinding(Button.ToolTipProperty, binding_e_14_ToolTip);
+            Binding binding_e_14_Command = new Binding("SetContentDirectoryCommand");
+            binding_e_14_Command.Mode = BindingMode.OneWay;
+            this.e_14.SetBinding(Button.CommandProperty, binding_e_14_Command);
+            // e_15 element
+            this.e_15 = new Grid();
+            this.e_1.Children.Add(this.e_15);
+            this.e_15.Name = "e_15";
+            this.e_15.Margin = new Thickness(5F, 5F, 5F, 5F);
+            this.e_15.HorizontalAlignment = HorizontalAlignment.Stretch;
+            this.e_15.VerticalAlignment = VerticalAlignment.Center;
+            RowDefinition row_e_15_0 = new RowDefinition();
+            row_e_15_0.Height = new GridLength(1F, GridUnitType.Star);
+            this.e_15.RowDefinitions.Add(row_e_15_0);
+            ColumnDefinition col_e_15_0 = new ColumnDefinition();
+            col_e_15_0.Width = new GridLength(1F, GridUnitType.Star);
+            this.e_15.ColumnDefinitions.Add(col_e_15_0);
+            ColumnDefinition col_e_15_1 = new ColumnDefinition();
+            col_e_15_1.Width = new GridLength(1F, GridUnitType.Star);
+            this.e_15.ColumnDefinitions.Add(col_e_15_1);
+            ColumnDefinition col_e_15_2 = new ColumnDefinition();
+            col_e_15_2.Width = new GridLength(1F, GridUnitType.Star);
+            this.e_15.ColumnDefinitions.Add(col_e_15_2);
+            Grid.SetColumn(this.e_15, 0);
+            Grid.SetRow(this.e_15, 6);
+            Grid.SetColumnSpan(this.e_15, 2);
+            // e_16 element
+            this.e_16 = new Button();
+            this.e_15.Children.Add(this.e_16);
+            this.e_16.Name = "e_16";
+            this.e_16.HorizontalAlignment = HorizontalAlignment.Center;
+            this.e_16.VerticalAlignment = VerticalAlignment.Center;
+            ToolTip tt_e_16 = new ToolTip();
+            this.e_16.ToolTip = tt_e_16;
+            tt_e_16.Content = "Create a new animation from scratch";
+            this.e_16.Content = "New";
+            Grid.SetColumn(this.e_16, 0);
+            Grid.SetRow(this.e_16, 0);
+            Binding binding_e_16_Command = new Binding("NewCommand");
+            binding_e_16_Command.Mode = BindingMode.OneWay;
+            this.e_16.SetBinding(Button.CommandProperty, binding_e_16_Command);
+            // e_17 element
+            this.e_17 = new Button();
+            this.e_15.Children.Add(this.e_17);
+            this.e_17.Name = "e_17";
+            this.e_17.HorizontalAlignment = HorizontalAlignment.Center;
+            this.e_17.VerticalAlignment = VerticalAlignment.Center;
+            ToolTip tt_e_17 = new ToolTip();
+            this.e_17.ToolTip = tt_e_17;
+            tt_e_17.Content = "Edit an existing animation";
+            this.e_17.Content = "Load";
+            Grid.SetColumn(this.e_17, 1);
+            Grid.SetRow(this.e_17, 0);
+            Binding binding_e_17_Command = new Binding("LoadCommand");
+            binding_e_17_Command.Mode = BindingMode.OneWay;
+            this.e_17.SetBinding(Button.CommandProperty, binding_e_17_Command);
+            // e_18 element
+            this.e_18 = new Button();
+            this.e_15.Children.Add(this.e_18);
+            this.e_18.Name = "e_18";
+            this.e_18.HorizontalAlignment = HorizontalAlignment.Center;
+            this.e_18.VerticalAlignment = VerticalAlignment.Center;
+            ToolTip tt_e_18 = new ToolTip();
+            this.e_18.ToolTip = tt_e_18;
+            tt_e_18.Content = "Save the current animation";
+            this.e_18.Content = "Save";
+            Grid.SetColumn(this.e_18, 2);
+            Grid.SetRow(this.e_18, 0);
+            Binding binding_e_18_Command = new Binding("SaveCommand");
+            binding_e_18_Command.Mode = BindingMode.OneWay;
+            this.e_18.SetBinding(Button.CommandProperty, binding_e_18_Command);
         }
     }
 }

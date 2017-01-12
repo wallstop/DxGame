@@ -39,5 +39,11 @@ namespace AnimationEditorLibrary.Core.Services
                 Self.AttachComponent(UiDrawer);
             }
         }
+
+        protected override void OnRemove()
+        {
+            View.OnClose();
+            base.OnRemove();
+        }
     }
 }

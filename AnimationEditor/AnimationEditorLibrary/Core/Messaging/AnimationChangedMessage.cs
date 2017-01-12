@@ -6,10 +6,14 @@ namespace AnimationEditorLibrary.Core.Messaging
 {
     public class AnimationChangedMessage : Message
     {
+        public string AssetPath { get; private set; }
+
         public AnimationDescriptor Descriptor { get; private set; }
 
-        public AnimationChangedMessage(AnimationDescriptor descriptor)
+        // AssetPath is nullable
+        public AnimationChangedMessage(string assetPath, AnimationDescriptor descriptor)
         {
+            AssetPath = assetPath;
             Validate.Hard.IsNotNull(descriptor);
             Descriptor = descriptor;
         }

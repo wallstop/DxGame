@@ -373,6 +373,12 @@ namespace DxCore
 
         protected override void OnExiting(object sender, EventArgs args)
         {
+            foreach(IService service in ServiceProvider.GetAll())
+            {
+                DxService dxService = service as DxService;
+                dxService?.Remove();
+            }
+
             lock(GameLock)
             {
                 Validate.Hard.IsNotNull(Instance, () => "Cannot exit a null game!");
@@ -405,6 +411,12 @@ namespace DxCore
 
         protected override void UnloadContent()
         {
+            foreach(object gameObject in DxGameElements)
+            {
+                Component maybeComponent = gameObject as Component;
+                maybeComponent?.UnloadConent();
+            }
+
             base.UnloadContent();
         }
 

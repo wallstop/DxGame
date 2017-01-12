@@ -69,27 +69,10 @@ namespace DxCore.Core.Components.Basic
             return UpdatePriority.CompareTo(other?.UpdatePriority);
         }
 
-        protected void RegisterMessageHandler<T>(Action<T> handler) where T : Message
+        public virtual void Create()
         {
-            Action deregistration = Parent.MessageHandler.RegisterMessageHandler(handler);
-            DeregistrationHandles.Add(deregistration);
-        }
-
-        protected void RegisterGlobalAcceptAll(Action<Message> handler)
-        {
-            Action deregistration = Parent.MessageHandler.RegisterGlobalAcceptAll(handler);
-            DeregistrationHandles.Add(deregistration);
-        }
-
-        protected void RegisterTargetedAcceptAll(Action<Message> handler)
-        {
-            Action deregistration = Parent.MessageHandler.RegisterTargetedAcceptAll(handler);
-            DeregistrationHandles.Add(deregistration);
-        }
-
-        protected void BindToLocalGame(Action<Message> rejectionFunction)
-        {
-            Parent.MessageHandler.BindToGame(DxGame.Instance.GameGuid, rejectionFunction);
+            EntityCreatedMessage entityCreated = new EntityCreatedMessage(this);
+            entityCreated.Emit();
         }
 
         [DataMember]
@@ -108,23 +91,6 @@ namespace DxCore.Core.Components.Basic
             return Processable.DefaultComparer.Compare(this, other);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
-
-        public virtual void Create()
-        {
-            EntityCreatedMessage entityCreated = new EntityCreatedMessage(this);
-            entityCreated.Emit();
-        }
-
-        public override bool Equals(object other)
-        {
-            var rhs = other as Component;
-            return rhs != null && Id.Equals(rhs.Id);
-        }
-
         public virtual void Remove()
         {
             Parent?.RemoveComponents(this);
@@ -134,12 +100,30 @@ namespace DxCore.Core.Components.Basic
             // TODO: Gotta figure out deregistration (WHAT DID I MEAN WHEN I WROTE THIS???)
         }
 
-        protected virtual void Update(DxGameTime gameTime) {}
+        public virtual void DeSerialize()
+        {
+            LoadContent();
+            Initialize(); // Left as an exercise to the reader to determine specific behavior (wat)
+            LoadContent();
+        }
+
+        public override bool Equals(object other)
+        {
+            var rhs = other as Component;
+            return rhs != null && Id.Equals(rhs.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
 
         public virtual void Initialize()
         {
             Initialized = true;
         }
+
+        public virtual void LoadContent() {}
 
         public virtual void OnAttach() {}
 
@@ -153,21 +137,39 @@ namespace DxCore.Core.Components.Basic
             DeregistrationHandles.Clear();
         }
 
+        public virtual void UnloadConent() {}
+
+        protected void BindToLocalGame(Action<Message> rejectionFunction)
+        {
+            Parent.MessageHandler.BindToGame(DxGame.Instance.GameGuid, rejectionFunction);
+        }
+
         protected virtual void CustomOnDetach() {}
 
-        public virtual void LoadContent() {}
+        protected void RegisterGlobalAcceptAll(Action<Message> handler)
+        {
+            Action deregistration = Parent.MessageHandler.RegisterGlobalAcceptAll(handler);
+            DeregistrationHandles.Add(deregistration);
+        }
+
+        protected void RegisterMessageHandler<T>(Action<T> handler) where T : Message
+        {
+            Action deregistration = Parent.MessageHandler.RegisterMessageHandler(handler);
+            DeregistrationHandles.Add(deregistration);
+        }
+
+        protected void RegisterTargetedAcceptAll(Action<Message> handler)
+        {
+            Action deregistration = Parent.MessageHandler.RegisterTargetedAcceptAll(handler);
+            DeregistrationHandles.Add(deregistration);
+        }
+
+        protected virtual void Update(DxGameTime gameTime) {}
 
         [OnDeserialized]
         private void BaseDeSerialize(StreamingContext context)
         {
             DeSerialize();
-        }
-
-        public virtual void DeSerialize()
-        {
-            LoadContent();
-            Initialize(); // Left as an exercise to the reader to determine specific behavior (wat)
-            LoadContent();
         }
     }
 }

@@ -28,7 +28,8 @@ namespace DxCore.Core.Settings
             }
             catch(Exception e)
             {
-                Logger.Error(e, $"Caught unexpected exception while loading settings file for {typeof(T)} at {Path}");
+                Logger.Error(e, "Caught unexpected exception while loading settings file for {0} at {1}", typeof(T),
+                    Path);
                 loadedSettings = DefaultSettings;
                 DefaultSettings.Save(fileName);
             }
@@ -45,7 +46,7 @@ namespace DxCore.Core.Settings
             }
             catch(Exception e)
             {
-                Logger.Error(e, $"Caught unexpected exception while saving {typeof(T)} {this} at {Path}");
+                Logger.Error(e, "Caught unexpected exception while saving {0} {1} at {2}", typeof(T), this, Path);
             }
         }
 

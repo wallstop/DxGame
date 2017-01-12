@@ -121,6 +121,24 @@ namespace DxCore.Core.Animation
                 return this;
             }
 
+            public AnimationDescriptorBuilder WithDescriptor(AnimationDescriptor existingDescriptor)
+            {
+                Validate.Hard.IsNotNull(existingDescriptor);
+                Asset = existingDescriptor.Asset;
+                Fallback = existingDescriptor.Fallback;
+                Fps = existingDescriptor.FramesPerSecond;
+                Frames.Clear();
+                foreach(FrameDescriptor frame in existingDescriptor.Frames)
+                {
+                    Frames.Add(frame);
+                }
+                Height = existingDescriptor.Height;
+                Orientation = existingDescriptor.Orientation;
+                Scale = existingDescriptor.Scale;
+                Width = existingDescriptor.Width;
+                return this;
+            }
+
             public AnimationDescriptorBuilder WithFallback(FrameDescriptor fallback)
             {
                 Fallback = fallback;

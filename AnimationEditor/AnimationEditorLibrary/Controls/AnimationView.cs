@@ -12,6 +12,7 @@ using DxCore.Core.Utils.Distance;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Input;
 using EmptyKeys.UserInterface.Mvvm;
+using Microsoft.Xna.Framework;
 using NLog;
 using WallNetCore.Validate;
 
@@ -139,6 +140,7 @@ namespace AnimationEditorLibrary.Controls
             SaveCommand = new RelayCommand(HandleSave);
             Settings = new AnimationEditorSettings();
             Settings.Load();
+            Scale = 1.0f;
         }
 
         public void OnClose()
@@ -241,6 +243,7 @@ namespace AnimationEditorLibrary.Controls
             float delta = mouseEventArgs.Delta;
             delta /= BaseScrollScale;
             Scale += delta;
+            Scale = MathHelper.Clamp(Scale, 0.1f, float.MaxValue);
             Builder.WithScale(Scale);
             NotifyAnimationChanged();
         }
@@ -278,13 +281,16 @@ namespace AnimationEditorLibrary.Controls
                         return;
                     }
                     Uri assetAsRelative = ContentDirectoryUri.MakeRelativeUri(assetAsUri);
+                    string assetAsRelativeString = assetAsRelative.ToString();
                     // Now we need to strip the file extension for compatibility with monogame's content manager
-                    string assetWithoutExtension = Path.GetFileNameWithoutExtension(assetAsRelative.ToString());
+                    // I am a poor man, forgive my sins
+                    int extensionIndex = assetAsRelativeString.LastIndexOf(".");
+                    string assetWithoutExtension = assetAsRelativeString.Substring(0, extensionIndex);
                     Builder.ResetToBase();
                     Builder.WithAsset(assetWithoutExtension);
                     AssetPath = assetPath;
                     NotifyAnimationChanged();
-                    Logger.Debug("Updated asset to {0}", assetPath);
+                    Logger.Info("Updated asset to {0}", assetPath);
                     break;
                 }
                 default:

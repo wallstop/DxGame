@@ -1,9 +1,12 @@
-﻿using AnimationEditorLibrary.Core.Messaging;
-using DxCore.Core.Animation;
+﻿using System;
+using System.IO;
+using AnimationEditorLibrary.Core.Messaging;
+using DxCore;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils.Distance;
+using DxCore.Core.Utils;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using WallNetCore.Validate;
 
@@ -11,38 +14,48 @@ namespace AnimationEditorLibrary.Core.Components
 {
     public class UpdateableSpriteComponent : DrawableComponent
     {
-        private Animation Animation { get; set; }
+        private string PreviousAssetPath { get; set; }
+        private float Scale { get; set; } = 1.0f;
+        private ISpatial Spatial { get; }
+        private Texture2D Sprite { get; set; }
 
-        private Direction Orientation { get; set; }
-
-        private IPositional Position { get; }
-
-        public UpdateableSpriteComponent(IPositional position)
+        public UpdateableSpriteComponent(ISpatial spatial)
         {
-            Validate.Hard.IsNotNull(position);
-            Position = position;
+            Validate.Hard.IsNotNull(spatial);
+            Spatial = spatial;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            Animation.Draw(spriteBatch, gameTime, Position.WorldCoordinates, Orientation);
+            if(Validate.Check.IsNotNull(Sprite))
+            {
+                Rectangle target = Sprite.Bounds;
+                target.Width = (int) (target.Width * Scale);
+                target.Height = (int) (target.Height * Scale);
+                target.X = (int) Math.Round(Spatial.WorldCoordinates.X);
+                target.Y = (int) Math.Round(Spatial.WorldCoordinates.Y);
+                spriteBatch.Draw(Sprite, target, Color.White);
+            }
         }
 
         public override void OnAttach()
         {
             RegisterMessageHandler<AnimationChangedMessage>(HandleAnimationChanged);
-            RegisterMessageHandler<OrientationChangedMessage>(HandleOrientationChanged);
-            base.OnAttach();
         }
 
-        private void HandleAnimationChanged(AnimationChangedMessage newAnimation)
+        private void HandleAnimationChanged(AnimationChangedMessage animationChanged)
         {
-            Animation = new Animation(newAnimation.Descriptor);
-        }
+            Scale = animationChanged.Descriptor.Scale;
+            if(Objects.Equals(PreviousAssetPath, animationChanged.AssetPath))
+            {
+                return;
+            }
+            PreviousAssetPath = animationChanged.AssetPath;
 
-        private void HandleOrientationChanged(OrientationChangedMessage orientationChanged)
-        {
-            Orientation = orientationChanged.Orientation;
+            using(Stream fileStream = File.Open(animationChanged.AssetPath, FileMode.Open))
+            {
+                Sprite = Texture2D.FromStream(DxGame.Instance.GraphicsDevice, fileStream);
+            }
         }
     }
 }

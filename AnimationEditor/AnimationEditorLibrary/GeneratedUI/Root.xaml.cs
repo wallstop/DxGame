@@ -83,6 +83,8 @@ namespace EmptyKeys.UserInterface.Generated {
         }
         
         private void InitializeComponent() {
+            this.Background = new SolidColorBrush(new ColorW(255, 255, 255, 0));
+            this.Background.Opacity = 0F;
             // e_0 element
             this.e_0 = new Grid();
             this.Content = this.e_0;
@@ -109,6 +111,11 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_1 = new Grid();
             this.e_0.Children.Add(this.e_1);
             this.e_1.Name = "e_1";
+            this.e_1.Margin = new Thickness(5F, 5F, 5F, 5F);
+            this.e_1.HorizontalAlignment = HorizontalAlignment.Center;
+            this.e_1.VerticalAlignment = VerticalAlignment.Center;
+            this.e_1.Opacity = 0.9F;
+            this.e_1.Background = new SolidColorBrush(new ColorW(0, 0, 0, 255));
             RowDefinition row_e_1_0 = new RowDefinition();
             row_e_1_0.Height = new GridLength(1F, GridUnitType.Star);
             this.e_1.RowDefinitions.Add(row_e_1_0);

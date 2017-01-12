@@ -101,13 +101,13 @@ namespace DxCore.Core.Animation
 
             public AnimationDescriptor Build()
             {
-                Validate.Hard.IsPositive(Width);
-                Validate.Hard.IsPositive(Height);
+                Validate.Hard.IsPositive(Width, () => $"Expected {nameof(Width)} to be positive, but was {Width}");
+                Validate.Hard.IsPositive(Height, () => $"Expected {nameof(Height)} to be positive, but was {Height}");
                 if(Validate.Check.IsNull(Asset))
                 {
                     Logger.Debug("Creating Animation with null asset");
                 }
-                Validate.Hard.IsPositive(Scale);
+                Validate.Hard.IsPositive(Scale, () => $"Expected {nameof(Scale)} to be positive, but was {Scale}");
                 if(Validate.Check.IsEmpty(Frames))
                 {
                     Logger.Debug("Creating animation without any frames");

@@ -69,6 +69,14 @@ namespace DxCore.Core.Components.Advanced.Sprite
                 return this;
             }
 
+            public SimpleSpriteComponentBuilder WithComponent(SimpleSpriteComponent alreadyExists)
+            {
+                Validate.Hard.IsNotNull(alreadyExists);
+                asset_ = alreadyExists.assetName_;
+                spatial_ = alreadyExists.spatial_;
+                return this;
+            }
+
             public SimpleSpriteComponentBuilder WithSpatial(ISpatial spatial)
             {
                 spatial_ = spatial;

@@ -135,15 +135,17 @@ namespace DxCore.Core.Components.Advanced.Position
 
         public sealed class UiSpatialComponentBuilder : IBuilder<SpatialComponent>
         {
-            private DxVector2? dimensions_;
-            private DxVector2? uiOffset_;
+            private DxVector2? Dimensions { get; set; }
+            private DxVector2? UiOffset { get; set; }
 
             public SpatialComponent Build()
             {
-                Validate.Hard.IsTrue(uiOffset_.HasValue);
-                Validate.Hard.IsTrue(dimensions_.HasValue);
-                UiOffsetPositionProvider uiPositional = new UiOffsetPositionProvider(uiOffset_.Value);
-                return new SpatialComponent(uiPositional.GetPosition, dimensions_.Value);
+                Validate.Hard.IsTrue(UiOffset.HasValue,
+                    () => $"{nameof(UiOffset)} required to build {nameof(SpatialComponent)}");
+                Validate.Hard.IsTrue(Dimensions.HasValue,
+                    () => $"{nameof(Dimensions)} required to build {nameof(SpatialComponent)}");
+                UiOffsetPositionProvider uiPositional = new UiOffsetPositionProvider(UiOffset.Value);
+                return new SpatialComponent(uiPositional.GetPosition, Dimensions.Value);
             }
 
             public UiSpatialComponentBuilder WithDimensions(float x, float y)
@@ -153,7 +155,7 @@ namespace DxCore.Core.Components.Advanced.Position
 
             public UiSpatialComponentBuilder WithDimensions(DxVector2 dimensions)
             {
-                dimensions_ = dimensions;
+                Dimensions = dimensions;
                 return this;
             }
 
@@ -169,7 +171,7 @@ namespace DxCore.Core.Components.Advanced.Position
 
             public UiSpatialComponentBuilder WithUiOffset(DxVector2 uiOffset)
             {
-                uiOffset_ = uiOffset;
+                UiOffset = uiOffset;
                 return this;
             }
         }

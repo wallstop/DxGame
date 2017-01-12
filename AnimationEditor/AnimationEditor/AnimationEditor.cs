@@ -31,6 +31,9 @@ namespace AnimationEditor
 
             DeveloperService devService = new DeveloperService();
             devService.Create();
+
+            AnimationViewerHudService hud = new AnimationViewerHudService();
+            hud.Create();
         }
 
         private void HandleDeviceCreated(object sender, EventArgs eventArgs)

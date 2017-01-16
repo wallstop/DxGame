@@ -1,6 +1,6 @@
 ﻿using EmptyKeys.UserInterface.Input;
 
-namespace AnimationEditorLibrary.EmptyKeys.Relay
+namespace AnimationEditorLibrary.EmptyKeysLib.Relay
 {
     public static class Nop
     {

@@ -140,6 +140,7 @@
     <Compile Include="Core\Behaviors\Attributes.cs" />
     <Compile Include="Core\Components\Advanced\Behaviors\BehaviorComponent.cs" />
     <Compile Include="Core\Components\Advanced\Camera\MousePanComponent.cs" />
+    <Compile Include="Core\Components\Developer\BoundsWidget.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\TransparentBackground.cs" />
     <Compile Include="Core\Services\Components\GoalAssigner.cs" />
     <Compile Include="Core\Components\Advanced\Collision\CollisionDestructibleComponent.cs" />
@@ -394,6 +395,7 @@
     <Compile Include="Core\Utils\VectorUtils.cs" />
     <Compile Include="Core\Utils\XnaUtils.cs" />
     <Compile Include="DxGame.cs" />
+    <Compile Include="Extension\Texture2DExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

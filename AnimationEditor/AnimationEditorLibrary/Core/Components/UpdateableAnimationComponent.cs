@@ -1,5 +1,7 @@
-﻿using AnimationEditorLibrary.Core.Messaging;
+﻿using System.IO;
+using AnimationEditorLibrary.Core.Messaging;
 using DxCore;
+using DxCore.Core;
 using DxCore.Core.Animation;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
@@ -40,8 +42,14 @@ namespace AnimationEditorLibrary.Core.Components
         {
             if(0 < newAnimation.Descriptor.FrameCount)
             {
-                Animation = new Animation(newAnimation.Descriptor);
-                Animation.LoadContent(DxGame.Instance.Content);
+                using(Stream fileStream = File.Open(newAnimation.AssetPath, FileMode.Open))
+                {
+                    // We probably have a memory leak going on here, but, like... who cares
+                    Animation = new Animation(newAnimation.Descriptor, DrawPriority.Normal,
+                        // ReSharper disable once AccessToDisposedClosure
+                        _ => Texture2D.FromStream(DxGame.Instance.GraphicsDevice, fileStream));
+                    Animation.LoadContent(DxGame.Instance.Content);
+                }
             }
             else
             {

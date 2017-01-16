@@ -65,6 +65,8 @@ namespace EmptyKeys.UserInterface.Generated {
         
         private Button e_18;
         
+        private ListBox e_19;
+        
         public Root() : 
                 base() {
             this.Initialize();
@@ -343,6 +345,15 @@ namespace EmptyKeys.UserInterface.Generated {
             Binding binding_e_18_Command = new Binding("SaveCommand");
             binding_e_18_Command.Mode = BindingMode.OneWay;
             this.e_18.SetBinding(Button.CommandProperty, binding_e_18_Command);
+            // e_19 element
+            this.e_19 = new ListBox();
+            this.e_0.Children.Add(this.e_19);
+            this.e_19.Name = "e_19";
+            this.e_19.HorizontalAlignment = HorizontalAlignment.Center;
+            this.e_19.VerticalAlignment = VerticalAlignment.Center;
+            Grid.SetColumn(this.e_19, 0);
+            Grid.SetRow(this.e_19, 2);
+            Grid.SetColumnSpan(this.e_19, 3);
         }
     }
 }

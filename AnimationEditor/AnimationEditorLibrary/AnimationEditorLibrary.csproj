@@ -97,9 +97,10 @@
     <Compile Include="Core\Services\Components\UiDrawer.cs" />
     <Compile Include="Core\Services\RootUiService.cs" />
     <Compile Include="Core\Settings\AnimationEditorSettings.cs" />
-    <Compile Include="EmptyKeys\Relay\Nop.cs" />
+    <Compile Include="EmptyKeysLib\Relay\Nop.cs" />
     <Compile Include="GeneratedUI\Root.xaml.cs" />
     <Compile Include="GeneratedUI\Root.xaml_bindings.cs" />
+    <Compile Include="Models\FrameModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

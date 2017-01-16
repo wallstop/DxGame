@@ -1,5 +1,6 @@
 ﻿using AnimationEditorLibrary.Core.Components;
 using DxCore.Core.Components.Advanced.Position;
+using DxCore.Core.Components.Developer;
 using DxCore.Core.Primitives;
 using DxCore.Core.Services;
 using WallNetCore.Validate;
@@ -10,6 +11,8 @@ namespace AnimationEditorLibrary.Core.Services
     {
         private UpdateableAnimationComponent AnimationPreview { get; set; }
         private static DxVector2 AnimationPreviewOffset => new DxVector2(5, 5);
+
+        private BoundingBoxWidget CurrentFramePreview { get; set; }
         private UpdateableSpriteComponent SpriteSheet { get; set; }
         private static DxVector2 SpriteSheetOffset => new DxVector2(427, 5);
 
@@ -32,6 +35,10 @@ namespace AnimationEditorLibrary.Core.Services
                 SpriteSheet = spriteSheet;
                 Self.AttachComponent(position);
                 Self.AttachComponent(SpriteSheet);
+            }
+            if(Validate.Check.IsNull(CurrentFramePreview))
+            {
+                //CurrentFramePreview =
             }
         }
 

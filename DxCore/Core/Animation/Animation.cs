@@ -27,21 +27,26 @@ namespace DxCore.Core.Animation
         [DataMember]
         private int CurrentFrame { get; set; }
 
+        [IgnoreDataMember]
+        private Func<ContentManager, Texture2D> CustomLoadContent { get; set; }
+
         [DataMember]
         private TimeSpan LastUpdated { get; set; }
 
         private int TotalFrames => AnimationDescriptor.FrameCount;
 
-        public Animation(AnimationDescriptor descriptor, DrawPriority drawPriority = DrawPriority.Normal)
+        public Animation(AnimationDescriptor descriptor, DrawPriority drawPriority = DrawPriority.Normal,
+            Func<ContentManager, Texture2D> customLoadContent = null)
         {
             Validate.Hard.IsNotNullOrDefault(descriptor, () => this.GetFormattedNullOrDefaultMessage(descriptor));
             Validate.Hard.IsPositive(descriptor.FrameCount,
                 () => $"Cannot initialize an {nameof(Animation)} with a FrameCount of {descriptor.FrameCount}");
             Validate.Hard.IsPositive(descriptor.FramesPerSecond,
                 () =>
-                        $"Cannot initialize an {nameof(Animation)} with a {nameof(descriptor.FramesPerSecond)} of {descriptor.FramesPerSecond}");
+                    $"Cannot initialize an {nameof(Animation)} with a {nameof(descriptor.FramesPerSecond)} of {descriptor.FramesPerSecond}");
             Validate.Hard.IsNotNullOrDefault(descriptor.Asset,
                 () => this.GetFormattedNullOrDefaultMessage(nameof(descriptor.Asset)));
+            CustomLoadContent = customLoadContent;
             AnimationDescriptor = descriptor;
             DrawPriority = drawPriority;
             LastUpdated = DxGame.Instance.CurrentDrawTime.TotalGameTime;
@@ -83,7 +88,16 @@ namespace DxCore.Core.Animation
 
         public bool LoadContent(ContentManager contentManager)
         {
-            spriteSheet_ = contentManager.Load<Texture2D>(AnimationDescriptor.Asset);
+            Texture2D spriteSheet;
+            if(!Validate.Check.IsNull(CustomLoadContent))
+            {
+                spriteSheet = CustomLoadContent(contentManager);
+            }
+            else
+            {
+                spriteSheet = DefaultLoadContent(contentManager);
+            }
+            spriteSheet_ = spriteSheet;
             return true;
         }
 
@@ -103,6 +117,11 @@ namespace DxCore.Core.Animation
         private void BaseDeSerialize(StreamingContext context)
         {
             DeSerialize();
+        }
+
+        private Texture2D DefaultLoadContent(ContentManager contentManager)
+        {
+            return contentManager.Load<Texture2D>(AnimationDescriptor.Asset);
         }
 
         private void UpdateToCurrentFrame(DxGameTime gameTime)

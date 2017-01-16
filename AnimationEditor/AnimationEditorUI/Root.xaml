@@ -162,6 +162,11 @@
                 </Button>
             </Grid>
         </Grid>
+        <ListBox Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="3"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center" />
     </Grid>
 </ek:UIRoot>
 

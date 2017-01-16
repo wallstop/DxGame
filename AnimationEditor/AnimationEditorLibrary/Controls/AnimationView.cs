@@ -1,23 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Forms;
 using AnimationEditorLibrary.Core.Messaging;
 using AnimationEditorLibrary.Core.Settings;
-using AnimationEditorLibrary.EmptyKeys.Relay;
+using AnimationEditorLibrary.EmptyKeysLib.Relay;
+using AnimationEditorLibrary.Models;
+using DxCore;
 using DxCore.Core.Animation;
 using DxCore.Core.Messaging;
+using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Input;
 using EmptyKeys.UserInterface.Mvvm;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using NLog;
 using WallNetCore.Validate;
+using MouseEventArgs = EmptyKeys.UserInterface.Input.MouseEventArgs;
+using MouseEventHandler = EmptyKeys.UserInterface.Input.MouseEventHandler;
 
 namespace AnimationEditorLibrary.Controls
 {
+    internal enum BoundingBoxMovementMode
+    {
+        NotDoinIt,
+        DoinIt,
+        Idk
+    }
+
     public class AnimationView : ViewModelBase
     {
         private const float BaseScrollScale = 1200f;
@@ -79,16 +93,33 @@ namespace AnimationEditorLibrary.Controls
             set
             {
                 Builder.WithFrameCount(value);
+                Frames.Clear();
+                using(Stream textureStream = File.Open(AssetPath, FileMode.Open))
+                {
+                    Texture2D texture = Texture2D.FromStream(DxGame.Instance.GraphicsDevice, textureStream);
+                    foreach(FrameDescriptor frame in Descriptor.Frames)
+                    {
+                        FrameModel frameModel = new FrameModel(texture,
+                            new DxRectangle(frame.FrameOffset, Width, Height));
+                        Frames.Add(frameModel);
+                    }
+                }
+
                 RaisePropertyChanged();
                 NotifyAnimationChanged();
             }
         }
 
+        public ObservableCollection<FrameModel> Frames { get; }
+
         public Dictionary<RoutedEvent, Delegate> Handlers
             =>
                 new Dictionary<RoutedEvent, Delegate>
                 {
-                    [Mouse.MouseWheelEvent] = new MouseWheelEventHandler(HandleMouseScroll)
+                    [Mouse.MouseWheelEvent] = new MouseWheelEventHandler(HandleMouseScroll),
+                    [Mouse.MouseMoveEvent] = new MouseEventHandler(HandleMouseMove),
+                    [Mouse.MouseDownEvent] = new MouseButtonEventHandler(HandleMouseDown),
+                    [Mouse.MouseUpEvent] = new MouseButtonEventHandler(HandleMouseUp)
                 };
 
         public int Height
@@ -125,6 +156,8 @@ namespace AnimationEditorLibrary.Controls
 
         private Direction Facing { get; set; }
 
+        private BoundingBoxMovementMode MovementMode { get; set; }
+
         private float Scale { get; set; }
 
         private AnimationEditorSettings Settings { get; set; }
@@ -141,6 +174,9 @@ namespace AnimationEditorLibrary.Controls
             Settings = new AnimationEditorSettings();
             Settings.Load();
             Scale = 1.0f;
+
+            MovementMode = BoundingBoxMovementMode.NotDoinIt;
+            Frames = new ObservableCollection<FrameModel>();
         }
 
         public void OnClose()
@@ -238,6 +274,16 @@ namespace AnimationEditorLibrary.Controls
             // TODO
         }
 
+        private void HandleMouseDown(object source, MouseButtonEventArgs mouseEventArgs)
+        {
+            MovementMode = BoundingBoxMovementMode.DoinIt;
+        }
+
+        private void HandleMouseMove(object source, MouseEventArgs mouseEventArgs)
+        {
+            // TODO
+        }
+
         private void HandleMouseScroll(object source, MouseWheelEventArgs mouseEventArgs)
         {
             float delta = mouseEventArgs.Delta;
@@ -246,6 +292,11 @@ namespace AnimationEditorLibrary.Controls
             Scale = MathHelper.Clamp(Scale, 0.1f, float.MaxValue);
             Builder.WithScale(Scale);
             NotifyAnimationChanged();
+        }
+
+        private void HandleMouseUp(object source, MouseButtonEventArgs mouseEventArgs)
+        {
+            MovementMode = BoundingBoxMovementMode.NotDoinIt;
         }
 
         private void HandleNew(object whoCares)

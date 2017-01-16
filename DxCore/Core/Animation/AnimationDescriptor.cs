@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
@@ -28,7 +29,10 @@ namespace DxCore.Core.Animation
 
         public override string Extension => AnimationExtension;
 
-        public int FrameCount => Frames.Length;
+        public int FrameCount => InternalFrames.Length;
+
+        [IgnoreDataMember]
+        public List<FrameDescriptor> Frames => InternalFrames.ToList();
 
         [DataMember]
         public int FramesPerSecond { get; private set; } = DefaultFps;
@@ -53,7 +57,7 @@ namespace DxCore.Core.Animation
         private FrameDescriptor Fallback { get; set; }
 
         [DataMember]
-        private FrameDescriptor[] Frames { get; set; }
+        private FrameDescriptor[] InternalFrames { get; set; }
 
         private AnimationDescriptor() {}
 
@@ -66,7 +70,7 @@ namespace DxCore.Core.Animation
             Orientation = orientation;
             Scale = scale;
             Fallback = fallback;
-            Frames = frames.ToArray();
+            InternalFrames = frames.ToArray();
         }
 
         public static AnimationDescriptor Empty()
@@ -78,7 +82,7 @@ namespace DxCore.Core.Animation
             out int height)
         {
             bool validFrame = frameNumber < FrameCount && 0 <= frameNumber;
-            FrameDescriptor frameDescriptor = validFrame ? Frames[frameNumber] : Fallback;
+            FrameDescriptor frameDescriptor = validFrame ? InternalFrames[frameNumber] : Fallback;
             frameOffset = frameDescriptor.FrameOffset;
             drawOffset = frameDescriptor.DrawOffset;
             width = frameDescriptor.Width ?? Width;
@@ -128,7 +132,7 @@ namespace DxCore.Core.Animation
                 Fallback = existingDescriptor.Fallback;
                 Fps = existingDescriptor.FramesPerSecond;
                 Frames.Clear();
-                foreach(FrameDescriptor frame in existingDescriptor.Frames)
+                foreach(FrameDescriptor frame in existingDescriptor.InternalFrames)
                 {
                     Frames.Add(frame);
                 }

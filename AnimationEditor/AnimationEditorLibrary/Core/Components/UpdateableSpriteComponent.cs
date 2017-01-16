@@ -12,6 +12,12 @@ using WallNetCore.Validate;
 
 namespace AnimationEditorLibrary.Core.Components
 {
+    /**
+        <summary>
+            A simple, non-animated sprite drawing component that updates itself in response to animation changed messages
+        </summary>
+    */
+
     public class UpdateableSpriteComponent : DrawableComponent
     {
         private string PreviousAssetPath { get; set; }
@@ -27,15 +33,17 @@ namespace AnimationEditorLibrary.Core.Components
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            if(Validate.Check.IsNotNull(Sprite))
+            if(Validate.Check.IsNull(Sprite))
             {
-                Rectangle target = Sprite.Bounds;
-                target.Width = (int) (target.Width * Scale);
-                target.Height = (int) (target.Height * Scale);
-                target.X = (int) Math.Round(Spatial.WorldCoordinates.X);
-                target.Y = (int) Math.Round(Spatial.WorldCoordinates.Y);
-                spriteBatch.Draw(Sprite, target, Color.White);
+                return;
             }
+
+            Rectangle target = Sprite.Bounds;
+            target.Width = (int) (target.Width * Scale);
+            target.Height = (int) (target.Height * Scale);
+            target.X = (int) Math.Round(Spatial.WorldCoordinates.X);
+            target.Y = (int) Math.Round(Spatial.WorldCoordinates.Y);
+            spriteBatch.Draw(Sprite, target, Color.White);
         }
 
         public override void OnAttach()

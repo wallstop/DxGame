@@ -19,6 +19,7 @@ using EmptyKeys.UserInterface.Mvvm;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
+using WallNetCore.Cache.Advanced;
 using WallNetCore.Validate;
 using MouseEventArgs = EmptyKeys.UserInterface.Input.MouseEventArgs;
 using MouseEventHandler = EmptyKeys.UserInterface.Input.MouseEventHandler;
@@ -38,6 +39,8 @@ namespace AnimationEditorLibrary.Controls
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        private int frameIndex_;
+
         public string AssetPath { get; private set; }
 
         public string ContentDirectory
@@ -53,6 +56,23 @@ namespace AnimationEditorLibrary.Controls
                     // TODO: ... invalidate animation / ensure that's what we wanted to do?
                     RaisePropertyChanged();
                 }
+            }
+        }
+
+        public DxRectangle? CurrentFrameView
+        {
+            get
+            {
+                DxVector2 drawOffset;
+                DxVector2 frameOffset;
+                int width;
+                int height;
+                if(Descriptor.OffsetForFrame(FrameIndex, out frameOffset, out drawOffset, out width, out height))
+                {
+                    // TODO: Care about draw offset?
+                    return new DxRectangle(frameOffset, width, height) + Offset() + InternalOffset;
+                }
+                return null;
             }
         }
 
@@ -92,8 +112,11 @@ namespace AnimationEditorLibrary.Controls
             get { return Descriptor.FrameCount; }
             set
             {
+                int oldFrameIndex = FrameIndex;
+                int oldValue = Descriptor.FrameCount;
                 Builder.WithFrameCount(value);
-                Frames.Clear();
+                DescriptorCache.Invalidate();
+
                 using(Stream textureStream = File.Open(AssetPath, FileMode.Open))
                 {
                     Texture2D texture = Texture2D.FromStream(DxGame.Instance.GraphicsDevice, textureStream);
@@ -104,9 +127,31 @@ namespace AnimationEditorLibrary.Controls
                         Frames.Add(frameModel);
                     }
                 }
+                if(oldValue < value && oldValue == 0)
+                {
+                    FrameIndex = 0;
+                }
+                else if(value < oldValue && FrameIndex == value)
+                {
+                    FrameIndex = value - 1;
+                }
+                else
+                {
+                    FrameIndex = oldFrameIndex;
+                }
 
                 RaisePropertyChanged();
                 NotifyAnimationChanged();
+            }
+        }
+
+        public int FrameIndex
+        {
+            get { return frameIndex_; }
+            set
+            {
+                frameIndex_ = value;
+                RaisePropertyChanged();
             }
         }
 
@@ -135,6 +180,8 @@ namespace AnimationEditorLibrary.Controls
 
         public ICommand LoadCommand { get; }
         public ICommand NewCommand { get; }
+
+        public Func<DxVector2> Offset { get; set; }
         public ICommand SaveCommand { get; }
 
         public ICommand SetContentDirectoryCommand { get; }
@@ -152,9 +199,13 @@ namespace AnimationEditorLibrary.Controls
         private AnimationDescriptor.AnimationDescriptorBuilder Builder { get; }
 
         private Uri ContentDirectoryUri => new Uri(ContentDirectory);
-        private AnimationDescriptor Descriptor => Builder.Build();
+        private AnimationDescriptor Descriptor => DescriptorCache.Get();
+
+        private SingleElementLocalLoadingCache<AnimationDescriptor> DescriptorCache { get; }
 
         private Direction Facing { get; set; }
+
+        private DxVector2 InternalOffset { get; set; }
 
         private BoundingBoxMovementMode MovementMode { get; set; }
 
@@ -177,6 +228,10 @@ namespace AnimationEditorLibrary.Controls
 
             MovementMode = BoundingBoxMovementMode.NotDoinIt;
             Frames = new ObservableCollection<FrameModel>();
+            DescriptorCache =
+                new SingleElementLocalLoadingCache<AnimationDescriptor>(
+                    CacheBuilder<FastCacheKey, AnimationDescriptor>.NewBuilder(), () => Builder.Build());
+            Offset = () => new DxVector2();
         }
 
         public void OnClose()
@@ -281,7 +336,25 @@ namespace AnimationEditorLibrary.Controls
 
         private void HandleMouseMove(object source, MouseEventArgs mouseEventArgs)
         {
-            // TODO
+            switch(MovementMode)
+            {
+                case BoundingBoxMovementMode.DoinIt:
+                {
+                    // DxRectangle currentFrameBounds = 
+
+                    return;
+                }
+                case BoundingBoxMovementMode.NotDoinIt:
+                {
+                    // I ain't doin this
+                    return;
+                }
+                default:
+                {
+                    Logger.Debug("Somehow ended up with {0} of {1}", nameof(MovementMode), MovementMode);
+                    return;
+                }
+            }
         }
 
         private void HandleMouseScroll(object source, MouseWheelEventArgs mouseEventArgs)
@@ -444,6 +517,7 @@ namespace AnimationEditorLibrary.Controls
         private void NotifyAnimationChanged()
         {
             new AnimationChangedMessage(AssetPath, Descriptor).Emit();
+            DescriptorCache.Invalidate();
         }
     }
 }

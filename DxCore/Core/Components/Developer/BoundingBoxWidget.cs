@@ -16,6 +16,8 @@ namespace DxCore.Core.Components.Developer
 
     public class BoundingBoxWidget : DrawableComponent
     {
+        public BoundingBoxWidget(DrawPriority drawPriority = DrawPriority.Low) : base(drawPriority) {}
+
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             foreach(ISpatial spatial in DxGame.Instance.DxGameElements.OfType<ISpatial>())

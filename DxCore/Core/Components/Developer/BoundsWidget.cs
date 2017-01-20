@@ -22,21 +22,25 @@ namespace DxCore.Core.Components.Developer
     {
         private static readonly Color DefaultColor = Color.Red;
 
-        private Func<DxRectangle> BoundsProducer { get; }
+        private Func<DxRectangle?> BoundsProducer { get; }
 
         private Color Color { get; }
 
-        public BoundsWidget(Func<DxRectangle> boundsProducer, Color? color = null)
+        public BoundsWidget(Func<DxRectangle?> boundsProducer, Color? color = null)
         {
             Validate.Hard.IsNotNull(boundsProducer, () => this.GetFormattedNullOrDefaultMessage(nameof(boundsProducer)));
             BoundsProducer = boundsProducer;
             Color = color ?? DefaultColor;
+            DrawPriority = DrawPriority.Low;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            DxRectangle border = BoundsProducer();
-            spriteBatch.DrawBorder(border, 1, Color);
+            DxRectangle? border = BoundsProducer();
+            if(border.HasValue)
+            {
+                spriteBatch.DrawBorder(border.Value, 1, Color);
+            }
         }
     }
 }

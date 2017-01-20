@@ -25,9 +25,9 @@ namespace DxCore.Core.Components.Basic
     [DataContract]
     public abstract class DrawableComponent : Component, IComparable<DrawableComponent>, IDrawable
     {
-        protected DrawableComponent()
+        protected DrawableComponent(DrawPriority drawPriority = DrawPriority.Normal)
         {
-            DrawPriority = DrawPriority.Normal;
+            DrawPriority = drawPriority;
         }
 
         public int CompareTo(DrawableComponent other)

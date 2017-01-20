@@ -15,13 +15,14 @@ namespace DxCore.Core
         Normal = 5,
         HudLayer = 8,
         Low = 10,
+        Lowest = 50,
         EndSpritebatch = 1000,
         /* 
             User primitives (actual GPU shader calls) must be made after sprite batch has finished 
             (http://stackoverflow.com/questions/27431038/going-back-to-spritebatch-draw-after-using-graphicsdevice-drawuserprimitives) 
         */
         UserPrimitives = 1001,
-        MenuLayer = 1002,
+        MenuLayer = 1002
     }
 
     public interface IDrawable : IComparable<IDrawable>
@@ -32,8 +33,10 @@ namespace DxCore.Core
 
     public static class Drawable
     {
-        public static IComparer<IDrawable> DefaultComparer { get; } = new LambdaUtils.LambdaComparer<IDrawable>(
-            (first, second) =>
-                ((int?) first?.DrawPriority ?? int.MinValue).CompareTo(((int?) second?.DrawPriority ?? int.MinValue)));
+        public static IComparer<IDrawable> DefaultComparer { get; } =
+            new LambdaUtils.LambdaComparer<IDrawable>(
+                (first, second) =>
+                    ((int?) first?.DrawPriority ?? int.MinValue).CompareTo((int?) second?.DrawPriority ?? int.MinValue))
+            ;
     }
 }

@@ -163,10 +163,25 @@
             </Grid>
         </Grid>
         <ListBox Grid.Row="2"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="3"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center" />
+                 Grid.Column="0"
+                 Grid.ColumnSpan="3"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 ItemsSource="{Binding Frames,
+                                       Mode=OneWay}"
+                 SelectedIndex="{Binding FrameIndex,
+                                         Mode=TwoWay}">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel FlowDirection="LeftToRight" Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Image Margin="5" Source="{Binding Frame}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
 </ek:UIRoot>
 

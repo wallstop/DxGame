@@ -351,9 +351,41 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_19.Name = "e_19";
             this.e_19.HorizontalAlignment = HorizontalAlignment.Center;
             this.e_19.VerticalAlignment = VerticalAlignment.Center;
+            Func<UIElement, UIElement> e_19_iptFunc = e_19_iptMethod;
+            ControlTemplate e_19_ipt = new ControlTemplate(e_19_iptFunc);
+            this.e_19.ItemsPanel = e_19_ipt;
+            Func<UIElement, UIElement> e_19_dtFunc = e_19_dtMethod;
+            this.e_19.ItemTemplate = new DataTemplate(e_19_dtFunc);
             Grid.SetColumn(this.e_19, 0);
             Grid.SetRow(this.e_19, 2);
             Grid.SetColumnSpan(this.e_19, 3);
+            Binding binding_e_19_ItemsSource = new Binding("Frames");
+            binding_e_19_ItemsSource.Mode = BindingMode.OneWay;
+            this.e_19.SetBinding(ListBox.ItemsSourceProperty, binding_e_19_ItemsSource);
+            Binding binding_e_19_SelectedIndex = new Binding("FrameIndex");
+            binding_e_19_SelectedIndex.Mode = BindingMode.TwoWay;
+            this.e_19.SetBinding(ListBox.SelectedIndexProperty, binding_e_19_SelectedIndex);
+        }
+        
+        private static UIElement e_19_iptMethod(UIElement parent) {
+            // e_20 element
+            WrapPanel e_20 = new WrapPanel();
+            e_20.Parent = parent;
+            e_20.Name = "e_20";
+            e_20.IsItemsHost = true;
+            e_20.Orientation = Orientation.Horizontal;
+            return e_20;
+        }
+        
+        private static UIElement e_19_dtMethod(UIElement parent) {
+            // e_21 element
+            Image e_21 = new Image();
+            e_21.Parent = parent;
+            e_21.Name = "e_21";
+            e_21.Margin = new Thickness(5F, 5F, 5F, 5F);
+            Binding binding_e_21_Source = new Binding("Frame");
+            e_21.SetBinding(Image.SourceProperty, binding_e_21_Source);
+            return e_21;
         }
     }
 }

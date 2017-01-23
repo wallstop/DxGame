@@ -1,12 +1,10 @@
-﻿using DxCore.Core;
-using DxCore.Core.Behaviors.Goals;
+﻿using DxCore.Core.Behaviors.Goals;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DXGame.Core.Behaviors.Goals;
 using NLog;
-using System;
 
-namespace DXGame.Core.Components.Advanced.Behaviors
+namespace DxCore.Core.Components.Advanced.Behaviors
 {
     // TODO: 
     /** 
@@ -32,7 +30,7 @@ namespace DXGame.Core.Components.Advanced.Behaviors
 
         public void AssignGoal(Goal goal)
         {
-            Logger.Info($"{this.GetType().Name} assigned goal: {goal}");
+            Logger.Info($"{GetType().Name} assigned goal: {goal}");
             // No checks here: BehaviorComponents don't know when they should get new goals, they have to take our word for it
             CurrentGoal = goal;
         }

@@ -1,15 +1,17 @@
-﻿using DxCore.Core.Components.Basic;
+﻿using System.Collections.Generic;
+using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using DXGame.Core.Behaviors;
 using NLog;
-using System.Collections.Generic;
+using WallNetCore.Validate;
+
 /**
 * Summarize an entity's behavioral attributes by mapping each commandment (including movement)
 * to a set of attributes and their values
 */
-namespace DXGame.Core.Components.Advanced.Behaviors
+
+namespace DxCore.Core.Components.Advanced.Behaviors
 {
     public class AffinityComponent : Component
     {
@@ -30,11 +32,12 @@ namespace DXGame.Core.Components.Advanced.Behaviors
         // TODO: out values instead of Optionals I guess
         public Optional<Score> AffinityFor(Commandment commandment, Attribute attribute)
         {
-            Dictionary<Attribute, Score> affinities; 
-            if (AffinitiesByCommandment.TryGetValue(commandment, out affinities))
+            Dictionary<Attribute, Score> affinities;
+            if(AffinitiesByCommandment.TryGetValue(commandment, out affinities))
             {
                 Score score;
-                if (affinities.TryGetValue(attribute, out score)) {
+                if(affinities.TryGetValue(attribute, out score))
+                {
                     return Optional<Score>.Of(score);
                 }
             }
@@ -48,7 +51,14 @@ namespace DXGame.Core.Components.Advanced.Behaviors
 
         public class AffinityComponentBuilder : IBuilder<AffinityComponent>
         {
-            private Dictionary<Commandment, Dictionary<Attribute, Score>> AffinitiesByCommandment = new Dictionary<Commandment, Dictionary<Attribute, Score>>();
+            private readonly Dictionary<Commandment, Dictionary<Attribute, Score>> AffinitiesByCommandment =
+                new Dictionary<Commandment, Dictionary<Attribute, Score>>();
+
+            public AffinityComponent Build()
+            {
+                // TODO: Validation
+                return new AffinityComponent(AffinitiesByCommandment);
+            }
 
             public AffinityComponentBuilder WithAffinity(Commandment commandment, Attribute attribute, float score)
             {
@@ -57,7 +67,7 @@ namespace DXGame.Core.Components.Advanced.Behaviors
 
             public AffinityComponentBuilder WithAffinity(Commandment commandment, Attribute attribute, Score score)
             {
-                if (!AffinitiesByCommandment.ContainsKey(commandment))
+                if(!AffinitiesByCommandment.ContainsKey(commandment))
                 {
                     // Looks like this is the first entry for this commandment
                     AffinitiesByCommandment.Add(commandment, new Dictionary<Attribute, Score>());
@@ -67,12 +77,6 @@ namespace DXGame.Core.Components.Advanced.Behaviors
                 commandmentAffinities[attribute] = score;
 
                 return this;
-            }
-
-            public AffinityComponent Build()
-            {
-                // TODO: Validation
-                return new AffinityComponent(AffinitiesByCommandment);
             }
         }
     }

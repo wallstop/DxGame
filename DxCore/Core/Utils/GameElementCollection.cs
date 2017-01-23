@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.DataStructures;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Utils
 {
@@ -33,10 +32,10 @@ namespace DxCore.Core.Utils
         public int Count => processables_.Count;
 
         [IgnoreDataMember]
-        public IEnumerable<IProcessable> Processables => processables_;
+        public IEnumerable<IDrawable> Drawables => drawables_;
 
         [IgnoreDataMember]
-        public IEnumerable<IDrawable> Drawables => drawables_;
+        public IEnumerable<IProcessable> Processables => processables_;
 
         public GameElementCollection()
         {
@@ -46,7 +45,7 @@ namespace DxCore.Core.Utils
 
         public GameElementCollection(GameElementCollection copy)
         {
-            Validate.Validate.Hard.IsNotNull(copy, this.GetFormattedNullOrDefaultMessage(copy));
+            Validate.Hard.IsNotNull(copy, this.GetFormattedNullOrDefaultMessage(copy));
             drawables_ = new SortedList<IDrawable>(copy.drawables_);
             processables_ = new SortedList<IProcessable>(copy.processables_);
         }
@@ -67,12 +66,6 @@ namespace DxCore.Core.Utils
             return allOwnedElements.GetEnumerator();
         }
 
-        public void Clear()
-        {
-            processables_.Clear();
-            drawables_.Clear();
-        }
-
         public void Add(object component)
         {
             IProcessable processable = component as IProcessable;
@@ -86,6 +79,12 @@ namespace DxCore.Core.Utils
             {
                 drawables_.Add(drawable);
             }
+        }
+
+        public void Clear()
+        {
+            processables_.Clear();
+            drawables_.Clear();
         }
 
         public void Remove(Predicate<object> match)

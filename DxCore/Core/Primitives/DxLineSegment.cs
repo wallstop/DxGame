@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Primitives
 {
@@ -101,7 +101,7 @@ namespace DxCore.Core.Primitives
 
         public static bool operator ==(DxLineSegment lhs, DxLineSegment rhs)
         {
-            return lhs.Start == rhs.Start && lhs.End == rhs.End;
+            return (lhs.Start == rhs.Start) && (lhs.End == rhs.End);
         }
 
         public static bool operator !=(DxLineSegment lhs, DxLineSegment rhs)

@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Frames
 {
@@ -45,16 +45,16 @@ namespace DxCore.Core.Frames
                 return new Frame(gameTime_, gameObjects_);
             }
 
-            public FrameBuilder WithGameTime(DxGameTime gameTime)
-            {
-                gameTime_ = gameTime;
-                return this;
-            }
-
             public FrameBuilder WithGameObject(GameObject gameObject)
             {
                 Validate.Hard.IsNotNull(gameObject);
                 gameObjects_[gameObject.Id] = gameObject;
+                return this;
+            }
+
+            public FrameBuilder WithGameTime(DxGameTime gameTime)
+            {
+                gameTime_ = gameTime;
                 return this;
             }
         }

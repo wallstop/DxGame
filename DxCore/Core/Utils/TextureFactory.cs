@@ -28,9 +28,10 @@ namespace DxCore.Core.Utils
 
         public static Texture2D FilledCircleForColor(Color color)
         {
-            if (Instance.filledCircleTexturesForColors_.ContainsKey(color))
+            Texture2D filledCircle;
+            if (Instance.filledCircleTexturesForColors_.TryGetValue(color, out filledCircle))
             {
-                return Instance.filledCircleTexturesForColors_[color];
+                return filledCircle;
             }
 
             var radius = 100;
@@ -106,12 +107,13 @@ namespace DxCore.Core.Utils
 
         public static Texture2D TextureForColor(Color color)
         {
-            if (Instance.texturesForColors_.ContainsKey(color))
+            Texture2D coloredTexture;
+            if(Instance.texturesForColors_.TryGetValue(color, out coloredTexture))
             {
-                return Instance.texturesForColors_[color];
+                return coloredTexture;
             }
 
-            var coloredTexture = new Texture2D(DxGame.Instance.GraphicsDevice, 1, 1);
+            coloredTexture = new Texture2D(DxGame.Instance.GraphicsDevice, 1, 1);
             coloredTexture.SetData(new[] {color});
             Instance.texturesForColors_[color] = coloredTexture;
             return coloredTexture;

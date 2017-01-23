@@ -4,8 +4,8 @@ using System.Linq;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Services
 {
@@ -44,31 +44,6 @@ namespace DxCore.Core.Services
             Self.MessageHandler.RegisterMessageHandler<NewPlayerNotification>(HandleNewPlayer);
         }
 
-        private static float SimpleExponentialEaseInOut(int x)
-        {
-            /* Just make use of our already-populated Spring Functions */
-            const int maxEntities = 100;
-            const float floor = 0.001f;
-            if(x >= maxEntities)
-            {
-                return floor;
-            }
-            /* Start at 1 and go to 0 - earlier mob kills should weigh "more" */
-            float scalar = (float) SpringFunctions.ExponentialEaseOutIn(1, 0, x, maxEntities);
-            return scalar;
-        }
-
-        private void HandleNewPlayer(NewPlayerNotification newPlayerNotification)
-        {
-            Player player = newPlayerNotification.Player;
-            if(entitiesContributingToExperienceByPlayer_.ContainsKey(player))
-            {
-                Logger.Warn("Received double registration of {0}: {1}", typeof(Player), player);
-                return;
-            }
-            entitiesContributingToExperienceByPlayer_[player] = 0;
-        }
-
         private void HandleExperienceDroppedMessage(ExperienceDroppedMessage experienceDropped)
         {
             /* 
@@ -77,7 +52,7 @@ namespace DxCore.Core.Services
                 direct, simple distance compares
             */
             foreach(KeyValuePair<Player, int> playerAndEntityCount in entitiesContributingToExperienceByPlayer_.ToList()
-                )
+            )
             {
                 Player player = playerAndEntityCount.Key;
                 DxVector2 playerPosition = player.Position.Center;
@@ -95,6 +70,31 @@ namespace DxCore.Core.Services
                 experienceReceived.Target = player.Object.Id;
                 experienceReceived.Emit();
             }
+        }
+
+        private void HandleNewPlayer(NewPlayerNotification newPlayerNotification)
+        {
+            Player player = newPlayerNotification.Player;
+            if(entitiesContributingToExperienceByPlayer_.ContainsKey(player))
+            {
+                Logger.Warn("Received double registration of {0}: {1}", typeof(Player), player);
+                return;
+            }
+            entitiesContributingToExperienceByPlayer_[player] = 0;
+        }
+
+        private static float SimpleExponentialEaseInOut(int x)
+        {
+            /* Just make use of our already-populated Spring Functions */
+            const int maxEntities = 100;
+            const float floor = 0.001f;
+            if(x >= maxEntities)
+            {
+                return floor;
+            }
+            /* Start at 1 and go to 0 - earlier mob kills should weigh "more" */
+            float scalar = (float) SpringFunctions.ExponentialEaseOutIn(1, 0, x, maxEntities);
+            return scalar;
         }
     }
 }

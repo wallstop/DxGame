@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Frames
 {
@@ -12,14 +12,13 @@ namespace DxCore.Core.Frames
 
         This is useful for things like "expected gamestate" where GameTime is unimportant
     */
+
     [Serializable]
     [DataContract]
     public class SingleElementFrame : Frame
     {
         protected SingleElementFrame(DxGameTime gameTime, IDictionary<UniqueId, GameObject> gameObjects)
-            : base(gameTime, gameObjects)
-        {
-        }
+            : base(gameTime, gameObjects) {}
 
         public new static SingleElementFrameBuilder Builder()
         {
@@ -30,16 +29,16 @@ namespace DxCore.Core.Frames
         {
             private GameObject gameObject_;
 
-            public new SingleElementFrameBuilder WithGameObject(GameObject gameObject)
-            {
-                gameObject_ = gameObject;
-                return this;
-            }
-
             public override Frame Build()
             {
                 Validate.Hard.IsNotNull(gameObject_, () => this.GetFormattedNullOrDefaultMessage(gameObject_));
                 return new SingleElementFrame(null, new Dictionary<UniqueId, GameObject> {{gameObject_.Id, gameObject_}});
+            }
+
+            public new SingleElementFrameBuilder WithGameObject(GameObject gameObject)
+            {
+                gameObject_ = gameObject;
+                return this;
             }
         }
     }

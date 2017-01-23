@@ -6,10 +6,10 @@ using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Services;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using FarseerPhysics.Collision.Shapes;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Map
 {
@@ -32,7 +32,7 @@ namespace DxCore.Core.Components.Advanced.Map
         public override void Initialize()
         {
             WorldService worldService = DxGame.Instance.Service<WorldService>();
-            MapGeometryBody = BodyFactory.CreateBody(worldService.World, userData:this);
+            MapGeometryBody = BodyFactory.CreateBody(worldService.World, userData: this);
             foreach(DxLineSegment edge in MapGeometry)
             {
                 EdgeShape edgeShape = new EdgeShape(edge.Start.Vector2 * WorldService.DxToFarseerScale,

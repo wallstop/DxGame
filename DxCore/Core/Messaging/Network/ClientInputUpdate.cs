@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Input;
 using DxCore.Core.Network;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Messaging.Network
 {
@@ -17,7 +17,8 @@ namespace DxCore.Core.Messaging.Network
 
         public ClientInputUpdate(List<KeyboardEvent> clientKeyboardEvents)
         {
-            Validate.Hard.IsNotNullOrDefault(clientKeyboardEvents, () => this.GetFormattedNullOrDefaultMessage(nameof(clientKeyboardEvents)));
+            Validate.Hard.IsNotNullOrDefault(clientKeyboardEvents,
+                () => this.GetFormattedNullOrDefaultMessage(nameof(clientKeyboardEvents)));
             ClientKeyboardEvents = clientKeyboardEvents;
         }
     }

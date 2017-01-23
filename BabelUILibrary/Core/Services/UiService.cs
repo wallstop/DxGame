@@ -1,8 +1,8 @@
 ﻿using BabelUILibrary.Controls;
 using BabelUILibrary.Core.Services.Components;
 using DxCore.Core.Services;
-using DxCore.Core.Utils.Validate;
 using EmptyKeys.UserInterface.Generated;
+using WallNetCore.Validate;
 
 namespace BabelUILibrary.Core.Services
 {

@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Command
 {
@@ -20,16 +20,16 @@ namespace DxCore.Core.Components.Advanced.Command
     public class RandomCommander : AbstractCommandComponent
     {
         [DataMember]
-        private TimeSpan LastCommanded { get; set; }
-
-        [DataMember]
         private TimeSpan CommandInterval { get; set; }
 
         [DataMember]
-        private List<Commandment> ValidCommandments { get; set; }
+        private Commandment CurrentCommand { get; set; }
 
         [DataMember]
-        private Commandment CurrentCommand { get; set; }
+        private TimeSpan LastCommanded { get; set; }
+
+        [DataMember]
+        private List<Commandment> ValidCommandments { get; set; }
 
         public RandomCommander(TimeSpan commandInterval, IEnumerable<Commandment> validCommandments)
         {

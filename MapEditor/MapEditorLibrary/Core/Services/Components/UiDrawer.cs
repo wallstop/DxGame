@@ -2,10 +2,10 @@
 using DxCore.Core;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils.Validate;
 using EmptyKeys.UserInterface;
 using EmptyKeys.UserInterface.Generated;
 using Microsoft.Xna.Framework.Graphics;
+using WallNetCore.Validate;
 
 namespace MapEditorLibrary.Core.Services.Components
 {

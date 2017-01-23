@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Primitives
 {
@@ -15,12 +14,11 @@ namespace DxCore.Core.Primitives
     [DataContract]
     public class DxGameTime : IEquatable<DxGameTime>, IComparable<DxGameTime>
     {
-        [DataMember]
-        public TimeSpan TotalGameTime { get; private set;}
-        
+        [NonSerialized] [IgnoreDataMember] private double scale_;
+
         [DataMember]
         public TimeSpan ElapsedGameTime { get; private set; }
-        
+
         [DataMember]
         public bool IsRunningSlowly { get; private set; }
 
@@ -39,7 +37,8 @@ namespace DxCore.Core.Primitives
             }
         }
 
-        [NonSerialized] [IgnoreDataMember] private double scale_;
+        [DataMember]
+        public TimeSpan TotalGameTime { get; private set; }
 
         public DxGameTime() : this(TimeSpan.Zero, TimeSpan.Zero) {}
 
@@ -64,17 +63,6 @@ namespace DxCore.Core.Primitives
             IsRunningSlowly = isRunningSlowly;
         }
 
-        public bool Equals(DxGameTime other)
-        {
-            return TotalGameTime.Equals(other.TotalGameTime) && ElapsedGameTime.Equals(other.ElapsedGameTime) &&
-                   IsRunningSlowly.Equals(other.IsRunningSlowly);
-        }
-
-        public GameTime ToGameTime()
-        {
-            return new GameTime(TotalGameTime, ElapsedGameTime, IsRunningSlowly);
-        }
-
         /**
 
             <summary>
@@ -89,6 +77,17 @@ namespace DxCore.Core.Primitives
                 return 1;
             }
             return TotalGameTime.CompareTo(other.TotalGameTime);
+        }
+
+        public bool Equals(DxGameTime other)
+        {
+            return TotalGameTime.Equals(other.TotalGameTime) && ElapsedGameTime.Equals(other.ElapsedGameTime) &&
+                   IsRunningSlowly.Equals(other.IsRunningSlowly);
+        }
+
+        public GameTime ToGameTime()
+        {
+            return new GameTime(TotalGameTime, ElapsedGameTime, IsRunningSlowly);
         }
     }
 }

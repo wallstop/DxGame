@@ -4,9 +4,9 @@ using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.GraphicsWidgets
 {
@@ -16,18 +16,18 @@ namespace DxCore.Core.GraphicsWidgets
     {
         [DataMember] private readonly IPositional position_;
 
-        [NonSerialized] [IgnoreDataMember] private SpriteFont spriteFont_;
-
         [DataMember] private readonly string spriteFontName_;
+
+        [NonSerialized] [IgnoreDataMember] private SpriteFont spriteFont_;
 
         [DataMember]
         public float AlphaBlend { get; set; } = 1.0f;
 
         [DataMember]
-        public string Text { get; set; }
+        public DxColor DxColor { get; set; }
 
         [DataMember]
-        public DxColor DxColor { get; set; }
+        public string Text { get; set; }
 
         public TextComponent(IPositional position, SpriteFont spriteFont, string spriteFontName)
         {

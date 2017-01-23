@@ -2,16 +2,16 @@
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core;
-using DxCore.Core.Components.Advanced.Team;
-using DxCore.Core.Components.Advanced.Sprite;
-using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Environment;
+using DxCore.Core.Components.Advanced.Physics;
+using DxCore.Core.Components.Advanced.Sprite;
+using DxCore.Core.Components.Advanced.Team;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using NLog;
+using WallNetCore.Validate;
 
 namespace Babel.Items
 {
@@ -30,13 +30,13 @@ namespace Babel.Items
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         [DataMember]
-        private PhysicsComponent Physics { get; set; }
-
-        [DataMember]
         private bool Activated { get; set; }
 
         [DataMember]
         private Type ItemComponentType { get; set; }
+
+        [DataMember]
+        private PhysicsComponent Physics { get; set; }
 
         public VisibleItemComponent(PhysicsComponent physics, Type itemComponentType)
         {
@@ -48,11 +48,6 @@ namespace Babel.Items
             Physics = physics;
             Activated = false;
             ItemComponentType = itemComponentType;
-        }
-
-        public override void OnAttach()
-        {
-            RegisterMessageHandler<EnvironmentInteractionMessage>(ValidEnvironmentInteractionFilter);
         }
 
         /* 
@@ -79,20 +74,24 @@ namespace Babel.Items
             return pandorasBox;
         }
 
-        private void HandleEnvironmentInteraction(EnvironmentInteractionMessage environmentInteraction)
+        public override void OnAttach()
         {
-            GameObject source = environmentInteraction.Source;
-            ItemManager itemManager = source.ComponentOfType<ItemManager>();
-            itemManager.Attach(ItemComponentType);
+            RegisterMessageHandler<EnvironmentInteractionMessage>(ValidEnvironmentInteractionFilter);
         }
 
-        private void ValidEnvironmentInteractionFilter(EnvironmentInteractionMessage environmentInteraction)
+        public override void Remove()
         {
-            if(CheckIsRelevantEnvironmentInteraction(environmentInteraction))
+            /* TODO: Move to some centralized ManagerComponent? (This concept exists similarly elsewhere) */
+            foreach(var component in Parent.Components.ToList())
             {
-                Activated = true;
-                HandleEnvironmentInteraction(environmentInteraction);
+                if(ReferenceEquals(component, this))
+                {
+                    /* Make sure we don't stack overflow */
+                    continue;
+                }
+                component.Remove();
             }
+            base.Remove();
         }
 
         private bool CheckIsRelevantEnvironmentInteraction(EnvironmentInteractionMessage environmentInteraction)
@@ -114,19 +113,20 @@ namespace Babel.Items
             return true;
         }
 
-        public override void Remove()
+        private void HandleEnvironmentInteraction(EnvironmentInteractionMessage environmentInteraction)
         {
-            /* TODO: Move to some centralized ManagerComponent? (This concept exists similarly elsewhere) */
-            foreach(var component in Parent.Components.ToList())
+            GameObject source = environmentInteraction.Source;
+            ItemManager itemManager = source.ComponentOfType<ItemManager>();
+            itemManager.Attach(ItemComponentType);
+        }
+
+        private void ValidEnvironmentInteractionFilter(EnvironmentInteractionMessage environmentInteraction)
+        {
+            if(CheckIsRelevantEnvironmentInteraction(environmentInteraction))
             {
-                if(ReferenceEquals(component, this))
-                {
-                    /* Make sure we don't stack overflow */
-                    continue;
-                }
-                component.Remove();
+                Activated = true;
+                HandleEnvironmentInteraction(environmentInteraction);
             }
-            base.Remove();
         }
     }
 }

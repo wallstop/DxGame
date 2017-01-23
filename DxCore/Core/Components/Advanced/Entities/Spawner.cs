@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Basic;
@@ -7,7 +6,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Entities
 {
@@ -26,16 +25,21 @@ namespace DxCore.Core.Components.Advanced.Entities
     {
         [DataMember] protected DxRectangle spawnArea_;
 
+        protected virtual DxRectangle SpawnArea => spawnArea_;
+
         [DataMember]
         protected SpawnTrigger SpawnTrigger { get; }
-
-        protected virtual DxRectangle SpawnArea => spawnArea_;
 
         protected Spawner(DxRectangle spawnArea, SpawnTrigger spawnTrigger)
         {
             Validate.Hard.IsNotNull(spawnTrigger);
             SpawnTrigger = spawnTrigger;
             spawnArea_ = spawnArea;
+        }
+
+        public static SpawnerBuilder Builder()
+        {
+            return new SpawnerBuilder();
         }
 
         public static SpawnTrigger ImmediateSpawnTriggerFor(GameObject gameObject)
@@ -75,11 +79,6 @@ namespace DxCore.Core.Components.Advanced.Entities
             var xCoordinate = ThreadLocalRandom.Current.NextFloat(minX, maxX);
             var yCoordinate = ThreadLocalRandom.Current.NextFloat(minY, maxY);
             return new DxVector2(xCoordinate, yCoordinate);
-        }
-
-        public static SpawnerBuilder Builder()
-        {
-            return new SpawnerBuilder();
         }
 
         public class SpawnerBuilder : IBuilder<Spawner>

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Utils;
-using DXGame.Core.Utils;
 using Microsoft.Xna.Framework;
 
 namespace DxCore.Core.Primitives
@@ -16,30 +14,26 @@ namespace DxCore.Core.Primitives
     [DataContract]
     public struct DxColor
     {
-        [DataMember] private uint colorAsInt_;
+        [DataMember]
+        private uint ColorAsInt { get; set; }
+
+        [IgnoreDataMember] [NonSerialized] private Color cachedColor_;
 
         // TODO: Cache created color
 
         [IgnoreDataMember]
-        public Color Color
-        {
-            get
-            {
-                Color color = new Color
-                {
-                    A = colorAsInt_.A(),
-                    B = colorAsInt_.B(),
-                    G = colorAsInt_.C(),
-                    R = colorAsInt_.D()
-                };
-                return color;
-            }
-            set { colorAsInt_ = value.PackedValue; }
-        }
+        public Color Color => cachedColor_;
 
         public DxColor(Color color)
         {
-            colorAsInt_ = color.PackedValue;
+            ColorAsInt = color.PackedValue;
+            cachedColor_ = new Color {PackedValue = ColorAsInt};
+        }
+
+        [OnDeserialized]
+        private void OnDeserialized()
+        {
+            cachedColor_.PackedValue = ColorAsInt;
         }
     }
 }

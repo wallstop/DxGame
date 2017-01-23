@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
+using WallNetCore.Extension;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Utils.Distance
 {
@@ -14,13 +16,13 @@ namespace DxCore.Core.Utils.Distance
         public DxRectangle Boundary { get; }
 
         [DataMember]
-        public bool Terminal { get; }
+        public List<RTreeNode<T>> Children { get; }
 
         [DataMember]
         public List<T> Rectangles { get; }
 
         [DataMember]
-        public List<RTreeNode<T>> Children { get; }
+        public bool Terminal { get; }
 
         public RTreeNode(BoundingBox<T> boundingBox, List<T> rectangles, int bucketSize, int branchFactor)
         {
@@ -86,6 +88,19 @@ namespace DxCore.Core.Utils.Distance
         [DataMember] private readonly DxRectangle boundary_;
         [DataMember] private readonly BoundingBox<T> boundingBox_;
         [DataMember] private readonly RTreeNode<T> head_;
+
+        public RTree(BoundingBox<T> boundingBox, List<T> rectangles)
+            : this(boundingBox, rectangles, DEFAULT_BUCKET_SIZE, DEFAULT_BRANCH_FACTOR) {}
+
+        public RTree(BoundingBox<T> boundingBox, List<T> rectangles, int bucketSize, int branchFactor)
+        {
+            Validate.Hard.IsPositive(bucketSize,
+                () => $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
+            Validate.Hard.IsNotNull(boundingBox, () => this.GetFormattedNullOrDefaultMessage(nameof(boundingBox)));
+            boundingBox_ = boundingBox;
+            head_ = new RTreeNode<T>(boundingBox, rectangles, bucketSize, branchFactor);
+            boundary_ = head_.Boundary;
+        }
 
         public List<T> Elements
         {
@@ -163,20 +178,6 @@ namespace DxCore.Core.Utils.Distance
 
                 return rectangles;
             }
-        }
-
-        public RTree(BoundingBox<T> boundingBox, List<T> rectangles)
-            : this(boundingBox, rectangles, DEFAULT_BUCKET_SIZE, DEFAULT_BRANCH_FACTOR) {}
-
-        public RTree(BoundingBox<T> boundingBox, List<T> rectangles, int bucketSize, int branchFactor)
-        {
-            Validate.Validate.Hard.IsPositive(bucketSize,
-                () => $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
-            Validate.Validate.Hard.IsNotNull(boundingBox,
-                () => this.GetFormattedNullOrDefaultMessage(nameof(boundingBox)));
-            boundingBox_ = boundingBox;
-            head_ = new RTreeNode<T>(boundingBox, rectangles, bucketSize, branchFactor);
-            boundary_ = head_.Boundary;
         }
 
         public List<T> InRange(DxRectangle range)

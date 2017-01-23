@@ -8,7 +8,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Services;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Command
 {
@@ -36,11 +36,6 @@ namespace DxCore.Core.Components.Advanced.Command
     {
         [IgnoreDataMember] private static List<ActionCheck> CACHED_ACTION_CHECKS;
 
-        /* We use a list instead of single KeyboardEvents to check the case of "combo" type inputs */
-
-        [DataMember]
-        private Func<List<KeyboardEvent>> PlayerInputProducer { get; set; }
-
         private static IEnumerable<ActionCheck> ActionChecks
         {
             get
@@ -56,13 +51,18 @@ namespace DxCore.Core.Components.Advanced.Command
                 var actionChecks = new List<ActionCheck>(allMethods.Length);
                 actionChecks.AddRange(
                     allMethods.Select(
-                        method => (ActionCheck) Delegate.CreateDelegate(typeof(ActionCheck), method, false))
+                            method => (ActionCheck) Delegate.CreateDelegate(typeof(ActionCheck), method, false))
                         .Where(actionCheck => !ReferenceEquals(null, actionCheck)));
                 /* Cache them so this is only a one-time hit */
                 CACHED_ACTION_CHECKS = actionChecks;
                 return CACHED_ACTION_CHECKS;
             }
         }
+
+        /* We use a list instead of single KeyboardEvents to check the case of "combo" type inputs */
+
+        [DataMember]
+        private Func<List<KeyboardEvent>> PlayerInputProducer { get; set; }
 
         public PlayerInputListener() : this(RipEventsFromLocalInputModel) {}
 
@@ -71,26 +71,6 @@ namespace DxCore.Core.Components.Advanced.Command
             Validate.Hard.IsNotNullOrDefault(playerInputProducer,
                 this.GetFormattedNullOrDefaultMessage(nameof(playerInputProducer)));
             PlayerInputProducer = playerInputProducer;
-        }
-
-        protected override void Update(DxGameTime gameTime)
-        {
-            /* TODO: Change state transitions to simply be event handlers based off the events emitted from here */
-
-            List<KeyboardEvent> inputEvents = PlayerInputProducer.Invoke();
-            List<Commandment> commandments = DetermineCommandmentsFor(inputEvents);
-            foreach(Commandment commandment in commandments)
-            {
-                BroadcastCommandment(commandment);
-            }
-            base.Update(gameTime);
-        }
-
-        public static List<KeyboardEvent> RipEventsFromLocalInputModel()
-        {
-            InputService inputService = DxGame.Instance.Service<InputService>();
-            List<KeyboardEvent> inputEvents = inputService.InputHandler.CurrentKeyboardEvents.ToList();
-            return inputEvents;
         }
 
         public static List<Commandment> DetermineCommandmentsFor(List<KeyboardEvent> keyboardEvents)
@@ -112,54 +92,24 @@ namespace DxCore.Core.Components.Advanced.Command
             return new List<Commandment>(1) {Commandment.None};
         }
 
-        private static bool CheckForMoveLeft(List<KeyboardEvent> inputEvents, ref Commandment commandment)
+        public static List<KeyboardEvent> RipEventsFromLocalInputModel()
         {
-            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Left))
-            {
-                commandment = Commandment.MoveLeft;
-                return true;
-            }
-            return false;
+            InputService inputService = DxGame.Instance.Service<InputService>();
+            List<KeyboardEvent> inputEvents = inputService.InputHandler.CurrentKeyboardEvents.ToList();
+            return inputEvents;
         }
 
-        private static bool CheckForMoveRight(List<KeyboardEvent> inputEvents, ref Commandment commandment)
+        protected override void Update(DxGameTime gameTime)
         {
-            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Right))
-            {
-                commandment = Commandment.MoveRight;
-                return true;
-            }
-            return false;
-        }
+            /* TODO: Change state transitions to simply be event handlers based off the events emitted from here */
 
-        private static bool CheckForMoveUp(List<KeyboardEvent> inputEvents, ref Commandment commandment)
-        {
-            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Jump))
+            List<KeyboardEvent> inputEvents = PlayerInputProducer.Invoke();
+            List<Commandment> commandments = DetermineCommandmentsFor(inputEvents);
+            foreach(Commandment commandment in commandments)
             {
-                commandment = Commandment.MoveUp;
-                return true;
+                BroadcastCommandment(commandment);
             }
-            return false;
-        }
-
-        private static bool CheckForMoveDown(List<KeyboardEvent> inputEvents, ref Commandment commandment)
-        {
-            if(inputEvents.Any(keyEvent => keyEvent.Source == DxGame.Instance.Controls.Down))
-            {
-                commandment = Commandment.MoveDown;
-                return true;
-            }
-            return false;
-        }
-
-        private static bool CheckForAttack(List<KeyboardEvent> inputEvents, ref Commandment commandment)
-        {
-            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Attack))
-            {
-                commandment = Commandment.Attack;
-                return true;
-            }
-            return false;
+            base.Update(gameTime);
         }
 
         private static bool CheckForAbility1(List<KeyboardEvent> inputEvents, ref Commandment commandment)
@@ -202,11 +152,11 @@ namespace DxCore.Core.Components.Advanced.Command
             return false;
         }
 
-        private static bool CheckForMovement(List<KeyboardEvent> inputEvents, ref Commandment commandment)
+        private static bool CheckForAttack(List<KeyboardEvent> inputEvents, ref Commandment commandment)
         {
-            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Movement))
+            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Attack))
             {
-                commandment = Commandment.Movement;
+                commandment = Commandment.Attack;
                 return true;
             }
             return false;
@@ -217,6 +167,56 @@ namespace DxCore.Core.Components.Advanced.Command
             if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Interact))
             {
                 commandment = Commandment.InteractWithEnvironment;
+                return true;
+            }
+            return false;
+        }
+
+        private static bool CheckForMoveDown(List<KeyboardEvent> inputEvents, ref Commandment commandment)
+        {
+            if(inputEvents.Any(keyEvent => keyEvent.Source == DxGame.Instance.Controls.Down))
+            {
+                commandment = Commandment.MoveDown;
+                return true;
+            }
+            return false;
+        }
+
+        private static bool CheckForMoveLeft(List<KeyboardEvent> inputEvents, ref Commandment commandment)
+        {
+            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Left))
+            {
+                commandment = Commandment.MoveLeft;
+                return true;
+            }
+            return false;
+        }
+
+        private static bool CheckForMovement(List<KeyboardEvent> inputEvents, ref Commandment commandment)
+        {
+            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Movement))
+            {
+                commandment = Commandment.Movement;
+                return true;
+            }
+            return false;
+        }
+
+        private static bool CheckForMoveRight(List<KeyboardEvent> inputEvents, ref Commandment commandment)
+        {
+            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Right))
+            {
+                commandment = Commandment.MoveRight;
+                return true;
+            }
+            return false;
+        }
+
+        private static bool CheckForMoveUp(List<KeyboardEvent> inputEvents, ref Commandment commandment)
+        {
+            if(inputEvents.Any(inputEvent => inputEvent.Source == DxGame.Instance.Controls.Jump))
+            {
+                commandment = Commandment.MoveUp;
                 return true;
             }
             return false;

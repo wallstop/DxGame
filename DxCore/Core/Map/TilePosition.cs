@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Map
 {
@@ -41,7 +41,7 @@ namespace DxCore.Core.Map
 
         public static bool ValidTileCoordinates(int x, int y)
         {
-            return 0 <= x && 0 <= y;
+            return (0 <= x) && (0 <= y);
         }
 
         public override int GetHashCode()
@@ -87,17 +87,17 @@ namespace DxCore.Core.Map
 
         public static bool operator ==(TilePosition lhs, TilePosition rhs)
         {
-            return lhs.X == rhs.X && lhs.Y == rhs.Y;
+            return (lhs.X == rhs.X) && (lhs.Y == rhs.Y);
         }
 
         public static bool operator !=(TilePosition lhs, TilePosition rhs)
         {
-            return lhs.X != rhs.X || lhs.Y != rhs.Y;
+            return (lhs.X != rhs.X) || (lhs.Y != rhs.Y);
         }
 
         public override bool Equals(object other)
         {
-            return other is TilePosition && this == (TilePosition) other;
+            return other is TilePosition && (this == (TilePosition) other);
         }
 
         public override string ToString()

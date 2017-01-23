@@ -3,10 +3,11 @@ using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
-using DxCore.Core.Utils.Validate;
+using DxCore.Extension;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Animation
 {
@@ -14,102 +15,112 @@ namespace DxCore.Core.Animation
     [DataContract]
     public class Animation
     {
-        [DataMember] private int currentFrame_;
-        [DataMember] private DrawPriority drawPriority_;
-        [DataMember] private TimeSpan lastUpdated_ = TimeSpan.FromSeconds(0);
-
         [NonSerialized] [IgnoreDataMember] private Texture2D spriteSheet_;
-
-        public TimeSpan TimePerFrame => TimeSpan.FromSeconds(1.0f / AnimationDescriptor.FramesPerSecond);
 
         [DataMember]
         public AnimationDescriptor AnimationDescriptor { get; private set; }
 
+        [DataMember]
+        public DrawPriority DrawPriority { get; private set; }
+
+        public TimeSpan TimePerFrame
+            => TimeSpan.Zero.FromAccurateMilliseconds(1000.0 / AnimationDescriptor.FramesPerSecond);
+
+        [DataMember]
+        private int CurrentFrame { get; set; }
+
+        [IgnoreDataMember]
+        private Func<ContentManager, Texture2D> CustomLoadContent { get; set; }
+
+        [DataMember]
+        private TimeSpan LastUpdated { get; set; }
+
         private int TotalFrames => AnimationDescriptor.FrameCount;
-        private float Scale => (float) AnimationDescriptor.Scale;
 
-        public Animation(AnimationDescriptor descriptor, DrawPriority drawPriority = DrawPriority.Normal)
+        public Animation(AnimationDescriptor descriptor, DrawPriority drawPriority = DrawPriority.Normal,
+            Func<ContentManager, Texture2D> customLoadContent = null)
         {
-            Validate.Hard.IsNotNullOrDefault(descriptor, this.GetFormattedNullOrDefaultMessage(descriptor));
-            Validate.Hard.IsTrue(descriptor.FrameCount > 0,
-                $"Cannot initialize an {nameof(Animation)} with a FrameCount of {descriptor.FrameCount}");
-            Validate.Hard.IsNotNullOrDefault(descriptor.FramesPerSecond > 0,
-                $"Cannot initialize an {nameof(Animation)} with a {nameof(descriptor.FramesPerSecond)} of {descriptor.FramesPerSecond}");
+            Validate.Hard.IsNotNullOrDefault(descriptor, () => this.GetFormattedNullOrDefaultMessage(descriptor));
+            Validate.Hard.IsPositive(descriptor.FrameCount,
+                () => $"Cannot initialize an {nameof(Animation)} with a FrameCount of {descriptor.FrameCount}");
+            Validate.Hard.IsPositive(descriptor.FramesPerSecond,
+                () =>
+                    $"Cannot initialize an {nameof(Animation)} with a {nameof(descriptor.FramesPerSecond)} of {descriptor.FramesPerSecond}");
             Validate.Hard.IsNotNullOrDefault(descriptor.Asset,
-                this.GetFormattedNullOrDefaultMessage(nameof(descriptor.Asset)));
+                () => this.GetFormattedNullOrDefaultMessage(nameof(descriptor.Asset)));
+            CustomLoadContent = customLoadContent;
             AnimationDescriptor = descriptor;
-            drawPriority_ = drawPriority;
+            DrawPriority = drawPriority;
+            LastUpdated = DxGame.Instance.CurrentDrawTime.TotalGameTime;
         }
-
-        public DrawPriority DrawPriority => drawPriority_;
 
         public void Draw(SpriteBatch spriteBatch, DxGameTime gameTime, DxVector2 position, Direction orientation)
         {
-            while(lastUpdated_ + TimePerFrame < gameTime.TotalGameTime)
+            if(Validate.Check.IsNull(AnimationDescriptor.Asset))
             {
-                lastUpdated_ += TimePerFrame;
-                currentFrame_ = currentFrame_.WrappedAdd(1, TotalFrames);
+                return;
             }
 
-            /* We asume that Animations are horizontal strips without any spacing or anything between frames */
-            int frameWidth = spriteSheet_.Width / TotalFrames;
+            UpdateToCurrentFrame(gameTime);
+
             DxVector2 frameOffset;
             DxVector2 drawOffset;
-            DxRectangle boundingBox;
-            AnimationDescriptor.FrameOffsets.OffsetForFrame(currentFrame_, out frameOffset, out drawOffset,
-                out boundingBox);
+            int frameWidth;
+            int frameHeight;
+            AnimationDescriptor.OffsetForFrame(CurrentFrame, out frameOffset, out drawOffset, out frameWidth,
+                out frameHeight);
 
-            Rectangle frameOutline = new Rectangle(frameWidth * currentFrame_, 0, (int) boundingBox.Width,
-                (int) boundingBox.Height);
-            if(frameOutline.Width == 0)
-            {
-                frameOutline.Width = frameWidth;
-            }
-            if(frameOutline.Height == 0)
-            {
-                frameOutline.Height = spriteSheet_.Height;
-            }
-
-            frameOutline.X += (int) frameOffset.X;
-            frameOutline.Y += (int) frameOffset.Y;
+            Rectangle frameOutline = new Rectangle((int) Math.Round(frameOffset.X), (int) Math.Round(frameOffset.Y),
+                frameWidth, frameHeight);
 
             position.X += drawOffset.X;
             position.Y += drawOffset.Y;
+
+            Rectangle drawLocation = new DxRectangle(position, frameWidth * AnimationDescriptor.Scale,
+                frameHeight * AnimationDescriptor.Scale);
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if(orientation != AnimationDescriptor.Orientation)
             {
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
-            spriteBatch.Draw(spriteSheet_, null,
-                new Rectangle((int) position.X, (int) position.Y, (int) (frameOutline.Width * AnimationDescriptor.Scale),
-                    (int) (frameOutline.Height * AnimationDescriptor.Scale)), frameOutline, null, 0, null, Color.White,
-                spriteEffects, 0);
+            spriteBatch.Draw(spriteSheet_, null, drawLocation, frameOutline, null, 0, null, Color.White, spriteEffects,
+                0);
         }
 
-        public int CompareTo(IDrawable other)
+        public void DrawDebug(SpriteBatch spriteBatch, DxGameTime gameTime, DxVector2 position, Direction orientation)
         {
-            throw new NotImplementedException();
+            Draw(spriteBatch, gameTime, position, orientation);
+
+            spriteBatch.DrawString(FontFactory.Instance.Default, (CurrentFrame + 1).ToString(), position.Vector2,
+                ColorFactory.Transparency(0.5f, Color.Purple));
         }
 
-        public int CompareTo(IProcessable other)
+        public bool LoadContent(ContentManager contentManager)
         {
-            throw new NotImplementedException();
+            Texture2D spriteSheet;
+            if(!Validate.Check.IsNull(CustomLoadContent))
+            {
+                spriteSheet = CustomLoadContent(contentManager);
+            }
+            else
+            {
+                spriteSheet = DefaultLoadContent(contentManager);
+            }
+            spriteSheet_ = spriteSheet;
+            return true;
         }
-
-        public UpdatePriority UpdatePriority => UpdatePriority.Normal;
 
         /* TODO: Make proper builders for everything */
 
         public void Reset()
         {
-            currentFrame_ = 0;
+            CurrentFrame = 0;
         }
 
-        public bool LoadContent(ContentManager contentManager)
+        protected virtual void DeSerialize()
         {
-            spriteSheet_ = contentManager.Load<Texture2D>(AnimationDescriptor.Asset);
-            return true;
+            LoadContent(DxGame.Instance.Content);
         }
 
         [OnDeserialized]
@@ -118,9 +129,18 @@ namespace DxCore.Core.Animation
             DeSerialize();
         }
 
-        protected virtual void DeSerialize()
+        private Texture2D DefaultLoadContent(ContentManager contentManager)
         {
-            LoadContent(DxGame.Instance.Content);
+            return contentManager.Load<Texture2D>(AnimationDescriptor.Asset);
+        }
+
+        private void UpdateToCurrentFrame(DxGameTime gameTime)
+        {
+            while(LastUpdated + TimePerFrame < gameTime.TotalGameTime)
+            {
+                LastUpdated += TimePerFrame;
+                CurrentFrame = CurrentFrame.WrappedAdd(1, TotalFrames);
+            }
         }
     }
 }

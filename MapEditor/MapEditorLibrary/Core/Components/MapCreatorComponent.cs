@@ -6,8 +6,6 @@ using DxCore.Core.Map;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Services;
-using DxCore.Core.Utils.Cache.Advanced;
-using DxCore.Core.Utils.Validate;
 using MapEditorLibrary.Controls;
 using MapEditorLibrary.Core.Messaging;
 using MapEditorLibrary.Core.Services;
@@ -15,6 +13,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using NLog;
+using WallNetCore.Cache.Advanced;
+using WallNetCore.Validate;
 
 namespace MapEditorLibrary.Core.Components
 {
@@ -23,13 +23,31 @@ namespace MapEditorLibrary.Core.Components
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly ILoadingCache<Tile, Texture2D> tileTextureCache_ =
-            CacheBuilder<Tile, Texture2D>.NewBuilder().Build(tile => DxGame.Instance.Content.Load<Texture2D>(tile.Asset));
+            CacheBuilder<Tile, Texture2D>.NewBuilder()
+                .Build(tile => DxGame.Instance.Content.Load<Texture2D>(tile.Asset));
+
+        private TilePosition? CurrentTilePosition
+        {
+            get
+            {
+                DxVector2 mousePosition = Mouse.GetState().Position;
+                CameraService cameraService = DxGame.Instance.Service<CameraService>();
+                DxVector2 worldSpacePosition = cameraService.Invert(mousePosition);
+
+                TilePosition tilePosition;
+                if(MapGrid.PositionForPoint(worldSpacePosition, out tilePosition))
+                {
+                    return tilePosition;
+                }
+                return null;
+            }
+        }
 
         private MapDescriptor.MapDescriptorBuilder MapBuilder { get; }
 
-        private MapGridComponent MapGrid { get; }
-
         private SingleElementLocalLoadingCache<MapDescriptor> MapDescriptorCache { get; }
+
+        private MapGridComponent MapGrid { get; }
 
         public MapCreatorComponent(MapGridComponent mapGrid)
         {
@@ -43,6 +61,25 @@ namespace MapEditorLibrary.Core.Components
                     CacheBuilder<FastCacheKey, MapDescriptor>.NewBuilder(), () => MapBuilder.Build());
         }
 
+        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
+        {
+            MapDescriptor mapDescriptor = MapDescriptorCache.Get();
+            int tileWidth = MapGrid.MapLayout.TileWidth;
+            int tileHeight = MapGrid.MapLayout.TileHeight;
+
+            foreach(KeyValuePair<TilePosition, Tile> tilePositionAndTile in mapDescriptor.Tiles)
+            {
+                TilePosition tilePosition = tilePositionAndTile.Key;
+                Tile tile = tilePositionAndTile.Value;
+                DxRectangle space = new DxRectangle(tilePosition.X * tileWidth, tilePosition.Y * tileHeight, tileWidth,
+                    tileHeight);
+
+                Texture2D tileTexture = tileTextureCache_.Get(tile);
+
+                spriteBatch.Draw(tileTexture, space, Color.White);
+            }
+        }
+
         public override void OnAttach()
         {
             RegisterMessageHandler<AddTileToMapRequest>(HandleAddTileToMapRequest);
@@ -54,44 +91,30 @@ namespace MapEditorLibrary.Core.Components
             base.OnAttach();
         }
 
-        private void HandleResetMapRequest(ResetMapRequest request)
+        private void HandleAddTileToMapRequest(AddTileToMapRequest request)
         {
-            MapBuilder.WithoutTiles();
-            MapDescriptorCache.Invalidate();
-        }
+            TilePosition? tilePosition = CurrentTilePosition;
+            if(!tilePosition.HasValue)
+            {
+                return;
+            }
+            RootUiService rootUi;
+            if(!DxGame.Instance.ServiceProvider.TryGet(out rootUi))
+            {
+                Logger.Debug("Unable to find {0}", typeof(RootUiService));
+                return;
+            }
+            Tile currentTile = rootUi.SelectedTile;
+            if(ReferenceEquals(currentTile, null))
+            {
+                Logger.Debug("Ignoring {0} for {1}, no selected tile found", typeof(AddTileToMapRequest), tilePosition);
+                return;
+            }
 
-        private void HandleMapLayoutChanged(MapLayoutChanged mapLayoutChanged)
-        {
-            MapLayout newMapLayout = mapLayoutChanged.NewLayout;
-            /* Cull tiles */
-            foreach(TilePosition tilePosition in MapBuilder.Tiles.Keys)
-            {
-                if(tilePosition.X >= newMapLayout.Width)
-                {
-                    MapBuilder.WithoutTile(tilePosition);
-                }
-                else if(tilePosition.Y >= newMapLayout.Height)
-                {
-                    MapBuilder.WithoutTile(tilePosition);
-                }
-            }
-            MapBuilder.WithMapLayout(newMapLayout);
+            TileModel currentTileModel = rootUi.SelectedTileModel;
+            tileTextureCache_.Put(currentTile, currentTileModel.Texture);
+            MapBuilder.WithTile(tilePosition.Value, currentTile);
             MapDescriptorCache.Invalidate();
-        }
-
-        private void HandleSaveMapRequest(SaveMapRequest saveMapRequest)
-        {
-            try
-            {
-                MapDescriptor mapDescriptor = MapDescriptorCache.Get();
-                mapDescriptor.Save(saveMapRequest.FilePath);
-            }
-            catch(Exception e)
-            {
-                string errorMessage = $"Failed to save map to {saveMapRequest.FilePath}";
-                Logger.Error(e, errorMessage);
-                new ErrorNotification(errorMessage).Emit();
-            }
         }
 
         private void HandleLoadMapRequest(LoadMapRequest loadMapRequest)
@@ -113,6 +136,25 @@ namespace MapEditorLibrary.Core.Components
             new MapChangedNotification(MapDescriptorCache.Get()).Emit();
         }
 
+        private void HandleMapLayoutChanged(MapLayoutChanged mapLayoutChanged)
+        {
+            MapLayout newMapLayout = mapLayoutChanged.NewLayout;
+            /* Cull tiles */
+            foreach(TilePosition tilePosition in MapBuilder.Tiles.Keys)
+            {
+                if(tilePosition.X >= newMapLayout.Width)
+                {
+                    MapBuilder.WithoutTile(tilePosition);
+                }
+                else if(tilePosition.Y >= newMapLayout.Height)
+                {
+                    MapBuilder.WithoutTile(tilePosition);
+                }
+            }
+            MapBuilder.WithMapLayout(newMapLayout);
+            MapDescriptorCache.Invalidate();
+        }
+
         private void HandleRemoveTileFromMapRequest(RemoveTileFromMapRequest request)
         {
             TilePosition? tilePosition = CurrentTilePosition;
@@ -124,59 +166,24 @@ namespace MapEditorLibrary.Core.Components
             MapDescriptorCache.Invalidate();
         }
 
-        private void HandleAddTileToMapRequest(AddTileToMapRequest request)
+        private void HandleResetMapRequest(ResetMapRequest request)
         {
-            TilePosition? tilePosition = CurrentTilePosition;
-            if(!tilePosition.HasValue)
-            {
-                return;
-            }
-            Tile currentTile = DxGame.Instance.Service<RootUiService>().SelectedTile;
-            if(ReferenceEquals(currentTile, null))
-            {
-                Logger.Debug("Ignoring {0} for {1}, no selected tile found", typeof(AddTileToMapRequest), tilePosition);
-                return;
-            }
-
-            TileModel currentTileModel = DxGame.Instance.Service<RootUiService>().SelectedTileModel;
-            tileTextureCache_.Put(currentTile, currentTileModel.Texture);
-            MapBuilder.WithTile(tilePosition.Value, currentTile);
+            MapBuilder.WithoutTiles();
             MapDescriptorCache.Invalidate();
         }
 
-        private TilePosition? CurrentTilePosition
+        private void HandleSaveMapRequest(SaveMapRequest saveMapRequest)
         {
-            get
+            try
             {
-                DxVector2 mousePosition = Mouse.GetState().Position;
-                CameraService cameraService = DxGame.Instance.Service<CameraService>();
-                DxVector2 worldSpacePosition = cameraService.Invert(mousePosition);
-
-                TilePosition tilePosition;
-                if(MapGrid.PositionForPoint(worldSpacePosition, out tilePosition))
-                {
-                    return tilePosition;
-                }
-                return null;
+                MapDescriptor mapDescriptor = MapDescriptorCache.Get();
+                mapDescriptor.Save(saveMapRequest.FilePath);
             }
-        }
-
-        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
-        {
-            MapDescriptor mapDescriptor = MapDescriptorCache.Get();
-            int tileWidth = MapGrid.MapLayout.TileWidth;
-            int tileHeight = MapGrid.MapLayout.TileHeight;
-
-            foreach(KeyValuePair<TilePosition, Tile> tilePositionAndTile in mapDescriptor.Tiles)
+            catch(Exception e)
             {
-                TilePosition tilePosition = tilePositionAndTile.Key;
-                Tile tile = tilePositionAndTile.Value;
-                DxRectangle space = new DxRectangle(tilePosition.X * tileWidth, tilePosition.Y * tileHeight, tileWidth,
-                    tileHeight);
-
-                Texture2D tileTexture = tileTextureCache_.Get(tile);
-
-                spriteBatch.Draw(tileTexture, space, Color.White);
+                string errorMessage = $"Failed to save map to {saveMapRequest.FilePath}";
+                Logger.Error(e, errorMessage);
+                new ErrorNotification(errorMessage).Emit();
             }
         }
     }

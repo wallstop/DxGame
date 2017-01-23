@@ -3,8 +3,8 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Components.Developer;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework.Graphics;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Services.Components
 {
@@ -20,6 +20,17 @@ namespace DxCore.Core.Services.Components
             DeveloperComponents = gameElements;
             Validate.Hard.IsNotNull(devSwitch);
             DevSwitch = devSwitch;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
+        {
+            if(DevSwitch.DeveloperMode != DeveloperMode.NotSoOn)
+            {
+                foreach(var drawable in DeveloperComponents.Drawables)
+                {
+                    drawable.Draw(spriteBatch, gameTime);
+                }
+            }
         }
 
         public override void Initialize()
@@ -53,17 +64,6 @@ namespace DxCore.Core.Services.Components
                 }
             }
             base.Update(gameTime);
-        }
-
-        public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
-        {
-            if(DevSwitch.DeveloperMode != DeveloperMode.NotSoOn)
-            {
-                foreach(var drawable in DeveloperComponents.Drawables)
-                {
-                    drawable.Draw(spriteBatch, gameTime);
-                }
-            }
         }
     }
 }

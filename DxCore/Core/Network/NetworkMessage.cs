@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils.Validate;
 using Lidgren.Network;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Network
 {
@@ -25,6 +25,9 @@ namespace DxCore.Core.Network
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
+        [DataMember]
+        public DxGameTime TimeStamp { get; private set; } = DxGame.Instance.CurrentUpdateTime;
+
         protected NetworkMessage()
         {
             Id = new UniqueId();
@@ -32,9 +35,6 @@ namespace DxCore.Core.Network
 
         [DataMember]
         public UniqueId Id { get; private set; }
-
-        [DataMember]
-        public DxGameTime TimeStamp { get; private set; } = DxGame.Instance.CurrentUpdateTime;
 
         public static NetworkMessage FromNetIncomingMessage(NetIncomingMessage message)
         {

@@ -12,14 +12,10 @@ namespace DxCore.Core.Services
         [DataMember]
         protected GameObject Self { get; private set; }
 
-        public UniqueId Id => Self.Id;
-
         protected DxService()
         {
             Self = GameObject.Builder().Build();
         }
-
-        protected virtual void OnCreate() {}
 
         public void Create()
         {
@@ -29,15 +25,7 @@ namespace DxCore.Core.Services
             Self.Create();
         }
 
-        protected virtual void OnRemove() {}
-
-        public void Remove()
-        {
-            dynamic serviceInstance = this;
-            DxGame.Instance.ServiceProvider.Deregister(serviceInstance);
-            OnRemove();
-            Self.Remove();
-        }
+        public UniqueId Id => Self.Id;
 
         public int CompareTo(IProcessable other)
         {
@@ -53,5 +41,17 @@ namespace DxCore.Core.Services
         {
             Self.Process(gameTime);
         }
+
+        public void Remove()
+        {
+            dynamic serviceInstance = this;
+            DxGame.Instance.ServiceProvider.Deregister(serviceInstance);
+            OnRemove();
+            Self.Remove();
+        }
+
+        protected virtual void OnCreate() {}
+
+        protected virtual void OnRemove() {}
     }
 }

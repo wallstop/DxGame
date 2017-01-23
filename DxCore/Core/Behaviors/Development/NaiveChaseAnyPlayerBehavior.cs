@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using DXGame.Core.Behaviors.Goals;
-using DXGame.Core.Components.Advanced.Behaviors;
 using DxCore.Core.Utils;
 using DxCore.Core.Messaging;
 using DxCore;
 using System.Linq;
 using DxCore.Core.Services;
 using DxCore.Core;
+using DxCore.Core.Components.Advanced.Behaviors;
 
 namespace DXGame.Core.Behaviors.Development
 {

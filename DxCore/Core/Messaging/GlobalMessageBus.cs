@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using DxCore.Core.Utils.Validate;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Messaging
 {
@@ -11,6 +11,145 @@ namespace DxCore.Core.Messaging
     public static class GlobalMessageBus
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        private static HashSet<MessageHandler> GlobalSinks { get; } = new HashSet<MessageHandler>();
+
+        private static Dictionary<UniqueId, MessageHandler> UntypedTargetedSinks { get; } =
+            new Dictionary<UniqueId, MessageHandler>();
+
+        /*
+            Registers the provided HandlerId and MessageHandler with the specified type, providing a deregistration function to call on 
+            deregistration 
+        */
+
+        public static Action Register<T>(UniqueId handlerOwnerId, MessageHandler messageHandler) where T : Message
+        {
+            Validate.Hard.IsNotNullOrDefault(handlerOwnerId);
+            Validate.Hard.IsNotNullOrDefault(messageHandler);
+
+            Dictionary<UniqueId, MessageHandler> targetedHandlers = TargetedHandlers<T>();
+            MessageHandler existingHandler;
+            if(!targetedHandlers.TryGetValue(handlerOwnerId, out existingHandler))
+            {
+                targetedHandlers[handlerOwnerId] = messageHandler;
+            }
+            else if(!ReferenceEquals(existingHandler, messageHandler))
+            {
+                Logger.Warn(
+                    "Ignoring double registration of {0} with different handlers (is this intentional? Likely a bug)",
+                    handlerOwnerId);
+                return new SerializableDeregistration<T>(handlerOwnerId).Deregister;
+            }
+
+            HashSet<MessageHandler> handlersForType = Handler<T>();
+            bool newRegistration = handlersForType.Add(messageHandler);
+            if(!newRegistration)
+            {
+                Logger.Debug("Received double registration of {0} for {1}", typeof(T), handlerOwnerId);
+            }
+
+            return new SerializableDeregistration<T>(handlerOwnerId).Deregister;
+        }
+
+        public static Action RegisterGlobal(MessageHandler messageHandler)
+        {
+            GlobalSinks.Add(messageHandler);
+            return new SerializableUntypedGlobalDeregistration(messageHandler).DeregisterUntypedGlobal;
+        }
+
+        /* TODO: This naming convention is garbage, please redo. No one is going to understand what any of this crap means */
+
+        /**
+                <summary>
+                    Registers an untyped message handler for all messages that are for the specified target
+                </summary>   
+            */
+
+        public static Action RegisterTargetedGlobal(UniqueId handlerOwnerId, MessageHandler messageHandler)
+        {
+            if(UntypedTargetedSinks.ContainsKey(handlerOwnerId))
+            {
+                Logger.Info("Ignoring double targeted global registration of {0}", handlerOwnerId);
+                return new SerializableUntypedTargetedDeregistration(handlerOwnerId).DeregisterUntypedTargeted;
+            }
+
+            UntypedTargetedSinks[handlerOwnerId] = messageHandler;
+            return new SerializableUntypedTargetedDeregistration(handlerOwnerId).DeregisterUntypedTargeted;
+        }
+
+        public static void TypedBroadcast<T>(T typedMessage) where T : Message
+        {
+            BroadcastGlobal(typedMessage);
+            ITargetedMessage targetedMessage = typedMessage as ITargetedMessage;
+            if(!ReferenceEquals(targetedMessage, null))
+            {
+                UniqueId target = targetedMessage.Target;
+                TargetedBroadcast(target, typedMessage);
+                return;
+            }
+            UntargetedBroadcast(typedMessage);
+        }
+
+        public static void UntypedBroadcast(Message message)
+        {
+            dynamic typedMessage = message;
+            TypedBroadcast(typedMessage);
+        }
+
+        private static void BroadcastGlobal<T>(T typedMessage) where T : Message
+        {
+            foreach(MessageHandler handler in GlobalSinks.ToArray())
+            {
+                handler.HandleUntypedMessage(typedMessage);
+            }
+        }
+
+        private static HashSet<MessageHandler> Handler<T>() where T : Message
+        {
+            return SpecializedHandler<T>.Sinks;
+        }
+
+        private static void TargetedBroadcast<T>(UniqueId target, T typedAndTargetedMessage) where T : Message
+        {
+            MessageHandler handler;
+            if(UntargetedHandler(target, out handler))
+            {
+                handler.HandleUntypedMessage(typedAndTargetedMessage);
+            }
+
+            /* Re-use existing handler */
+            if(TargetedHandler<T>(target, out handler))
+            {
+                handler.HandleTypedMessage(typedAndTargetedMessage);
+                return;
+            }
+
+            Logger.Trace("Could not find a matching handler for Id: {0}, Message: {1}", target, typedAndTargetedMessage);
+        }
+
+        private static bool TargetedHandler<T>(UniqueId target, out MessageHandler handler) where T : Message
+        {
+            return SpecializedHandler<T>.TargetedSinks.TryGetValue(target, out handler);
+        }
+
+        private static Dictionary<UniqueId, MessageHandler> TargetedHandlers<T>() where T : Message
+        {
+            return SpecializedHandler<T>.TargetedSinks;
+        }
+
+        private static void UntargetedBroadcast<T>(T typedMessage) where T : Message
+        {
+            foreach(MessageHandler handler in Handler<T>().ToArray())
+            {
+                handler.HandleTypedMessage(typedMessage);
+            }
+            BroadcastGlobal(typedMessage);
+        }
+
+        private static bool UntargetedHandler(UniqueId target, out MessageHandler handler)
+        {
+            return UntypedTargetedSinks.TryGetValue(target, out handler);
+        }
 
         private static class SpecializedHandler<T> where T : Message
         {
@@ -78,145 +217,6 @@ namespace DxCore.Core.Messaging
             {
                 GlobalSinks.Remove(Handler);
             }
-        }
-
-        private static Dictionary<UniqueId, MessageHandler> UntypedTargetedSinks { get; } =
-            new Dictionary<UniqueId, MessageHandler>();
-
-        private static HashSet<MessageHandler> GlobalSinks { get; } = new HashSet<MessageHandler>();
-
-        private static HashSet<MessageHandler> Handler<T>() where T : Message
-        {
-            return SpecializedHandler<T>.Sinks;
-        }
-
-        private static Dictionary<UniqueId, MessageHandler> TargetedHandlers<T>() where T : Message
-        {
-            return SpecializedHandler<T>.TargetedSinks;
-        }
-
-        private static bool TargetedHandler<T>(UniqueId target, out MessageHandler handler) where T : Message
-        {
-            return SpecializedHandler<T>.TargetedSinks.TryGetValue(target, out handler);
-        }
-
-        private static bool UntargetedHandler(UniqueId target, out MessageHandler handler)
-        {
-            return UntypedTargetedSinks.TryGetValue(target, out handler);
-        }
-
-        public static void UntypedBroadcast(Message message)
-        {
-            dynamic typedMessage = message;
-            TypedBroadcast(typedMessage);
-        }
-
-        /*
-            Registers the provided HandlerId and MessageHandler with the specified type, providing a deregistration function to call on 
-            deregistration 
-        */
-
-        public static Action Register<T>(UniqueId handlerOwnerId, MessageHandler messageHandler) where T : Message
-        {
-            Validate.Hard.IsNotNullOrDefault(handlerOwnerId);
-            Validate.Hard.IsNotNullOrDefault(messageHandler);
-
-            Dictionary<UniqueId, MessageHandler> targetedHandlers = TargetedHandlers<T>();
-            MessageHandler existingHandler;
-            if(!targetedHandlers.TryGetValue(handlerOwnerId, out existingHandler))
-            {
-                targetedHandlers[handlerOwnerId] = messageHandler;
-            }
-            else if(!ReferenceEquals(existingHandler, messageHandler))
-            {
-                Logger.Warn(
-                    "Ignoring double registration of {0} with different handlers (is this intentional? Likely a bug)",
-                    handlerOwnerId);
-                return new SerializableDeregistration<T>(handlerOwnerId).Deregister;
-            }
-
-            HashSet<MessageHandler> handlersForType = Handler<T>();
-            bool newRegistration = handlersForType.Add(messageHandler);
-            if(!newRegistration)
-            {
-                Logger.Debug("Received double registration of {0} for {1}", typeof(T), handlerOwnerId);
-            } 
-
-            return new SerializableDeregistration<T>(handlerOwnerId).Deregister;
-        }
-
-        /* TODO: This naming convention is garbage, please redo. No one is going to understand what any of this crap means */
-
-        /**
-                <summary>
-                    Registers an untyped message handler for all messages that are for the specified target
-                </summary>   
-            */
-
-        public static Action RegisterTargetedGlobal(UniqueId handlerOwnerId, MessageHandler messageHandler)
-        {
-            if(UntypedTargetedSinks.ContainsKey(handlerOwnerId))
-            {
-                Logger.Info("Ignoring double targeted global registration of {0}", handlerOwnerId);
-                return new SerializableUntypedTargetedDeregistration(handlerOwnerId).DeregisterUntypedTargeted;
-            }
-
-            UntypedTargetedSinks[handlerOwnerId] = messageHandler;
-            return new SerializableUntypedTargetedDeregistration(handlerOwnerId).DeregisterUntypedTargeted;
-        }
-
-        public static Action RegisterGlobal(MessageHandler messageHandler)
-        {
-            GlobalSinks.Add(messageHandler);
-            return new SerializableUntypedGlobalDeregistration(messageHandler).DeregisterUntypedGlobal;
-        }
-
-        public static void TypedBroadcast<T>(T typedMessage) where T : Message
-        {
-            BroadcastGlobal(typedMessage);
-            ITargetedMessage targetedMessage = typedMessage as ITargetedMessage;
-            if(!ReferenceEquals(targetedMessage, null))
-            {
-                UniqueId target = targetedMessage.Target;
-                TargetedBroadcast(target, typedMessage);
-                return;
-            }
-            UntargetedBroadcast(typedMessage);
-        }
-
-        private static void UntargetedBroadcast<T>(T typedMessage) where T : Message
-        {
-            foreach(MessageHandler handler in Handler<T>().ToArray())
-            {
-                handler.HandleTypedMessage(typedMessage);
-            }
-            BroadcastGlobal(typedMessage);
-        }
-
-        private static void BroadcastGlobal<T>(T typedMessage) where T : Message
-        {
-            foreach(MessageHandler handler in GlobalSinks.ToArray())
-            {
-                handler.HandleUntypedMessage(typedMessage);
-            }
-        }
-
-        private static void TargetedBroadcast<T>(UniqueId target, T typedAndTargetedMessage) where T : Message
-        {
-            MessageHandler handler;
-            if(UntargetedHandler(target, out handler))
-            {
-                handler.HandleUntypedMessage(typedAndTargetedMessage);
-            }
-
-            /* Re-use existing handler */
-            if(TargetedHandler<T>(target, out handler))
-            {
-                handler.HandleTypedMessage(typedAndTargetedMessage);
-                return;
-            }
-
-            Logger.Trace("Could not find a matching handler for Id: {0}, Message: {1}", target, typedAndTargetedMessage);
         }
     }
 }

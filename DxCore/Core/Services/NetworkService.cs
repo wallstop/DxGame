@@ -4,7 +4,7 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Components.Network;
 using DxCore.Core.Primitives;
 using DxCore.Core.Services.Components;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Services
 {
@@ -18,47 +18,14 @@ namespace DxCore.Core.Services
 
         private NetworkProcessor NetworkProcessor { get; set; }
 
-        // TODO: Get outta here
-        public NetworkService WithClient(AbstractNetworkClient client)
-        {
-            AddNetworkComponent(client);
-            return this;
-        }
-
-        public NetworkService WithServer(AbstractNetworkServer server)
-        {
-            // Really? Why not more?
-            Validate.Hard.IsEmpty(Servers, () => $"Cannot add {server}. Can only add one server to a NetworkModel");
-            AddNetworkComponent(server);
-            return this;
-        }
-
-        protected override void OnCreate()
-        {
-            if(Validate.Check.IsNull(NetworkProcessor))
-            {
-                NetworkProcessor = new NetworkProcessor(connections_);
-                Self.AttachComponent(NetworkProcessor);
-            }
-        }
-
-        public void AttachServer(AbstractNetworkServer server)
-        {
-            WithServer(server);
-        }
-
         public void AttachClient(AbstractNetworkClient client)
         {
             WithClient(client);
         }
 
-        protected void AddNetworkComponent(NetworkComponent netComponent)
+        public void AttachServer(AbstractNetworkServer server)
         {
-            Validate.Hard.IsNotNullOrDefault(netComponent,
-                () => $"Cannot add a null/default NetworkComponent to {GetType()}");
-            Validate.Hard.IsNotElementOf(connections_, netComponent,
-                () => $"Cannot add NetworkComponent {netComponent}. This component already exists in {connections_}");
-            connections_.Add(netComponent);
+            WithServer(server);
         }
 
         public void ReceiveData(DxGameTime gameTime)
@@ -87,6 +54,39 @@ namespace DxCore.Core.Services
             foreach(var server in Servers)
             {
                 server.Shutdown();
+            }
+        }
+
+        // TODO: Get outta here
+        public NetworkService WithClient(AbstractNetworkClient client)
+        {
+            AddNetworkComponent(client);
+            return this;
+        }
+
+        public NetworkService WithServer(AbstractNetworkServer server)
+        {
+            // Really? Why not more?
+            Validate.Hard.IsEmpty(Servers, () => $"Cannot add {server}. Can only add one server to a NetworkModel");
+            AddNetworkComponent(server);
+            return this;
+        }
+
+        protected void AddNetworkComponent(NetworkComponent netComponent)
+        {
+            Validate.Hard.IsNotNullOrDefault(netComponent,
+                () => $"Cannot add a null/default NetworkComponent to {GetType()}");
+            Validate.Hard.IsNotElementOf(connections_, netComponent,
+                () => $"Cannot add NetworkComponent {netComponent}. This component already exists in {connections_}");
+            connections_.Add(netComponent);
+        }
+
+        protected override void OnCreate()
+        {
+            if(Validate.Check.IsNull(NetworkProcessor))
+            {
+                NetworkProcessor = new NetworkProcessor(connections_);
+                Self.AttachComponent(NetworkProcessor);
             }
         }
     }

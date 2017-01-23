@@ -3,8 +3,8 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Services.Components;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Services
 {
@@ -13,10 +13,6 @@ namespace DxCore.Core.Services
     public sealed class MapService : DxService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        public DxRectangle RandomSpawnLocation => Map.RandomSpawnLocation;
-        public DxVector2 PlayerSpawn => Map.PlayerSpawn;
-        public DxRectangle MapBounds => Map.MapDescriptor.Bounds;
 
         private Level.Level level_;
 
@@ -34,10 +30,14 @@ namespace DxCore.Core.Services
         }
 
         public Map.Map Map => Level.Map;
+        public DxRectangle MapBounds => Map.MapDescriptor.Bounds;
+        public DxVector2 PlayerSpawn => Map.PlayerSpawn;
 
-        private MapDrawer MapDrawer { get; set; }
+        public DxRectangle RandomSpawnLocation => Map.RandomSpawnLocation;
 
         private ILevelProgressionStrategy LevelProgressionStrategy { get; }
+
+        private MapDrawer MapDrawer { get; set; }
 
         public MapService(ILevelProgressionStrategy levelProgressionStrategy)
         {
@@ -65,6 +65,11 @@ namespace DxCore.Core.Services
             Self.MessageHandler.RegisterMessageHandler<MapRotationNotification>(HandleMapFinishedLoading);
         }
 
+        private void HandleMapFinishedLoading(MapRotationNotification mapRotationNotification)
+        {
+            Level.Create();
+        }
+
         private void HandleMapRotationRequest(MapRotationRequest mapRotationRequest)
         {
             Level.Level nextLevel = LevelProgressionStrategy.DetermineNextLevel(Level);
@@ -73,11 +78,6 @@ namespace DxCore.Core.Services
             Level = nextLevel;
             MapRotationNotification mapRotationNotification = new MapRotationNotification(Level.Map);
             mapRotationNotification.Emit();
-        }
-
-        private void HandleMapFinishedLoading(MapRotationNotification mapRotationNotification)
-        {
-            Level.Create();
         }
     }
 }

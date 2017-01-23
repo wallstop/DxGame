@@ -4,7 +4,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Services.Components;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Services
 {
@@ -19,9 +19,9 @@ namespace DxCore.Core.Services
         private readonly GameElementCollection components_ = new GameElementCollection();
         private readonly DeveloperSwitch devSwitch_;
 
-        private DeveloperComponentHandler DevComponentHandler { get; set; }
-
         public DeveloperMode DeveloperMode => devSwitch_.DeveloperMode;
+
+        private DeveloperComponentHandler DevComponentHandler { get; set; }
 
         public DeveloperService()
         {

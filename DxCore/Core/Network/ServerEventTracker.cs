@@ -4,9 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Network
 {
@@ -14,37 +12,12 @@ namespace DxCore.Core.Network
     [Serializable]
     public class ServerEventTracker
     {
-        public MessageHandler Handler { get; }
+        private readonly List<NetworkMessage> clientSpecificMessages_;
 
         private readonly List<Message> events_;
 
-        private readonly List<NetworkMessage> clientSpecificMessages_;
-
         private readonly UniqueId trackerId_;
-
-        public bool RetrieveNetworkEvents(out List<NetworkMessage> clientSpecificMessages)
-        {
-            if(!clientSpecificMessages_.Any())
-            {
-                clientSpecificMessages = null;
-                return false;
-            }
-            clientSpecificMessages = clientSpecificMessages_.ToList();
-            clientSpecificMessages_.Clear();
-            return true;
-        }
-
-        public void AttachNetworkMessage(NetworkMessage networkMessage)
-        {
-            clientSpecificMessages_.Add(networkMessage);
-        }
-
-        public List<Message> RetrieveEvents()
-        {
-            List<Message> events = events_.ToList();
-            events_.Clear();
-            return events;
-        }
+        public MessageHandler Handler { get; }
 
         public ServerEventTracker()
         {
@@ -63,6 +36,30 @@ namespace DxCore.Core.Network
             trackerId_ = new UniqueId();
             Handler = new MessageHandler(trackerId_);
             Handler.RegisterGlobalAcceptAll(HandleMessage);
+        }
+
+        public void AttachNetworkMessage(NetworkMessage networkMessage)
+        {
+            clientSpecificMessages_.Add(networkMessage);
+        }
+
+        public List<Message> RetrieveEvents()
+        {
+            List<Message> events = events_.ToList();
+            events_.Clear();
+            return events;
+        }
+
+        public bool RetrieveNetworkEvents(out List<NetworkMessage> clientSpecificMessages)
+        {
+            if(!clientSpecificMessages_.Any())
+            {
+                clientSpecificMessages = null;
+                return false;
+            }
+            clientSpecificMessages = clientSpecificMessages_.ToList();
+            clientSpecificMessages_.Clear();
+            return true;
         }
 
         private void HandleMessage(Message message)

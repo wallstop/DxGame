@@ -9,8 +9,8 @@ using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Cache.Simple;
 using DxCore.Core.Utils.Distance;
-using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework.Graphics;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Map
 {
@@ -18,6 +18,9 @@ namespace DxCore.Core.Map
     [DataContract]
     public class Map : DrawableComponent
     {
+        [IgnoreDataMember] [NonSerialized] private readonly ISimpleCache<Tile, Texture2D> tileTextureCache_ =
+            new UnboundedLoadingSimpleCache<Tile, Texture2D>(tile => DxGame.Instance.Content.Load<Texture2D>(tile.Asset));
+
         [DataMember] private MapDescriptor mapDescriptor_;
 
         [IgnoreDataMember]
@@ -32,16 +35,7 @@ namespace DxCore.Core.Map
         }
 
         [DataMember]
-        private Dictionary<TilePosition, MapTile> MapTiles { get; set; }
-
-        [DataMember]
-        public ISpatialTree<MapTile> TileSpatialTree { get; private set; }
-
-        [DataMember]
         public DxVector2 PlayerSpawn { get; private set; }
-
-        [IgnoreDataMember] [NonSerialized] private readonly ISimpleCache<Tile, Texture2D> tileTextureCache_ =
-            new UnboundedLoadingSimpleCache<Tile, Texture2D>(tile => DxGame.Instance.Content.Load<Texture2D>(tile.Asset));
 
         // TODO: Have spawn locations be a part of the Map Descriptor
         public DxRectangle RandomSpawnLocation
@@ -64,6 +58,24 @@ namespace DxCore.Core.Map
             }
         }
 
+        [DataMember]
+        public ISpatialTree<MapTile> TileSpatialTree { get; private set; }
+
+        [DataMember]
+        private Dictionary<TilePosition, MapTile> MapTiles { get; set; }
+
+        public Map(MapDescriptor descriptor)
+        {
+            Validate.Hard.IsNotNullOrDefault(descriptor, this.GetFormattedNullOrDefaultMessage(nameof(descriptor)));
+            MapDescriptor = descriptor;
+
+            MapTiles = DetermineMapTiles(descriptor);
+            TileSpatialTree = new RTree<MapTile>(mapTile => mapTile.Space, MapTiles.Values.ToList());
+            DrawPriority = DrawPriority.Map;
+
+            PlayerSpawn = RandomSpawnLocation.Position;
+        }
+
         public static Dictionary<TilePosition, MapTile> DetermineMapTiles(MapDescriptor mapDescriptor)
         {
             Validate.Hard.IsNotNullOrDefault(mapDescriptor);
@@ -80,36 +92,6 @@ namespace DxCore.Core.Map
             return mapTiles;
         }
 
-        public Map(MapDescriptor descriptor)
-        {
-            Validate.Hard.IsNotNullOrDefault(descriptor, this.GetFormattedNullOrDefaultMessage(nameof(descriptor)));
-            MapDescriptor = descriptor;
-
-            MapTiles = DetermineMapTiles(descriptor);
-            TileSpatialTree = new RTree<MapTile>(mapTile => mapTile.Space, MapTiles.Values.ToList());
-            DrawPriority = DrawPriority.Map;
-
-            PlayerSpawn = RandomSpawnLocation.Position;
-        }
-
-        public override void LoadContent()
-        {
-            foreach(MapTile mapTile in MapTiles.Values)
-            {
-                /* Loading cache - textures should be loaded in automagically */
-                tileTextureCache_.Get(mapTile.Tile);
-            }
-
-            base.LoadContent();
-        }
-
-        public override void Initialize()
-        {
-            MapGeometryComponent mapGeometry =
-                new MapGeometryComponent(MapTiles.Values.Select(tile => tile.Space).ToList());
-            mapGeometry.Create();
-        }
-
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             DxRectangle range = DxGame.Instance.ScreenRegion;
@@ -121,6 +103,24 @@ namespace DxCore.Core.Map
             {
                 spriteBatch.Draw(tileTextureCache_.Get(mapTile.Tile), null, mapTile.Space);
             }
+        }
+
+        public override void Initialize()
+        {
+            MapGeometryComponent mapGeometry =
+                new MapGeometryComponent(MapTiles.Values.Select(tile => tile.Space).ToList());
+            mapGeometry.Create();
+        }
+
+        public override void LoadContent()
+        {
+            foreach(MapTile mapTile in MapTiles.Values)
+            {
+                /* Loading cache - textures should be loaded in automagically */
+                tileTextureCache_.Get(mapTile.Tile);
+            }
+
+            base.LoadContent();
         }
 
         private bool CollidesWithMap(DxRectangle region)

@@ -6,8 +6,8 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Damage
 {
@@ -42,26 +42,6 @@ namespace DxCore.Core.Components.Advanced.Damage
         public override void OnAttach()
         {
             RegisterMessageHandler<EntityDeathMessage>(HandleEntityDeath);
-        }
-
-        protected virtual void HandleEntityDeath(EntityDeathMessage deathMessage)
-        {
-            if(!ReferenceEquals(deathMessage.Entity, Parent))
-            {
-                /* Not us? Don't care */
-                return;
-            }
-
-            PhysicsComponent spatial = deathMessage.Entity?.ComponentOfType<PhysicsComponent>();
-            /* 
-                If there is a spatial, trigger the death effect. 
-                If there isn't one, we can't reliably determine the space that the entity died at, so don't trigger it. 
-            */
-            if(!ReferenceEquals(spatial, null))
-            {
-                deathEffect_.Invoke(spatial.Space);
-            }
-            Parent?.Remove();
         }
 
         public static void SimpleEnemyBloodParticles(DxRectangle deathSpace)
@@ -132,6 +112,26 @@ namespace DxCore.Core.Components.Advanced.Damage
                 EntityCreatedMessage particlesCreated = new EntityCreatedMessage(particle);
                 particlesCreated.Emit();
             }
+        }
+
+        protected virtual void HandleEntityDeath(EntityDeathMessage deathMessage)
+        {
+            if(!ReferenceEquals(deathMessage.Entity, Parent))
+            {
+                /* Not us? Don't care */
+                return;
+            }
+
+            PhysicsComponent spatial = deathMessage.Entity?.ComponentOfType<PhysicsComponent>();
+            /* 
+                If there is a spatial, trigger the death effect. 
+                If there isn't one, we can't reliably determine the space that the entity died at, so don't trigger it. 
+            */
+            if(!ReferenceEquals(spatial, null))
+            {
+                deathEffect_.Invoke(spatial.Space);
+            }
+            Parent?.Remove();
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Animation;
-using DxCore.Core.Components.Advanced.Animated;
+using DxCore.Core.Components.Advanced.Animation;
 using DxCore.Core.Components.Advanced.Physics;
 using DxCore.Core.Components.Advanced.Properties;
 using DxCore.Core.Messaging;
@@ -11,8 +11,8 @@ using DxCore.Core.Messaging.Physics;
 using DxCore.Core.Physics;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils.Distance;
-using DxCore.Core.Utils.Validate;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.State
 {
@@ -46,7 +46,8 @@ namespace DxCore.Core.State
             </summary>
         */
 
-        public static void BuildAndAttachBasicMovementStateMachineAndAnimations(GameObject entity, string entityName, bool loggingEnabled = false)
+        public static void BuildAndAttachBasicMovementStateMachineAndAnimations(GameObject entity, string entityName,
+            bool loggingEnabled = false)
         {
             Validate.Hard.IsNotNull(entity,
                 () => $"Cannot make a {typeof(StateMachine)} for a null {typeof(GameObject)}");
@@ -86,7 +87,7 @@ namespace DxCore.Core.State
                 jumpState);
 
             animationBuilder.WithStateAndAsset(idleState,
-                AnimationFactory.AnimationFor(entityName, StandardAnimationType.Idle))
+                    AnimationFactory.AnimationFor(entityName, StandardAnimationType.Idle))
                 .WithStateAndAsset(movementState,
                     AnimationFactory.AnimationFor(entityName, StandardAnimationType.Moving))
                 .WithStateAndAsset(jumpState, AnimationFactory.AnimationFor(entityName, StandardAnimationType.Jumping))
@@ -98,7 +99,8 @@ namespace DxCore.Core.State
 
             Trigger returnToIdleTrigger =
                 (entityInstance, gameTime) =>
-                    !AnyMoveLeftCommands(entityInstance, gameTime) && !AnyMoveRightCommands(entityInstance, gameTime);
+                    !AnyMoveLeftCommands(entityInstance, gameTime) &&
+                    !AnyMoveRightCommands(entityInstance, gameTime);
             Trigger movingBothDirectionsIsReallyIdleTrigger = OnlyMoveLeftAndRightCommands;
 
             Transition movementTransition = new Transition(movementTrigger, movementState);
@@ -142,12 +144,6 @@ namespace DxCore.Core.State
             return commands.Any(command => command.Commandment == Commandment.MoveUp);
         }
 
-        private static bool AnyMoveRightCommands(List<Message> messages, DxGameTime gameTime)
-        {
-            var commands = messages.OfType<CommandMessage>();
-            return commands.Any(command => command.Commandment == Commandment.MoveRight);
-        }
-
         private static bool AnyMoveLeftCommands(List<Message> messages, DxGameTime gameTime)
         {
             var commands = messages.OfType<CommandMessage>();
@@ -160,13 +156,21 @@ namespace DxCore.Core.State
             return
                 commands.Any(
                     command =>
-                        command.Commandment == Commandment.MoveLeft || command.Commandment == Commandment.MoveRight);
+                        (command.Commandment == Commandment.MoveLeft) ||
+                        (command.Commandment == Commandment.MoveRight));
+        }
+
+        private static bool AnyMoveRightCommands(List<Message> messages, DxGameTime gameTime)
+        {
+            var commands = messages.OfType<CommandMessage>();
+            return commands.Any(command => command.Commandment == Commandment.MoveRight);
         }
 
         private static bool BelowCollisionTrigger(List<Message> messages, DxGameTime gameTime)
         {
             List<CollisionMessage> collisionMessages = messages.OfType<CollisionMessage>().ToList();
-            bool triggered = collisionMessages.Any(collision => collision.CollisionDirections.ContainsKey(Direction.South));
+            bool triggered =
+                collisionMessages.Any(collision => collision.CollisionDirections.ContainsKey(Direction.South));
             return triggered;
         }
 
@@ -213,19 +217,19 @@ namespace DxCore.Core.State
             private float HorizontalForce { get; set; }
 
             [DataMember]
-            private float VerticalForce { get; set; }
-
-            [DataMember]
             private TimeSpan HorizontalForceEmission { get; set; }
-
-            [DataMember]
-            private TimeSpan VerticalForceEmission { get; set; }
 
             [IgnoreDataMember]
             private float MaxHorizontalForce => EntityProperties.EntityProperties.MoveSpeed.CurrentValue;
 
             [IgnoreDataMember]
             private float MaxVerticalForce => EntityProperties.EntityProperties.JumpSpeed.CurrentValue;
+
+            [DataMember]
+            private float VerticalForce { get; set; }
+
+            [DataMember]
+            private TimeSpan VerticalForceEmission { get; set; }
 
             public MovementRegulator(UniqueId id, EntityPropertiesComponent entityProperties)
             {
@@ -247,6 +251,35 @@ namespace DxCore.Core.State
                 HorizontalForce = 0;
             }
 
+            public void Jump(List<Message> messages, DxGameTime gameTime)
+            {
+                Movement(messages, gameTime);
+                if(VerticalForce != 0)
+                {
+                    // TODO: Smart re-application of forces
+
+                    return;
+                }
+                float jumpPower = MaxVerticalForce;
+                Force jumpPlease = new Force(new DxVector2(0, -jumpPower));
+                new PhysicsAttachment(jumpPlease, EntityId).Emit();
+                VerticalForce = jumpPower;
+            }
+
+            public void MoveLeft(DxGameTime gameTime)
+            {
+                if(HorizontalForce == -MaxHorizontalForce)
+                {
+                    return; // Nothing to do, probably
+                }
+                /* TODO: Don't use force differential, simply apply. (How to factor into emission time?) */
+                HorizontalForceEmission = gameTime.TotalGameTime;
+                float forceDifferential = -MaxHorizontalForce - HorizontalForce;
+                Force movePlease = new Force(new DxVector2(forceDifferential, 0));
+                new PhysicsAttachment(movePlease, EntityId).Emit();
+                HorizontalForce += forceDifferential;
+            }
+
             public void Movement(List<Message> messages, DxGameTime gameTime)
             {
                 List<CommandMessage> commandMessages =
@@ -254,9 +287,8 @@ namespace DxCore.Core.State
 
                 bool canMoveLeft = true;
                 bool canMoveRight = true;
-                foreach(
-                    Direction collisionDirection in
-                        messages.OfType<CollisionMessage>().SelectMany(_ => _.CollisionDirections.Keys).Distinct())
+                foreach(Direction collisionDirection in
+                    messages.OfType<CollisionMessage>().SelectMany(_ => _.CollisionDirections.Keys).Distinct())
                 {
                     switch(collisionDirection)
                     {
@@ -265,12 +297,14 @@ namespace DxCore.Core.State
                             HorizontalForce = Math.Min(HorizontalForce, 0);
                             canMoveRight = false;
                             break;
-                        } case Direction.West:
+                        }
+                        case Direction.West:
                         {
                             HorizontalForce = Math.Max(HorizontalForce, 0);
                             canMoveLeft = false;
                             break;
-                        } case Direction.South:
+                        }
+                        case Direction.South:
                         {
                             VerticalForce = 0;
                             break;
@@ -309,20 +343,6 @@ namespace DxCore.Core.State
                 DoNothing(messages, gameTime);
             }
 
-            public void MoveLeft(DxGameTime gameTime)
-            {
-                if(HorizontalForce == -MaxHorizontalForce)
-                {
-                    return; // Nothing to do, probably
-                }
-                /* TODO: Don't use force differential, simply apply. (How to factor into emission time?) */
-                HorizontalForceEmission = gameTime.TotalGameTime;
-                float forceDifferential = -MaxHorizontalForce - HorizontalForce;
-                Force movePlease = new Force(new DxVector2(forceDifferential, 0));
-                new PhysicsAttachment(movePlease, EntityId).Emit();
-                HorizontalForce += forceDifferential;
-            }
-
             public void MoveRight(DxGameTime gameTime)
             {
                 if(HorizontalForce == MaxHorizontalForce)
@@ -336,26 +356,6 @@ namespace DxCore.Core.State
                 HorizontalForce += forceDifferential;
             }
 
-            public void Jump(List<Message> messages, DxGameTime gameTime)
-            {
-                Movement(messages, gameTime);
-                if(VerticalForce != 0)
-                {
-                    // TODO: Smart re-application of forces
-                    
-                    return;
-                }
-                float jumpPower = MaxVerticalForce;
-                Force jumpPlease = new Force(new DxVector2(0, -jumpPower));
-                new PhysicsAttachment(jumpPlease, EntityId).Emit();
-                VerticalForce = jumpPower;
-            }
-
-            public void StopMoving(DxGameTime gameTime)
-            {
-                HorizontalForce = 0;
-            }
-
             public void StopJumping(StateUpdateConfig updateConfig)
             {
                 if(updateConfig.LoggingEnabled)
@@ -363,6 +363,11 @@ namespace DxCore.Core.State
                     Logger.Debug("Ceasing the jump movement, I promise");
                 }
                 VerticalForce = 0;
+            }
+
+            public void StopMoving(DxGameTime gameTime)
+            {
+                HorizontalForce = 0;
             }
         }
     }

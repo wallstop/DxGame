@@ -3,7 +3,7 @@ using Babel.Items;
 using Babel.Player;
 using DxCore.Core;
 using DxCore.Core.Components.Advanced;
-using DxCore.Core.Components.Advanced.Animated;
+using DxCore.Core.Components.Advanced.Animation;
 using DxCore.Core.Components.Advanced.Team;
 using DxCore.Core.Components.Advanced.Command;
 using DxCore.Core.Components.Advanced.Entities;

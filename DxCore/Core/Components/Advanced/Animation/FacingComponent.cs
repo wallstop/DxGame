@@ -4,7 +4,7 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Utils.Distance;
 
-namespace DxCore.Core.Components.Advanced.Animated
+namespace DxCore.Core.Components.Advanced.Animation
 {
     /** 
         <summary>
@@ -18,10 +18,6 @@ namespace DxCore.Core.Components.Advanced.Animated
     {
         [DataMember]
         public Direction Facing { get; private set; } = Direction.East;
-
-        public FacingComponent()
-        {
-        }
 
         public override void OnAttach()
         {

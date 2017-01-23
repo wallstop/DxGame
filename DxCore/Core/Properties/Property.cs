@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Properties
 {
@@ -58,9 +58,6 @@ namespace DxCore.Core.Properties
 
         [DataMember] private T baseValue_;
         [DataMember] private T currentValue_;
-        
-        [DataMember]
-        public string Name { get; }
 
         [DataMember]
         public T BaseValue
@@ -75,6 +72,9 @@ namespace DxCore.Core.Properties
 
         [IgnoreDataMember]
         public T CurrentValue => currentValue_;
+
+        [DataMember]
+        public string Name { get; }
 
         [DataMember]
         private T PreviousValue { get; set; }
@@ -108,25 +108,6 @@ namespace DxCore.Core.Properties
             PreviousValue = CurrentValue;
         }
 
-        private void InternalTriggerListeners(T previous, T current)
-        {
-            foreach(var listener in listeners_)
-            {
-                listener.Invoke(previous, current);
-            }
-        }
-
-        public void AttachListener(PropertyListener<T> listener)
-        {
-            Validate.Hard.IsNotNullOrDefault(listener, () => $"Cannot attach a null {typeof(PropertyListener<T>)} to a {typeof(Property<T>)} ({Name})");
-            listeners_.Add(listener);
-        }
-
-        public bool RemoveListener(PropertyListener<T> listener)
-        {
-            return listeners_.Remove(listener);
-        }
-
         public void AddMutator(PropertyMutator<T> mutator)
         {
             if(mutator == null)
@@ -143,9 +124,21 @@ namespace DxCore.Core.Properties
             }
         }
 
+        public void AttachListener(PropertyListener<T> listener)
+        {
+            Validate.Hard.IsNotNullOrDefault(listener,
+                () => $"Cannot attach a null {typeof(PropertyListener<T>)} to a {typeof(Property<T>)} ({Name})");
+            listeners_.Add(listener);
+        }
+
+        public bool RemoveListener(PropertyListener<T> listener)
+        {
+            return listeners_.Remove(listener);
+        }
+
         public void RemoveMutator(PropertyMutator<T> mutator)
         {
-            if(mutator == null || !mutatorCounts_.ContainsKey(mutator))
+            if((mutator == null) || !mutatorCounts_.ContainsKey(mutator))
             {
                 Logger.Error($"Attempted to remove non-existing {mutator} from Property {Name}");
                 return;
@@ -158,6 +151,14 @@ namespace DxCore.Core.Properties
             }
 
             InternalRemoveMutator(mutator);
+        }
+
+        private void ApplyMutatorChain()
+        {
+            T previous = currentValue_;
+            currentValue_ = mutatorCounts_.Aggregate(BaseValue,
+                (current, mutatorCountPair) => mutatorCountPair.Key.Mutate(current, mutatorCountPair.Value));
+            InternalTriggerListeners(previous, currentValue_);
         }
 
         /*
@@ -190,12 +191,12 @@ namespace DxCore.Core.Properties
             ApplyMutatorChain();
         }
 
-        private void ApplyMutatorChain()
+        private void InternalTriggerListeners(T previous, T current)
         {
-            T previous = currentValue_;
-            currentValue_ = mutatorCounts_.Aggregate(BaseValue,
-                (current, mutatorCountPair) => mutatorCountPair.Key.Mutate(current, mutatorCountPair.Value));
-            InternalTriggerListeners(previous, currentValue_);
+            foreach(var listener in listeners_)
+            {
+                listener.Invoke(previous, current);
+            }
         }
     }
 }

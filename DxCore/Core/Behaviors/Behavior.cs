@@ -1,9 +1,9 @@
 ﻿using DXGame.Core.Behaviors.Goals;
-using DXGame.Core.Components.Advanced.Behaviors;
 using NLog;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using DxCore.Core.Components.Advanced.Behaviors;
 
 namespace DXGame.Core.Behaviors
 {

@@ -78,8 +78,8 @@
       <HintPath>..\packages\Lidgren.Network.1.0.2\lib\net451\Lidgren.Network.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MathNet.Numerics, Version=3.12.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MathNet.Numerics.3.12.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    <Reference Include="MathNet.Numerics, Version=3.15.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.3.15.0\lib\net40\MathNet.Numerics.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
@@ -87,16 +87,16 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.9.0.2-beta1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.4.0-beta13\lib\net45\NLog.dll</HintPath>
+    <Reference Include="NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.5.0.0-beta04\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.1.2.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.3.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
@@ -105,6 +105,10 @@
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Runtime.Serialization.Primitives, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.Serialization.Primitives.4.3.0\lib\net46\System.Runtime.Serialization.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
@@ -113,12 +117,15 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WallNetCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WallNet.Core.1.0.0.1\lib\net461\WallNetCore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Animation\Animation.cs" />
     <Compile Include="Core\Animation\AnimationDescriptor.cs" />
     <Compile Include="Core\Animation\AnimationFactory.cs" />
-    <Compile Include="Core\Animation\AnimationFrameOffset.cs" />
     <Compile Include="Core\Animation\FrameDescriptor.cs" />
     <Compile Include="Core\Behaviors\Development\NaiveChaseAnyPlayerBehavior.cs" />
     <Compile Include="Core\Behaviors\Automatic\NullBehavior.cs" />
@@ -132,6 +139,9 @@
     <Compile Include="Core\Components\Advanced\Behaviors\AffinityComponent.cs" />
     <Compile Include="Core\Behaviors\Attributes.cs" />
     <Compile Include="Core\Components\Advanced\Behaviors\BehaviorComponent.cs" />
+    <Compile Include="Core\Components\Advanced\Camera\MousePanComponent.cs" />
+    <Compile Include="Core\Components\Developer\BoundsWidget.cs" />
+    <Compile Include="Core\GraphicsWidgets\HUD\TransparentBackground.cs" />
     <Compile Include="Core\Services\Components\GoalAssigner.cs" />
     <Compile Include="Core\Components\Advanced\Collision\CollisionDestructibleComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\AbstractCommandComponent.cs" />
@@ -343,26 +353,13 @@
     <Compile Include="Core\Team.cs" />
     <Compile Include="Core\UniqueId.cs" />
     <Compile Include="Core\Utils\BehaviorUtils.cs" />
-    <Compile Include="Core\Utils\Cache\Advanced\CacheBuilder.cs" />
-    <Compile Include="Core\Utils\Cache\Advanced\FastCacheKey.cs" />
-    <Compile Include="Core\Utils\Cache\Advanced\ICache.cs" />
-    <Compile Include="Core\Utils\Cache\Advanced\ILoadingCache.cs" />
-    <Compile Include="Core\Utils\Cache\Advanced\LocalCache.cs" />
-    <Compile Include="Core\Utils\Cache\Advanced\LocalLoadingCache.cs" />
-    <Compile Include="Core\Utils\Cache\Advanced\SingleElementLocalCache.cs" />
-    <Compile Include="Core\Utils\Cache\Advanced\SingleElementLocalLoadingCache.cs" />
     <Compile Include="Core\Utils\Cache\DiscardingQueue.cs" />
-    <Compile Include="Core\Utils\Cache\RemovalNotification.cs" />
     <Compile Include="Core\Utils\Cache\Simple\AbstractSimpleCache.cs" />
     <Compile Include="Core\Utils\Cache\Simple\ISimpleCache.cs" />
     <Compile Include="Core\Utils\Cache\Simple\UnboundedLoadingSimpleCache.cs" />
     <Compile Include="Core\Utils\Cache\Simple\UnboundedSimpleCache.cs" />
-    <Compile Include="Core\Utils\CollectionExtensions.cs" />
     <Compile Include="Core\Utils\ColorFactory.cs" />
-    <Compile Include="Core\Utils\ColorUtils.cs" />
-    <Compile Include="Core\Utils\CriticalRegion.cs" />
     <Compile Include="Core\Utils\DateTimeConstants.cs" />
-    <Compile Include="Core\Utils\DictionaryExtensions.cs" />
     <Compile Include="Core\Utils\Distance\Directions.cs" />
     <Compile Include="Core\Utils\Distance\Distance.cs" />
     <Compile Include="Core\Utils\Distance\EmptyTree.cs" />
@@ -370,9 +367,9 @@
     <Compile Include="Core\Utils\Distance\KDTree.cs" />
     <Compile Include="Core\Utils\Distance\QuadTree.cs" />
     <Compile Include="Core\Utils\Distance\RTree.cs" />
-    <Compile Include="Core\Utils\EnumUtils.cs" />
     <Compile Include="Core\Utils\FarseerExtensions.cs" />
     <Compile Include="Core\Utils\FixedSizedBuffer.cs" />
+    <Compile Include="Core\Utils\FontFactory.cs" />
     <Compile Include="Core\Utils\ForceExtensions.cs" />
     <Compile Include="Core\Utils\GameElementCollection.cs" />
     <Compile Include="Core\Utils\GameObjectUtils.cs" />
@@ -389,8 +386,6 @@
     <Compile Include="Core\Utils\Optional.cs" />
     <Compile Include="Core\Utils\Pair.cs" />
     <Compile Include="Core\Utils\PrimitiveExtensions.cs" />
-    <Compile Include="Core\Utils\ProducerConsumerCollectionExtensions.cs" />
-    <Compile Include="Core\Utils\RandomUtils.cs" />
     <Compile Include="Core\Utils\SpringFunctions.cs" />
     <Compile Include="Core\Utils\SpriteBatchUtils.cs" />
     <Compile Include="Core\Utils\StringUtils.cs" />
@@ -398,14 +393,17 @@
     <Compile Include="Core\Utils\ThreadLocalRandom.cs" />
     <Compile Include="Core\Utils\TimeSpanUtils.cs" />
     <Compile Include="Core\Utils\UintUtils.cs" />
-    <Compile Include="Core\Utils\Validate\Validator.cs" />
-    <Compile Include="Core\Utils\Validate\Validate.cs" />
     <Compile Include="Core\Utils\VectorUtils.cs" />
     <Compile Include="Core\Utils\XnaUtils.cs" />
     <Compile Include="DxGame.cs" />
+    <Compile Include="Extension\Texture2DExtensions.cs" />
+    <Compile Include="Extension\TimeSpanExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -413,6 +411,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\GraphicsWidgets\Utils\" />
+    <Folder Include="Core\Utils\Extensions\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -7,10 +7,9 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Network;
 using DxCore.Core.Network;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using Lidgren.Network;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Network
 {
@@ -18,8 +17,6 @@ namespace DxCore.Core.Components.Network
     public abstract class AbstractNetworkServer : NetworkComponent
     {
         protected static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        public NetServer ServerConnection => Connection as NetServer;
-        public Dictionary<NetConnection, ClientEventTracker> ClientFrameStates { get; }
 
         /* 
             In addition to keeping track of unique diffs for each Connection, we need to 
@@ -28,16 +25,70 @@ namespace DxCore.Core.Components.Network
             succinct manner.
         */
         protected readonly ServerEventTracker baseEventTracker_ = new ServerEventTracker();
+        public Dictionary<NetConnection, ClientEventTracker> ClientFrameStates { get; }
+        public NetServer ServerConnection => Connection as NetServer;
 
         protected AbstractNetworkServer(NetPeerConfiguration configuration) : base(configuration)
         {
             ClientFrameStates = new Dictionary<NetConnection, ClientEventTracker>();
         }
 
-        protected override void InternalSendData(DxGameTime gameTime)
+        public override void EstablishConnection()
         {
-            InternalDefaultSendMessageStream(gameTime);
-            InternalDefaultSendLerpData(gameTime);
+            ServerConnection.Start();
+        }
+
+        public override void RouteDataOnMessageType(NetIncomingMessage incomingMessage, DxGameTime gameTime)
+        {
+            // TODO: Deal with gameTime
+            switch(incomingMessage.MessageType)
+            {
+                case NetIncomingMessageType.Error:
+                    ProcessError(incomingMessage);
+                    break;
+                case NetIncomingMessageType.Data:
+                    ProcessData(incomingMessage);
+                    break;
+                case NetIncomingMessageType.ConnectionLatencyUpdated:
+                    ProcessConnectionLatencyUpdated(incomingMessage);
+                    break;
+                case NetIncomingMessageType.ConnectionApproval:
+                    ProcessConnectionApproval(incomingMessage);
+                    break;
+                case NetIncomingMessageType.StatusChanged:
+                default:
+                    LOG.Info(
+                        $"Received MessageType {incomingMessage.MessageType}. Currently not handling. ({incomingMessage})");
+                    // TODO: Handle
+                    break;
+            }
+        }
+
+        public override void Shutdown()
+        {
+            LOG.Info("Shutting down NetworkServer");
+            ServerConnection.Shutdown("NetworkServer shutting down calmly");
+            base.Shutdown();
+        }
+
+        protected abstract override void InitializeNetworkMessageListeners();
+
+        protected void InternalDefaultSendLerpData(DxGameTime gameTime)
+        {
+            List<IDxVectorLerpable> dxVectorLerpables =
+                DxGame.Instance.DxGameElements.OfType<IDxVectorLerpable>().ToList();
+
+            foreach(IDxVectorLerpable dxVectorLerpable in dxVectorLerpables)
+            {
+                DxVectorLerpMessage dxVectorLerpMessage = new DxVectorLerpMessage(dxVectorLerpable.Id,
+                    dxVectorLerpable.LerpValueSnapshot);
+                NetOutgoingMessage outgoingLerpMessage = dxVectorLerpMessage.ToNetOutgoingMessage(ServerConnection);
+                foreach(NetConnection clientConnection in ClientFrameStates.Keys)
+                {
+                    /* Don't really care if the client picks these up... (but do we care about order? not right now...) */
+                    ServerConnection.SendMessage(outgoingLerpMessage, clientConnection, NetDeliveryMethod.Unreliable);
+                }
+            }
         }
 
         protected void InternalDefaultSendMessageStream(DxGameTime gameTime)
@@ -79,81 +130,10 @@ namespace DxCore.Core.Components.Network
             }
         }
 
-        protected void InternalDefaultSendLerpData(DxGameTime gameTime)
+        protected override void InternalSendData(DxGameTime gameTime)
         {
-            List<IDxVectorLerpable> dxVectorLerpables =
-                DxGame.Instance.DxGameElements.OfType<IDxVectorLerpable>().ToList();
-
-            foreach(IDxVectorLerpable dxVectorLerpable in dxVectorLerpables)
-            {
-                DxVectorLerpMessage dxVectorLerpMessage = new DxVectorLerpMessage(dxVectorLerpable.Id,
-                    dxVectorLerpable.LerpValueSnapshot);
-                NetOutgoingMessage outgoingLerpMessage = dxVectorLerpMessage.ToNetOutgoingMessage(ServerConnection);
-                foreach(NetConnection clientConnection in ClientFrameStates.Keys)
-                {
-                    /* Don't really care if the client picks these up... (but do we care about order? not right now...) */
-                    ServerConnection.SendMessage(outgoingLerpMessage, clientConnection, NetDeliveryMethod.Unreliable);
-                }
-            }
-        }
-
-        protected abstract override void InitializeNetworkMessageListeners();
-
-        public override void EstablishConnection()
-        {
-            ServerConnection.Start();
-        }
-
-        public override void RouteDataOnMessageType(NetIncomingMessage incomingMessage, DxGameTime gameTime)
-        {
-            // TODO: Deal with gameTime
-            switch(incomingMessage.MessageType)
-            {
-                case NetIncomingMessageType.Error:
-                    ProcessError(incomingMessage);
-                    break;
-                case NetIncomingMessageType.Data:
-                    ProcessData(incomingMessage);
-                    break;
-                case NetIncomingMessageType.ConnectionLatencyUpdated:
-                    ProcessConnectionLatencyUpdated(incomingMessage);
-                    break;
-                case NetIncomingMessageType.ConnectionApproval:
-                    ProcessConnectionApproval(incomingMessage);
-                    break;
-                case NetIncomingMessageType.StatusChanged:
-                default:
-                    LOG.Info(
-                        $"Received MessageType {incomingMessage.MessageType}. Currently not handling. ({incomingMessage})");
-                    // TODO: Handle
-                    break;
-            }
-        }
-
-        public override void Shutdown()
-        {
-            LOG.Info("Shutting down NetworkServer");
-            ServerConnection.Shutdown("NetworkServer shutting down calmly");
-            base.Shutdown();
-        }
-
-        protected void ProcessUnhandledMessageType(NetIncomingMessage message)
-        {
-            Validate.Hard.IsTrue(false,
-                $"NetworkServer currently doesn't support messages of the type {message.MessageType}. Message: {message}");
-        }
-
-        protected void ProcessError(NetIncomingMessage message)
-        {
-            Validate.Hard.IsTrue(false,
-                $"Received IncomingMessage with error type, this shouldn't happen! Message: {message}");
-        }
-
-        protected void ProcessConnectionLatencyUpdated(NetIncomingMessage message)
-        {
-            // TODO: Handle latency updates (currently not supported)
-            LOG.Info($"Received LatencyUpdate {message}");
-            throw new NotImplementedException();
+            InternalDefaultSendMessageStream(gameTime);
+            InternalDefaultSendLerpData(gameTime);
         }
 
         protected void ProcessConnectionApproval(NetIncomingMessage message)
@@ -173,6 +153,25 @@ namespace DxCore.Core.Components.Network
             LOG.Info($"Approving NetworkServer client connection {message.SenderConnection}");
             message.SenderConnection.Approve();
             ProcessData(message);
+        }
+
+        protected void ProcessConnectionLatencyUpdated(NetIncomingMessage message)
+        {
+            // TODO: Handle latency updates (currently not supported)
+            LOG.Info($"Received LatencyUpdate {message}");
+            throw new NotImplementedException();
+        }
+
+        protected void ProcessError(NetIncomingMessage message)
+        {
+            Validate.Hard.IsTrue(false,
+                $"Received IncomingMessage with error type, this shouldn't happen! Message: {message}");
+        }
+
+        protected void ProcessUnhandledMessageType(NetIncomingMessage message)
+        {
+            Validate.Hard.IsTrue(false,
+                $"NetworkServer currently doesn't support messages of the type {message.MessageType}. Message: {message}");
         }
     }
 }

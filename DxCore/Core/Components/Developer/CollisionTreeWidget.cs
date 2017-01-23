@@ -3,9 +3,9 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
-using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Developer
 {
@@ -24,7 +24,8 @@ namespace DxCore.Core.Components.Developer
 
         public CollisionTreeWidget(CollisionTreeProducer<T> collisionTreeProducer)
         {
-            Validate.Hard.IsNotNullOrDefault(collisionTreeProducer, () => this.GetFormattedNullOrDefaultMessage(nameof(collisionTreeProducer)));
+            Validate.Hard.IsNotNullOrDefault(collisionTreeProducer,
+                () => this.GetFormattedNullOrDefaultMessage(nameof(collisionTreeProducer)));
             producer_ = collisionTreeProducer;
         }
 
@@ -33,13 +34,13 @@ namespace DxCore.Core.Components.Developer
             ISpatialTree<T> spatialTree = producer_();
             /* Draw each "collision rectangle" */
             List<DxRectangle> divisions = spatialTree.Divisions;
-            foreach (var division in divisions)
+            foreach(var division in divisions)
             {
                 spriteBatch.DrawBorder(division, 1, Color.DarkSlateBlue);
             }
             /* ...as well as each Node in the tree */
             List<DxRectangle> nodes = spatialTree.Nodes;
-            foreach (var nodeBoundary in nodes)
+            foreach(var nodeBoundary in nodes)
             {
                 spriteBatch.DrawBorder(nodeBoundary, 1, Color.Black);
             }

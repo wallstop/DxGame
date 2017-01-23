@@ -1,8 +1,8 @@
 ﻿using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
-using DXGame.Core.Components.Advanced.Behaviors;
 using DxCore.Core.Components.Advanced.Physics;
 using System;
+using DxCore.Core.Components.Advanced.Behaviors;
 using DxCore.Core.Utils;
 using NLog;
 

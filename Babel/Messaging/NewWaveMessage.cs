@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
-using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace Babel.Messaging
 {

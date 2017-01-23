@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using DXGame.Core.Utils;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Utils
 {
@@ -30,7 +30,7 @@ namespace DxCore.Core.Utils
 
             public LambdaComparer(Func<T, T, int> lambdaComparer)
             {
-                Validate.Validate.Hard.IsNotNull(lambdaComparer, this.GetFormattedNullOrDefaultMessage(nameof(lambdaComparer)));
+                Validate.Hard.IsNotNull(lambdaComparer, this.GetFormattedNullOrDefaultMessage(nameof(lambdaComparer)));
                 lambdaComparer_ = lambdaComparer;
             }
 

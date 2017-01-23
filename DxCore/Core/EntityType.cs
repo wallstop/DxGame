@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Cache.Simple;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core
 {
@@ -13,6 +13,8 @@ namespace DxCore.Core
     {
         private static readonly UnboundedLoadingSimpleCache<string, EntityType> EntityTypeSimpleCache =
             new UnboundedLoadingSimpleCache<string, EntityType>(name => new EntityType(name));
+
+        [NonSerialized] [IgnoreDataMember] private int hash_;
 
         public static IReadOnlyCollection<EntityType> EntityTypes => EntityTypeSimpleCache.Elements;
 
@@ -24,21 +26,16 @@ namespace DxCore.Core
             Name = name;
         }
 
-        [NonSerialized] [IgnoreDataMember] private int hash_;
+        public bool Equals(EntityType other)
+        {
+            return Name == other?.Name;
+        }
 
         public static EntityType EntityTypeFor(string name)
         {
-            Validate.Hard.IsNotNullOrDefault(name, StringUtils.GetFormattedNullOrDefaultMessage(typeof(EntityType), "name"));
+            Validate.Hard.IsNotNullOrDefault(name,
+                StringUtils.GetFormattedNullOrDefaultMessage(typeof(EntityType), "name"));
             return EntityTypeSimpleCache.Get(name);
-        }
-
-        public override int GetHashCode()
-        {
-            if(hash_ == 0)
-            {
-                hash_ = Name.GetHashCode();
-            }
-            return hash_;
         }
 
         public override bool Equals(object other)
@@ -51,9 +48,13 @@ namespace DxCore.Core
             return false;
         }
 
-        public bool Equals(EntityType other)
+        public override int GetHashCode()
         {
-            return Name == other?.Name;
+            if(hash_ == 0)
+            {
+                hash_ = Name.GetHashCode();
+            }
+            return hash_;
         }
 
         public override string ToString()

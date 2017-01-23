@@ -5,8 +5,8 @@ using System.IO;
 using System.Linq;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Cache.Simple;
-using DxCore.Core.Utils.Validate;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Animation
 {
@@ -19,8 +19,11 @@ namespace DxCore.Core.Animation
 
     public class AnimationFactory
     {
-        private static readonly ReadOnlyCollection<string> ASSET_FILE_EXTENSIONS = new ReadOnlyCollection<string>(new List<string> { ".png" });
+        private static readonly ReadOnlyCollection<string> ASSET_FILE_EXTENSIONS =
+            new ReadOnlyCollection<string>(new List<string> {".png"});
+
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
         private static readonly Lazy<AnimationFactory> SINGLETON =
             new Lazy<AnimationFactory>(() => new AnimationFactory());
 
@@ -32,8 +35,12 @@ namespace DxCore.Core.Animation
                 {StandardAnimationType.Jumping, "Jumping"}
             });
 
-        private readonly UnboundedSimpleCache<string, AnimationDescriptor> animationSimpleCache_ = new UnboundedSimpleCache<string, AnimationDescriptor>();
-        private readonly UnboundedLoadingSimpleCache<string, bool> generatedStaticAnimations_ = new UnboundedLoadingSimpleCache<string, bool>(InternalGenerateStaticStandardAnimationTypes);
+        private readonly UnboundedSimpleCache<string, AnimationDescriptor> animationSimpleCache_ =
+            new UnboundedSimpleCache<string, AnimationDescriptor>();
+
+        private readonly UnboundedLoadingSimpleCache<string, bool> generatedStaticAnimations_ =
+            new UnboundedLoadingSimpleCache<string, bool>(InternalGenerateStaticStandardAnimationTypes);
+
         /* TODO: Content-directory enumeration caching */
         //private readonly List<string> allContentFiles_;
 
@@ -41,7 +48,7 @@ namespace DxCore.Core.Animation
 
         private AnimationFactory()
         {
-            foreach (var animationFile in AnimationDescriptors(DxGame.Instance.Content.RootDirectory))
+            foreach(var animationFile in AnimationDescriptors(DxGame.Instance.Content.RootDirectory))
             {
                 animationSimpleCache_.PutIfAbsent(animationFile, AnimationDescriptor.StaticLoad(animationFile));
             }
@@ -57,22 +64,13 @@ namespace DxCore.Core.Animation
             AnimationDescriptor animationDescriptor = SearchCache(category, animation);
             if(Validate.Check.IsNullOrDefault(animationDescriptor))
             {
-                LOG.Info($"Found no {typeof(AnimationDescriptor)} for {category}, {animation}, attempting to generate static files");
+                LOG.Info(
+                    $"Found no {typeof(AnimationDescriptor)} for {category}, {animation}, attempting to generate static files");
                 GenerateStaticStandardAnimationTypes(category);
                 animationDescriptor = SearchCache(category, animation);
             }
-            Validate.Hard.IsNotNullOrDefault(animationDescriptor, () => $"Could not find a {typeof(AnimationDescriptor)} for {category}, {animation}");
-            return animationDescriptor;
-        }
-
-        private static AnimationDescriptor SearchCache(string category, string animation)
-        {
-            AnimationDescriptor animationDescriptor =
-                Instance.animationSimpleCache_.KeyedElements
-                    .FirstOrDefault(
-                        entry =>
-                            (entry.Value.Asset.Contains(category) || entry.Key.Contains(category)) &&
-                            (entry.Value.Asset.Contains(animation) || entry.Key.Contains(animation))).Value;
+            Validate.Hard.IsNotNullOrDefault(animationDescriptor,
+                () => $"Could not find a {typeof(AnimationDescriptor)} for {category}, {animation}");
             return animationDescriptor;
         }
 
@@ -88,82 +86,10 @@ namespace DxCore.Core.Animation
                 file to the cache.
             </summary>
         */
+
         public static bool GenerateStaticStandardAnimationTypes(string animationFile)
         {
             return Instance.generatedStaticAnimations_.Get(animationFile);
-        }
-
-        private static bool InternalGenerateStaticStandardAnimationTypes(string animationFile)
-        {
-            IEnumerable<string> assetFiles = ContentFiles(DxGame.Instance.Content.RootDirectory);
-            List<string> matchingAssetFiles = assetFiles.Where(assetFile => Objects.Equals(animationFile, Path.GetFileNameWithoutExtension(assetFile))).ToList();
-            if(matchingAssetFiles.Count() != 1)
-            {
-                LOG.Info(
-                    $"Found {matchingAssetFiles.Count()} asset files that matched {animationFile} ({matchingAssetFiles}), pretending that {animationFile} is what you meant");
-                    matchingAssetFiles = new List<string> { animationFile };
-            }
-            string pathToAssetFile = matchingAssetFiles.First();
-            pathToAssetFile = StripContentDirectory(pathToAssetFile);
-            foreach(StandardAnimationType animationType in Enum.GetValues(typeof(StandardAnimationType)))
-            {
-                AnimationDescriptor fakeDescriptor = new AnimationDescriptor
-                {
-                    Asset = pathToAssetFile,
-                    FrameCount = 1,
-                    FramesPerSecond = 60,
-                    Scale = 1.0
-                };
-                string mangledFakePath = ManipulatePathToIncludeAnimationType(pathToAssetFile, animationType);
-                Instance.animationSimpleCache_.PutIfAbsent(mangledFakePath, fakeDescriptor);
-            }
-            return true;
-        }
-
-        /**
-            <summary>
-                Removes the Content directory and any directory separators from a path, if the path begins with them.
-                This is useful for when we find files, but expect the game to load them (they will be in the form Content\\MyFile.png, but 
-                the game's content is looking for "MyFile.png")
-            </summary>
-        */
-        private static string StripContentDirectory(string path)
-        {
-            if(path.StartsWith(DxGame.Instance.Content.RootDirectory))
-            {
-                path = path.Substring(DxGame.Instance.Content.RootDirectory.Length);
-            }
-            while(path.StartsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                path = path.Substring(Path.DirectorySeparatorChar.ToString().Length);
-            }
-            return path;
-        }
-
-        /**
-            <summary>
-                We do hazy matching on animations in order to provide an easy interface. While its kind of hacky,
-                this method will generate an expected animation description file for the animation type and asset file
-            </summary>
-        */
-        private static string ManipulatePathToIncludeAnimationType(string pathToAssetFile, StandardAnimationType animationType)
-        {
-            string extension = Path.GetExtension(pathToAssetFile);
-            int lastNonExtensionIndex = pathToAssetFile.LastIndexOf(extension);
-            string fullPathWithoutExtension = pathToAssetFile.Substring(0, lastNonExtensionIndex);
-            return $"{fullPathWithoutExtension}_{STANDARD_FILE_NAMES[animationType]}{AnimationDescriptor.AnimationExtension}";
-        }
-
-        /**
-            <summary>
-                Returns a full enumeration of all content files in the provided 
-            </summary>
-        */
-        private static IEnumerable<string> ContentFiles(string directory)
-        {
-            IEnumerable<string> assetFiles = Directory.EnumerateFiles(directory).Where(path => Path.HasExtension(path) && ASSET_FILE_EXTENSIONS.Contains(Path.GetExtension(path)));
-            IEnumerable<string> subdirectories = Directory.EnumerateDirectories(directory);
-            return assetFiles.Concat(subdirectories.SelectMany(ContentFiles));
         }
 
         /**
@@ -180,6 +106,97 @@ namespace DxCore.Core.Animation
                             (Path.GetExtension(path)?.Equals(AnimationDescriptor.AnimationExtension) ?? false));
             var directories = Directory.EnumerateDirectories(directory);
             return animationFiles.Concat(directories.SelectMany(AnimationDescriptors));
+        }
+
+        /**
+            <summary>
+                Returns a full enumeration of all content files in the provided 
+            </summary>
+        */
+
+        private static IEnumerable<string> ContentFiles(string directory)
+        {
+            IEnumerable<string> assetFiles =
+                Directory.EnumerateFiles(directory)
+                    .Where(path => Path.HasExtension(path) && ASSET_FILE_EXTENSIONS.Contains(Path.GetExtension(path)));
+            IEnumerable<string> subdirectories = Directory.EnumerateDirectories(directory);
+            return assetFiles.Concat(subdirectories.SelectMany(ContentFiles));
+        }
+
+        private static bool InternalGenerateStaticStandardAnimationTypes(string animationFile)
+        {
+            IEnumerable<string> assetFiles = ContentFiles(DxGame.Instance.Content.RootDirectory);
+            List<string> matchingAssetFiles =
+                assetFiles.Where(assetFile => Objects.Equals(animationFile, Path.GetFileNameWithoutExtension(assetFile)))
+                    .ToList();
+            if(matchingAssetFiles.Count() != 1)
+            {
+                LOG.Info(
+                    $"Found {matchingAssetFiles.Count()} asset files that matched {animationFile} ({matchingAssetFiles}), pretending that {animationFile} is what you meant");
+                matchingAssetFiles = new List<string> {animationFile};
+            }
+            string pathToAssetFile = matchingAssetFiles.First();
+            pathToAssetFile = StripContentDirectory(pathToAssetFile);
+            foreach(StandardAnimationType animationType in Enum.GetValues(typeof(StandardAnimationType)))
+            {
+                AnimationDescriptor.AnimationDescriptorBuilder builder =
+                    AnimationDescriptor.NewBuilder.WithAsset(pathToAssetFile)
+                        .WithFrameCount(1)
+                        .WithWidth(50)
+                        .WithHeight(50);
+                // TODO: Make not terrible
+                string mangledFakePath = ManipulatePathToIncludeAnimationType(pathToAssetFile, animationType);
+                Instance.animationSimpleCache_.PutIfAbsent(mangledFakePath, builder.Build());
+            }
+            return true;
+        }
+
+        /**
+            <summary>
+                We do hazy matching on animations in order to provide an easy interface. While its kind of hacky,
+                this method will generate an expected animation description file for the animation type and asset file
+            </summary>
+        */
+
+        private static string ManipulatePathToIncludeAnimationType(string pathToAssetFile,
+            StandardAnimationType animationType)
+        {
+            string extension = Path.GetExtension(pathToAssetFile);
+            int lastNonExtensionIndex = pathToAssetFile.LastIndexOf(extension);
+            string fullPathWithoutExtension = pathToAssetFile.Substring(0, lastNonExtensionIndex);
+            return
+                $"{fullPathWithoutExtension}_{STANDARD_FILE_NAMES[animationType]}{AnimationDescriptor.AnimationExtension}";
+        }
+
+        private static AnimationDescriptor SearchCache(string category, string animation)
+        {
+            AnimationDescriptor animationDescriptor =
+                Instance.animationSimpleCache_.KeyedElements.FirstOrDefault(
+                    entry =>
+                        (entry.Value.Asset.Contains(category) || entry.Key.Contains(category)) &&
+                        (entry.Value.Asset.Contains(animation) || entry.Key.Contains(animation))).Value;
+            return animationDescriptor;
+        }
+
+        /**
+            <summary>
+                Removes the Content directory and any directory separators from a path, if the path begins with them.
+                This is useful for when we find files, but expect the game to load them (they will be in the form Content\\MyFile.png, but 
+                the game's content is looking for "MyFile.png")
+            </summary>
+        */
+
+        private static string StripContentDirectory(string path)
+        {
+            if(path.StartsWith(DxGame.Instance.Content.RootDirectory))
+            {
+                path = path.Substring(DxGame.Instance.Content.RootDirectory.Length);
+            }
+            while(path.StartsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                path = path.Substring(Path.DirectorySeparatorChar.ToString().Length);
+            }
+            return path;
         }
     }
 }

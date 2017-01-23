@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.DataStructures
 {
@@ -14,7 +14,7 @@ namespace DxCore.Core.DataStructures
 
         <code>
             // Indexing is done backwards-like. ie:
-            var buffer = new CircularBuffer<int>(50);
+            CircularBuffer buffer = new CircularBuffer<int>(50);
             buffer.Add(13); // [13, 0, 0, 0, ...]
             buffer.Add(14); // [14, 13, 0, 0, ...]
         </code>
@@ -50,43 +50,12 @@ namespace DxCore.Core.DataStructures
             }
         }
 
-        public bool Peek(out T value)
-        {
-            if(InBounds(0))
-            {
-                value = this[0];
-                return true;
-            }
-            value = default(T);
-            return false;
-        }
-
-        private void BoundsCheck(int index)
-        {
-            if(!InBounds(index))
-            {
-                throw new IndexOutOfRangeException($"{index} is outside of bounds [0, {Count})");
-            }
-        }
-
-        private bool InBounds(int index)
-        {
-            return !(Count <= index || index < 0);
-        }
-
         public CircularBuffer(int capacity)
         {
-            Validate.Hard.IsTrue(0 < capacity, () => this.GetFormattedNullOrDefaultMessage(nameof(capacity)));
+            Validate.Hard.IsPositive(capacity, () => this.GetFormattedNullOrDefaultMessage(nameof(capacity)));
             Capacity = capacity;
             position_ = 0;
             buffer_ = new T[capacity];
-        }
-
-        public void Clear()
-        {
-            /* Simply reset state */
-            Count = 0;
-            position_ = 0;
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -110,6 +79,37 @@ namespace DxCore.Core.DataStructures
             {
                 ++Count;
             }
+        }
+
+        public void Clear()
+        {
+            /* Simply reset state */
+            Count = 0;
+            position_ = 0;
+        }
+
+        public bool Peek(out T value)
+        {
+            if(InBounds(0))
+            {
+                value = this[0];
+                return true;
+            }
+            value = default(T);
+            return false;
+        }
+
+        private void BoundsCheck(int index)
+        {
+            if(!InBounds(index))
+            {
+                throw new IndexOutOfRangeException($"{index} is outside of bounds [0, {Count})");
+            }
+        }
+
+        private bool InBounds(int index)
+        {
+            return !((Count < index) || (index < 0));
         }
     }
 }

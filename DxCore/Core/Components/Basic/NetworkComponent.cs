@@ -6,9 +6,9 @@ using System.Threading;
 using DxCore.Core.Network;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using Lidgren.Network;
 using NLog;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Basic
 {
@@ -18,30 +18,21 @@ namespace DxCore.Core.Components.Basic
 
     public abstract class NetworkComponent : Component
     {
-        public static readonly TimeSpan DEFAULT_TICK_RATE = TimeSpan.FromSeconds(1.0 / 60); // 60 FPS
-
         protected const int REQUIRED_MESSAGE_CHANNEL = 0;
         protected const int LERP_DATA_CHANNEL = 1;
         protected const int TIME_SYNCHRONIZATION_CHANNEL = 2;
         protected const int PLAYER_INPUT_CHANNEL = 3;
         protected const int CLIENT_SPECIFIC_UPDATES = 4;
+        public static readonly TimeSpan DEFAULT_TICK_RATE = TimeSpan.FromSeconds(1.0 / 60); // 60 FPS
 
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        private NetPeer connection_;
-        /*
-            Make sure you know what you're doing when you get/set this. 
-            This Connection listener should only be set via Connection setter and never gotten
-        */
-        protected Thread ConnectionListener { get; set; }
-        protected ConcurrentQueue<NetIncomingMessage> MessageQueue { get; set; }
 
         private static readonly TimeSpan NETWORK_POLL_DELAY = TimeSpan.FromMilliseconds(1.0 / 10);
-
-        public virtual TimeSpan TickRate => DEFAULT_TICK_RATE;
-
-        protected Stopwatch TransmissionClock { get; }
+        private NetPeer connection_;
 
         private TimeSpan lastTicked_;
+
+        protected Dictionary<Type, Action<NetworkMessage, NetConnection>> networkMessageHandlers_;
 
         /*
             The Connection property will attempt to terminate the current ConnectionListener thread
@@ -87,7 +78,15 @@ namespace DxCore.Core.Components.Basic
             }
         }
 
-        protected Dictionary<Type, Action<NetworkMessage, NetConnection>> networkMessageHandlers_;
+        public virtual TimeSpan TickRate => DEFAULT_TICK_RATE;
+        /*
+            Make sure you know what you're doing when you get/set this. 
+            This Connection listener should only be set via Connection setter and never gotten
+        */
+        protected Thread ConnectionListener { get; set; }
+        protected ConcurrentQueue<NetIncomingMessage> MessageQueue { get; set; }
+
+        protected Stopwatch TransmissionClock { get; }
 
         protected NetworkComponent(NetPeerConfiguration configuration)
         {
@@ -98,43 +97,12 @@ namespace DxCore.Core.Components.Basic
             TransmissionClock = Stopwatch.StartNew();
         }
 
+        public abstract void EstablishConnection();
+
         public override void Initialize()
         {
             InitializeNetworkMessageListeners();
             base.Initialize();
-        }
-
-        protected void ReadFromConnection()
-        {
-            try
-            {
-                while(true)
-                {
-                    NetIncomingMessage message;
-                    while((message = Connection.ReadMessage()) != null)
-                    {
-                        MessageQueue.Enqueue(message);
-                    }
-                    Thread.Sleep(NETWORK_POLL_DELAY);
-                }
-            }
-            catch(ThreadInterruptedException e)
-            {
-                LOG.Info($"Shutting down reader for Connection {Connection}", e);
-            }
-        }
-
-        public virtual NetworkComponent WithConnection(NetPeer connection)
-        {
-            Validate.Hard.IsNotNullOrDefault(connection, "Cannot create a NetworkComponent with a null/default NetPeer");
-            Connection = connection;
-            return this;
-        }
-
-        protected static T ConvertMessageType<T>(NetworkMessage message) where T : class
-        {
-            return GenericExtensions.CheckedCast<T>(message, () =>
-                $"Received message expecting type {typeof(T)}, but was unable to dynamic cast");
         }
 
         // We need to know the GameTime in order to Receive Data
@@ -163,6 +131,42 @@ namespace DxCore.Core.Components.Basic
 
             PostReceiveData(gameTime);
         }
+
+        public abstract void RouteDataOnMessageType(NetIncomingMessage message, DxGameTime gameTime);
+        // ...and also to send data
+        public void SendData(DxGameTime gameTime)
+        {
+            TimeSpan currentTick = TransmissionClock.Elapsed;
+            if(currentTick <= lastTicked_ + TickRate)
+            {
+                return;
+            }
+
+            InternalSendData(gameTime);
+            lastTicked_ = currentTick;
+        }
+
+        public virtual void Shutdown()
+        {
+            ConnectionListener.Abort();
+        }
+
+        public virtual NetworkComponent WithConnection(NetPeer connection)
+        {
+            Validate.Hard.IsNotNullOrDefault(connection, "Cannot create a NetworkComponent with a null/default NetPeer");
+            Connection = connection;
+            return this;
+        }
+
+        protected static T ConvertMessageType<T>(NetworkMessage message) where T : class
+        {
+            return GenericExtensions.CheckedCast<T>(message,
+                () => $"Received message expecting type {typeof(T)}, but was unable to dynamic cast");
+        }
+
+        protected abstract void InitializeNetworkMessageListeners();
+
+        protected abstract void InternalSendData(DxGameTime gameTime);
 
         protected virtual void PostReceiveData(DxGameTime gameTime) {}
 
@@ -196,28 +200,24 @@ namespace DxCore.Core.Components.Basic
             }
         }
 
-        public abstract void EstablishConnection();
-        public abstract void RouteDataOnMessageType(NetIncomingMessage message, DxGameTime gameTime);
-        // ...and also to send data
-        public void SendData(DxGameTime gameTime)
+        protected void ReadFromConnection()
         {
-            TimeSpan currentTick = TransmissionClock.Elapsed;
-            if(currentTick <= lastTicked_ + TickRate)
+            try
             {
-                return;
+                while(true)
+                {
+                    NetIncomingMessage message;
+                    while((message = Connection.ReadMessage()) != null)
+                    {
+                        MessageQueue.Enqueue(message);
+                    }
+                    Thread.Sleep(NETWORK_POLL_DELAY);
+                }
             }
-
-            InternalSendData(gameTime);
-            lastTicked_ = currentTick;
-        }
-
-        protected abstract void InternalSendData(DxGameTime gameTime);
-
-        protected abstract void InitializeNetworkMessageListeners();
-
-        public virtual void Shutdown()
-        {
-            ConnectionListener.Abort();
+            catch(ThreadInterruptedException e)
+            {
+                LOG.Info($"Shutting down reader for Connection {Connection}", e);
+            }
         }
     }
 }

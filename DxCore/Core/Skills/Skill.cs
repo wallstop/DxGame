@@ -3,8 +3,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Skills
 {
@@ -26,25 +25,16 @@ namespace DxCore.Core.Skills
         [DataMember] protected TimeSpan lastActivated_;
 
         [DataMember]
-        public TimeSpan Cooldown { get; private set; }
+        public Commandment Ability { get; }
 
         [DataMember]
-        public Commandment Ability { get; }
+        public TimeSpan Cooldown { get; private set; }
 
         protected Skill(SkillFunction skillFunction, TimeSpan cooldown, Commandment ability)
         {
             skillFunction_ = skillFunction;
             Cooldown = cooldown;
             Ability = ability;
-        }
-
-        /**
-            <summary> How much time is remaining until the cooldown has expired. </summary>
-        */
-
-        public TimeSpan RemainingCooldown(DxGameTime gameTime)
-        {
-            return MathUtils.Max(Cooldown - (gameTime.TotalGameTime - lastActivated_), TimeSpan.Zero);
         }
 
         /**
@@ -61,6 +51,11 @@ namespace DxCore.Core.Skills
             }
         }
 
+        public static SkillBuilder Builder()
+        {
+            return new SkillBuilder();
+        }
+
         /**
             <summary>
                 We might care about the case where we aren't activated - for example, if the longer we aren't activated, the more stuff we do. 
@@ -73,16 +68,20 @@ namespace DxCore.Core.Skills
             // Normal skill - do nothing
         }
 
-        public static SkillBuilder Builder()
+        /**
+            <summary> How much time is remaining until the cooldown has expired. </summary>
+        */
+
+        public TimeSpan RemainingCooldown(DxGameTime gameTime)
         {
-            return new SkillBuilder();
+            return MathUtils.Max(Cooldown - (gameTime.TotalGameTime - lastActivated_), TimeSpan.Zero);
         }
 
         public class SkillBuilder : IBuilder<Skill>
         {
+            protected Commandment ability_;
             protected TimeSpan cooldown_;
             protected SkillFunction skillFunction_;
-            protected Commandment ability_;
 
             public virtual Skill Build()
             {
@@ -90,17 +89,15 @@ namespace DxCore.Core.Skills
                 return new Skill(skillFunction_, cooldown_, ability_);
             }
 
-            protected void ValidateArguments()
-            {
-                Validate.Hard.IsNotNullOrDefault(cooldown_, this.GetFormattedNullOrDefaultMessage("Cooldown"));
-                Validate.Hard.IsNotNull(skillFunction_, this.GetFormattedNullOrDefaultMessage(skillFunction_));
-                Validate.Hard.IsTrue(Commandments.ABILITY_COMMANDMENTS.Contains(ability_),
-                    $"{ability_} was expected to be an ability-type {typeof(Commandment)}, but was not.");
-            }
-
             public SkillBuilder WithCommandment(Commandment ability)
             {
                 ability_ = ability;
+                return this;
+            }
+
+            public SkillBuilder WithCooldown(TimeSpan cooldown)
+            {
+                cooldown_ = cooldown;
                 return this;
             }
 
@@ -110,10 +107,12 @@ namespace DxCore.Core.Skills
                 return this;
             }
 
-            public SkillBuilder WithCooldown(TimeSpan cooldown)
+            protected void ValidateArguments()
             {
-                cooldown_ = cooldown;
-                return this;
+                Validate.Hard.IsNotNullOrDefault(cooldown_, this.GetFormattedNullOrDefaultMessage("Cooldown"));
+                Validate.Hard.IsNotNull(skillFunction_, this.GetFormattedNullOrDefaultMessage(skillFunction_));
+                Validate.Hard.IsTrue(Commandments.ABILITY_COMMANDMENTS.Contains(ability_),
+                    $"{ability_} was expected to be an ability-type {typeof(Commandment)}, but was not.");
             }
         }
     }

@@ -1,7 +1,7 @@
 ﻿using DXGame.Core.Behaviors.Goals;
 using System;
+using DxCore.Core.Components.Advanced.Behaviors;
 using DxCore.Core.Primitives;
-using DXGame.Core.Components.Advanced.Behaviors;
 using NLog;
 
 namespace DxCore.Core.Behaviors.Goals

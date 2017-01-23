@@ -4,10 +4,10 @@ using System.Linq;
 using BabelUILibrary.Core;
 using DxCore;
 using DxCore.Core.Settings;
-using DxCore.Core.Utils.Validate;
 using EmptyKeys.UserInterface.Input;
 using EmptyKeys.UserInterface.Mvvm;
 using NLog;
+using WallNetCore.Validate;
 
 namespace BabelUILibrary.Controls
 {
@@ -15,40 +15,29 @@ namespace BabelUILibrary.Controls
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public bool Enabled
-        {
-            get { return true; }
-            set { ChangeSettingsVisibility(value); }
-        }
+        private int selectedResolutionIndex_;
 
-        public bool VSync
-        {
-            get { return DxGame.Instance.GameSettings.VideoSettings.VSyncEnabled; }
-            set { DxGame.Instance.GameSettings.VideoSettings.VSyncEnabled = value; }
-        }
-
-        public ICommand SaveCommand { get; }
-        public ICommand BackCommand { get; }
+        private int selectedWindowModeIndex_;
 
         public List<string> AvailableResolutions
         {
             get { return UniqueResolutions.Select(_ => _.ToString()).ToList(); }
         }
 
-        private List<Resolution> UniqueResolutions
+        public List<string> AvailableWindowModes
         {
-            get
-            {
-                // TODO: Move to settings service D:
-                return
-                    DxGame.Instance.GameSettings.VideoSettings.DisplayModes.Select(
-                        displayMode => new Resolution {Height = displayMode.Height, Width = displayMode.Width})
-                        .Distinct()
-                        .ToList();
-            }
+            get { return UniqueWindowModes.Select(_ => _.ToString()).ToList(); }
         }
 
-        private int selectedResolutionIndex_;
+        public ICommand BackCommand { get; }
+
+        public bool Enabled
+        {
+            get { return true; }
+            set { ChangeSettingsVisibility(value); }
+        }
+
+        public ICommand SaveCommand { get; }
 
         public int SelectedResolutionIndex
         {
@@ -66,15 +55,6 @@ namespace BabelUILibrary.Controls
             }
         }
 
-        public List<string> AvailableWindowModes
-        {
-            get { return UniqueWindowModes.Select(_ => _.ToString()).ToList(); }
-        }
-
-        private List<WindowMode> UniqueWindowModes => ((WindowMode[]) Enum.GetValues(typeof(WindowMode))).ToList();
-
-        private int selectedWindowModeIndex_;
-
         public int SelectedWindowModeIndex
         {
             get { return selectedWindowModeIndex_; }
@@ -90,7 +70,28 @@ namespace BabelUILibrary.Controls
             }
         }
 
+        public bool VSync
+        {
+            get { return DxGame.Instance.GameSettings.VideoSettings.VSyncEnabled; }
+            set { DxGame.Instance.GameSettings.VideoSettings.VSyncEnabled = value; }
+        }
+
         private Action<bool> ChangeSettingsVisibility { get; }
+
+        private List<Resolution> UniqueResolutions
+        {
+            get
+            {
+                // TODO: Move to settings service D:
+                return
+                    DxGame.Instance.GameSettings.VideoSettings.DisplayModes.Select(
+                            displayMode => new Resolution {Height = displayMode.Height, Width = displayMode.Width})
+                        .Distinct()
+                        .ToList();
+            }
+        }
+
+        private List<WindowMode> UniqueWindowModes => ((WindowMode[]) Enum.GetValues(typeof(WindowMode))).ToList();
 
         public SettingsController(Action<bool> settingsVisibilityTrigger)
         {
@@ -101,6 +102,20 @@ namespace BabelUILibrary.Controls
 
             FindCurrentResolution();
             FindCurrentWindowMode();
+        }
+
+        private void FindCurrentResolution()
+        {
+            for(int i = 0; i < UniqueResolutions.Count; ++i)
+            {
+                Resolution resolution = UniqueResolutions[i];
+                if((resolution.Height == DxGame.Instance.GameSettings.VideoSettings.ScreenHeight) &&
+                   (resolution.Width == DxGame.Instance.GameSettings.VideoSettings.ScreenWidth))
+                {
+                    selectedResolutionIndex_ = i;
+                    break;
+                }
+            }
         }
 
         private void FindCurrentWindowMode()
@@ -116,28 +131,14 @@ namespace BabelUILibrary.Controls
             }
         }
 
-        private void FindCurrentResolution()
+        private void OnBack(object context)
         {
-            for(int i = 0; i < UniqueResolutions.Count; ++i)
-            {
-                Resolution resolution = UniqueResolutions[i];
-                if(resolution.Height == DxGame.Instance.GameSettings.VideoSettings.ScreenHeight &&
-                   resolution.Width == DxGame.Instance.GameSettings.VideoSettings.ScreenWidth)
-                {
-                    selectedResolutionIndex_ = i;
-                    break;
-                }
-            }
+            Enabled = false;
         }
 
         private void OnSave(object context)
         {
             DxGame.Instance.GameSettings.Save();
-        }
-
-        private void OnBack(object context)
-        {
-            Enabled = false;
         }
     }
 }

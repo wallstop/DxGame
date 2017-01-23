@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading;
-using DXGame.Core;
-using DXGame.Core.Utils;
+using WallNetCore;
 
 namespace DxCore.Core.Utils.Lerp
 {
@@ -40,7 +39,6 @@ namespace DxCore.Core.Utils.Lerp
 
         public bool TryGetLerpData(UniqueId entityId, out LerpData<T> lerpData)
         {
-
             Tuple<ReaderWriterLockSlim, FixedSizedBuffer<Tuple<T, TimeSpan>>> value;
             if(lerpBuffersById_.TryGetValue(entityId, out value))
             {

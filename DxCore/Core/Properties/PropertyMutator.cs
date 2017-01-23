@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
-using DXGame.Core.Utils;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Properties
 {
@@ -90,8 +89,7 @@ namespace DxCore.Core.Properties
         [DataMember]
         public MutatePriority Priority { get; }
 
-        public PropertyMutator(Mutator mutator, string name,
-            MutatePriority priority = MutatePriority.Medium)
+        public PropertyMutator(Mutator mutator, string name, MutatePriority priority = MutatePriority.Medium)
         {
             // TODO: Remove these or do property validation checks
             Validate.Hard.IsNotNull(mutator, $"Cannot initialize {GetType()} with a null {nameof(mutator)}");
@@ -103,8 +101,20 @@ namespace DxCore.Core.Properties
 
         public bool Equals(PropertyMutator<T> other)
         {
-            return !ReferenceEquals(other, null) && mutator_ == other.mutator_ && Name == other.Name &&
-                   Priority == other.Priority;
+            return !ReferenceEquals(other, null) && (mutator_ == other.mutator_) && (Name == other.Name) &&
+                   (Priority == other.Priority);
+        }
+
+        public override bool Equals(object other)
+        {
+            var lhs = other as PropertyMutator<T>;
+            return (lhs != null) && Equals(lhs);
+        }
+
+        public override int GetHashCode()
+        {
+            // TOOD: Come up with a nice, generic hashCode function
+            return Objects.HashCode(LambdaUtils.DelegateHashCode(mutator_), Name, Priority);
         }
 
         /*
@@ -130,18 +140,6 @@ namespace DxCore.Core.Properties
         public static bool operator !=(PropertyMutator<T> lhs, PropertyMutator<T> rhs)
         {
             return !(lhs == rhs);
-        }
-
-        public override bool Equals(object other)
-        {
-            var lhs = other as PropertyMutator<T>;
-            return lhs != null && Equals(lhs);
-        }
-
-        public override int GetHashCode()
-        {
-            // TOOD: Come up with a nice, generic hashCode function
-            return Objects.HashCode(LambdaUtils.DelegateHashCode(mutator_), Name, Priority);
         }
 
         public override string ToString()

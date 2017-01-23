@@ -8,16 +8,18 @@ using DxCore.Core.Primitives;
 using DxCore.Core.State;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
-using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework.Graphics;
+using WallNetCore.Validate;
 
-namespace DxCore.Core.Components.Advanced.Animated
+namespace DxCore.Core.Components.Advanced.Animation
 {
     [Serializable]
     [DataContract]
     public class AnimatedComponent : DrawableComponent
     {
-        [DataMember] private readonly Dictionary<State.State, Animation.Animation> animationsForStates_;
+        [DataMember] private readonly Dictionary<State.State, Core.Animation.Animation> animationsForStates_;
+
+        [DataMember] private State.State lastState_;
 
         [DataMember]
         public PhysicsComponent Position { get; }
@@ -25,10 +27,8 @@ namespace DxCore.Core.Components.Advanced.Animated
         [DataMember]
         public StateMachine StateMachine { get; }
 
-        [DataMember] private State.State lastState_;
-
         private AnimatedComponent(StateMachine stateMachine,
-            Dictionary<State.State, Animation.Animation> animationsForStates, PhysicsComponent position)
+            Dictionary<State.State, Core.Animation.Animation> animationsForStates, PhysicsComponent position)
         {
             StateMachine = stateMachine;
             Position = position;
@@ -38,22 +38,6 @@ namespace DxCore.Core.Components.Advanced.Animated
         public static AnimationComponentBuilder Builder()
         {
             return new AnimationComponentBuilder();
-        }
-
-        public override void Initialize()
-        {
-            foreach(Animation.Animation animation in animationsForStates_.Values)
-            {
-                animation.LoadContent(DxGame.Instance.Content);
-            }
-        }
-
-        public override void LoadContent()
-        {
-            foreach(Animation.Animation animation in animationsForStates_.Values)
-            {
-                animation.LoadContent(DxGame.Instance.Content);
-            }
         }
 
         public override void Draw(SpriteBatch spritebatch, DxGameTime gameTime)
@@ -68,7 +52,7 @@ namespace DxCore.Core.Components.Advanced.Animated
                 animationsForStates_[lastState_].Reset();
                 lastState_ = currentState;
             }
-            Animation.Animation animation = animationsForStates_[currentState];
+            Core.Animation.Animation animation = animationsForStates_[currentState];
 
             // TODO: Emit & Consume "Facing changed" messages
             FacingComponent facing = Parent.ComponentOfType<FacingComponent>();
@@ -80,10 +64,26 @@ namespace DxCore.Core.Components.Advanced.Animated
             animation.Draw(spritebatch, gameTime, Position.Position, orientation);
         }
 
+        public override void Initialize()
+        {
+            foreach(Core.Animation.Animation animation in animationsForStates_.Values)
+            {
+                animation.LoadContent(DxGame.Instance.Content);
+            }
+        }
+
+        public override void LoadContent()
+        {
+            foreach(Core.Animation.Animation animation in animationsForStates_.Values)
+            {
+                animation.LoadContent(DxGame.Instance.Content);
+            }
+        }
+
         public class AnimationComponentBuilder : IBuilder<AnimatedComponent>
         {
-            private readonly Dictionary<State.State, Animation.Animation> animationsForStates_ =
-                new Dictionary<State.State, Animation.Animation>();
+            private readonly Dictionary<State.State, Core.Animation.Animation> animationsForStates_ =
+                new Dictionary<State.State, Core.Animation.Animation>();
 
             private PhysicsComponent position_;
             private StateMachine stateMachine_;
@@ -101,19 +101,19 @@ namespace DxCore.Core.Components.Advanced.Animated
                 return this;
             }
 
-            public AnimationComponentBuilder WithStateMachine(StateMachine stateMachine)
-            {
-                stateMachine_ = stateMachine;
-                return this;
-            }
-
             public AnimationComponentBuilder WithStateAndAsset(State.State state, AnimationDescriptor descriptor)
             {
                 Validate.Hard.IsNotNullOrDefault(state, () => this.GetFormattedNullOrDefaultMessage(nameof(descriptor)));
                 Validate.Hard.IsFalse(animationsForStates_.ContainsKey(state),
                     () => this.GetFormattedAlreadyContainsMessage(state, animationsForStates_.Keys));
-                Animation.Animation animation = new Animation.Animation(descriptor);
+                Core.Animation.Animation animation = new Core.Animation.Animation(descriptor);
                 animationsForStates_.Add(state, animation);
+                return this;
+            }
+
+            public AnimationComponentBuilder WithStateMachine(StateMachine stateMachine)
+            {
+                stateMachine_ = stateMachine;
                 return this;
             }
         }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DXGame.Core.Utils;
+using WallNetCore;
 
 namespace DxCore.Core.Utils.Cache.Simple
 {
@@ -9,6 +9,7 @@ namespace DxCore.Core.Utils.Cache.Simple
             Simple threadsafe unbounded cache, for when you want to store a lot of stuff in a threadsafe manner.
         </summary>
     */
+
     [Serializable]
     [DataContract]
     public class UnboundedSimpleCache<U, T> : AbstractSimpleCache<U, T>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using DxCore.Core.Utils.Validate;
 using DxCore.Core.Utils;
+using WallNetCore.Validate;
 
 namespace DXGame.Core.Behaviors
 {
@@ -21,9 +21,9 @@ namespace DXGame.Core.Behaviors
     {
         private static readonly float MIN = 0f;
         private static readonly float MAX = 1f;
+        public static Score Max => new Score(MAX);
 
         public static Score Min => new Score(MIN);
-        public static Score Max => new Score(MAX);
 
         [DataMember]
         private float Value { get; set; }
@@ -36,10 +36,10 @@ namespace DXGame.Core.Behaviors
 
         public Score(Score other)
         {
-            Validate.Hard.IsNotNull(other, StringUtils.GetFormattedNullOrDefaultMessage(this, other));
+            Validate.Hard.IsNotNull(other, this.GetFormattedNullOrDefaultMessage(other));
             Value = other.Value;
         }
-        
+
         /* TODO: Weighting & math operations of scores */
 
         public int CompareTo(Score other)
@@ -50,7 +50,7 @@ namespace DXGame.Core.Behaviors
         public bool Equals(Score other)
         {
             /* Score may be roughly computed, so fuzzy equality is probably best */
-            return !ReferenceEquals(null, other) && Value.FuzzyCompare(other.Value) == 0;
+            return !ReferenceEquals(null, other) && (Value.FuzzyCompare(other.Value) == 0);
         }
 
         public override bool Equals(object other)

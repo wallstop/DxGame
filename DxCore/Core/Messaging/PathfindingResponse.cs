@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using DxCore.Core.Map;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Messaging
 {
@@ -10,9 +10,6 @@ namespace DxCore.Core.Messaging
     [DataContract]
     public sealed class PathfindingResponse : Message, ITargetedMessage
     {
-        [DataMember]
-        public UniqueId Target { get; private set; }
-
         [DataMember]
         public List<NavigableMeshNode> Path { get; private set; }
 
@@ -23,5 +20,8 @@ namespace DxCore.Core.Messaging
             Validate.Hard.IsNotNull(target);
             Target = target;
         }
+
+        [DataMember]
+        public UniqueId Target { get; private set; }
     }
 }

@@ -8,7 +8,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Services;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace Babel.Components
 {
@@ -23,14 +23,19 @@ namespace Babel.Components
 
         private static readonly double PERSONAL_SPACE = 50;
 
+        [DataMember] private TimeSpan timeSinceLastMovementRequest_ = TimeSpan.Zero;
+
         [DataMember]
         private IPositional Positional { get; set; }
-
-        [DataMember] private TimeSpan timeSinceLastMovementRequest_ = TimeSpan.Zero;
 
         private SimpleEnemyAI(IPositional positional)
         {
             Positional = positional;
+        }
+
+        public static SimpleEnemyAIBuilder Builder()
+        {
+            return new SimpleEnemyAIBuilder();
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -40,8 +45,8 @@ namespace Babel.Components
             PlayerService playerService = DxGame.Instance.Service<PlayerService>();
             DxCore.Core.Player player = playerService.Players.First();
 
-            var closeEnough = Math.Abs(player.Position.Position.X - Positional.WorldCoordinates.X) < PERSONAL_SPACE &&
-                              Math.Abs(player.Position.Position.Y - Positional.WorldCoordinates.Y) < PERSONAL_SPACE;
+            var closeEnough = (Math.Abs(player.Position.Position.X - Positional.WorldCoordinates.X) < PERSONAL_SPACE) &&
+                              (Math.Abs(player.Position.Position.Y - Positional.WorldCoordinates.Y) < PERSONAL_SPACE);
             if(closeEnough)
             {
                 return;
@@ -52,16 +57,10 @@ namespace Babel.Components
                 return;
             }
 
-
-
-            PathfindingRequest pathfindingRequest = new PathfindingRequest(Positional.WorldCoordinates, player.Position.Center, Parent?.Id);
+            PathfindingRequest pathfindingRequest = new PathfindingRequest(Positional.WorldCoordinates,
+                player.Position.Center, Parent?.Id);
             pathfindingRequest.Emit();
             timeSinceLastMovementRequest_ = TimeSpan.Zero;
-        }
-
-        public static SimpleEnemyAIBuilder Builder()
-        {
-            return new SimpleEnemyAIBuilder();
         }
 
         /// <summary>

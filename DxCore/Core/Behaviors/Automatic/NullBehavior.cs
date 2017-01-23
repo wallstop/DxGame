@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using DXGame.Core.Behaviors.Goals;
 using System.Linq;
-using DXGame.Core.Components.Advanced.Behaviors;
 using DxCore.Core.Behaviors.Goals;
+using DxCore.Core.Components.Advanced.Behaviors;
 using NLog;
 
 namespace DXGame.Core.Behaviors.Automatic

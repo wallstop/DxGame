@@ -1,7 +1,7 @@
 ﻿using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils.Validate;
 using FarseerPhysics.Dynamics;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Services.Components
 {

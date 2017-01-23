@@ -195,6 +195,14 @@ namespace DxCore.Core.Primitives
             return !lhs.X.Equals(rhs.X) || !lhs.Y.Equals(rhs.Y);
         }
 
+        public DxVector2 Bound(DxRectangle space)
+        {
+            DxVector2 copy = this;
+            copy.X = MathHelper.Clamp(copy.X, space.X, space.X + space.Width);
+            copy.Y = MathHelper.Clamp(copy.Y, space.Y, space.Y + space.Height);
+            return copy;
+        }
+
         public override bool Equals(object other)
         {
             if(other is DxVector2)

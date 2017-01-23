@@ -4,9 +4,9 @@ using DxCore.Core.Components.Advanced.Entities;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Services;
-using DxCore.Core.Utils.Validate;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.GraphicsWidgets.HUD
 {
@@ -19,8 +19,10 @@ namespace DxCore.Core.GraphicsWidgets.HUD
 
         public PlayerLevelIndicator(DxVector2 screenOffset)
         {
-            Validate.Hard.IsTrue(screenOffset.X >= 0, () => $"Cannot create a {typeof(PlayerLevelIndicator)} with an x offset of {screenOffset.X}");
-            Validate.Hard.IsTrue(screenOffset.X >= 0, () => $"Cannot create a {typeof(PlayerLevelIndicator)} with an x offset of {screenOffset.X}");
+            Validate.Hard.IsTrue(screenOffset.X >= 0,
+                () => $"Cannot create a {typeof(PlayerLevelIndicator)} with an x offset of {screenOffset.X}");
+            Validate.Hard.IsTrue(screenOffset.X >= 0,
+                () => $"Cannot create a {typeof(PlayerLevelIndicator)} with an x offset of {screenOffset.X}");
             ScreenOffset = screenOffset;
         }
 

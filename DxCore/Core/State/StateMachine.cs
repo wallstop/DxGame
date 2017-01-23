@@ -6,8 +6,9 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
 using NLog;
+using WallNetCore.Extension;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.State
 {
@@ -17,16 +18,16 @@ namespace DxCore.Core.State
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        [DataMember]
-        public State InitialState { get; private set; }
+        [DataMember] private ReadOnlyDictionary<UniqueId, State> statesById_;
 
         [DataMember]
         public State CurrentState { get; private set; }
 
         [DataMember]
-        private bool Logging { get; set; }
+        public State InitialState { get; private set; }
 
-        [DataMember] private ReadOnlyDictionary<UniqueId, State> statesById_;
+        [DataMember]
+        private bool Logging { get; set; }
 
         protected StateMachine(State initialState, Dictionary<UniqueId, State> statesById, bool loggingEnabled)
         {
@@ -37,15 +38,20 @@ namespace DxCore.Core.State
             Reset();
         }
 
+        public static StateMachineBuilder Builder()
+        {
+            return new StateMachineBuilder();
+        }
+
         public override void OnAttach()
         {
             RegisterTargetedAcceptAll(HandleMessage);
             base.OnAttach();
         }
 
-        private void HandleMessage(Message message)
+        public void Reset()
         {
-            CurrentState.Accept(message);
+            CurrentState = InitialState;
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -75,32 +81,28 @@ namespace DxCore.Core.State
             CurrentState.Process(updateConfig);
         }
 
-        public void Reset()
+        private void HandleMessage(Message message)
         {
-            CurrentState = InitialState;
-        }
-
-        public static StateMachineBuilder Builder()
-        {
-            return new StateMachineBuilder();
+            CurrentState.Accept(message);
         }
 
         public class StateMachineBuilder : IBuilder<StateMachine>
         {
-            private State initialState_;
-            private bool logging_ = false;
-
             private readonly Dictionary<UniqueId, State> uniqueStates_ = new Dictionary<UniqueId, State>();
+            private State initialState_;
+            private bool logging_;
 
             public StateMachine Build()
             {
-                Validate.Hard.IsNotNullOrDefault(initialState_, () => this.GetFormattedNullOrDefaultMessage(nameof(initialState_)));
+                Validate.Hard.IsNotNullOrDefault(initialState_,
+                    () => this.GetFormattedNullOrDefaultMessage(nameof(initialState_)));
                 return new StateMachine(initialState_, uniqueStates_.ToDictionary(), logging_);
             }
 
-            public StateMachineBuilder WithState(State state)
+            public StateMachineBuilder WithInitialState(State initialState)
             {
-                uniqueStates_[state.Id] = state;
+                initialState_ = initialState;
+                WithState(initialState);
                 return this;
             }
 
@@ -110,10 +112,9 @@ namespace DxCore.Core.State
                 return this;
             }
 
-            public StateMachineBuilder WithInitialState(State initialState)
+            public StateMachineBuilder WithState(State state)
             {
-                initialState_ = initialState;
-                WithState(initialState);
+                uniqueStates_[state.Id] = state;
                 return this;
             }
         }

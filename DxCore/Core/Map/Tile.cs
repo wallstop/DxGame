@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Map
 {
@@ -10,10 +10,10 @@ namespace DxCore.Core.Map
     public class Tile
     {
         [DataMember]
-        public TileType Type { get; private set; }
+        public string Asset { get; private set; }
 
         [DataMember]
-        public string Asset { get; private set; }
+        public TileType Type { get; private set; }
 
         /* Only necessary for JSON Serialization */
 
@@ -48,14 +48,14 @@ namespace DxCore.Core.Map
             return false;
         }
 
-        public override string ToString()
-        {
-            return this.ToJson();
-        }
-
         public override int GetHashCode()
         {
             return Objects.HashCode(Type, Asset);
+        }
+
+        public override string ToString()
+        {
+            return this.ToJson();
         }
     }
 }

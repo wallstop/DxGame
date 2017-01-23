@@ -7,7 +7,7 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Level
 {
@@ -18,10 +18,10 @@ namespace DxCore.Core.Level
         [DataMember] private readonly ManagerComponent entityManager_ = new ManagerComponent();
 
         [DataMember]
-        public Map.Map Map { get; }
+        public TimeSpan LevelTime { get; private set; }
 
         [DataMember]
-        public TimeSpan LevelTime { get; private set; }
+        public Map.Map Map { get; }
 
         [DataMember]
         public List<Spawner> Spawners { get; }
@@ -31,6 +31,11 @@ namespace DxCore.Core.Level
             Map = map;
             Spawners = spawners.ToList();
             LevelTime = TimeSpan.Zero;
+        }
+
+        public static LevelBuilder Builder()
+        {
+            return new LevelBuilder();
         }
 
         public override void Initialize()
@@ -48,6 +53,12 @@ namespace DxCore.Core.Level
         {
             RegisterMessageHandler<EntitySpawnedMessage>(AddEntityToManagementPool);
             base.OnAttach();
+        }
+
+        public override void Remove()
+        {
+            entityManager_.Remove();
+            Spawners.ForEach(spawner => spawner.Remove());
         }
 
         protected override void Update(DxGameTime gameTime)
@@ -77,17 +88,6 @@ namespace DxCore.Core.Level
             }
         }
 
-        public override void Remove()
-        {
-            entityManager_.Remove();
-            Spawners.ForEach(spawner => spawner.Remove());
-        }
-
-        public static LevelBuilder Builder()
-        {
-            return new LevelBuilder();
-        }
-
         public class LevelBuilder : IBuilder<Level>
         {
             private readonly HashSet<Spawner> spawners_ = new HashSet<Spawner>();
@@ -105,19 +105,19 @@ namespace DxCore.Core.Level
                 return this;
             }
 
+            public LevelBuilder WithSpawner(Spawner spawner)
+            {
+                Validate.Hard.IsNotNull(spawner);
+                spawners_.Add(spawner);
+                return this;
+            }
+
             public LevelBuilder WithSpawners(params Spawner[] spawners)
             {
                 foreach(Spawner spawner in spawners)
                 {
                     WithSpawner(spawner);
                 }
-                return this;
-            }
-
-            public LevelBuilder WithSpawner(Spawner spawner)
-            {
-                Validate.Hard.IsNotNull(spawner);
-                spawners_.Add(spawner);
                 return this;
             }
         }

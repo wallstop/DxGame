@@ -7,7 +7,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Entities
 {
@@ -18,10 +18,10 @@ namespace DxCore.Core.Components.Advanced.Entities
         public static readonly float DEFAULT_RADIUS = 250;
 
         [DataMember]
-        public float Radius { get; }
+        public Experience.Experience Experience { get; }
 
         [DataMember]
-        public Experience.Experience Experience { get; }
+        public float Radius { get; }
 
         public ExperienceDropperComponent(Experience.Experience experience) : this(DEFAULT_RADIUS, experience) {}
 
@@ -42,7 +42,7 @@ namespace DxCore.Core.Components.Advanced.Entities
 
         protected virtual void HandleEntityDeath(EntityDeathMessage deathMessage)
         {
-            DxCore.Core.Team sourceTeam = Parent?.ComponentOfType<TeamComponent>()?.Team;
+            Core.Team sourceTeam = Parent?.ComponentOfType<TeamComponent>()?.Team;
             DxVector2 sourcePosition = Parent?.ComponentOfType<PhysicsComponent>()?.Center ?? new DxVector2();
             ExperienceDroppedMessage experienceDropped = new ExperienceDroppedMessage(sourceTeam, sourcePosition, Radius,
                 Experience);

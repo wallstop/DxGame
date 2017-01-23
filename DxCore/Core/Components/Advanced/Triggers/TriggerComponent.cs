@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Triggers
 {
@@ -31,9 +31,6 @@ namespace DxCore.Core.Components.Advanced.Triggers
     {
         [DataMember] private TimeSpan lastChecked_;
 
-        [DataMember]
-        private Trigger Trigger { get; }
-
         /* Executed when the trigger returns true */
 
         [DataMember]
@@ -41,6 +38,9 @@ namespace DxCore.Core.Components.Advanced.Triggers
 
         [DataMember]
         private TimeSpan CheckFrequency { get; }
+
+        [DataMember]
+        private Trigger Trigger { get; }
 
         public TriggerComponent(Trigger trigger, Action action, TimeSpan checkFrequency = new TimeSpan())
         {

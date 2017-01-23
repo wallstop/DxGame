@@ -1,6 +1,7 @@
 ﻿using System;
 using DxCore.Core.Utils.Cache.Simple;
 using Microsoft.Xna.Framework;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Utils
 {
@@ -51,6 +52,7 @@ namespace DxCore.Core.Utils
                 Retrieves an already cached color of the specified transparency, or creates a new one, caches it, and returns it.
             </summary>
         */
+
         public static Color Transparency(float transparencyWeight, Color color)
         {
             transparencyWeight = RoundTransparencyWeight(transparencyWeight);
@@ -59,7 +61,7 @@ namespace DxCore.Core.Utils
 
         private static float RoundTransparencyWeight(float transparencyWeight)
         {
-            Validate.Validate.Hard.IsInClosedInterval(transparencyWeight, 0, 1.0);
+            Validate.Hard.IsInClosedInterval(transparencyWeight, 0, 1.0);
             /* Clamp transparencyWeight to nearest 0.01 so we reduce the space of our possible key set (by some) */
             return (float) Math.Round(transparencyWeight, NUM_PRECISION_DIGITS);
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Utils.Distance
 {
@@ -13,16 +14,16 @@ namespace DxCore.Core.Utils.Distance
     internal class KDTreeNode<T>
     {
         [DataMember]
-        public KDTreeNode<T> Left { get; }
-
-        [DataMember]
-        public KDTreeNode<T> Right { get; }
-
-        [DataMember]
         public DxRectangle Boundary { get; }
 
         [DataMember]
+        public KDTreeNode<T> Left { get; }
+
+        [DataMember]
         public List<T> Points { get; }
+
+        [DataMember]
+        public KDTreeNode<T> Right { get; }
 
         [DataMember]
         public bool Terminal { get; }
@@ -80,6 +81,19 @@ namespace DxCore.Core.Utils.Distance
         [DataMember] private readonly Coordinate<T> coordinate_;
         [DataMember] private readonly KDTreeNode<T> head_;
 
+        public KDTree(Coordinate<T> coordinate, DxRectangle boundary, List<T> points)
+            : this(coordinate, boundary, points, DEFAULT_BUCKET_SIZE) {}
+
+        public KDTree(Coordinate<T> coordinate, DxRectangle boundary, List<T> points, int bucketSize)
+        {
+            Validate.Hard.IsPositive(bucketSize,
+                () => $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
+            Validate.Hard.IsNotNull(coordinate, () => this.GetFormattedNullOrDefaultMessage(nameof(coordinate)));
+            coordinate_ = coordinate;
+            boundary_ = boundary;
+            head_ = new KDTreeNode<T>(boundary, coordinate_, points, bucketSize, true);
+        }
+
         public List<T> Elements
         {
             get
@@ -131,24 +145,6 @@ namespace DxCore.Core.Utils.Distance
             }
         }
 
-        public KDTree(Coordinate<T> coordinate, DxRectangle boundary, List<T> points)
-            : this(coordinate, boundary, points, DEFAULT_BUCKET_SIZE) {}
-
-        public KDTree(Coordinate<T> coordinate, DxRectangle boundary, List<T> points, int bucketSize)
-        {
-            Validate.Validate.Hard.IsPositive(bucketSize,
-                () => $"Cannot create a {GetType()} with a {nameof(bucketSize)} of {bucketSize}");
-            Validate.Validate.Hard.IsNotNull(coordinate, () => this.GetFormattedNullOrDefaultMessage(nameof(coordinate)));
-            coordinate_ = coordinate;
-            boundary_ = boundary;
-            head_ = new KDTreeNode<T>(boundary, coordinate_, points, bucketSize, true);
-        }
-
-        public List<T> InRange(DxVector2 point, float radius)
-        {
-            return InRange(new DxRectangle(point.X - radius, point.Y - radius, radius, radius));
-        }
-
         public List<T> InRange(DxRectangle range)
         {
             if(!range.Intersects(boundary_))
@@ -185,6 +181,11 @@ namespace DxCore.Core.Utils.Distance
         {
             // TODO (LOL)
             throw new NotImplementedException();
+        }
+
+        public List<T> InRange(DxVector2 point, float radius)
+        {
+            return InRange(new DxRectangle(point.X - radius, point.Y - radius, radius, radius));
         }
     }
 }

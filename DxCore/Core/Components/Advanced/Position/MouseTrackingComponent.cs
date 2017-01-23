@@ -1,5 +1,4 @@
-﻿using DxCore.Core.Components.Advanced.Position;
-using DxCore.Core.Components.Basic;
+﻿using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using Microsoft.Xna.Framework.Input;
 
@@ -7,14 +6,10 @@ namespace DxCore.Core.Components.Advanced.Position
 {
     public class MouseTrackingComponent : Component, ISpatial
     {
-        private ISpatial MouseSpatial { get; }
-
         public bool Clicked { get; private set; }
 
         private bool ClickInProgress { get; set; }
-
-        public DxVector2 WorldCoordinates => MouseSpatial.WorldCoordinates;
-        public DxRectangle Space => MouseSpatial.Space;
+        private ISpatial MouseSpatial { get; }
 
         public MouseTrackingComponent()
         {
@@ -27,6 +22,9 @@ namespace DxCore.Core.Components.Advanced.Position
                     .WithDimensions(50, 50)
                     .Build();
         }
+
+        public DxVector2 WorldCoordinates => MouseSpatial.WorldCoordinates;
+        public DxRectangle Space => MouseSpatial.Space;
 
         protected override void Update(DxGameTime gameTime)
         {

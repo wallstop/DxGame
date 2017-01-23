@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Messaging.Entity
 {
@@ -25,18 +25,6 @@ namespace DxCore.Core.Messaging.Entity
             spawnedGameObject_ = spawnedObject;
         }
 
-        public bool TryGetCreatedEntity(out Component spawnedComponent)
-        {
-            spawnedComponent = spawnedComponent_;
-            return !ReferenceEquals(spawnedComponent_, null);
-        }
-
-        public bool TryGetCreatedEntity(out GameObject spawnedGameObject)
-        {
-            spawnedGameObject = spawnedGameObject_;
-            return !ReferenceEquals(spawnedGameObject_, null);
-        }
-
         public override string ToString()
         {
             Component component;
@@ -52,6 +40,18 @@ namespace DxCore.Core.Messaging.Entity
             }
 
             return base.ToString();
+        }
+
+        public bool TryGetCreatedEntity(out Component spawnedComponent)
+        {
+            spawnedComponent = spawnedComponent_;
+            return !ReferenceEquals(spawnedComponent_, null);
+        }
+
+        public bool TryGetCreatedEntity(out GameObject spawnedGameObject)
+        {
+            spawnedGameObject = spawnedGameObject_;
+            return !ReferenceEquals(spawnedGameObject_, null);
         }
     }
 }

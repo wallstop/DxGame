@@ -2,8 +2,7 @@
 using System.Runtime.Serialization;
 using DxCore.Core;
 using DxCore.Core.Components.Basic;
-using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace Babel.Items
 {

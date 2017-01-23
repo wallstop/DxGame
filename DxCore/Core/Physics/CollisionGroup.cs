@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Runtime.Serialization;
-using DxCore.Core.Utils.Validate;
 using FarseerPhysics.Dynamics;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Physics
 {
@@ -15,29 +15,6 @@ namespace DxCore.Core.Physics
         public static readonly CollisionGroup Map = new CollisionGroup(Category.Cat1);
         public static readonly CollisionGroup Entities = new CollisionGroup(Category.Cat2);
         public static readonly CollisionGroup MovementSensors = new CollisionGroup(Category.Cat3);
-
-        // TODO: Test
-        public static class Alias<T>
-        {
-            private static ConcurrentDictionary<T, CollisionGroup> Aliases { get; } =
-                new ConcurrentDictionary<T, CollisionGroup>();
-
-            public static CollisionGroup Register(T key, Category value)
-            {
-                Validate.Hard.IsNotNull(key,
-                    () => $"Cannot alias a null key to a {typeof(CollisionGroup)} of type {typeof(T)}");
-                CollisionGroup foundGroup = Aliases.GetOrAdd(key, providedKey => new CollisionGroup(value));
-                Validate.Hard.AreEqual(foundGroup.CollisionCategory, value,
-                    () => $"Cannot re-alias {key} from {foundGroup.CollisionCategory} to {value}");
-                return foundGroup;
-            }
-
-            public static CollisionGroup GroupFor(T key)
-            {
-                /* Throw if not found */
-                return Aliases[key];
-            }
-        }
 
         // TODO: Expand for teams, etc, more general use
 
@@ -63,6 +40,29 @@ namespace DxCore.Core.Physics
         {
             Validate.Hard.IsNotNull(group);
             return group.CollisionCategory;
+        }
+
+        // TODO: Test
+        public static class Alias<T>
+        {
+            private static ConcurrentDictionary<T, CollisionGroup> Aliases { get; } =
+                new ConcurrentDictionary<T, CollisionGroup>();
+
+            public static CollisionGroup GroupFor(T key)
+            {
+                /* Throw if not found */
+                return Aliases[key];
+            }
+
+            public static CollisionGroup Register(T key, Category value)
+            {
+                Validate.Hard.IsNotNull(key,
+                    () => $"Cannot alias a null key to a {typeof(CollisionGroup)} of type {typeof(T)}");
+                CollisionGroup foundGroup = Aliases.GetOrAdd(key, providedKey => new CollisionGroup(value));
+                Validate.Hard.AreEqual(foundGroup.CollisionCategory, value,
+                    () => $"Cannot re-alias {key} from {foundGroup.CollisionCategory} to {value}");
+                return foundGroup;
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Messaging
 {
@@ -13,7 +13,8 @@ namespace DxCore.Core.Messaging
     [Serializable]
     public class AttackBuilder : Message, IBuilder<List<PhysicsMessage>>, ITargetedMessage
     {
-        public delegate PhysicsMessage PhysicsMessageGenerator(GameObject source, ICollection<DxRectangle> sourceAttackAreas);
+        public delegate PhysicsMessage PhysicsMessageGenerator(
+            GameObject source, ICollection<DxRectangle> sourceAttackAreas);
 
         [DataMember] private readonly List<PhysicsMessageGenerator> attackMessageGenerators_ =
             new List<PhysicsMessageGenerator>();
@@ -42,6 +43,9 @@ namespace DxCore.Core.Messaging
             return attackInteractions;
         }
 
+        [DataMember]
+        public UniqueId Target { get; set; }
+
         public AttackBuilder WithPhysicsMessageGenerator(PhysicsMessageGenerator physicsMessageGenerator)
         {
             Validate.Hard.IsNotNullOrDefault(physicsMessageGenerator,
@@ -49,8 +53,5 @@ namespace DxCore.Core.Messaging
             attackMessageGenerators_.Add(physicsMessageGenerator);
             return this;
         }
-
-        [DataMember]
-        public UniqueId Target { get; set; }
     }
 }

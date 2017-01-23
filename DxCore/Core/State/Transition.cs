@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.State
 {
@@ -25,10 +25,10 @@ namespace DxCore.Core.State
         public Priority Priority { get; private set; }
 
         [DataMember]
-        public Trigger Trigger { get; private set; }
+        public State State { get; private set; }
 
         [DataMember]
-        public State State { get; private set; }
+        public Trigger Trigger { get; private set; }
 
         public Transition(Trigger trigger, State state) : this(trigger, state, Priority.Medium) {}
 

@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils.Distance;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Messaging
 {
@@ -96,11 +96,6 @@ namespace DxCore.Core.Messaging
         [DataMember]
         public UniqueId GameObjectId { get; private set; }
 
-        public bool Equals(CommandMessage other)
-        {
-            return !ReferenceEquals(null, other) && Commandment == other.Commandment;
-        }
-
         public CommandMessage(Commandment commandment, UniqueId gameObjectId)
         {
             Validate.Hard.IsNotNullOrDefault(gameObjectId);
@@ -109,6 +104,13 @@ namespace DxCore.Core.Messaging
         }
 
         public CommandMessage(UniqueId gameObjectId) : this(Commandment.None, gameObjectId) {}
+
+        public bool Equals(CommandMessage other)
+        {
+            return !ReferenceEquals(null, other) && (Commandment == other.Commandment);
+        }
+
+        public UniqueId Target => GameObjectId;
 
         public static Commandment CommandmentForDirection(Direction direction)
         {
@@ -128,9 +130,10 @@ namespace DxCore.Core.Messaging
             }
         }
 
-        public override string ToString()
+        public override bool Equals(object other)
         {
-            return Commandment.ToString();
+            var command = other as CommandMessage;
+            return !ReferenceEquals(null, command) && Equals(command);
         }
 
         public override int GetHashCode()
@@ -138,12 +141,9 @@ namespace DxCore.Core.Messaging
             return Commandment.GetHashCode();
         }
 
-        public override bool Equals(object other)
+        public override string ToString()
         {
-            var command = other as CommandMessage;
-            return !ReferenceEquals(null, command) && Equals(command);
+            return Commandment.ToString();
         }
-
-        public UniqueId Target => GameObjectId;
     }
 }

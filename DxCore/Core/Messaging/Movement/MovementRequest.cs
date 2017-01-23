@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using DxCore.Core.Utils.Distance;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Messaging.Movement
 {
@@ -9,9 +9,6 @@ namespace DxCore.Core.Messaging.Movement
     [DataContract]
     public class MovementRequest : Message, ITargetedMessage
     {
-        [DataMember]
-        public UniqueId Target { get; private set; }
-
         [DataMember]
         public Direction? Direction { get; private set; }
 
@@ -21,5 +18,8 @@ namespace DxCore.Core.Messaging.Movement
             Target = target;
             Direction = direction;
         }
+
+        [DataMember]
+        public UniqueId Target { get; private set; }
     }
 }

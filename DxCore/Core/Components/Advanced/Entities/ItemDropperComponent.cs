@@ -7,7 +7,7 @@ using DxCore.Core.Messaging;
 using DxCore.Core.Messaging.Entity;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
-using DxCore.Core.Utils.Validate;
+using WallNetCore.Validate;
 
 namespace DxCore.Core.Components.Advanced.Entities
 {
@@ -28,10 +28,10 @@ namespace DxCore.Core.Components.Advanced.Entities
     public class ItemDropperComponent : Component
     {
         [DataMember]
-        private double PercentChance { get; }
+        private Func<DxVector2, List<GameObject>> ItemProduction { get; }
 
         [DataMember]
-        private Func<DxVector2, List<GameObject>> ItemProduction { get; }
+        private double PercentChance { get; }
 
         public ItemDropperComponent(double percentChance, Func<DxVector2, List<GameObject>> itemProduction)
         {

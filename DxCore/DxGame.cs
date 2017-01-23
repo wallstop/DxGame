@@ -10,6 +10,7 @@ using DxCore.Core.Service;
 using DxCore.Core.Services;
 using DxCore.Core.Settings;
 using DxCore.Core.Utils;
+using DxCore.Extension;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -139,7 +140,7 @@ namespace DxCore
             Controls = new Controls();
             Controls.Load();
 
-            TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0 / TargetFps);
+            TargetElapsedTime = TimeSpan.Zero.FromAccurateMilliseconds(1000.0 / TargetFps);
             IsFixedTimeStep = false;
 
             DxGameElements = new GameElementCollection();
@@ -210,7 +211,7 @@ namespace DxCore
             // Should probably thread this... but wait until we have perf testing :)
             networkModel?.ReceiveData(gameTime);
             /* We may end up modifying these as we iterate over them, so take an immutable copy */
-            TimeSpan physicsTarget = TimeSpan.FromMilliseconds(PhysicsUpdateFrequency * 1000.0);
+            TimeSpan physicsTarget = TimeSpan.Zero.FromAccurateMilliseconds(PhysicsUpdateFrequency * 1000.0);
             if(lastUpdated_ + physicsTarget < gameTime.TotalGameTime)
             {
                 DxGameTime fakedGameTime = new DxGameTime(gameTime.TotalGameTime, gameTime.TotalGameTime - lastUpdated_,
@@ -296,13 +297,13 @@ namespace DxCore
                 // What is going on here
                 if(0 < timeSkewMilliseconds_)
                 {
-                    TimeSpan timeSkew = TimeSpan.FromMilliseconds(timeSkewMilliseconds_);
+                    TimeSpan timeSkew = TimeSpan.Zero.FromAccurateMilliseconds(timeSkewMilliseconds_);
                     currentTime += timeSkew;
                     compensatedGameTime_ += timeSkew;
                 }
                 else
                 {
-                    TimeSpan timeSkew = TimeSpan.FromMilliseconds(-timeSkewMilliseconds_);
+                    TimeSpan timeSkew = TimeSpan.Zero.FromAccurateMilliseconds(-timeSkewMilliseconds_);
                     currentTime -= timeSkew;
                     compensatedGameTime_ -= timeSkew;
                 }

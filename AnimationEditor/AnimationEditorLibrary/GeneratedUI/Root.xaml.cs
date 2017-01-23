@@ -65,7 +65,9 @@ namespace EmptyKeys.UserInterface.Generated {
         
         private Button e_18;
         
-        private ListBox e_19;
+        private ScrollViewer e_19;
+        
+        private ListBox e_20;
         
         public Root() : 
                 base() {
@@ -165,6 +167,8 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_3.Minimum = 0F;
             Grid.SetColumn(this.e_3, 1);
             Grid.SetRow(this.e_3, 0);
+            Binding binding_e_3_IsEnabled = new Binding("FrameCountEnabled");
+            this.e_3.SetBinding(NumericTextBox.IsEnabledProperty, binding_e_3_IsEnabled);
             Binding binding_e_3_Value = new Binding("FrameCount");
             this.e_3.SetBinding(NumericTextBox.ValueProperty, binding_e_3_Value);
             // e_4 element
@@ -224,7 +228,8 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_1.Children.Add(this.e_9);
             this.e_9.Name = "e_9";
             this.e_9.Margin = new Thickness(5F, 5F, 5F, 5F);
-            this.e_9.Minimum = 0F;
+            this.e_9.Text = "1.00";
+            this.e_9.Minimum = 1F;
             Grid.SetColumn(this.e_9, 1);
             Grid.SetRow(this.e_9, 3);
             Binding binding_e_9_Value = new Binding("FPS");
@@ -346,46 +351,54 @@ namespace EmptyKeys.UserInterface.Generated {
             binding_e_18_Command.Mode = BindingMode.OneWay;
             this.e_18.SetBinding(Button.CommandProperty, binding_e_18_Command);
             // e_19 element
-            this.e_19 = new ListBox();
+            this.e_19 = new ScrollViewer();
             this.e_0.Children.Add(this.e_19);
             this.e_19.Name = "e_19";
-            this.e_19.HorizontalAlignment = HorizontalAlignment.Center;
-            this.e_19.VerticalAlignment = VerticalAlignment.Center;
-            Func<UIElement, UIElement> e_19_iptFunc = e_19_iptMethod;
-            ControlTemplate e_19_ipt = new ControlTemplate(e_19_iptFunc);
-            this.e_19.ItemsPanel = e_19_ipt;
-            Func<UIElement, UIElement> e_19_dtFunc = e_19_dtMethod;
-            this.e_19.ItemTemplate = new DataTemplate(e_19_dtFunc);
+            this.e_19.Margin = new Thickness(5F, 5F, 5F, 5F);
+            this.e_19.Background = new SolidColorBrush(new ColorW(128, 128, 128, 255));
+            this.e_19.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            this.e_19.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
             Grid.SetColumn(this.e_19, 0);
             Grid.SetRow(this.e_19, 2);
             Grid.SetColumnSpan(this.e_19, 3);
-            Binding binding_e_19_ItemsSource = new Binding("Frames");
-            binding_e_19_ItemsSource.Mode = BindingMode.OneWay;
-            this.e_19.SetBinding(ListBox.ItemsSourceProperty, binding_e_19_ItemsSource);
-            Binding binding_e_19_SelectedIndex = new Binding("FrameIndex");
-            binding_e_19_SelectedIndex.Mode = BindingMode.TwoWay;
-            this.e_19.SetBinding(ListBox.SelectedIndexProperty, binding_e_19_SelectedIndex);
-        }
-        
-        private static UIElement e_19_iptMethod(UIElement parent) {
             // e_20 element
-            WrapPanel e_20 = new WrapPanel();
-            e_20.Parent = parent;
-            e_20.Name = "e_20";
-            e_20.IsItemsHost = true;
-            e_20.Orientation = Orientation.Horizontal;
-            return e_20;
+            this.e_20 = new ListBox();
+            this.e_19.Content = this.e_20;
+            this.e_20.Name = "e_20";
+            this.e_20.HorizontalAlignment = HorizontalAlignment.Center;
+            this.e_20.VerticalAlignment = VerticalAlignment.Center;
+            Func<UIElement, UIElement> e_20_iptFunc = e_20_iptMethod;
+            ControlTemplate e_20_ipt = new ControlTemplate(e_20_iptFunc);
+            this.e_20.ItemsPanel = e_20_ipt;
+            Func<UIElement, UIElement> e_20_dtFunc = e_20_dtMethod;
+            this.e_20.ItemTemplate = new DataTemplate(e_20_dtFunc);
+            Binding binding_e_20_ItemsSource = new Binding("Frames");
+            binding_e_20_ItemsSource.Mode = BindingMode.OneWay;
+            this.e_20.SetBinding(ListBox.ItemsSourceProperty, binding_e_20_ItemsSource);
+            Binding binding_e_20_SelectedIndex = new Binding("FrameIndex");
+            binding_e_20_SelectedIndex.Mode = BindingMode.TwoWay;
+            this.e_20.SetBinding(ListBox.SelectedIndexProperty, binding_e_20_SelectedIndex);
         }
         
-        private static UIElement e_19_dtMethod(UIElement parent) {
+        private static UIElement e_20_iptMethod(UIElement parent) {
             // e_21 element
-            Image e_21 = new Image();
+            WrapPanel e_21 = new WrapPanel();
             e_21.Parent = parent;
             e_21.Name = "e_21";
-            e_21.Margin = new Thickness(5F, 5F, 5F, 5F);
-            Binding binding_e_21_Source = new Binding("Frame");
-            e_21.SetBinding(Image.SourceProperty, binding_e_21_Source);
+            e_21.IsItemsHost = true;
+            e_21.Orientation = Orientation.Horizontal;
             return e_21;
+        }
+        
+        private static UIElement e_20_dtMethod(UIElement parent) {
+            // e_22 element
+            Image e_22 = new Image();
+            e_22.Parent = parent;
+            e_22.Name = "e_22";
+            e_22.Margin = new Thickness(5F, 5F, 5F, 5F);
+            Binding binding_e_22_Source = new Binding("Frame");
+            e_22.SetBinding(Image.SourceProperty, binding_e_22_Source);
+            return e_22;
         }
     }
 }

@@ -69,6 +69,7 @@ namespace DxCore.Core.Animation
             Height = height;
             Orientation = orientation;
             Scale = scale;
+            FramesPerSecond = fps;
             Fallback = fallback;
             InternalFrames = frames.ToArray();
         }

@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
+using DxCore.Extension;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -22,7 +23,8 @@ namespace DxCore.Core.Animation
         [DataMember]
         public DrawPriority DrawPriority { get; private set; }
 
-        public TimeSpan TimePerFrame => TimeSpan.FromSeconds(1.0f / AnimationDescriptor.FramesPerSecond);
+        public TimeSpan TimePerFrame
+            => TimeSpan.Zero.FromAccurateMilliseconds(1000.0 / AnimationDescriptor.FramesPerSecond);
 
         [DataMember]
         private int CurrentFrame { get; set; }
@@ -84,6 +86,14 @@ namespace DxCore.Core.Animation
             }
             spriteBatch.Draw(spriteSheet_, null, drawLocation, frameOutline, null, 0, null, Color.White, spriteEffects,
                 0);
+        }
+
+        public void DrawDebug(SpriteBatch spriteBatch, DxGameTime gameTime, DxVector2 position, Direction orientation)
+        {
+            Draw(spriteBatch, gameTime, position, orientation);
+
+            spriteBatch.DrawString(FontFactory.Instance.Default, (CurrentFrame + 1).ToString(), position.Vector2,
+                ColorFactory.Transparency(0.5f, Color.Purple));
         }
 
         public bool LoadContent(ContentManager contentManager)

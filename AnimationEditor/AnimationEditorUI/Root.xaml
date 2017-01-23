@@ -57,6 +57,7 @@
             <ek:NumericTextBox Grid.Row="0"
                                Grid.Column="1"
                                Margin="5"
+                               IsEnabled="{Binding FrameCountEnabled}"
                                Minimum="0"
                                Value="{Binding FrameCount}" />
             <TextBlock Grid.Row="1"
@@ -90,7 +91,7 @@
             <ek:NumericTextBox Grid.Row="3"
                                Grid.Column="1"
                                Margin="5"
-                               Minimum="0"
+                               Minimum="1"
                                Value="{Binding FPS}" />
             <TextBlock Grid.Row="4"
                        Grid.Column="0"
@@ -162,26 +163,32 @@
                 </Button>
             </Grid>
         </Grid>
-        <ListBox Grid.Row="2"
-                 Grid.Column="0"
-                 Grid.ColumnSpan="3"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Center"
-                 ItemsSource="{Binding Frames,
-                                       Mode=OneWay}"
-                 SelectedIndex="{Binding FrameIndex,
-                                         Mode=TwoWay}">
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel FlowDirection="LeftToRight" Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Image Margin="5" Source="{Binding Frame}" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <ScrollViewer Grid.Row="2"
+                      Grid.Column="0"
+                      Grid.ColumnSpan="3"
+                      Margin="5"
+                      Background="Gray"
+                      FlowDirection="LeftToRight"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Disabled">
+            <ListBox HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     ItemsSource="{Binding Frames,
+                                           Mode=OneWay}"
+                     SelectedIndex="{Binding FrameIndex,
+                                             Mode=TwoWay}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel FlowDirection="LeftToRight" Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Image Margin="5" Source="{Binding Frame}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
     </Grid>
 </ek:UIRoot>
 

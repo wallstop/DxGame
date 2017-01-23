@@ -28,7 +28,7 @@ namespace AnimationEditorLibrary.Core.Components
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            Animation?.Draw(spriteBatch, gameTime, Position.WorldCoordinates, Orientation);
+            Animation?.DrawDebug(spriteBatch, gameTime, Position.WorldCoordinates, Orientation);
         }
 
         public override void OnAttach()

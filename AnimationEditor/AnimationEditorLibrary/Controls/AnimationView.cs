@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Forms;
+using System.Windows.Input;
 using AnimationEditorLibrary.Core.Messaging;
 using AnimationEditorLibrary.Core.Settings;
 using AnimationEditorLibrary.EmptyKeysLib.Relay;
@@ -21,8 +22,14 @@ using Microsoft.Xna.Framework.Graphics;
 using NLog;
 using WallNetCore.Cache.Advanced;
 using WallNetCore.Validate;
+using ICommand = EmptyKeys.UserInterface.Input.ICommand;
+using Mouse = EmptyKeys.UserInterface.Input.Mouse;
+using MouseButtonEventArgs = EmptyKeys.UserInterface.Input.MouseButtonEventArgs;
+using MouseButtonEventHandler = EmptyKeys.UserInterface.Input.MouseButtonEventHandler;
 using MouseEventArgs = EmptyKeys.UserInterface.Input.MouseEventArgs;
 using MouseEventHandler = EmptyKeys.UserInterface.Input.MouseEventHandler;
+using MouseWheelEventArgs = EmptyKeys.UserInterface.Input.MouseWheelEventArgs;
+using MouseWheelEventHandler = EmptyKeys.UserInterface.Input.MouseWheelEventHandler;
 
 namespace AnimationEditorLibrary.Controls
 {
@@ -35,9 +42,12 @@ namespace AnimationEditorLibrary.Controls
 
     public class AnimationView : ViewModelBase
     {
+        private const bool RedrawTextures = true;
         private const float BaseScrollScale = 1200f;
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        private bool frameCountEnabled_;
 
         private int frameIndex_;
 
@@ -70,7 +80,7 @@ namespace AnimationEditorLibrary.Controls
                 if(Descriptor.OffsetForFrame(FrameIndex, out frameOffset, out drawOffset, out width, out height))
                 {
                     // TODO: Care about draw offset?
-                    return new DxRectangle(frameOffset, width, height) + Offset() + InternalOffset;
+                    return new DxRectangle(frameOffset * Scale, width * Scale, height * Scale) + Offset();
                 }
                 return null;
             }
@@ -115,18 +125,7 @@ namespace AnimationEditorLibrary.Controls
                 int oldFrameIndex = FrameIndex;
                 int oldValue = Descriptor.FrameCount;
                 Builder.WithFrameCount(value);
-                DescriptorCache.Invalidate();
 
-                using(Stream textureStream = File.Open(AssetPath, FileMode.Open))
-                {
-                    Texture2D texture = Texture2D.FromStream(DxGame.Instance.GraphicsDevice, textureStream);
-                    foreach(FrameDescriptor frame in Descriptor.Frames)
-                    {
-                        FrameModel frameModel = new FrameModel(texture,
-                            new DxRectangle(frame.FrameOffset, Width, Height));
-                        Frames.Add(frameModel);
-                    }
-                }
                 if(oldValue < value && oldValue == 0)
                 {
                     FrameIndex = 0;
@@ -141,7 +140,17 @@ namespace AnimationEditorLibrary.Controls
                 }
 
                 RaisePropertyChanged();
-                NotifyAnimationChanged();
+                NotifyAnimationChanged(RedrawTextures);
+            }
+        }
+
+        public bool FrameCountEnabled
+        {
+            get { return frameCountEnabled_; }
+            set
+            {
+                frameCountEnabled_ = value;
+                RaisePropertyChanged();
             }
         }
 
@@ -164,7 +173,8 @@ namespace AnimationEditorLibrary.Controls
                     [Mouse.MouseWheelEvent] = new MouseWheelEventHandler(HandleMouseScroll),
                     [Mouse.MouseMoveEvent] = new MouseEventHandler(HandleMouseMove),
                     [Mouse.MouseDownEvent] = new MouseButtonEventHandler(HandleMouseDown),
-                    [Mouse.MouseUpEvent] = new MouseButtonEventHandler(HandleMouseUp)
+                    [Mouse.MouseUpEvent] = new MouseButtonEventHandler(HandleMouseUp),
+                    [Mouse.MouseLeaveEvent] = new MouseEventHandler(HandleMouseLeave)
                 };
 
         public int Height
@@ -174,7 +184,7 @@ namespace AnimationEditorLibrary.Controls
             {
                 Builder.WithHeight(value);
                 RaisePropertyChanged();
-                NotifyAnimationChanged();
+                NotifyAnimationChanged(RedrawTextures);
             }
         }
 
@@ -192,22 +202,41 @@ namespace AnimationEditorLibrary.Controls
             set
             {
                 Builder.WithWidth(value);
-                NotifyAnimationChanged();
+                NotifyAnimationChanged(RedrawTextures);
             }
         }
 
         private AnimationDescriptor.AnimationDescriptorBuilder Builder { get; }
 
         private Uri ContentDirectoryUri => new Uri(ContentDirectory);
+
+        // Nullable
+        private Texture2D CurrentTexture { get; set; }
         private AnimationDescriptor Descriptor => DescriptorCache.Get();
 
         private SingleElementLocalLoadingCache<AnimationDescriptor> DescriptorCache { get; }
 
         private Direction Facing { get; set; }
 
-        private DxVector2 InternalOffset { get; set; }
+        private PointF LastOffsetStart { get; set; }
 
         private BoundingBoxMovementMode MovementMode { get; set; }
+
+        private DxRectangle OffsetPlayspace
+        {
+            // Bounds area for the potential frame offsets
+            get
+            {
+                if(Validate.Check.IsNull(CurrentTexture))
+                {
+                    return DxRectangle.EmptyRectangle;
+                }
+
+                int maxWidth = CurrentTexture.Width;
+                int maxHeight = CurrentTexture.Height;
+                return new DxRectangle(0, 0, maxWidth - Width, maxHeight - Height);
+            }
+        }
 
         private float Scale { get; set; }
 
@@ -232,6 +261,11 @@ namespace AnimationEditorLibrary.Controls
                 new SingleElementLocalLoadingCache<AnimationDescriptor>(
                     CacheBuilder<FastCacheKey, AnimationDescriptor>.NewBuilder(), () => Builder.Build());
             Offset = () => new DxVector2();
+        }
+
+        public void FrameCountValidation(object sender, TextCompositionEventArgs eventArgs)
+        {
+            // TODO
         }
 
         public void OnClose()
@@ -332,16 +366,40 @@ namespace AnimationEditorLibrary.Controls
         private void HandleMouseDown(object source, MouseButtonEventArgs mouseEventArgs)
         {
             MovementMode = BoundingBoxMovementMode.DoinIt;
+            LastOffsetStart = mouseEventArgs.GetPosition();
+        }
+
+        private void HandleMouseLeave(object source, MouseEventArgs mouseEventArgs)
+        {
+            MovementMode = BoundingBoxMovementMode.NotDoinIt;
         }
 
         private void HandleMouseMove(object source, MouseEventArgs mouseEventArgs)
         {
+            if(FrameIndex < 0)
+            {
+                // Can't do it without a selected Frame
+                return;
+            }
+
             switch(MovementMode)
             {
                 case BoundingBoxMovementMode.DoinIt:
                 {
-                    // DxRectangle currentFrameBounds = 
+                    PointF currentPosition = mouseEventArgs.GetPosition();
+                    DxVector2 distance = new DxVector2(currentPosition.X - LastOffsetStart.X,
+                        currentPosition.Y - LastOffsetStart.Y);
+                    LastOffsetStart = currentPosition;
 
+                    distance /= Scale;
+
+                    AnimationDescriptor animationDescriptor = DescriptorCache.Get();
+                    FrameDescriptor currentFrame = animationDescriptor.Frames[FrameIndex];
+                    currentFrame.FrameOffset += distance;
+                    /* Bounded */
+                    currentFrame.FrameOffset = currentFrame.FrameOffset.Bound(OffsetPlayspace);
+                    Builder.WithFrame(FrameIndex, currentFrame);
+                    NotifyAnimationChanged(RedrawTextures);
                     return;
                 }
                 case BoundingBoxMovementMode.NotDoinIt:
@@ -413,6 +471,7 @@ namespace AnimationEditorLibrary.Controls
                     Builder.ResetToBase();
                     Builder.WithAsset(assetWithoutExtension);
                     AssetPath = assetPath;
+                    FrameCountEnabled = true;
                     NotifyAnimationChanged();
                     Logger.Info("Updated asset to {0}", assetPath);
                     break;
@@ -514,10 +573,32 @@ namespace AnimationEditorLibrary.Controls
             GetService<IMessageBoxService>()?.Show(errorMessage, Nop.Instance, false);
         }
 
-        private void NotifyAnimationChanged()
+        private void NotifyAnimationChanged(bool clearTextures = false)
         {
-            new AnimationChangedMessage(AssetPath, Descriptor).Emit();
             DescriptorCache.Invalidate();
+            new AnimationChangedMessage(AssetPath, Descriptor).Emit();
+
+            if(!clearTextures)
+            {
+                return;
+            }
+
+            Frames.Clear();
+            if(Validate.Check.IsNull(AssetPath))
+            {
+                return;
+            }
+
+            using(Stream textureStream = File.Open(AssetPath, FileMode.Open))
+            {
+                CurrentTexture = Texture2D.FromStream(DxGame.Instance.GraphicsDevice, textureStream);
+                foreach(FrameDescriptor frame in Descriptor.Frames)
+                {
+                    FrameModel frameModel = new FrameModel(CurrentTexture,
+                        new DxRectangle(frame.FrameOffset, Width, Height));
+                    Frames.Add(frameModel);
+                }
+            }
         }
     }
 }

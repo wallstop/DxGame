@@ -369,6 +369,7 @@
     <Compile Include="Core\Utils\Distance\RTree.cs" />
     <Compile Include="Core\Utils\FarseerExtensions.cs" />
     <Compile Include="Core\Utils\FixedSizedBuffer.cs" />
+    <Compile Include="Core\Utils\FontFactory.cs" />
     <Compile Include="Core\Utils\ForceExtensions.cs" />
     <Compile Include="Core\Utils\GameElementCollection.cs" />
     <Compile Include="Core\Utils\GameObjectUtils.cs" />
@@ -396,6 +397,7 @@
     <Compile Include="Core\Utils\XnaUtils.cs" />
     <Compile Include="DxGame.cs" />
     <Compile Include="Extension\Texture2DExtensions.cs" />
+    <Compile Include="Extension\TimeSpanExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

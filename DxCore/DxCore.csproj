@@ -142,6 +142,7 @@
     <Compile Include="Core\Components\Advanced\Camera\MousePanComponent.cs" />
     <Compile Include="Core\Components\Developer\BoundsWidget.cs" />
     <Compile Include="Core\GraphicsWidgets\HUD\TransparentBackground.cs" />
+    <Compile Include="Core\Messaging\ChangeScaleRequest.cs" />
     <Compile Include="Core\Services\Components\GoalAssigner.cs" />
     <Compile Include="Core\Components\Advanced\Collision\CollisionDestructibleComponent.cs" />
     <Compile Include="Core\Components\Advanced\Command\AbstractCommandComponent.cs" />

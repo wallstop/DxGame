@@ -93,10 +93,12 @@
     <Compile Include="Core\Components\UpdateableSpriteComponent.cs" />
     <Compile Include="Core\Messaging\AnimationChangedMessage.cs" />
     <Compile Include="Core\Messaging\OrientationChangedMessage.cs" />
+    <Compile Include="Core\Messaging\SpriteSheetOffsetChangedMessage.cs" />
     <Compile Include="Core\Services\AnimationViewerHudService.cs" />
     <Compile Include="Core\Services\Components\UiDrawer.cs" />
     <Compile Include="Core\Services\RootUiService.cs" />
     <Compile Include="Core\Settings\AnimationEditorSettings.cs" />
+    <Compile Include="EmptyKeysLib\PointFExtensions.cs" />
     <Compile Include="EmptyKeysLib\Relay\Nop.cs" />
     <Compile Include="GeneratedUI\Root.xaml.cs" />
     <Compile Include="GeneratedUI\Root.xaml_bindings.cs" />

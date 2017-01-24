@@ -20,6 +20,7 @@ namespace AnimationEditorLibrary.Core.Components
 
     public class UpdateableSpriteComponent : DrawableComponent
     {
+        private DxVector2 DrawOffset { get; set; }
         private string PreviousAssetPath { get; set; }
         private float Scale { get; set; } = 1.0f;
         private ISpatial Spatial { get; }
@@ -41,14 +42,15 @@ namespace AnimationEditorLibrary.Core.Components
             Rectangle target = Sprite.Bounds;
             target.Width = (int) (target.Width * Scale);
             target.Height = (int) (target.Height * Scale);
-            target.X = (int) Math.Round(Spatial.WorldCoordinates.X);
-            target.Y = (int) Math.Round(Spatial.WorldCoordinates.Y);
+            target.X = (int) Math.Round(Spatial.WorldCoordinates.X + DrawOffset.X);
+            target.Y = (int) Math.Round(Spatial.WorldCoordinates.Y + DrawOffset.Y);
             spriteBatch.Draw(Sprite, target, Color.White);
         }
 
         public override void OnAttach()
         {
             RegisterMessageHandler<AnimationChangedMessage>(HandleAnimationChanged);
+            RegisterMessageHandler<SpriteSheetOffsetChangedMessage>(HandleDrawOffsetChanged);
         }
 
         private void HandleAnimationChanged(AnimationChangedMessage animationChanged)
@@ -64,6 +66,11 @@ namespace AnimationEditorLibrary.Core.Components
             {
                 Sprite = Texture2D.FromStream(DxGame.Instance.GraphicsDevice, fileStream);
             }
+        }
+
+        private void HandleDrawOffsetChanged(SpriteSheetOffsetChangedMessage spriteSheetOffsetChanged)
+        {
+            DrawOffset = spriteSheetOffsetChanged.LatesOffset;
         }
     }
 }

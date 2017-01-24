@@ -58,7 +58,7 @@ namespace DxCore.Core.Components.Advanced.Position
         private static DxVector2 GetWorldPosition(DxVector2 uiOffset)
         {
             CameraService cameraService = DxGame.Instance.Service<CameraService>();
-            return cameraService.Invert(uiOffset);
+            return cameraService.UiOffsetToWorldCoordinates(uiOffset);
         }
 
         public sealed class UiTrackingSpatialComponentBuilder : IBuilder<SpatialComponent>

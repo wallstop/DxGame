@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
@@ -20,26 +21,29 @@ namespace DxCore.Core.Components.Developer
 
     public class BoundsWidget : DrawableComponent
     {
+        private const int DefaultBorderThickness = 1;
+
         private static readonly Color DefaultColor = Color.Red;
 
-        private Func<DxRectangle?> BoundsProducer { get; }
+        private int BorderThickness { get; }
+
+        private Func<List<DxRectangle>> BoundsProducer { get; }
 
         private Color Color { get; }
 
-        public BoundsWidget(Func<DxRectangle?> boundsProducer, Color? color = null)
+        public BoundsWidget(Func<List<DxRectangle>> boundsProducer, int? borderThickness = null, Color? color = null)
         {
             Validate.Hard.IsNotNull(boundsProducer, () => this.GetFormattedNullOrDefaultMessage(nameof(boundsProducer)));
             BoundsProducer = boundsProducer;
             Color = color ?? DefaultColor;
-            DrawPriority = DrawPriority.Low;
+            borderThickness DrawPriority = DrawPriority.Low;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
-            DxRectangle? border = BoundsProducer();
-            if(border.HasValue)
+            foreach(DxRectangle border in BoundsProducer.Invoke())
             {
-                spriteBatch.DrawBorder(border.Value, 1, Color);
+                spriteBatch.DrawBorder(border, 1, Color);
             }
         }
     }

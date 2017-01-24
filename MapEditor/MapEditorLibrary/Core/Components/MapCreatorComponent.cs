@@ -32,7 +32,7 @@ namespace MapEditorLibrary.Core.Components
             {
                 DxVector2 mousePosition = Mouse.GetState().Position;
                 CameraService cameraService = DxGame.Instance.Service<CameraService>();
-                DxVector2 worldSpacePosition = cameraService.Invert(mousePosition);
+                DxVector2 worldSpacePosition = cameraService.UiOffsetToWorldCoordinates(mousePosition);
 
                 TilePosition tilePosition;
                 if(MapGrid.PositionForPoint(worldSpacePosition, out tilePosition))

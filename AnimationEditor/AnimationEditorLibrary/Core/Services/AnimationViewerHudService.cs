@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using AnimationEditorLibrary.Core.Components;
 using DxCore.Core.Components.Advanced.Position;
 using DxCore.Core.Components.Developer;
@@ -15,18 +16,26 @@ namespace AnimationEditorLibrary.Core.Services
         public DxVector2 SpriteSheetOffset => InternalSpriteSheetOffset;
         private UpdateableAnimationComponent AnimationPreview { get; set; }
         private static DxVector2 AnimationPreviewOffset => new DxVector2(5, 5);
+        private Func<List<DxRectangle>> BackgroundFrameBounds { get; }
 
-        private Func<DxRectangle?> CurrentFrameBounds { get; }
+        private BoundsWidget BackgroundFramesPreview { get; set; }
+
+        private Func<List<DxRectangle>> CurrentFrameBounds { get; }
 
         private BoundsWidget CurrentFramePreview { get; set; }
+
         private static DxVector2 InternalSpriteSheetOffset => new DxVector2(427, 5);
         private UpdateableSpriteComponent SpriteSheet { get; set; }
 
-        public AnimationViewerHudService(Func<DxRectangle?> currentFrameBounds)
+        public AnimationViewerHudService(Func<List<DxRectangle>> currentFrameBounds,
+            Func<List<DxRectangle>> backgroundFrameBounds)
         {
             Validate.Hard.IsNotNull(currentFrameBounds,
                 () => this.GetFormattedNullOrDefaultMessage(nameof(currentFrameBounds)));
             CurrentFrameBounds = currentFrameBounds;
+            Validate.Hard.IsNotNull(backgroundFrameBounds,
+                () => this.GetFormattedNullOrDefaultMessage(nameof(backgroundFrameBounds)));
+            BackgroundFrameBounds = backgroundFrameBounds;
         }
 
         protected override void OnCreate()
@@ -53,6 +62,11 @@ namespace AnimationEditorLibrary.Core.Services
             {
                 CurrentFramePreview = new BoundsWidget(CurrentFrameBounds, Color.Crimson);
                 Self.AttachComponent(CurrentFramePreview);
+            }
+            if(Validate.Check.IsNull(BackgroundFramesPreview))
+            {
+                BackgroundFramesPreview = new BoundsWidget(BackgroundFrameBounds, Color.Gray);
+                Self.AttachComponent(BackgroundFramesPreview);
             }
         }
 

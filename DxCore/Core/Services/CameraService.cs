@@ -79,11 +79,6 @@ namespace DxCore.Core.Services
             Follow(() => DxGame.Instance.Service<PlayerService>()?.ActivePlayer?.Position.Center ?? Position);
         }
 
-        public DxVector2 Invert(DxVector2 nonScaledUiPoint)
-        {
-            return Vector2.Transform(nonScaledUiPoint.Vector2, Matrix.Invert(Transform));
-        }
-
         public void MoveBy(DxVector2 translation)
         {
             Position += translation;
@@ -100,7 +95,12 @@ namespace DxCore.Core.Services
             Target = NoOpTarget;
         }
 
-        public DxVector2 Transformed(DxVector2 worldCoordinate)
+        public DxVector2 UiOffsetToWorldCoordinates(DxVector2 nonScaledUiPoint)
+        {
+            return Vector2.Transform(nonScaledUiPoint.Vector2, Matrix.Invert(Transform));
+        }
+
+        public DxVector2 WorldCoordinatesToUiOffset(DxVector2 worldCoordinate)
         {
             return Vector2.Transform(worldCoordinate.Vector2, Transform);
         }

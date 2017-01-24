@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
-using System.Windows.Input;
 using AnimationEditorLibrary.Core.Messaging;
 using AnimationEditorLibrary.Core.Settings;
+using AnimationEditorLibrary.EmptyKeysLib;
 using AnimationEditorLibrary.EmptyKeysLib.Relay;
 using AnimationEditorLibrary.Models;
 using DxCore;
 using DxCore.Core.Animation;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
+using DxCore.Core.Services;
 using DxCore.Core.Utils;
 using DxCore.Core.Utils.Distance;
 using EmptyKeys.UserInterface;
@@ -22,14 +25,8 @@ using Microsoft.Xna.Framework.Graphics;
 using NLog;
 using WallNetCore.Cache.Advanced;
 using WallNetCore.Validate;
-using ICommand = EmptyKeys.UserInterface.Input.ICommand;
-using Mouse = EmptyKeys.UserInterface.Input.Mouse;
-using MouseButtonEventArgs = EmptyKeys.UserInterface.Input.MouseButtonEventArgs;
-using MouseButtonEventHandler = EmptyKeys.UserInterface.Input.MouseButtonEventHandler;
 using MouseEventArgs = EmptyKeys.UserInterface.Input.MouseEventArgs;
 using MouseEventHandler = EmptyKeys.UserInterface.Input.MouseEventHandler;
-using MouseWheelEventArgs = EmptyKeys.UserInterface.Input.MouseWheelEventArgs;
-using MouseWheelEventHandler = EmptyKeys.UserInterface.Input.MouseWheelEventHandler;
 
 namespace AnimationEditorLibrary.Controls
 {
@@ -37,6 +34,7 @@ namespace AnimationEditorLibrary.Controls
     {
         NotDoinIt,
         DoinIt,
+        SpriteSheetMovin,
         Idk
     }
 
@@ -69,7 +67,7 @@ namespace AnimationEditorLibrary.Controls
             }
         }
 
-        public DxRectangle? CurrentFrameView
+        public List<DxRectangle> CurrentFrameView
         {
             get
             {
@@ -80,9 +78,12 @@ namespace AnimationEditorLibrary.Controls
                 if(Descriptor.OffsetForFrame(FrameIndex, out frameOffset, out drawOffset, out width, out height))
                 {
                     // TODO: Care about draw offset?
-                    return new DxRectangle(frameOffset * Scale, width * Scale, height * Scale) + Offset();
+                    return new List<DxRectangle>(1)
+                    {
+                        new DxRectangle(frameOffset * Scale, width * Scale, height * Scale) + Offset()
+                    };
                 }
-                return null;
+                return new List<DxRectangle>(0);
             }
         }
 
@@ -192,6 +193,36 @@ namespace AnimationEditorLibrary.Controls
         public ICommand NewCommand { get; }
 
         public Func<DxVector2> Offset { get; set; }
+
+        public List<DxRectangle> OtherFrameView
+        {
+            get
+            {
+                int frameIndexToIgnore = FrameIndex;
+                List<FrameDescriptor> frameDescriptors = Descriptor.Frames;
+                List<DxRectangle> otherFrameView =
+                    new List<DxRectangle>(frameDescriptors.Count == 0 ? 0 : frameDescriptors.Count - 1);
+                for(int i = 0; i < frameDescriptors.Count; ++i)
+                {
+                    if(i == frameIndexToIgnore)
+                    {
+                        continue;
+                    }
+                    DxVector2 drawOffset;
+                    DxVector2 frameOffset;
+                    int width;
+                    int height;
+                    if(Descriptor.OffsetForFrame(i, out frameOffset, out drawOffset, out width, out height))
+                    {
+                        DxRectangle frameView = new DxRectangle(frameOffset * Scale, width * Scale, height * Scale) +
+                                                Offset();
+                        otherFrameView.Add(frameView);
+                    }
+                }
+                return otherFrameView;
+            }
+        }
+
         public ICommand SaveCommand { get; }
 
         public ICommand SetContentDirectoryCommand { get; }
@@ -218,7 +249,8 @@ namespace AnimationEditorLibrary.Controls
 
         private Direction Facing { get; set; }
 
-        private PointF LastOffsetStart { get; set; }
+        // Overloaded - is either BoundingBox or SpriteSheet offset depending on MovementMode
+        private DxVector2 LastOffsetStart { get; set; }
 
         private BoundingBoxMovementMode MovementMode { get; set; }
 
@@ -263,20 +295,15 @@ namespace AnimationEditorLibrary.Controls
             Offset = () => new DxVector2();
         }
 
-        public void FrameCountValidation(object sender, TextCompositionEventArgs eventArgs)
-        {
-            // TODO
-        }
-
         public void OnClose()
         {
             try
             {
                 Settings.Save();
             }
-            catch
+            catch(Exception e)
             {
-                // Don't care
+                Logger.Error(e, "Caught unexpected exception while trying to save settings");
             }
         }
 
@@ -365,8 +392,23 @@ namespace AnimationEditorLibrary.Controls
 
         private void HandleMouseDown(object source, MouseButtonEventArgs mouseEventArgs)
         {
-            MovementMode = BoundingBoxMovementMode.DoinIt;
-            LastOffsetStart = mouseEventArgs.GetPosition();
+            DxVector2 uiCoordinates = mouseEventArgs.GetPosition().ToDxVector2();
+            
+            CameraService cameraService;
+            if(!DxGame.Instance.ServiceProvider.TryGet(out cameraService))
+            {
+                string error = $"{typeof(CameraService)} does not exist, something is very wrong";
+                Logger.Error(error);
+                throw new DataException(error);
+            }
+
+            // Hit test to see if we're inside the current frame's bounding box
+            DxVector2 worldCoordinates = cameraService.UiOffsetToWorldCoordinates(uiCoordinates);
+            bool isBoundingBoxMove = CurrentFrameView.Any(_ => _.Contains(worldCoordinates));
+            MovementMode = isBoundingBoxMove ? BoundingBoxMovementMode.DoinIt : BoundingBoxMovementMode.SpriteSheetMovin;
+
+            Logger.Debug("Beginning move pattern for {0}", MovementMode);
+            LastOffsetStart = mouseEventArgs.GetPosition().ToDxVector2();
         }
 
         private void HandleMouseLeave(object source, MouseEventArgs mouseEventArgs)
@@ -386,9 +428,8 @@ namespace AnimationEditorLibrary.Controls
             {
                 case BoundingBoxMovementMode.DoinIt:
                 {
-                    PointF currentPosition = mouseEventArgs.GetPosition();
-                    DxVector2 distance = new DxVector2(currentPosition.X - LastOffsetStart.X,
-                        currentPosition.Y - LastOffsetStart.Y);
+                    DxVector2 currentPosition = mouseEventArgs.GetPosition().ToDxVector2();
+                    DxVector2 distance = currentPosition - LastOffsetStart;
                     LastOffsetStart = currentPosition;
 
                     distance /= Scale;

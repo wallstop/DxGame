@@ -32,7 +32,8 @@ namespace AnimationEditor
             DeveloperService devService = new DeveloperService();
             devService.Create();
 
-            AnimationViewerHudService hud = new AnimationViewerHudService(() => rootUi.View.CurrentFrameView);
+            AnimationViewerHudService hud = new AnimationViewerHudService(() => rootUi.View.CurrentFrameView,
+                () => rootUi.View.OtherFrameView);
             hud.Create();
             // TODO: Get rid of cyclic dependency :(
             rootUi.View.Offset = () => hud.SpriteSheetOffset;

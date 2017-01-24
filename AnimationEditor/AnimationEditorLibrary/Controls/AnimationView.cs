@@ -11,6 +11,7 @@ using AnimationEditorLibrary.EmptyKeysLib;
 using AnimationEditorLibrary.EmptyKeysLib.Relay;
 using AnimationEditorLibrary.Models;
 using DxCore;
+using DxCore.Core;
 using DxCore.Core.Animation;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
@@ -48,6 +49,8 @@ namespace AnimationEditorLibrary.Controls
         private bool frameCountEnabled_;
 
         private int frameIndex_;
+
+        private float scale_;
 
         private DxVector2 spriteSheetDrawOffset_;
 
@@ -228,6 +231,9 @@ namespace AnimationEditorLibrary.Controls
 
         public ICommand SaveCommand { get; }
 
+        // Ugh this coupling blows, pls make better
+        public UniqueId ServiceId { get; set; }
+
         public ICommand SetContentDirectoryCommand { get; }
 
         public int Width
@@ -273,7 +279,18 @@ namespace AnimationEditorLibrary.Controls
             }
         }
 
-        private float Scale { get; set; }
+        private float Scale
+        {
+            get { return scale_; }
+            set
+            {
+                scale_ = value;
+                if(Validate.Check.IsNotNull(ServiceId))
+                {
+                    new ChangeScaleRequest(ServiceId, scale_).Emit();
+                }
+            }
+        }
 
         private AnimationEditorSettings Settings { get; set; }
 
@@ -431,21 +448,18 @@ namespace AnimationEditorLibrary.Controls
 
         private void HandleMouseMove(object source, MouseEventArgs mouseEventArgs)
         {
-            if(FrameIndex < 0)
-            {
-                // Can't do it without a selected Frame
-                return;
-            }
-
             switch(MovementMode)
             {
                 case BoundingBoxMovementMode.DoinIt:
                 {
+                    if(FrameIndex < 0)
+                    {
+                        // Can't do it without a selected Frame
+                        return;
+                    }
                     DxVector2 currentPosition = mouseEventArgs.GetPosition().ToDxVector2();
                     DxVector2 distance = currentPosition - LastOffsetStart;
                     LastOffsetStart = currentPosition;
-
-                    distance /= Scale;
 
                     AnimationDescriptor animationDescriptor = DescriptorCache.Get();
                     FrameDescriptor currentFrame = animationDescriptor.Frames[FrameIndex];
@@ -461,8 +475,6 @@ namespace AnimationEditorLibrary.Controls
                     DxVector2 currentPosition = mouseEventArgs.GetPosition().ToDxVector2();
                     DxVector2 distance = currentPosition - LastOffsetStart;
                     LastOffsetStart = currentPosition;
-
-                    distance /= Scale;
 
                     SpriteSheetDrawOffset += distance;
                     break;

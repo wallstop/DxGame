@@ -7,14 +7,14 @@ namespace DxCore.Core.Messaging
 {
     [Serializable]
     [DataContract]
-    public sealed class IncreaseScaleMessage : Message, ITargetedMessage
+    public sealed class ChangeScaleRequest : Message, ITargetedMessage
     {
         public const float DefaultScale = 1.0f;
 
         [DataMember]
         public float Scale { get; set; }
 
-        public IncreaseScaleMessage(UniqueId target, float scale = DefaultScale)
+        public ChangeScaleRequest(UniqueId target, float scale = DefaultScale)
         {
             Validate.Hard.IsNotNull(target, () => this.GetFormattedNullOrDefaultMessage(nameof(target)));
             Target = target;

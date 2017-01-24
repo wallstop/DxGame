@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DxCore.Core.Components.Basic;
+using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
 using Microsoft.Xna.Framework;
@@ -31,6 +32,8 @@ namespace DxCore.Core.Components.Developer
 
         private Color Color { get; }
 
+        private float Scale { get; set; } = 1.0f;
+
         public BoundsWidget(Func<List<DxRectangle>> boundsProducer, int? borderThickness = null, Color? color = null)
         {
             Validate.Hard.IsNotNull(boundsProducer, () => this.GetFormattedNullOrDefaultMessage(nameof(boundsProducer)));
@@ -45,8 +48,20 @@ namespace DxCore.Core.Components.Developer
         {
             foreach(DxRectangle border in BoundsProducer.Invoke())
             {
-                spriteBatch.DrawBorder(border, BorderThickness, Color);
+                int compensatedThickness = (int) Math.Round(BorderThickness * Scale);
+                compensatedThickness = MathHelper.Clamp(compensatedThickness, 1, 100);
+                spriteBatch.DrawBorder(border, compensatedThickness, Color);
             }
+        }
+
+        public override void OnAttach()
+        {
+            RegisterMessageHandler<ChangeScaleRequest>(HandleChangeScaleRequest);
+        }
+
+        private void HandleChangeScaleRequest(ChangeScaleRequest changeScale)
+        {
+            Scale = changeScale.Scale;
         }
     }
 }

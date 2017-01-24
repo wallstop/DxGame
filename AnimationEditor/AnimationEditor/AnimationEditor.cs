@@ -37,6 +37,7 @@ namespace AnimationEditor
             hud.Create();
             // TODO: Get rid of cyclic dependency :(
             rootUi.View.Offset = () => hud.SpriteSheetOffset;
+            rootUi.View.ServiceId = hud.Id;
         }
 
         private void HandleDeviceCreated(object sender, EventArgs eventArgs)

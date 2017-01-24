@@ -49,6 +49,8 @@ namespace AnimationEditorLibrary.Controls
 
         private int frameIndex_;
 
+        private DxVector2 spriteSheetDrawOffset_;
+
         public string AssetPath { get; private set; }
 
         public string ContentDirectory
@@ -80,7 +82,8 @@ namespace AnimationEditorLibrary.Controls
                     // TODO: Care about draw offset?
                     return new List<DxRectangle>(1)
                     {
-                        new DxRectangle(frameOffset * Scale, width * Scale, height * Scale) + Offset()
+                        new DxRectangle(frameOffset * Scale, width * Scale, height * Scale) + Offset() +
+                        SpriteSheetDrawOffset
                     };
                 }
                 return new List<DxRectangle>(0);
@@ -215,7 +218,7 @@ namespace AnimationEditorLibrary.Controls
                     if(Descriptor.OffsetForFrame(i, out frameOffset, out drawOffset, out width, out height))
                     {
                         DxRectangle frameView = new DxRectangle(frameOffset * Scale, width * Scale, height * Scale) +
-                                                Offset();
+                                                Offset() + SpriteSheetDrawOffset;
                         otherFrameView.Add(frameView);
                     }
                 }
@@ -273,6 +276,16 @@ namespace AnimationEditorLibrary.Controls
         private float Scale { get; set; }
 
         private AnimationEditorSettings Settings { get; set; }
+
+        private DxVector2 SpriteSheetDrawOffset
+        {
+            get { return spriteSheetDrawOffset_; }
+            set
+            {
+                spriteSheetDrawOffset_ = value;
+                new SpriteSheetOffsetChangedMessage(value).Emit();
+            }
+        }
 
         public AnimationView()
         {
@@ -393,7 +406,7 @@ namespace AnimationEditorLibrary.Controls
         private void HandleMouseDown(object source, MouseButtonEventArgs mouseEventArgs)
         {
             DxVector2 uiCoordinates = mouseEventArgs.GetPosition().ToDxVector2();
-            
+
             CameraService cameraService;
             if(!DxGame.Instance.ServiceProvider.TryGet(out cameraService))
             {
@@ -442,6 +455,17 @@ namespace AnimationEditorLibrary.Controls
                     Builder.WithFrame(FrameIndex, currentFrame);
                     NotifyAnimationChanged(RedrawTextures);
                     return;
+                }
+                case BoundingBoxMovementMode.SpriteSheetMovin:
+                {
+                    DxVector2 currentPosition = mouseEventArgs.GetPosition().ToDxVector2();
+                    DxVector2 distance = currentPosition - LastOffsetStart;
+                    LastOffsetStart = currentPosition;
+
+                    distance /= Scale;
+
+                    SpriteSheetDrawOffset += distance;
+                    break;
                 }
                 case BoundingBoxMovementMode.NotDoinIt:
                 {

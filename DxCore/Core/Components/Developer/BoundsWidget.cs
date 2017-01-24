@@ -25,7 +25,7 @@ namespace DxCore.Core.Components.Developer
 
         private static readonly Color DefaultColor = Color.Red;
 
-        private int BorderThickness { get; }
+        private int BorderThickness { get; set; }
 
         private Func<List<DxRectangle>> BoundsProducer { get; }
 
@@ -36,14 +36,16 @@ namespace DxCore.Core.Components.Developer
             Validate.Hard.IsNotNull(boundsProducer, () => this.GetFormattedNullOrDefaultMessage(nameof(boundsProducer)));
             BoundsProducer = boundsProducer;
             Color = color ?? DefaultColor;
-            borderThickness DrawPriority = DrawPriority.Low;
+            BorderThickness = borderThickness ?? DefaultBorderThickness;
+
+            DrawPriority = DrawPriority.Low;
         }
 
         public override void Draw(SpriteBatch spriteBatch, DxGameTime gameTime)
         {
             foreach(DxRectangle border in BoundsProducer.Invoke())
             {
-                spriteBatch.DrawBorder(border, 1, Color);
+                spriteBatch.DrawBorder(border, BorderThickness, Color);
             }
         }
     }

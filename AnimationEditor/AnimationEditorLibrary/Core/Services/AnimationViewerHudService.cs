@@ -60,12 +60,12 @@ namespace AnimationEditorLibrary.Core.Services
             }
             if(Validate.Check.IsNull(CurrentFramePreview))
             {
-                CurrentFramePreview = new BoundsWidget(CurrentFrameBounds, Color.Crimson);
+                CurrentFramePreview = new BoundsWidget(CurrentFrameBounds, color: Color.Crimson);
                 Self.AttachComponent(CurrentFramePreview);
             }
             if(Validate.Check.IsNull(BackgroundFramesPreview))
             {
-                BackgroundFramesPreview = new BoundsWidget(BackgroundFrameBounds, Color.Gray);
+                BackgroundFramesPreview = new BoundsWidget(BackgroundFrameBounds, color: Color.Gray);
                 Self.AttachComponent(BackgroundFramesPreview);
             }
         }

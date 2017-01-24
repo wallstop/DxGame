@@ -388,7 +388,6 @@
     <Compile Include="Core\Utils\Pair.cs" />
     <Compile Include="Core\Utils\PrimitiveExtensions.cs" />
     <Compile Include="Core\Utils\SpringFunctions.cs" />
-    <Compile Include="Core\Utils\SpriteBatchUtils.cs" />
     <Compile Include="Core\Utils\StringUtils.cs" />
     <Compile Include="Core\Utils\TextureFactory.cs" />
     <Compile Include="Core\Utils\ThreadLocalRandom.cs" />
@@ -397,6 +396,7 @@
     <Compile Include="Core\Utils\VectorUtils.cs" />
     <Compile Include="Core\Utils\XnaUtils.cs" />
     <Compile Include="DxGame.cs" />
+    <Compile Include="Extension\SpriteBatchExtensions.cs" />
     <Compile Include="Extension\Texture2DExtensions.cs" />
     <Compile Include="Extension\TimeSpanExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

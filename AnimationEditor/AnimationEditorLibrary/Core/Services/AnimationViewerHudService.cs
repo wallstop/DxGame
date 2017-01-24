@@ -6,6 +6,7 @@ using DxCore.Core.Components.Developer;
 using DxCore.Core.Primitives;
 using DxCore.Core.Services;
 using DxCore.Core.Utils;
+using DxCore.Extension;
 using Microsoft.Xna.Framework;
 using WallNetCore.Validate;
 
@@ -60,12 +61,14 @@ namespace AnimationEditorLibrary.Core.Services
             }
             if(Validate.Check.IsNull(CurrentFramePreview))
             {
-                CurrentFramePreview = new BoundsWidget(CurrentFrameBounds, color: Color.Crimson);
+                CurrentFramePreview = new BoundsWidget(CurrentFrameBounds, color: Color.Crimson,
+                    borderRenderMode: SpriteBatchExtensions.BorderRenderMode.Outside);
                 Self.AttachComponent(CurrentFramePreview);
             }
             if(Validate.Check.IsNull(BackgroundFramesPreview))
             {
-                BackgroundFramesPreview = new BoundsWidget(BackgroundFrameBounds, color: Color.Gray);
+                BackgroundFramesPreview = new BoundsWidget(BackgroundFrameBounds, color: Color.Gray,
+                    borderRenderMode: SpriteBatchExtensions.BorderRenderMode.Outside);
                 Self.AttachComponent(BackgroundFramesPreview);
             }
         }

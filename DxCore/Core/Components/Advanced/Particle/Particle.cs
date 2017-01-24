@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using DxCore.Core.Components.Basic;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Extension;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using WallNetCore.Validate;
@@ -73,7 +74,7 @@ namespace DxCore.Core.Components.Advanced.Particle
             var growthScaleFactor = (float) gameTime.ElapsedGameTime.TotalMilliseconds /
                                     DateTimeConstants.MILLISECONDS_PER_SECOND;
             AccumulatedRadius += Radius * growthScaleFactor * GrowRate;
-            if((AccumulatedRadius < 0) || (MaxDistance <= 0))
+            if(AccumulatedRadius < 0 || MaxDistance <= 0)
             {
                 /* Have we shrunk to 0 or traveled farther than we should have? If so, die */
                 Remove();
@@ -114,7 +115,7 @@ namespace DxCore.Core.Components.Advanced.Particle
                     $"Cannot create {typeof(Particle)}s with a negative radius ({radius_})");
                 Validate.Hard.IsTrue(maxDistance_ >= 0,
                     $"Cannot create {typeof(Particle)}s with a negative maxDistance ({maxDistance_})");
-                Validate.Hard.IsTrue((transparencyWeight_ >= 0) && (transparencyWeight_ <= 1.0f),
+                Validate.Hard.IsTrue(transparencyWeight_ >= 0 && transparencyWeight_ <= 1.0f,
                     $"Cannot create {typeof(Particle)}s with an transparencyWeight that is not [0, 1] (was {transparencyWeight_})");
                 return new Particle(color_, radius_, growRate_, position_, velocity_, acceleration_, timeToLive_,
                     maxDistance_, transparencyWeight_);

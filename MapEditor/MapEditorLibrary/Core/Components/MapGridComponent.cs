@@ -3,7 +3,7 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Map;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
-using DxCore.Core.Utils;
+using DxCore.Extension;
 using MapEditorLibrary.Core.Messaging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

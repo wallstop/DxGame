@@ -70,7 +70,7 @@
                                Grid.Column="1"
                                Margin="5"
                                Minimum="1"
-                               Value="{Binding Height}" />
+                               Value="{Binding Width}" />
             <TextBlock Grid.Row="2"
                        Grid.Column="0"
                        Margin="5"
@@ -81,7 +81,7 @@
                                Grid.Column="1"
                                Margin="5"
                                Minimum="1"
-                               Value="{Binding Width}" />
+                               Value="{Binding Height}" />
             <TextBlock Grid.Row="3"
                        Grid.Column="0"
                        Margin="5"
@@ -170,7 +170,7 @@
                       Background="Gray"
                       FlowDirection="LeftToRight"
                       HorizontalScrollBarVisibility="Auto"
-                      VerticalScrollBarVisibility="Disabled">
+                      VerticalScrollBarVisibility="Auto">
             <ListBox HorizontalAlignment="Center"
                      VerticalAlignment="Center"
                      ItemsSource="{Binding Frames,

@@ -190,7 +190,7 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_5.Minimum = 1F;
             Grid.SetColumn(this.e_5, 1);
             Grid.SetRow(this.e_5, 1);
-            Binding binding_e_5_Value = new Binding("Height");
+            Binding binding_e_5_Value = new Binding("Width");
             this.e_5.SetBinding(NumericTextBox.ValueProperty, binding_e_5_Value);
             // e_6 element
             this.e_6 = new TextBlock();
@@ -211,7 +211,7 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_7.Minimum = 1F;
             Grid.SetColumn(this.e_7, 1);
             Grid.SetRow(this.e_7, 2);
-            Binding binding_e_7_Value = new Binding("Width");
+            Binding binding_e_7_Value = new Binding("Height");
             this.e_7.SetBinding(NumericTextBox.ValueProperty, binding_e_7_Value);
             // e_8 element
             this.e_8 = new TextBlock();
@@ -357,7 +357,7 @@ namespace EmptyKeys.UserInterface.Generated {
             this.e_19.Margin = new Thickness(5F, 5F, 5F, 5F);
             this.e_19.Background = new SolidColorBrush(new ColorW(128, 128, 128, 255));
             this.e_19.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-            this.e_19.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+            this.e_19.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             Grid.SetColumn(this.e_19, 0);
             Grid.SetRow(this.e_19, 2);
             Grid.SetColumnSpan(this.e_19, 3);

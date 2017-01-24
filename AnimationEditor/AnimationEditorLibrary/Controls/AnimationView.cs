@@ -459,6 +459,7 @@ namespace AnimationEditorLibrary.Controls
                     }
                     DxVector2 currentPosition = mouseEventArgs.GetPosition().ToDxVector2();
                     DxVector2 distance = currentPosition - LastOffsetStart;
+                    distance /= Scale;
                     LastOffsetStart = currentPosition;
 
                     AnimationDescriptor animationDescriptor = DescriptorCache.Get();

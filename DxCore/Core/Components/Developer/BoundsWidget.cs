@@ -4,6 +4,7 @@ using DxCore.Core.Components.Basic;
 using DxCore.Core.Messaging;
 using DxCore.Core.Primitives;
 using DxCore.Core.Utils;
+using DxCore.Extension;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using WallNetCore.Validate;
@@ -26,6 +27,8 @@ namespace DxCore.Core.Components.Developer
 
         private static readonly Color DefaultColor = Color.Red;
 
+        private SpriteBatchExtensions.BorderRenderMode BorderRenderMode { get; }
+
         private int BorderThickness { get; set; }
 
         private Func<List<DxRectangle>> BoundsProducer { get; }
@@ -34,12 +37,15 @@ namespace DxCore.Core.Components.Developer
 
         private float Scale { get; set; } = 1.0f;
 
-        public BoundsWidget(Func<List<DxRectangle>> boundsProducer, int? borderThickness = null, Color? color = null)
+        public BoundsWidget(Func<List<DxRectangle>> boundsProducer, int? borderThickness = null, Color? color = null,
+            SpriteBatchExtensions.BorderRenderMode borderRenderMode = SpriteBatchExtensions.DefaultBorderRenderMode)
         {
             Validate.Hard.IsNotNull(boundsProducer, () => this.GetFormattedNullOrDefaultMessage(nameof(boundsProducer)));
             BoundsProducer = boundsProducer;
             Color = color ?? DefaultColor;
             BorderThickness = borderThickness ?? DefaultBorderThickness;
+
+            BorderRenderMode = borderRenderMode;
 
             DrawPriority = DrawPriority.Low;
         }
@@ -50,7 +56,7 @@ namespace DxCore.Core.Components.Developer
             {
                 int compensatedThickness = (int) Math.Round(BorderThickness * Scale);
                 compensatedThickness = MathHelper.Clamp(compensatedThickness, 1, 100);
-                spriteBatch.DrawBorder(border, compensatedThickness, Color);
+                spriteBatch.DrawBorder(border, compensatedThickness, Color, BorderRenderMode);
             }
         }
 
